@@ -22,7 +22,6 @@
 #include "feature.h"
 #include "iunknown.h"
 #include "samgr_lite.h"
-#include "service.h"
 
 #include "ipc_auth.h"
 
