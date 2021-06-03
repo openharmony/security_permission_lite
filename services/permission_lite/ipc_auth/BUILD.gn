@@ -22,6 +22,7 @@ lite_library("ipc_auth_target") {
   include_dirs = [
     "//base/security/permission/interfaces/innerkits/permission_lite",
     "//base/security/permission/services/permission_lite/ipc_auth/include",
+    "${ohos_product_adapter_dir}/security/permission_lite/ipc_auth/include",
     "//base/security/permission/services/permission_lite/pms_base/include",
     "//foundation/distributedschedule/samgr_lite/interfaces/kits/registry",
     "//foundation/distributedschedule/samgr_lite/interfaces/kits/samgr",
