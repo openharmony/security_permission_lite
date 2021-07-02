@@ -26,6 +26,7 @@
 
 #include "ipc_auth_err.h"
 #include "policy_preset.h"
+#include "policy_preset_product.h"
 #include "policy_registry.h"
 
 static unsigned int g_systemSvcUids[] = {1, 2, 0, 7, 8, 9, 10};
@@ -140,6 +141,28 @@ static int SetPolicies(const FeaturePolicy *featurePolicy, PolicyTrans **policie
     return AUTH_ERRORCODE_SUCCESS;
 }
 
+static int SetPresetPolicies(const PolicySetting presetPolicy[], int policySize, RegParams params,
+    PolicyTrans **policies, unsigned int *policyNum)
+{
+    for (int i = 0; i < policySize; i++) {
+        if (strcmp(presetPolicy[i].service, params.service) != 0) {
+            continue;
+        }
+        for (int j = 0; j < presetPolicy[i].featureNum; j++) {
+            FeaturePolicy *featurePolicy = (FeaturePolicy *) presetPolicy[i].features + j;
+            if (StrcmpWithNull(featurePolicy->feature, params.feature) != 0) {
+                continue;
+            }
+            if (SetPolicies(featurePolicy, policies, policyNum) == AUTH_ERRORCODE_SUCCESS) {
+                return AUTH_ERRORCODE_SUCCESS;
+            }
+            return AUTH_ERRORCODE_NO_POLICY_SET;
+        }
+        return AUTH_ERRORCODE_NO_POLICY_SET;
+    }
+    return AUTH_ERRORCODE_POLICY_NOT_FOUND;
+}
+
 int GetCommunicationStrategy(RegParams params, PolicyTrans **policies, unsigned int *policyNum)
 {
     if (IsUidValid(params.uid) == AUTH_ERRORCODE_INVALID_UID) {
@@ -148,40 +171,18 @@ int GetCommunicationStrategy(RegParams params, PolicyTrans **policies, unsigned 
         return AUTH_ERRORCODE_INVALID_UID;
     }
 
-    for (int i = 0; i < g_presetPolicySize; i++) {
-        if (strcmp(g_presetPolicies[i].service, params.service) != 0) {
-            continue;
-        }
-        for (int j = 0; j < g_presetPolicies[i].featureNum; j++) {
-            FeaturePolicy *featurePolicy = (FeaturePolicy *) g_presetPolicies[i].features + j;
-            if (StrcmpWithNull(featurePolicy->feature, params.feature) != 0) {
-                continue;
-            }
-            if (SetPolicies(featurePolicy, policies, policyNum) == AUTH_ERRORCODE_SUCCESS) {
-                return AUTH_ERRORCODE_SUCCESS;
-            }
-            return AUTH_ERRORCODE_NO_POLICY_SET;
-        }
-        return AUTH_ERRORCODE_NO_POLICY_SET;
+    int res = SetPresetPolicies(g_presetPolicies, g_presetPolicySize, params, policies, policyNum);
+    if (res != AUTH_ERRORCODE_POLICY_NOT_FOUND) {
+        return res;
     }
-
-    for (int i = 0; i < g_regPoliciesSize; i++) {
-        if (strcmp(g_registryPolicies[i].service, params.service) != 0) {
-            continue;
-        }
-        for (int j = 0; j < g_registryPolicies[i].featureNum; j++) {
-            FeaturePolicy *featurePolicy = (FeaturePolicy *) g_registryPolicies[i].features + j;
-            if (StrcmpWithNull(featurePolicy->feature, params.feature) != 0) {
-                continue;
-            }
-            if (SetPolicies(featurePolicy, policies, policyNum) == AUTH_ERRORCODE_SUCCESS) {
-                return AUTH_ERRORCODE_SUCCESS;
-            }
-            return AUTH_ERRORCODE_NO_POLICY_SET;
-        }
-        return AUTH_ERRORCODE_NO_POLICY_SET;
+    res = SetPresetPolicies(g_productPolicies, g_productPolicySize, params, policies, policyNum);
+    if (res != AUTH_ERRORCODE_POLICY_NOT_FOUND) {
+        return res;
     }
-
+    res = SetPresetPolicies(g_registryPolicies, g_regPoliciesSize, params, policies, policyNum);
+    if (res != AUTH_ERRORCODE_POLICY_NOT_FOUND) {
+        return res;
+    }
     return AUTH_ERRORCODE_NO_POLICY_SET;
 }
 
@@ -268,7 +269,9 @@ int IsCommunicationAllowed(AuthParams params)
     if (CheckSvcPolicies(g_presetPolicies, g_presetPolicySize, &params) == AUTH_ERRORCODE_SUCCESS) {
         return AUTH_ERRORCODE_SUCCESS;
     }
-
+    if (CheckSvcPolicies(g_productPolicies, g_productPolicySize, &params) == AUTH_ERRORCODE_SUCCESS) {
+        return AUTH_ERRORCODE_SUCCESS;
+    }
     if (CheckSvcPolicies(g_registryPolicies, g_regPoliciesSize, &params) == AUTH_ERRORCODE_SUCCESS) {
         return AUTH_ERRORCODE_SUCCESS;
     }
