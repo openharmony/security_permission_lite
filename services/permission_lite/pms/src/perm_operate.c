@@ -40,14 +40,17 @@ int PermissionIsGranted(const TList *list, int uid, const char *permission)
     return RET_NOK;
 }
 
-int ModifyPermission(TNode *node, const char *permission, enum IsGranted granted)
+int ModifyPermission(TNode *node, const char *permission, const PermissionSaved *perms)
 {
-    if (node == NULL) {
+    if (node == NULL || permission == NULL || perms == NULL) {
         return RET_NOK;
     }
     for (int i = 0; i < node->permNum; i++) {
         if (strcmp(node->permList[i].name, permission) == 0) {
-            node->permList[i].granted = granted;
+            node->permList[i].granted = perms->granted;
+            if (perms->flags != PMS_FLAG_NOT_MODIFY) {
+                node->permList[i].flags = perms->flags;
+            }
             return RET_OK;
         }
     }

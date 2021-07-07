@@ -40,6 +40,7 @@ typedef struct InnerPermLiteApi {
     int (*GrantRuntimePermission)(int uid, const char *permissionName);
     int (*RevokeRuntimePermission)(int uid, const char *permissionName);
     int (*GetDevUdid)(unsigned char *udid, int size);
+    int (*UpdateRuntimePermissionFlags)(int uid, const char *permissionName, const int flags);
 } InnerPermLiteApi;
 
 typedef struct InnerPermLite {
@@ -54,7 +55,8 @@ enum INNERFUNCID {
     ID_REVOKE,
     ID_GRANT_RUNTIME,
     ID_REVOKE_RUNTIME,
-    ID_GET_UDID
+    ID_GET_UDID,
+    ID_UPDATE_PERMS_FLAGS,
 };
 
 static void Init();
@@ -77,6 +79,7 @@ static InnerPermLite g_permlite = {
     .GrantRuntimePermission = GrantRuntimePermission,
     .RevokeRuntimePermission = RevokeRuntimePermission,
     .GetDevUdid = GetDevUdid,
+    .UpdateRuntimePermissionFlags = UpdateRuntimePermissionFlags,
     IPROXY_END,
     .identity = {-1, -1, NULL},
 };
@@ -202,27 +205,45 @@ static void ReplyGetDevUdid(const void *origin, IpcIo *req, IpcIo *reply, InnerP
     IpcIoPushInt32(reply, (UDID_FINAL_BYTES + 1));
     IpcIoPushString(reply, (const char *)udid);
 }
+
+static void ReplyUpdatePermissionFlags(const void *origin, IpcIo *req, IpcIo *reply, const InnerPermLiteApi *api)
+{
+    pid_t callingPid = GetCallingPid(origin);
+    uid_t callingUid = GetCallingUid(origin);
+    HILOG_INFO(HILOG_MODULE_APP, "Enter ID_UPDATE_PERMS_FLAGS, [callerPid: %d][callerUid: %u]", callingPid, callingUid);
+    size_t permLen = 0;
+    int64_t uid = IpcIoPopInt64(req);
+    char *permName = (char *)IpcIoPopString(req, &permLen);
+    int32_t flags = IpcIoPopInt32(req);
+    int32_t ret = api->UpdateRuntimePermissionFlags(uid, permName, flags);
+    HILOG_INFO(HILOG_MODULE_APP, "update runtime permission flags, [uid: %lld][perm: %s][flags:%d][ret: %d]", uid,
+        permName, flags, ret);
+    IpcIoPushInt32(reply, ret);
+}
+
 static int32 Invoke(IServerProxy *iProxy, int funcId, void *origin, IpcIo *req, IpcIo *reply)
 {
-    InnerPermLiteApi *api = (InnerPermLiteApi *)iProxy;
     switch (funcId) {
         case ID_CHECK:
-            ReplyCheckPermission(origin, req, reply, api);
+            ReplyCheckPermission(origin, req, reply, (InnerPermLiteApi *)iProxy);
             break;
         case ID_GRANT:
-            ReplyGrantPermission(origin, req, reply, api);
+            ReplyGrantPermission(origin, req, reply, (InnerPermLiteApi *)iProxy);
             break;
         case ID_REVOKE:
-            ReplyRevokePermission(origin, req, reply, api);
+            ReplyRevokePermission(origin, req, reply, (InnerPermLiteApi *)iProxy);
             break;
         case ID_GRANT_RUNTIME:
-            ReplyGrantRuntimePermission(origin, req, reply, api);
+            ReplyGrantRuntimePermission(origin, req, reply, (InnerPermLiteApi *)iProxy);
             break;
         case ID_REVOKE_RUNTIME:
-            ReplyRevokeRuntimePermission(origin, req, reply, api);
+            ReplyRevokeRuntimePermission(origin, req, reply, (InnerPermLiteApi *)iProxy);
             break;
         case ID_GET_UDID:
-            ReplyGetDevUdid(origin, req, reply, api);
+            ReplyGetDevUdid(origin, req, reply, (InnerPermLiteApi *)iProxy);
+            break;
+        case ID_UPDATE_PERMS_FLAGS:
+            ReplyUpdatePermissionFlags(origin, req, reply, (InnerPermLiteApi *)iProxy);
             break;
         default:
             break;

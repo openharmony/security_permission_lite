@@ -32,6 +32,7 @@
 #define FIELD_NAME "name"
 #define FIELD_DESC "desc"
 #define FIELD_IS_GRANTED "isGranted"
+#define FIELD_FLAGS "flags"
 
 // Permission matrix of run-time tasks
 static struct TaskList g_taskList = {
@@ -140,12 +141,44 @@ static int GetPermissionType(const char *permission)
     return PERM_ERRORCODE_INVALID_PERMNAME;
 }
 
+static int ParseFixedPermissionsItem(const cJSON *object, PermissionSaved *perms)
+{
+    cJSON *itemName = cJSON_GetObjectItem(object, FIELD_NAME);
+    cJSON *itemDesc = cJSON_GetObjectItem(object, FIELD_DESC);
+    cJSON *itemGranted = cJSON_GetObjectItem(object, FIELD_IS_GRANTED);
+    if (itemName == NULL || itemDesc == NULL || itemGranted == NULL || 
+        !cJSON_IsString(itemName) || !cJSON_IsString(itemDesc)) {
+        return PERM_ERRORCODE_JSONPARSE_FAIL;
+    }
+    if (strcpy_s(perms->name, PERM_NAME_LEN, itemName->valuestring) != EOK) {
+        return PERM_ERRORCODE_COPY_ERROR;
+    }
+    if (strcpy_s(perms->desc, PERM_DESC_LEN, itemDesc->valuestring) != EOK) {
+        return PERM_ERRORCODE_COPY_ERROR;
+    }
+    perms->granted = (enum IsGranted)itemGranted->valueint;
+    return PERM_ERRORCODE_SUCCESS;
+}
+
+static int ParseNewPermissionsItem(const cJSON *object, PermissionSaved *perms)
+{
+    cJSON *itemFlags = cJSON_GetObjectItem(object, FIELD_FLAGS);
+    if (itemFlags != NULL) {
+        perms->flags = (enum PmsFlagDef)itemFlags->valuedouble;
+    } else {
+        perms->flags = PMS_FLAG_DEFAULT;
+    }
+    return PERM_ERRORCODE_SUCCESS;
+}
+
+
 static int ParsePermissions(const char *jsonStr, PermissionSaved **perms, int *permNum)
 {
     cJSON *root = cJSON_Parse(jsonStr);
     if (root == NULL) {
         return PERM_ERRORCODE_JSONPARSE_FAIL;
     }
+    int ret;
     cJSON *array = cJSON_GetObjectItem(root, FIELD_PERMISSION);
     int pSize = cJSON_GetArraySize(array);
     int allocSize = sizeof(PermissionSaved) * pSize;
@@ -160,29 +193,20 @@ static int ParsePermissions(const char *jsonStr, PermissionSaved **perms, int *p
     }
     for (int i = 0; i < pSize; i++) {
         cJSON *object = cJSON_GetArrayItem(array, i);
-        cJSON *itemName = cJSON_GetObjectItem(object, FIELD_NAME);
-        cJSON *itemDesc = cJSON_GetObjectItem(object, FIELD_DESC);
-        cJSON *itemGranted = cJSON_GetObjectItem(object, FIELD_IS_GRANTED);
-        if (itemName == NULL || itemDesc == NULL || itemGranted == NULL ||
-            !cJSON_IsString(itemName) || !cJSON_IsString(itemDesc)) {
+        ret = ParseFixedPermissionsItem(object, *perms + i);
+        if (ret != PERM_ERRORCODE_SUCCESS) {
             cJSON_Delete(root);
             HalFree(*perms);
             *perms = NULL;
-            return PERM_ERRORCODE_JSONPARSE_FAIL;
+            return ret;
         }
-        if (strcpy_s((*perms + i)->name, PERM_NAME_LEN, itemName->valuestring) != EOK) {
+        ret = ParseNewPermissionsItem(object, *perms + i);
+        if (ret != PERM_ERRORCODE_SUCCESS) {
             cJSON_Delete(root);
             HalFree(*perms);
             *perms = NULL;
-            return PERM_ERRORCODE_COPY_ERROR;
+            return ret;
         }
-        if (strcpy_s((*perms + i)->desc, PERM_DESC_LEN, itemDesc->valuestring) != EOK) {
-            cJSON_Delete(root);
-            HalFree(*perms);
-            *perms = NULL;
-            return PERM_ERRORCODE_COPY_ERROR;
-        }
-        (*perms + i)->granted = (enum IsGranted) itemGranted->valueint;
     }
     *permNum = pSize;
     cJSON_Delete(root);
@@ -240,10 +264,19 @@ static int SavePermissions(const char *identifier, const PermissionSaved *permis
         cJSON_AddItemToObject(object, FIELD_NAME, cJSON_CreateString(permissions[i].name));
         cJSON_AddItemToObject(object, FIELD_DESC, cJSON_CreateString(permissions[i].desc));
         cJSON_AddItemToObject(object, FIELD_IS_GRANTED, cJSON_CreateBool(permissions[i].granted));
+        cJSON_AddItemToObject(object, FIELD_FLAGS, cJSON_CreateNumber(permissions[i].flags));
         cJSON_AddItemToArray(array, object);
     }
     cJSON_AddItemToObject(root, FIELD_PERMISSION, array);
     return WritePermissions(root, path);
+}
+
+static bool IsValidFlags(const int flags)
+{
+    if ((flags == PMS_FLAG_DEFAULT) || ((flags & (~PMS_FLAG_VALID_MASK)) == PMS_FLAG_DEFAULT)) {
+        return true;
+    }
+    return false;
 }
 
 char *QueryPermissionString(const char *identifier, int *errCode)
@@ -377,6 +410,7 @@ static int UpdateAppPermission(
         }
         int permType = GetPermissionType(newPerms[i].name);
         updatePerms[i].granted = NOT_GRANTED;
+        updatePerms[i].flags = PMS_FLAG_DEFAULT;
         if (permType != PERM_ERRORCODE_INVALID_PERMNAME) {
             updatePerms[i].granted = (permType == SYSTEM_GRANT) ? GRANTED : NOT_GRANTED;
         }
@@ -551,7 +585,7 @@ int CheckPermissionStat(int uid, const char *permissionName)
     return ret;
 }
 
-static int OnPermissionFileSync(const char *identifier, const char *permName, enum IsGranted isGranted)
+static int OnPermissionFileSync(const char *identifier, const char *permName, const PermissionSaved *perms)
 {
     int retCode = PERM_ERRORCODE_SUCCESS;
     bool isSave = false;
@@ -563,8 +597,12 @@ static int OnPermissionFileSync(const char *identifier, const char *permName, en
     }
     for (int i = 0; i < permNum; i++) {
         if (strcmp(permissions[i].name, permName) == 0) {
-            isSave = permissions[i].granted ^ isGranted;
-            permissions[i].granted = isGranted;
+            isSave = permissions[i].granted ^ perms->granted;
+            permissions[i].granted = perms->granted;
+            if (perms->flags != PMS_FLAG_NOT_MODIFY) {
+                isSave |= permissions[i].flags ^ perms->flags;
+                permissions[i].flags = perms->flags;
+            }
             break;
         }
     }
@@ -581,10 +619,14 @@ int GrantPermission(const char *identifier, const char *permName)
         return PERM_ERRORCODE_INVALID_PARAMS;
     }
     int ret = PERM_ERRORCODE_SUCCESS;
+    PermissionSaved perms = {
+        .granted = GRANTED,
+        .flags = PMS_FLAG_NOT_MODIFY,
+    };
     HalMutexLock();
     TNode *node = GetTaskWithPkgName(&g_taskList, identifier);
     if (node != NULL) {
-        ret = ModifyPermission(node, permName, GRANTED);
+        ret = ModifyPermission(node, permName, &perms);
     }
     HalMutexUnlock();
 
@@ -592,7 +634,7 @@ int GrantPermission(const char *identifier, const char *permName)
         return PERM_ERRORCODE_PERM_NOT_EXIST;
     }
 
-    return OnPermissionFileSync(identifier, permName, GRANTED);
+    return OnPermissionFileSync(identifier, permName, &perms);
 }
 
 int RevokePermission(const char *identifier, const char *permName)
@@ -601,10 +643,14 @@ int RevokePermission(const char *identifier, const char *permName)
         return PERM_ERRORCODE_INVALID_PARAMS;
     }
     int ret = PERM_ERRORCODE_SUCCESS;
+    PermissionSaved perms = {
+        .granted = NOT_GRANTED,
+        .flags = PMS_FLAG_NOT_MODIFY,
+    };
     HalMutexLock();
     TNode *node = GetTaskWithPkgName(&g_taskList, identifier);
     if (node != NULL) {
-        ret = ModifyPermission(node, permName, NOT_GRANTED);
+        ret = ModifyPermission(node, permName, &perms);
     }
     HalMutexUnlock();
 
@@ -612,7 +658,7 @@ int RevokePermission(const char *identifier, const char *permName)
         return PERM_ERRORCODE_PERM_NOT_EXIST;
     }
 
-    return OnPermissionFileSync(identifier, permName, NOT_GRANTED);
+    return OnPermissionFileSync(identifier, permName, &perms);
 }
 
 int GrantRuntimePermission(int uid, const char *permissionName)
@@ -620,6 +666,11 @@ int GrantRuntimePermission(int uid, const char *permissionName)
     if (permissionName == NULL) {
         return PERM_ERRORCODE_INVALID_PARAMS;
     }
+    PermissionSaved perms = {
+        .granted = GRANTED,
+        .flags = PMS_FLAG_NOT_MODIFY,
+    };
+
     HalMutexLock();
     TNode *node = GetTaskWithUid(&g_taskList, uid);
     if (node == NULL) {
@@ -627,13 +678,13 @@ int GrantRuntimePermission(int uid, const char *permissionName)
         return PERM_ERRORCODE_TASKID_NOT_EXIST;
     }
 
-    int ret = ModifyPermission(node, permissionName, GRANTED);
+    int ret = ModifyPermission(node, permissionName, &perms);
     HalMutexUnlock();
     if (ret < 0) {
         return PERM_ERRORCODE_PERM_NOT_EXIST;
     }
 
-    return OnPermissionFileSync(node->pkgName, permissionName, GRANTED);
+    return OnPermissionFileSync(node->pkgName, permissionName, &perms);
 }
 
 int RevokeRuntimePermission(int uid, const char *permissionName)
@@ -641,6 +692,11 @@ int RevokeRuntimePermission(int uid, const char *permissionName)
     if (permissionName == NULL) {
         return PERM_ERRORCODE_INVALID_PARAMS;
     }
+    PermissionSaved perms = {
+        .granted = NOT_GRANTED,
+        .flags = PMS_FLAG_NOT_MODIFY,
+    };
+
     HalMutexLock();
     TNode *node = GetTaskWithUid(&g_taskList, uid);
     if (node == NULL) {
@@ -648,13 +704,13 @@ int RevokeRuntimePermission(int uid, const char *permissionName)
         return PERM_ERRORCODE_TASKID_NOT_EXIST;
     }
 
-    int ret = ModifyPermission(node, permissionName, NOT_GRANTED);
+    int ret = ModifyPermission(node, permissionName, &perms);
     HalMutexUnlock();
     if (ret < 0) {
         return PERM_ERRORCODE_PERM_NOT_EXIST;
     }
 
-    return OnPermissionFileSync(node->pkgName, permissionName, NOT_GRANTED);
+    return OnPermissionFileSync(node->pkgName, permissionName, &perms);
 }
 
 int GetDevUdid(unsigned char *udid, int size)
@@ -667,3 +723,27 @@ int GetDevUdid(unsigned char *udid, int size)
     return HalGetDevUdid(udid, size);
 }
 
+int UpdateRuntimePermissionFlags(int uid, const char *permissionName, const int flags)
+{
+    if ((permissionName == NULL) || !IsValidFlags(flags)) {
+        return PERM_ERRORCODE_INVALID_PARAMS;
+    }
+    PermissionSaved perms = {
+        .flags = flags,
+    };
+
+    HalMutexLock();
+    TNode *node = GetTaskWithUid(&g_taskList, uid);
+    if (node == NULL) {
+        HalMutexUnlock();
+        return PERM_ERRORCODE_TASKID_NOT_EXIST;
+    }
+    perms.granted = (enum IsGranted)PermissionIsGranted(&g_taskList, uid, permissionName);
+    int ret = ModifyPermission(node, permissionName, &perms);
+    HalMutexUnlock();
+    if (ret < 0) {
+        return PERM_ERRORCODE_PERM_NOT_EXIST;
+    }
+
+    return OnPermissionFileSync(node->pkgName, permissionName, &perms);
+}

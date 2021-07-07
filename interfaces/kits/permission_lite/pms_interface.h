@@ -152,6 +152,21 @@ int GrantRuntimePermission(int uid, const char *permissionName);
  */
 int RevokeRuntimePermission(int uid, const char *permissionName);
 
+/**
+ * @brief Update a specified runtime permission flags.
+ *
+ * @param uid Indicates the user ID of the application. The range is [0, INT_MAX].
+ * @param permissionName Indicates the pointer to the permission name.
+ * @param flags Indicates the permission flags of the permission.
+ * @return Returns <b>0</b> if the permission flags is successfully updated; returns an error code defined in
+ * {@link PmsErrorCode} otherwise.
+ *
+ * @since 1.0
+ * @version 1.0
+ *
+ */
+int UpdateRuntimePermissionFlags(int uid, const char *permissionName, const int flags);
+
 #ifdef __cplusplus
 #if __cplusplus
 }
