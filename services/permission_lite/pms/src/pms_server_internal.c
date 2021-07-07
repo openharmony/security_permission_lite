@@ -40,7 +40,7 @@ typedef struct InnerPermLiteApi {
     int (*GrantRuntimePermission)(int uid, const char *permissionName);
     int (*RevokeRuntimePermission)(int uid, const char *permissionName);
     int (*GetDevUdid)(unsigned char *udid, int size);
-    int (*updateRuntimePermissionFlags)(int uid, const char *permissionName, const int flags);
+    int (*UpdateRuntimePermissionFlags)(int uid, const char *permissionName, const int flags);
 } InnerPermLiteApi;
 
 typedef struct InnerPermLite {
@@ -79,7 +79,7 @@ static InnerPermLite g_permlite = {
     .GrantRuntimePermission = GrantRuntimePermission,
     .RevokeRuntimePermission = RevokeRuntimePermission,
     .GetDevUdid = GetDevUdid,
-    .updateRuntimePermissionFlags = UpdateRuntimePermissionFlags,
+    .UpdateRuntimePermissionFlags = UpdateRuntimePermissionFlags,
     IPROXY_END,
     .identity = {-1, -1, NULL},
 };
@@ -215,7 +215,7 @@ static void ReplyUpdatePermissionFlags(const void *origin, IpcIo *req, IpcIo *re
     int64_t uid = IpcIoPopInt64(req);
     char *permName = (char *)IpcIoPopString(req, &permLen);
     int32_t flags = IpcIoPopInt32(req);
-    int32_t ret = api->updateRuntimePermissionFlags(uid, permName, flags);
+    int32_t ret = api->UpdateRuntimePermissionFlags(uid, permName, flags);
     HILOG_INFO(HILOG_MODULE_APP, "update runtime permission flags, [uid: %lld][perm: %s][flags:%d][ret: %d]", uid,
         permName, flags, ret);
     IpcIoPushInt32(reply, ret);
