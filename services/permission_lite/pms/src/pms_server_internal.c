@@ -223,6 +223,7 @@ static void ReplyUpdatePermissionFlags(const void *origin, IpcIo *req, IpcIo *re
 
 static int32 Invoke(IServerProxy *iProxy, int funcId, void *origin, IpcIo *req, IpcIo *reply)
 {
+    int a = 0;
     switch (funcId) {
         case ID_CHECK:
             ReplyCheckPermission(origin, req, reply, (InnerPermLiteApi *)iProxy);
