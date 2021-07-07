@@ -26,9 +26,7 @@
 
 #include "ipc_auth_err.h"
 #include "policy_preset.h"
-#if  POLICY_PRODUCT 
 #include "policy_preset_product.h"
-#endif
 #include "policy_registry.h"
 
 static unsigned int g_systemSvcUids[] = {1, 2, 0, 7, 8, 9, 10};
