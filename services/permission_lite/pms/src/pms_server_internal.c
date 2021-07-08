@@ -34,13 +34,13 @@
 
 typedef struct InnerPermLiteApi {
     INHERIT_SERVER_IPROXY;
-    int (*CheckPermission)(int uid, const char *permissionName);
-    int (*GrantPermission)(const char *identifier, const char *permName);
-    int (*RevokePermission)(const char *identifier, const char *permName);
-    int (*GrantRuntimePermission)(int uid, const char *permissionName);
-    int (*RevokeRuntimePermission)(int uid, const char *permissionName);
-    int (*GetDevUdid)(unsigned char *udid, int size);
-    int (*UpdateRuntimePermissionFlags)(int uid, const char *permissionName, const int flags);
+    int (*checkPermission)(int uid, const char *permissionName);
+    int (*grantPermission)(const char *identifier, const char *permName);
+    int (*revokePermission)(const char *identifier, const char *permName);
+    int (*grantRuntimePermission)(int uid, const char *permissionName);
+    int (*revokeRuntimePermission)(int uid, const char *permissionName);
+    int (*getDevUdid)(unsigned char *udid, int size);
+    int (*updateRuntimePermissionFlags)(int uid, const char *permissionName, const int flags);
 } InnerPermLiteApi;
 
 typedef struct InnerPermLite {
@@ -73,13 +73,13 @@ static InnerPermLite g_permlite = {
     .OnMessage = OnMessage,
     SERVER_IPROXY_IMPL_BEGIN,
     .Invoke = Invoke,
-    .CheckPermission = CheckPermissionStat,
-    .GrantPermission = GrantPermission,
-    .RevokePermission = RevokePermission,
-    .GrantRuntimePermission = GrantRuntimePermission,
-    .RevokeRuntimePermission = RevokeRuntimePermission,
-    .GetDevUdid = GetDevUdid,
-    .UpdateRuntimePermissionFlags = UpdateRuntimePermissionFlags,
+    .checkPermission = CheckPermissionStat,
+    .grantPermission = GrantPermission,
+    .revokePermission = RevokePermission,
+    .grantRuntimePermission = GrantRuntimePermission,
+    .revokeRuntimePermission = RevokeRuntimePermission,
+    .getDevUdid = GetDevUdid,
+    .updateRuntimePermissionFlags = UpdateRuntimePermissionFlags,
     IPROXY_END,
     .identity = {-1, -1, NULL},
 };
@@ -133,7 +133,7 @@ static void ReplyCheckPermission(const void *origin, IpcIo *req, IpcIo *reply, I
     size_t permLen = 0;
     int64_t uid = IpcIoPopInt64(req);
     char *permName = (char *)IpcIoPopString(req, &permLen);
-    int32_t ret = api->CheckPermission(uid, permName);
+    int32_t ret = api->checkPermission(uid, permName);
     HILOG_INFO(HILOG_MODULE_APP, "check permission, [uid: %lld][perm: %s][ret: %d]", uid, permName, ret);
     IpcIoPushInt32(reply, ret);
 }
@@ -147,7 +147,7 @@ static void ReplyGrantPermission(const void *origin, IpcIo *req, IpcIo *reply, I
     size_t idLen = 0;
     char *identifier = (char *)IpcIoPopString(req, &idLen);
     char *permName = (char *)IpcIoPopString(req, &permLen);
-    int32_t ret = api->GrantPermission(identifier, permName);
+    int32_t ret = api->grantPermission(identifier, permName);
     HILOG_INFO(HILOG_MODULE_APP, "grant permission, [id: %s][perm: %s][ret: %d]", identifier, permName, ret);
     IpcIoPushInt32(reply, ret);
 }
@@ -161,7 +161,7 @@ static void ReplyRevokePermission(const void *origin, IpcIo *req, IpcIo *reply, 
     size_t idLen = 0;
     char *identifier = (char *)IpcIoPopString(req, &idLen);
     char *permName = (char *)IpcIoPopString(req, &permLen);
-    int32_t ret = api->RevokePermission(identifier, permName);
+    int32_t ret = api->revokePermission(identifier, permName);
     HILOG_INFO(HILOG_MODULE_APP, "revoke permission, [id: %s][perm: %s][ret: %d]", identifier, permName, ret);
     IpcIoPushInt32(reply, ret);
 }
@@ -174,7 +174,7 @@ static void ReplyGrantRuntimePermission(const void *origin, IpcIo *req, IpcIo *r
     size_t permLen = 0;
     int64_t uid = IpcIoPopInt64(req);
     char *permName = (char *)IpcIoPopString(req, &permLen);
-    int32_t ret = api->GrantRuntimePermission(uid, permName);
+    int32_t ret = api->grantRuntimePermission(uid, permName);
     HILOG_INFO(HILOG_MODULE_APP, "grant runtime permission, [uid: %lld][perm: %s][ret: %d]", uid, permName, ret);
     IpcIoPushInt32(reply, ret);
 }
@@ -187,7 +187,7 @@ static void ReplyRevokeRuntimePermission(const void *origin, IpcIo *req, IpcIo *
     size_t permLen = 0;
     int64_t uid = IpcIoPopInt64(req);
     char *permName = (char *)IpcIoPopString(req, &permLen);
-    int32_t ret = api->RevokeRuntimePermission(uid, permName);
+    int32_t ret = api->revokeRuntimePermission(uid, permName);
     HILOG_INFO(HILOG_MODULE_APP, "revoke runtime permission, [uid: %lld][perm: %s][ret: %d]", uid, permName, ret);
     IpcIoPushInt32(reply, ret);
 }
@@ -199,7 +199,7 @@ static void ReplyGetDevUdid(const void *origin, IpcIo *req, IpcIo *reply, InnerP
     HILOG_INFO(HILOG_MODULE_APP, "Enter ID_GET_UDID, [callerPid: %d][callerUid: %u]", callingPid, callingUid);
     int size = IpcIoPopInt32(req);
     unsigned char udid[UDID_FINAL_BYTES + 1] = {0};
-    int32_t ret = api->GetDevUdid(udid, size);
+    int32_t ret = api->getDevUdid(udid, size);
     HILOG_INFO(HILOG_MODULE_APP, "get device udid");
     IpcIoPushInt32(reply, ret);
     IpcIoPushInt32(reply, (UDID_FINAL_BYTES + 1));
@@ -215,7 +215,7 @@ static void ReplyUpdatePermissionFlags(const void *origin, IpcIo *req, IpcIo *re
     int64_t uid = IpcIoPopInt64(req);
     char *permName = (char *)IpcIoPopString(req, &permLen);
     int32_t flags = IpcIoPopInt32(req);
-    int32_t ret = api->UpdateRuntimePermissionFlags(uid, permName, flags);
+    int32_t ret = api->updateRuntimePermissionFlags(uid, permName, flags);
     HILOG_INFO(HILOG_MODULE_APP, "update runtime permission flags, [uid: %lld][perm: %s][flags:%d][ret: %d]", uid,
         permName, flags, ret);
     IpcIoPushInt32(reply, ret);
