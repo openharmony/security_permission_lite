@@ -28,14 +28,14 @@ extern "C" {
 
 typedef struct PmsInnerApi {
     INHERIT_IUNKNOWN;
-    int (*checkPermission)(int uid, const char *permissionName);
-    int (*queryPermission)(const char *identifier, PermissionSaved **permissions, int *permNum);
-    int (*grantPermission)(const char *identifier, const char *permName);
-    int (*revokePermission)(const char *identifier, const char *permName);
-    int (*grantRuntimePermission)(int uid, const char *permissionName);
-    int (*revokeRuntimePermission)(int uid, const char *permissionName);
-    int (*getDevUdid)(unsigned char *udid, int size);
-    int (*updateRuntimePermissionFlags)(int uid, const char *permissionName, int flags);
+    int (*CheckPermission)(int uid, const char *permissionName);
+    int (*QueryPermission)(const char *identifier, PermissionSaved **permissions, int *permNum);
+    int (*GrantPermission)(const char *identifier, const char *permName);
+    int (*RevokePermission)(const char *identifier, const char *permName);
+    int (*GrantRuntimePermission)(int uid, const char *permissionName);
+    int (*RevokeRuntimePermission)(int uid, const char *permissionName);
+    int (*GetDevUdid)(unsigned char *udid, int size);
+    int (*UpdateRuntimePermissionFlags)(int uid, const char *permissionName, int flags);
 } PmsInnerApi;
 
 typedef struct PmsInner {
