@@ -70,6 +70,7 @@ typedef struct InnerClientApi {
     int (*GrantRuntimePermission)(int uid, const char *permissionName);
     int (*RevokeRuntimePermission)(int uid, const char *permissionName);
     int (*RequestDevUdid)(unsigned char *udid, int size);
+    int (*UpdateRuntimePermissionFlags)(int uid, const char *permissionName, int flags);
 } InnerClientApi;
 
 typedef struct ClientInnerEntry {
@@ -165,6 +166,7 @@ void *CreatInnerClient(const char *service, const char *feature, uint32 size)
     entry->iUnknown.GrantRuntimePermission = GrantRuntimePermission;
     entry->iUnknown.RevokeRuntimePermission = RevokeRuntimePermission;
     entry->iUnknown.RequestDevUdid = RequestDevUdid;
+    entry->iUnknown.UpdateRuntimePermissionFlags = UpdateRuntimePermissionFlags;
     return client;
 }
 

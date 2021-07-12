@@ -223,7 +223,7 @@ static int WritePermissions(const cJSON *root, const char *path)
         return PERM_ERRORCODE_MALLOC_FAIL;
     }
     int ret = WriteString(path, jsonStr);
-    HalFree(jsonStr);
+    free(jsonStr);
     HalFree((void *)path);
     cJSON_Delete((cJSON *)root);
     return ret;
