@@ -43,6 +43,7 @@ static PmsInner g_permlite = {
     .GrantRuntimePermission = GrantRuntimePermission,
     .RevokeRuntimePermission = RevokeRuntimePermission,
     .GetDevUdid = GetDevUdid,
+    .UpdateRuntimePermissionFlags = UpdateRuntimePermissionFlags,
     DEFAULT_IUNKNOWN_ENTRY_END,
     .identity = {-1, -1, NULL},
 };

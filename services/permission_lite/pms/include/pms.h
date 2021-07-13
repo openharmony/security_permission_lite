@@ -52,6 +52,8 @@ int GrantRuntimePermission(int uid, const char *permissionName);
 
 int RevokeRuntimePermission(int uid, const char *permissionName);
 
+int UpdateRuntimePermissionFlags(int uid, const char *permissionName, const int flags);
+
 int GetDevUdid(unsigned char *udid, int size);
 
 #ifdef __cplusplus

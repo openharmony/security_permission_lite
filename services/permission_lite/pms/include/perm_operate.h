@@ -20,7 +20,7 @@
 
 int PermissionIsGranted(const TList *list, int uid, const char *permission);
 
-int ModifyPermission(TNode *node, const char *permission, enum IsGranted granted);
+int ModifyPermission(TNode *node, const char *permission, const PermissionSaved *perms);
 
 void AddTask(TList *list, TNode *node);
 
