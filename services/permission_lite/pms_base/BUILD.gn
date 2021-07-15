@@ -29,12 +29,5 @@ lite_library("pms_base") {
     "//foundation/distributedschedule/samgr_lite/samgr:samgr",
   ]
 
-  if (ohos_kernel_type == "liteos_a") {
-    include_dirs += [
-      "//kernel/liteos_a/kernel/include",
-      "//kernel/liteos_a/kernel/common",
-    ]
-  }
-
   cflags = [ "-Wall" ]
 }
