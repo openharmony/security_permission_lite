@@ -239,6 +239,19 @@ FeaturePolicy timertaskFeature[] = {
         },
     },
 };
+
+FeaturePolicy softbusFeature[] = {
+    {
+        NULL,
+        {
+            {
+                .type=RANGE,
+                .uidMin=0,
+                .uidMax=__INT_MAX__,
+            },
+        },
+    },
+};
 static PolicySetting g_presetPolicies[] = {
     {"permissionms", pmsFeature, 2},
     {"abilityms", amsFeature, 2},
@@ -252,7 +265,8 @@ static PolicySetting g_presetPolicies[] = {
     {"sensor_service", sensorFeature, 1},
     {"ai_service", aiFeature, 1},
     {"powermgr", powermgrFeature, 2},
-    {"timertask_srv", timertaskFeature, 1}
+    {"timertask_srv", timertaskFeature, 1},
+    {"softbus_service", softbusFeature, 1}
 };
 
 static int g_presetPolicySize = sizeof(g_presetPolicies) / sizeof(PolicySetting);
