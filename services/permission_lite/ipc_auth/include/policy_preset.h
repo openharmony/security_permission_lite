@@ -295,7 +295,7 @@ static PolicySetting g_presetPolicies[] = {
     {"timertask_srv", timertaskFeature, 1},
     {"softbus_service", softbusFeature, 1},
     {"devauth_svc", devAuthFeature, 1},
-	{"battery_service", batteryFeature, 1}
+    {"battery_service", batteryFeature, 1}
 };
 
 static int g_presetPolicySize = sizeof(g_presetPolicies) / sizeof(PolicySetting);
