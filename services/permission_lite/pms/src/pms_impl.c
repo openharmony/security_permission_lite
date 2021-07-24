@@ -26,12 +26,13 @@
 #include "hal_pms.h"
 #include "perm_operate.h"
 
-#define P_NAME_MAXLEN 32
-#define BUFF_SIZE 1024
+#define BUFF_SIZE_16 (16)
+#define BUFF_SIZE_1024 (1024)
 #define FIELD_PERMISSION "permissions"
 #define FIELD_NAME "name"
 #define FIELD_DESC "desc"
 #define FIELD_IS_GRANTED "isGranted"
+#define FIELD_FLAGS "flags"
 
 // Permission matrix of run-time tasks
 static struct TaskList g_taskList = {
@@ -42,7 +43,7 @@ static struct TaskList g_taskList = {
 static char *ConcatString(const char *s1, const char *s2)
 {
     unsigned int allocSize = strlen(s1) + strlen(s2) + 1;
-    if (allocSize > BUFF_SIZE) {
+    if (allocSize > BUFF_SIZE_1024) {
         return NULL;
     }
     char *rst = (char *) HalMalloc(allocSize);
@@ -140,12 +141,44 @@ static int GetPermissionType(const char *permission)
     return PERM_ERRORCODE_INVALID_PERMNAME;
 }
 
+static int ParseFixedPermissionsItem(const cJSON *object, PermissionSaved *perms)
+{
+    cJSON *itemName = cJSON_GetObjectItem(object, FIELD_NAME);
+    cJSON *itemDesc = cJSON_GetObjectItem(object, FIELD_DESC);
+    cJSON *itemGranted = cJSON_GetObjectItem(object, FIELD_IS_GRANTED);
+    if (itemName == NULL || itemDesc == NULL || itemGranted == NULL || 
+        !cJSON_IsString(itemName) || !cJSON_IsString(itemDesc)) {
+        return PERM_ERRORCODE_JSONPARSE_FAIL;
+    }
+    if (strcpy_s(perms->name, PERM_NAME_LEN, itemName->valuestring) != EOK) {
+        return PERM_ERRORCODE_COPY_ERROR;
+    }
+    if (strcpy_s(perms->desc, PERM_DESC_LEN, itemDesc->valuestring) != EOK) {
+        return PERM_ERRORCODE_COPY_ERROR;
+    }
+    perms->granted = (enum IsGranted)itemGranted->valueint;
+    return PERM_ERRORCODE_SUCCESS;
+}
+
+static int ParseNewPermissionsItem(const cJSON *object, PermissionSaved *perms)
+{
+    cJSON *itemFlags = cJSON_GetObjectItem(object, FIELD_FLAGS);
+    if (itemFlags != NULL) {
+        perms->flags = PmsAtoI(itemFlags->valuestring);
+    } else {
+        perms->flags = PMS_FLAG_DEFAULT;
+    }
+    return PERM_ERRORCODE_SUCCESS;
+}
+
+
 static int ParsePermissions(const char *jsonStr, PermissionSaved **perms, int *permNum)
 {
     cJSON *root = cJSON_Parse(jsonStr);
     if (root == NULL) {
         return PERM_ERRORCODE_JSONPARSE_FAIL;
     }
+    int ret;
     cJSON *array = cJSON_GetObjectItem(root, FIELD_PERMISSION);
     int pSize = cJSON_GetArraySize(array);
     int allocSize = sizeof(PermissionSaved) * pSize;
@@ -160,29 +193,20 @@ static int ParsePermissions(const char *jsonStr, PermissionSaved **perms, int *p
     }
     for (int i = 0; i < pSize; i++) {
         cJSON *object = cJSON_GetArrayItem(array, i);
-        cJSON *itemName = cJSON_GetObjectItem(object, FIELD_NAME);
-        cJSON *itemDesc = cJSON_GetObjectItem(object, FIELD_DESC);
-        cJSON *itemGranted = cJSON_GetObjectItem(object, FIELD_IS_GRANTED);
-        if (itemName == NULL || itemDesc == NULL || itemGranted == NULL ||
-            !cJSON_IsString(itemName) || !cJSON_IsString(itemDesc)) {
+        ret = ParseFixedPermissionsItem(object, *perms + i);
+        if (ret != PERM_ERRORCODE_SUCCESS) {
             cJSON_Delete(root);
             HalFree(*perms);
             *perms = NULL;
-            return PERM_ERRORCODE_JSONPARSE_FAIL;
+            return ret;
         }
-        if (strcpy_s((*perms + i)->name, PERM_NAME_LEN, itemName->valuestring) != EOK) {
+        ret = ParseNewPermissionsItem(object, *perms + i);
+        if (ret != PERM_ERRORCODE_SUCCESS) {
             cJSON_Delete(root);
             HalFree(*perms);
             *perms = NULL;
-            return PERM_ERRORCODE_COPY_ERROR;
+            return ret;
         }
-        if (strcpy_s((*perms + i)->desc, PERM_DESC_LEN, itemDesc->valuestring) != EOK) {
-            cJSON_Delete(root);
-            HalFree(*perms);
-            *perms = NULL;
-            return PERM_ERRORCODE_COPY_ERROR;
-        }
-        (*perms + i)->granted = (enum IsGranted) itemGranted->valueint;
     }
     *permNum = pSize;
     cJSON_Delete(root);
@@ -199,7 +223,7 @@ static int WritePermissions(const cJSON *root, const char *path)
         return PERM_ERRORCODE_MALLOC_FAIL;
     }
     int ret = WriteString(path, jsonStr);
-    HalFree(jsonStr);
+    free(jsonStr);
     HalFree((void *)path);
     cJSON_Delete((cJSON *)root);
     return ret;
@@ -214,6 +238,7 @@ static int SavePermissions(const char *identifier, const PermissionSaved *permis
     cJSON *root = NULL;
     cJSON *array = NULL;
     char *path = NULL;
+    char buf[BUFF_SIZE_16] = {0};
     root = cJSON_CreateObject();
     if (root == NULL) {
         return PERM_ERRORCODE_MALLOC_FAIL;
@@ -240,10 +265,19 @@ static int SavePermissions(const char *identifier, const PermissionSaved *permis
         cJSON_AddItemToObject(object, FIELD_NAME, cJSON_CreateString(permissions[i].name));
         cJSON_AddItemToObject(object, FIELD_DESC, cJSON_CreateString(permissions[i].desc));
         cJSON_AddItemToObject(object, FIELD_IS_GRANTED, cJSON_CreateBool(permissions[i].granted));
+        cJSON_AddItemToObject(object, FIELD_FLAGS, cJSON_CreateString(PmsItoA(permissions[i].flags, buf, BUFF_SIZE_16)));
         cJSON_AddItemToArray(array, object);
     }
     cJSON_AddItemToObject(root, FIELD_PERMISSION, array);
     return WritePermissions(root, path);
+}
+
+static bool IsValidFlags(const int flags)
+{
+    if ((flags == PMS_FLAG_DEFAULT) || ((flags & (~PMS_FLAG_VALID_MASK)) == PMS_FLAG_DEFAULT)) {
+        return true;
+    }
+    return false;
 }
 
 char *QueryPermissionString(const char *identifier, int *errCode)
@@ -377,6 +411,7 @@ static int UpdateAppPermission(
         }
         int permType = GetPermissionType(newPerms[i].name);
         updatePerms[i].granted = NOT_GRANTED;
+        updatePerms[i].flags = PMS_FLAG_DEFAULT;
         if (permType != PERM_ERRORCODE_INVALID_PERMNAME) {
             updatePerms[i].granted = (permType == SYSTEM_GRANT) ? GRANTED : NOT_GRANTED;
         }
@@ -551,7 +586,7 @@ int CheckPermissionStat(int uid, const char *permissionName)
     return ret;
 }
 
-static int OnPermissionFileSync(const char *identifier, const char *permName, enum IsGranted isGranted)
+static int OnPermissionFileSync(const char *identifier, const char *permName, const enum IsGranted granted)
 {
     int retCode = PERM_ERRORCODE_SUCCESS;
     bool isSave = false;
@@ -563,8 +598,32 @@ static int OnPermissionFileSync(const char *identifier, const char *permName, en
     }
     for (int i = 0; i < permNum; i++) {
         if (strcmp(permissions[i].name, permName) == 0) {
-            isSave = permissions[i].granted ^ isGranted;
-            permissions[i].granted = isGranted;
+            isSave = permissions[i].granted ^ granted;
+            permissions[i].granted = granted;
+            break;
+        }
+    }
+    if (isSave) {
+        retCode = SavePermissions(identifier, permissions, permNum);
+    }
+    HalFree(permissions);
+    return retCode;
+}
+
+static int OnPermissionFlagsFileSync(const char *identifier, const char *permName, const int flags)
+{
+    int retCode = PERM_ERRORCODE_SUCCESS;
+    bool isSave = false;
+    PermissionSaved *permissions = NULL;
+    int permNum = 0;
+    int ret = QueryPermission(identifier, &permissions, &permNum);
+    if (ret != PERM_ERRORCODE_SUCCESS) {
+        return ret;
+    }
+    for (int i = 0; i < permNum; i++) {
+        if (strcmp(permissions[i].name, permName) == 0) {
+            isSave = permissions[i].flags ^ flags;
+            permissions[i].flags = flags;
             break;
         }
     }
@@ -620,6 +679,7 @@ int GrantRuntimePermission(int uid, const char *permissionName)
     if (permissionName == NULL) {
         return PERM_ERRORCODE_INVALID_PARAMS;
     }
+
     HalMutexLock();
     TNode *node = GetTaskWithUid(&g_taskList, uid);
     if (node == NULL) {
@@ -641,6 +701,7 @@ int RevokeRuntimePermission(int uid, const char *permissionName)
     if (permissionName == NULL) {
         return PERM_ERRORCODE_INVALID_PARAMS;
     }
+
     HalMutexLock();
     TNode *node = GetTaskWithUid(&g_taskList, uid);
     if (node == NULL) {
@@ -667,3 +728,11 @@ int GetDevUdid(unsigned char *udid, int size)
     return HalGetDevUdid(udid, size);
 }
 
+int UpdatePermissionFlags(const char *identifier, const char *permissionName, const int flags)
+{
+    if ((identifier == NULL) || (permissionName == NULL) || !IsValidFlags(flags)) {
+        return PERM_ERRORCODE_INVALID_PARAMS;
+    }  
+
+    return OnPermissionFlagsFileSync(identifier, permissionName, flags);
+}

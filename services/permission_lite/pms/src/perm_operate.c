@@ -14,13 +14,15 @@
  */
 
 #include "perm_operate.h"
-
 #include <string.h>
-
 #include "hal_pms.h"
 
 #define RET_OK 0
 #define RET_NOK (-1)
+#define VAL_NEN (16)
+#define POSITIVE (1)
+#define NEGATIVE (-1)
+#define DECIMAL (10)
 
 int PermissionIsGranted(const TList *list, int uid, const char *permission)
 {
@@ -40,9 +42,9 @@ int PermissionIsGranted(const TList *list, int uid, const char *permission)
     return RET_NOK;
 }
 
-int ModifyPermission(TNode *node, const char *permission, enum IsGranted granted)
+int ModifyPermission(TNode *node, const char *permission, const enum IsGranted granted)
 {
-    if (node == NULL) {
+    if (node == NULL || permission == NULL) {
         return RET_NOK;
     }
     for (int i = 0; i < node->permNum; i++) {
@@ -106,4 +108,56 @@ TNode *GetTaskWithPkgName(TList *list, const char *pkgName)
         cur = cur->next;
     }
     return NULL;
+}
+int PmsAtoI(char *input)
+{
+    if (input == NULL) {
+        return RET_NOK;
+    }
+
+    while ((*input) == ' ') {
+        input++;
+    }
+
+    int sign = ((*input == '-') ? NEGATIVE : POSITIVE);
+
+    if ((*input == '+') || (*input == '-')) {
+        input++;
+    }
+
+    int num = 0;
+    while (*input != '\0') {
+        num = (num * DECIMAL) + (*input - '0');
+        input++;
+    }
+
+    return (num * sign);
+}
+ 
+char *PmsItoA(int num, char *output, int len)
+{
+    char temp[VAL_NEN] = {0};
+    int sign = num; 
+    int i = 0, j = 0;
+
+    if (sign < 0) {
+        num = -num;
+    }
+
+    do {
+        temp[i++] = num % DECIMAL + '0';
+        num /= DECIMAL;
+    } while (num > 0);
+
+    if (sign < 0) {
+        temp[i++] = '-';
+    }
+    
+    temp[i--] = '\0';
+    for (j = 0; i >= 0; j++, i--) {
+        output[j] = temp[i];
+    }
+    output[j] = '\0';
+
+    return output;
 }

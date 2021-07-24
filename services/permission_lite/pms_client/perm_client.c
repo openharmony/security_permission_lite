@@ -35,6 +35,7 @@
 #define FIELD_NAME "name"
 #define FIELD_DESC "desc"
 #define FIELD_IS_GRANTED "isGranted"
+#define FIELD_FLAGS "flags"
 #define SYS_SVC_UID_MAX 99
 #define SYS_APP_UID_MIN 100
 #define SYS_APP_UID_MAX 999
@@ -48,6 +49,7 @@ enum FUNCID {
     ID_GRANT_RUNTIME,
     ID_REVOKE_RUNTIME,
     ID_GET_UDID,
+    ID_UPDATE_PERMS_FLAGS,
 };
 
 typedef struct ClientApi {
@@ -68,6 +70,7 @@ typedef struct InnerClientApi {
     int (*GrantRuntimePermission)(int uid, const char *permissionName);
     int (*RevokeRuntimePermission)(int uid, const char *permissionName);
     int (*RequestDevUdid)(unsigned char *udid, int size);
+    int (*UpdatePermissionFlags)(const char *identifier, const char *permissionName, int flags);
 } InnerClientApi;
 
 typedef struct ClientInnerEntry {
@@ -163,6 +166,7 @@ void *CreatInnerClient(const char *service, const char *feature, uint32 size)
     entry->iUnknown.GrantRuntimePermission = GrantRuntimePermission;
     entry->iUnknown.RevokeRuntimePermission = RevokeRuntimePermission;
     entry->iUnknown.RequestDevUdid = RequestDevUdid;
+    entry->iUnknown.UpdatePermissionFlags = UpdatePermissionFlags;
     return client;
 }
 
@@ -468,3 +472,22 @@ int RequestDevUdid(unsigned char *udid, int size)
     ReleaseInnerClientApi(proxy);
     return ret.result;
 }
+
+int UpdatePermissionFlags(const char *identifier, const char *permissionName, const int flags)
+{
+    InnerClientApi *proxy = GetInnerClientApi();
+    if (proxy == NULL) {
+        return OHOS_FAILURE;
+    }
+    IpcIo request;
+    char data[MAX_DATA_LEN];
+    IpcIoInit(&request, data, MAX_DATA_LEN, 0);
+    IpcIoPushString(&request, identifier);
+    IpcIoPushString(&request, permissionName);
+    IpcIoPushInt32(&request, flags);
+    int32_t ret;
+    proxy->Invoke((IClientProxy *)proxy, ID_UPDATE_PERMS_FLAGS, &request, &ret, Notify);
+    ReleaseInnerClientApi(proxy);
+    return ret;
+}
+
