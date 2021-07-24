@@ -26,8 +26,8 @@
 #include "hal_pms.h"
 #include "perm_operate.h"
 
-#define BUFF_SIZE_16 (16)
-#define BUFF_SIZE_1024 (1024)
+#define BUFF_SIZE_16 16
+#define BUFF_SIZE_1024 1024
 #define FIELD_PERMISSION "permissions"
 #define FIELD_NAME "name"
 #define FIELD_DESC "desc"

@@ -19,10 +19,10 @@
 
 #define RET_OK 0
 #define RET_NOK (-1)
-#define VAL_NEN (16)
-#define POSITIVE (1)
+#define VAL_NEN 16
+#define POSITIVE 1
 #define NEGATIVE (-1)
-#define DECIMAL (10)
+#define DECIMAL 10
 
 int PermissionIsGranted(const TList *list, int uid, const char *permission)
 {
@@ -138,7 +138,8 @@ char *PmsItoA(int num, char *output, int len)
 {
     char temp[VAL_NEN] = {0};
     int sign = num; 
-    int i = 0, j = 0;
+    int i = 0, 
+    int j;
 
     if (sign < 0) {
         num = -num;
