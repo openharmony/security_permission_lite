@@ -138,7 +138,7 @@ char *PmsItoA(int num, char *output, int len)
 {
     char temp[VAL_NEN] = {0};
     int sign = num; 
-    int i = 0, 
+    int i = 0;
     int j;
 
     if (sign < 0) {
