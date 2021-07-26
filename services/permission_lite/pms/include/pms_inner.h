@@ -35,6 +35,7 @@ typedef struct PmsInnerApi {
     int (*GrantRuntimePermission)(int uid, const char *permissionName);
     int (*RevokeRuntimePermission)(int uid, const char *permissionName);
     int (*GetDevUdid)(unsigned char *udid, int size);
+    int (*UpdatePermissionFlags)(const char *identifier, const char *permissionName, int flags);
 } PmsInnerApi;
 
 typedef struct PmsInner {

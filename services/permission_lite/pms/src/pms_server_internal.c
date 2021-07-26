@@ -40,6 +40,7 @@ typedef struct InnerPermLiteApi {
     int (*GrantRuntimePermission)(int uid, const char *permissionName);
     int (*RevokeRuntimePermission)(int uid, const char *permissionName);
     int (*GetDevUdid)(unsigned char *udid, int size);
+    int (*UpdatePermissionFlags)(const char *identifier, const char *permissionName, const int flags);
 } InnerPermLiteApi;
 
 typedef struct InnerPermLite {
@@ -54,7 +55,8 @@ enum INNERFUNCID {
     ID_REVOKE,
     ID_GRANT_RUNTIME,
     ID_REVOKE_RUNTIME,
-    ID_GET_UDID
+    ID_GET_UDID,
+    ID_UPDATE_PERMS_FLAGS,
 };
 
 static void Init();
@@ -77,6 +79,7 @@ static InnerPermLite g_permlite = {
     .GrantRuntimePermission = GrantRuntimePermission,
     .RevokeRuntimePermission = RevokeRuntimePermission,
     .GetDevUdid = GetDevUdid,
+    .UpdatePermissionFlags = UpdatePermissionFlags,
     IPROXY_END,
     .identity = {-1, -1, NULL},
 };
@@ -202,6 +205,23 @@ static void ReplyGetDevUdid(const void *origin, IpcIo *req, IpcIo *reply, InnerP
     IpcIoPushInt32(reply, (UDID_FINAL_BYTES + 1));
     IpcIoPushString(reply, (const char *)udid);
 }
+
+static void ReplyUpdatePermissionFlags(const void *origin, IpcIo *req, IpcIo *reply, const InnerPermLiteApi *api)
+{
+    pid_t callingPid = GetCallingPid(origin);
+    uid_t callingUid = GetCallingUid(origin);
+    HILOG_INFO(HILOG_MODULE_APP, "Enter ID_UPDATE_PERMS_FLAGS, [callerPid: %d][callerUid: %u]", callingPid, callingUid);
+    size_t permLen = 0;
+    size_t idLen = 0;
+    char *identifier = (char *)IpcIoPopString(req, &idLen);
+    char *permName = (char *)IpcIoPopString(req, &permLen);
+    int32_t flags = IpcIoPopInt32(req);
+    int32_t ret = api->UpdatePermissionFlags(identifier, permName, flags);
+    HILOG_INFO(HILOG_MODULE_APP, "update runtime permission flags, [identifier: %s][perm: %s][flags:%d][ret: %d]", 
+        identifier, permName, flags, ret);
+    IpcIoPushInt32(reply, ret);
+}
+
 static int32 Invoke(IServerProxy *iProxy, int funcId, void *origin, IpcIo *req, IpcIo *reply)
 {
     InnerPermLiteApi *api = (InnerPermLiteApi *)iProxy;
@@ -223,6 +243,9 @@ static int32 Invoke(IServerProxy *iProxy, int funcId, void *origin, IpcIo *req, 
             break;
         case ID_GET_UDID:
             ReplyGetDevUdid(origin, req, reply, api);
+            break;
+        case ID_UPDATE_PERMS_FLAGS:
+            ReplyUpdatePermissionFlags(origin, req, reply, api);
             break;
         default:
             break;

@@ -48,6 +48,8 @@ int GrantPermission(const char *identifier, const char *permName);
 
 int RevokePermission(const char *identifier, const char *permName);
 
+int UpdatePermissionFlags(const char *identifier, const char *permissionName, const int flags);
+
 int GrantRuntimePermission(int uid, const char *permissionName);
 
 int RevokeRuntimePermission(int uid, const char *permissionName);

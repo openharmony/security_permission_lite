@@ -74,6 +74,28 @@ enum IsGranted {
 };
 
 /**
+ * @brief Defines the permission flag bits.
+ *
+ */
+enum PmsFlagDef {
+    /**
+    * Permission flag: The default value of permission flag.
+    */
+    PMS_FLAG_DEFAULT = 0,
+    
+    /**
+    * Permission flag[bit1]: The permission is set in its current state by the user and it is fixed,
+    * i.e. apps can no longer request this permission.
+    */
+    PMS_FLAG_USER_FIXED = 1 << 1,
+
+    /**
+    * Permission flag mask: Indicates the valid flag definition.
+    */ 
+    PMS_FLAG_VALID_MASK = 0x2,
+};
+
+/**
  * @brief Defines the permission, including the name, description, and whether the permission is granted.
  *
  */
@@ -84,6 +106,8 @@ typedef struct {
     char desc[PERM_DESC_LEN];
     /** Whether the permission is granted */
     enum IsGranted granted;
+    /** Permission flags */
+    int flags;
 } PermissionSaved;
 
 /**
