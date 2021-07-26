@@ -20,7 +20,7 @@
 
 int PermissionIsGranted(const TList *list, int uid, const char *permission);
 
-int ModifyPermission(TNode *node, const char *permission, const PermissionSaved *perms);
+int ModifyPermission(TNode *node, const char *permission, const enum IsGranted granted);
 
 void AddTask(TList *list, TNode *node);
 
@@ -29,5 +29,9 @@ void DeleteTask(TList *list, int uid);
 TNode *GetTaskWithUid(TList *list, int uid);
 
 TNode *GetTaskWithPkgName(TList *list, const char *pkgName);
+
+int PmsAtoI(char *input);
+
+char *PmsItoA(int num, char *output, int len);
 
 #endif // PERM_OPERATE_H

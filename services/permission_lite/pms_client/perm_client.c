@@ -70,7 +70,7 @@ typedef struct InnerClientApi {
     int (*GrantRuntimePermission)(int uid, const char *permissionName);
     int (*RevokeRuntimePermission)(int uid, const char *permissionName);
     int (*RequestDevUdid)(unsigned char *udid, int size);
-    int (*UpdateRuntimePermissionFlags)(int uid, const char *permissionName, int flags);
+    int (*UpdatePermissionFlags)(const char *identifier, const char *permissionName, int flags);
 } InnerClientApi;
 
 typedef struct ClientInnerEntry {
@@ -166,7 +166,7 @@ void *CreatInnerClient(const char *service, const char *feature, uint32 size)
     entry->iUnknown.GrantRuntimePermission = GrantRuntimePermission;
     entry->iUnknown.RevokeRuntimePermission = RevokeRuntimePermission;
     entry->iUnknown.RequestDevUdid = RequestDevUdid;
-    entry->iUnknown.UpdateRuntimePermissionFlags = UpdateRuntimePermissionFlags;
+    entry->iUnknown.UpdatePermissionFlags = UpdatePermissionFlags;
     return client;
 }
 
@@ -473,7 +473,7 @@ int RequestDevUdid(unsigned char *udid, int size)
     return ret.result;
 }
 
-int UpdateRuntimePermissionFlags(int uid, const char *permissionName, const int flags)
+int UpdatePermissionFlags(const char *identifier, const char *permissionName, const int flags)
 {
     InnerClientApi *proxy = GetInnerClientApi();
     if (proxy == NULL) {
@@ -482,7 +482,7 @@ int UpdateRuntimePermissionFlags(int uid, const char *permissionName, const int 
     IpcIo request;
     char data[MAX_DATA_LEN];
     IpcIoInit(&request, data, MAX_DATA_LEN, 0);
-    IpcIoPushInt64(&request, uid);
+    IpcIoPushString(&request, identifier);
     IpcIoPushString(&request, permissionName);
     IpcIoPushInt32(&request, flags);
     int32_t ret;
