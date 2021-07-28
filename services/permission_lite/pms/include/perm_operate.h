@@ -30,8 +30,4 @@ TNode *GetTaskWithUid(TList *list, int uid);
 
 TNode *GetTaskWithPkgName(TList *list, const char *pkgName);
 
-int PmsAtoI(char *input);
-
-char *PmsItoA(int num, char *output, int len);
-
 #endif // PERM_OPERATE_H
