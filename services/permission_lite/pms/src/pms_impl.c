@@ -164,7 +164,7 @@ static int ParseNewPermissionsItem(const cJSON *object, PermissionSaved *perms)
 {
     cJSON *itemFlags = cJSON_GetObjectItem(object, FIELD_FLAGS);
     if (itemFlags != NULL) {
-        perms->flags = PmsAtoI(itemFlags->valuestring);
+        perms->flags = atoi(itemFlags->valuestring);
     } else {
         perms->flags = PMS_FLAG_DEFAULT;
     }
@@ -265,14 +265,27 @@ static int SavePermissions(const char *identifier, const PermissionSaved *permis
         cJSON_AddItemToObject(object, FIELD_NAME, cJSON_CreateString(permissions[i].name));
         cJSON_AddItemToObject(object, FIELD_DESC, cJSON_CreateString(permissions[i].desc));
         cJSON_AddItemToObject(object, FIELD_IS_GRANTED, cJSON_CreateBool(permissions[i].granted));
-        cJSON_AddItemToObject(object, FIELD_FLAGS, cJSON_CreateString(PmsItoA(permissions[i].flags, buf, BUFF_SIZE_16)));
+
+        if (memset_s(buf, BUFF_SIZE_16, 0, BUFF_SIZE_16) != EOK) {
+            HalFree(path);
+            cJSON_Delete(array);
+            cJSON_Delete(root);
+            return PERM_ERRORCODE_MEMSET_FAIL;
+        }
+        if (sprintf_s(buf, BUFF_SIZE_16 - 1, "%d", permissions[i].flags) < 0) {
+            HalFree(path);
+            cJSON_Delete(array);
+            cJSON_Delete(root);
+            return PERM_ERRORCODE_INVALID_PERMNAME;
+        }
+        cJSON_AddItemToObject(object, FIELD_FLAGS, cJSON_CreateString(buf));
         cJSON_AddItemToArray(array, object);
     }
     cJSON_AddItemToObject(root, FIELD_PERMISSION, array);
     return WritePermissions(root, path);
 }
 
-static bool IsValidFlags(const int flags)
+static bool IsValidFlags(const unsigned int flags)
 {
     if ((flags == PMS_FLAG_DEFAULT) || ((flags & (~PMS_FLAG_VALID_MASK)) == PMS_FLAG_DEFAULT)) {
         return true;
