@@ -14,13 +14,15 @@
  */
 
 #include "perm_operate.h"
-
 #include <string.h>
-
 #include "hal_pms.h"
 
 #define RET_OK 0
 #define RET_NOK (-1)
+#define VAL_NEN 16
+#define POSITIVE 1
+#define NEGATIVE (-1)
+#define DECIMAL 10
 
 int PermissionIsGranted(const TList *list, int uid, const char *permission)
 {
@@ -40,17 +42,14 @@ int PermissionIsGranted(const TList *list, int uid, const char *permission)
     return RET_NOK;
 }
 
-int ModifyPermission(TNode *node, const char *permission, const PermissionSaved *perms)
+int ModifyPermission(TNode *node, const char *permission, const enum IsGranted granted)
 {
-    if (node == NULL || permission == NULL || perms == NULL) {
+    if (node == NULL || permission == NULL) {
         return RET_NOK;
     }
     for (int i = 0; i < node->permNum; i++) {
         if (strcmp(node->permList[i].name, permission) == 0) {
-            node->permList[i].granted = perms->granted;
-            if (perms->flags != PMS_FLAG_NOT_MODIFY) {
-                node->permList[i].flags = perms->flags;
-            }
+            node->permList[i].granted = granted;
             return RET_OK;
         }
     }
