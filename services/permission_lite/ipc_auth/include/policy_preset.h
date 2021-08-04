@@ -253,6 +253,45 @@ FeaturePolicy softbusFeature[] = {
     },
 };
 
+FeaturePolicy playerFeature[] = {
+    {
+        NULL,
+        {
+            {
+                .type=RANGE,
+                .uidMin=0,
+                .uidMax=__INT_MAX__,
+            },
+        },
+    },
+};
+
+FeaturePolicy cameraFeature[] = {
+    {
+        NULL,
+        {
+            {
+                .type=RANGE,
+                .uidMin=0,
+                .uidMax=__INT_MAX__,
+            },
+        },
+    },
+};
+
+FeaturePolicy recorderFeature[] = {
+    {
+        NULL,
+        {
+            {
+                .type=RANGE,
+                .uidMin=0,
+                .uidMax=__INT_MAX__,
+            },
+        },
+    },
+};
+
 FeaturePolicy devAuthFeature[] = {
     {
         NULL,
@@ -294,6 +333,9 @@ static PolicySetting g_presetPolicies[] = {
     {"powermgr", powermgrFeature, 2},
     {"timertask_srv", timertaskFeature, 1},
     {"softbus_service", softbusFeature, 1},
+    {"PlayerServer", playerFeature, 1},
+    {"CameraServer", cameraFeature, 1},
+    {"RecorderServer", recorderFeature, 1},
     {"devauth_svc", devAuthFeature, 1},
     {"battery_service", batteryFeature, 1}
 };
