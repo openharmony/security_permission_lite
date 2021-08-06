@@ -89,7 +89,7 @@ static char *ReadString(const char *path, int *errCode)
         return NULL;
     }
     struct stat buf = { 0 };
-    if (stat(path, &buf) || (buf.st_size <= 0)) {
+    if (stat(path, &buf) || ((buf.st_mode & S_IFREG) != S_IFREG)) {
         *errCode = PERM_ERRORCODE_STAT_FAIL;
         return NULL;
     }
