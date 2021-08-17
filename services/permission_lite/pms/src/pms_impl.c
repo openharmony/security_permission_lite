@@ -731,16 +731,6 @@ int RevokeRuntimePermission(int uid, const char *permissionName)
     return OnPermissionFileSync(node->pkgName, permissionName, NOT_GRANTED);
 }
 
-int GetDevUdid(unsigned char *udid, int size)
-{
-    if (size != (UDID_FINAL_BYTES + 1) || udid == NULL) {
-        HILOG_ERROR(HILOG_MODULE_APP, "Invalid hash size or buffer of udid!");
-        return PERM_ERRORCODE_INVALID_PARAMS;
-    }
-
-    return HalGetDevUdid(udid, size);
-}
-
 int UpdatePermissionFlags(const char *identifier, const char *permissionName, const int flags)
 {
     if ((identifier == NULL) || (permissionName == NULL) || !IsValidFlags(flags)) {
