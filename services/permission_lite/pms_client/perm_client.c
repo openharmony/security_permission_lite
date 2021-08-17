@@ -22,7 +22,6 @@
 #include "liteipc_adapter.h"
 #include "log.h"
 #include "pms_interface.h"
-#include "pms_interface_inner.h"
 #include "pms_types.h"
 #include "registry.h"
 #include "samgr_lite.h"
@@ -48,7 +47,6 @@ enum FUNCID {
     ID_REVOKE,
     ID_GRANT_RUNTIME,
     ID_REVOKE_RUNTIME,
-    ID_GET_UDID,
     ID_UPDATE_PERMS_FLAGS,
 };
 
@@ -69,7 +67,6 @@ typedef struct InnerClientApi {
     int (*RevokePermission)(const char *identifier, const char *permName);
     int (*GrantRuntimePermission)(int uid, const char *permissionName);
     int (*RevokeRuntimePermission)(int uid, const char *permissionName);
-    int (*RequestDevUdid)(unsigned char *udid, int size);
     int (*UpdatePermissionFlags)(const char *identifier, const char *permissionName, int flags);
 } InnerClientApi;
 
@@ -165,7 +162,6 @@ void *CreatInnerClient(const char *service, const char *feature, uint32 size)
     entry->iUnknown.RevokePermission = RevokePermission;
     entry->iUnknown.GrantRuntimePermission = GrantRuntimePermission;
     entry->iUnknown.RevokeRuntimePermission = RevokeRuntimePermission;
-    entry->iUnknown.RequestDevUdid = RequestDevUdid;
     entry->iUnknown.UpdatePermissionFlags = UpdatePermissionFlags;
     return client;
 }
@@ -292,29 +288,6 @@ static int DealQueryReply(IOwner owner, int code, IpcIo *reply)
 #endif
     ret->resultCode = retCode;
     return retCode;
-}
-
-static int DealUdidReply(IOwner owner, int code, IpcIo *reply)
-{
-    if ((reply == NULL) || (owner == NULL)) {
-        return OHOS_FAILURE;
-    }
-    int resultCode = IpcIoPopInt32(reply);
-    RetOfGetDevUdid *ret = (RetOfGetDevUdid *)(owner);
-    if (resultCode != PERM_ERRORCODE_SUCCESS) {
-        ret->result = resultCode;
-        return resultCode;
-    }
-    int len = IpcIoPopInt32(reply);
-    char *id = (char *)IpcIoPopString(reply, (size_t *)&len);
-    if (id == NULL) {
-        return OHOS_FAILURE;
-    }
-    if (memcpy_s(ret->udid, ret->size, id, len) != EOK) {
-        return OHOS_FAILURE;
-    }
-    ret->result = PERM_ERRORCODE_SUCCESS;
-    return PERM_ERRORCODE_SUCCESS;
 }
 
 int CheckSelfPermission(const char *permissionName)
@@ -448,29 +421,6 @@ int RevokeRuntimePermission(int uid, const char *permissionName)
     proxy->Invoke((IClientProxy *)proxy, ID_REVOKE_RUNTIME, &request, &ret, Notify);
     ReleaseInnerClientApi(proxy);
     return ret;
-}
-
-int RequestDevUdid(unsigned char *udid, int size)
-{
-    if (udid == NULL || size != (UDID_FINAL_BYTES + 1)) {
-        return OHOS_FAILURE;
-    }
-    InnerClientApi *proxy = GetInnerClientApi();
-    if (proxy == NULL) {
-        return OHOS_FAILURE;
-    }
-    IpcIo request;
-    char data[MAX_DATA_LEN];
-    IpcIoInit(&request, data, MAX_DATA_LEN, 0);
-    IpcIoPushInt32(&request, size);
-    RetOfGetDevUdid ret = {
-        .udid = udid,
-        .size = size,
-        .result = OHOS_FAILURE
-    };
-    proxy->Invoke((IClientProxy *)proxy, ID_GET_UDID, &request, &ret, DealUdidReply);
-    ReleaseInnerClientApi(proxy);
-    return ret.result;
 }
 
 int UpdatePermissionFlags(const char *identifier, const char *permissionName, const int flags)

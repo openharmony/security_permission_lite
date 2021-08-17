@@ -39,7 +39,6 @@ typedef struct InnerPermLiteApi {
     int (*RevokePermission)(const char *identifier, const char *permName);
     int (*GrantRuntimePermission)(int uid, const char *permissionName);
     int (*RevokeRuntimePermission)(int uid, const char *permissionName);
-    int (*GetDevUdid)(unsigned char *udid, int size);
     int (*UpdatePermissionFlags)(const char *identifier, const char *permissionName, const int flags);
 } InnerPermLiteApi;
 
@@ -55,7 +54,6 @@ enum INNERFUNCID {
     ID_REVOKE,
     ID_GRANT_RUNTIME,
     ID_REVOKE_RUNTIME,
-    ID_GET_UDID,
     ID_UPDATE_PERMS_FLAGS,
 };
 
@@ -78,7 +76,6 @@ static InnerPermLite g_permlite = {
     .RevokePermission = RevokePermission,
     .GrantRuntimePermission = GrantRuntimePermission,
     .RevokeRuntimePermission = RevokeRuntimePermission,
-    .GetDevUdid = GetDevUdid,
     .UpdatePermissionFlags = UpdatePermissionFlags,
     IPROXY_END,
     .identity = {-1, -1, NULL},
@@ -192,20 +189,6 @@ static void ReplyRevokeRuntimePermission(const void *origin, IpcIo *req, IpcIo *
     IpcIoPushInt32(reply, ret);
 }
 
-static void ReplyGetDevUdid(const void *origin, IpcIo *req, IpcIo *reply, InnerPermLiteApi* api)
-{
-    pid_t callingPid = GetCallingPid(origin);
-    uid_t callingUid = GetCallingUid(origin);
-    HILOG_INFO(HILOG_MODULE_APP, "Enter ID_GET_UDID, [callerPid: %d][callerUid: %u]", callingPid, callingUid);
-    int size = IpcIoPopInt32(req);
-    unsigned char udid[UDID_FINAL_BYTES + 1] = {0};
-    int32_t ret = api->GetDevUdid(udid, size);
-    HILOG_INFO(HILOG_MODULE_APP, "get device udid");
-    IpcIoPushInt32(reply, ret);
-    IpcIoPushInt32(reply, (UDID_FINAL_BYTES + 1));
-    IpcIoPushString(reply, (const char *)udid);
-}
-
 static void ReplyUpdatePermissionFlags(const void *origin, IpcIo *req, IpcIo *reply, const InnerPermLiteApi *api)
 {
     pid_t callingPid = GetCallingPid(origin);
@@ -240,9 +223,6 @@ static int32 Invoke(IServerProxy *iProxy, int funcId, void *origin, IpcIo *req, 
             break;
         case ID_REVOKE_RUNTIME:
             ReplyRevokeRuntimePermission(origin, req, reply, api);
-            break;
-        case ID_GET_UDID:
-            ReplyGetDevUdid(origin, req, reply, api);
             break;
         case ID_UPDATE_PERMS_FLAGS:
             ReplyUpdatePermissionFlags(origin, req, reply, api);
