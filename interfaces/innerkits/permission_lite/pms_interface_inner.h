@@ -22,15 +22,6 @@ extern "C" {
 #endif
 #endif
 
-/*
- * Request the unique device ID of the device(UDID).
- * This function is applicable to the process with uid less than 1000, which is used when requesting a UDID.
- *
- * udid: It is used to store the UDID finally obtained. Its size must be greater than 65, including '\0'.
- * size: The size of array to store UDID. It must be 65.
- * Returns 0 if the UDID is successfully obtained, other returns an error code.
- */
-int RequestDevUdid(unsigned char *udid, int size);
 
 #ifdef __cplusplus
 #if __cplusplus
