@@ -126,7 +126,6 @@ OpenHarmony中应用和系统服务均运行在独立的沙箱中，进程空间
 </tr>
 </tbody>
 </table>
-
 **轻量系统、小型系统应用权限管理**：当前仅供系统应用和系统服务调用，具体API接口如下：
 
 <a name="table9789027162518"></a>
@@ -171,12 +170,19 @@ OpenHarmony中应用和系统服务均运行在独立的沙箱中，进程空间
 <td class="cellrowborder" valign="top" width="44.34%" headers="mcps1.1.3.1.2 "><p id="p937132011440"><a name="p937132011440"></a><a name="p937132011440"></a>应用运行时动态撤销指定权限</p>
 </td>
 </tr>
+<tr id="row18566191217452"><td class="cellrowborder" valign="top" width="55.66%" headers="mcps1.1.3.1.1 "><p id="p169891916194512"><a name="p169891916194512"></a><a name="p169891916194512"></a>int UpdatePermissionFlags(const char *identifier, const char *permissionName, const int flags)</p>
+</td>
+<td class="cellrowborder" valign="top" width="44.34%" headers="mcps1.1.3.1.2 "><p id="p937132011440"><a name="p937132011440"></a><a name="p937132011440"></a>更新应用程序指定的应用权限的标记</p>
+</td>
+</tr>
 </tbody>
 </table>
+
 
 **轻量系统、小型系统IPC通信鉴权**：
 
 <a name="table10494122145517"></a>
+
 <table><thead align="left"><tr id="row1494152195511"><th class="cellrowborder" valign="top" width="50%" id="mcps1.1.3.1.1"><p id="p14941221135515"><a name="p14941221135515"></a><a name="p14941221135515"></a>接口名</p>
 </th>
 <th class="cellrowborder" valign="top" width="50%" id="mcps1.1.3.1.2"><p id="p8494172116555"><a name="p8494172116555"></a><a name="p8494172116555"></a>描述</p>
@@ -262,7 +268,7 @@ OpenHarmony中应用和系统服务均运行在独立的沙箱中，进程空间
 
     ```
     constexpr static char PERMISSION_INSTALL_BUNDLE[] = "ohos.permission.INSTALL_BUNDLE";
-
+    
     bool Install(const char *hapPath, const InstallParam *installParam, InstallerCallback installerCallback)
     {
         if ((hapPath == nullptr) || (installerCallback == nullptr) || (installParam == nullptr)) {
