@@ -171,12 +171,19 @@ App permission management provides permission management for the application fra
 <td class="cellrowborder" valign="top" width="44.34%" headers="mcps1.1.3.1.2 "><p id="p937132011440"><a name="p937132011440"></a><a name="p937132011440"></a>Revokes a specified runtime permission from the app.</p>
 </td>
 </tr>
+<tr id="row18566191217452"><td class="cellrowborder" valign="top" width="55.66%" headers="mcps1.1.3.1.1 "><p id="p169891916194512"><a name="p169891916194512"></a><a name="p169891916194512"></a>int UpdatePermissionFlags(const char *identifier, const char *permissionName, const int flags)</p>
+</td>
+<td class="cellrowborder" valign="top" width="44.34%" headers="mcps1.1.3.1.2 "><p id="p937132011440"><a name="p937132011440"></a><a name="p937132011440"></a>Updates the flags for the specified permission to the app.</p>
+</td>
+</tr>
 </tbody>
 </table>
+
 
 **IPC authentication for a mini or small system**
 
 <a name="table10494122145517"></a>
+
 <table><thead align="left"><tr id="row1494152195511"><th class="cellrowborder" valign="top" width="50%" id="mcps1.1.3.1.1"><p id="p14941221135515"><a name="p14941221135515"></a><a name="p14941221135515"></a>API</p>
 </th>
 <th class="cellrowborder" valign="top" width="50%" id="mcps1.1.3.1.2"><p id="p8494172116555"><a name="p8494172116555"></a><a name="p8494172116555"></a>Description</p>
@@ -262,7 +269,7 @@ This section uses the bundle manager as an example to describe the app permissio
 
     ```
     constexpr static char PERMISSION_INSTALL_BUNDLE[] = "ohos.permission.INSTALL_BUNDLE";
-
+    
     bool Install(const char *hapPath, const InstallParam *installParam, InstallerCallback installerCallback)
     {
         if ((hapPath == nullptr) || (installerCallback == nullptr) || (installParam == nullptr)) {
