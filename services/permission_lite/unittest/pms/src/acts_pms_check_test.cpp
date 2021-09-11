@@ -13,7 +13,8 @@
  * limitations under the License.
  */
 
-#include "ActsPMSTest.h"
+
+#include "acts_pms_test.h"
 
 using namespace std;
 using namespace testing::ext;
@@ -23,47 +24,47 @@ static PermissionTrans g_systemPers[] = {
     {
         "ohos.permission.CAMERA",
         "for test use",
-        INUSE,    
+        INUSE,
     },
     {
         "ohos.permission.RECORD_AUDIO",
         "for test use",
-        INUSE,    
+        INUSE,
     },
     {
         "ohos.permission.READ_MEDIA_AUDIO",
         "for test use",
-        INUSE,    
+        INUSE,
     },
     {
         "ohos.permission.READ_MEDIA_IMAGES",
         "for test use",
-        INUSE,    
+        INUSE,
     },
     {
         "ohos.permission.READ_MEDIA_VIDEO",
         "for test use",
-        INUSE,    
+        INUSE,
     },
     {
         "ohos.permission.WRITE_MEDIA_AUDIO",
         "for test use",
-        INUSE,    
+        INUSE,
     },
     {
         "ohos.permission.WRITE_MEDIA_IMAGES",
         "for test use",
-        INUSE,    
+        INUSE,
     },
     {
         "ohos.permission.WRITE_MEDIA_VIDEO",
         "for test use",
-        INUSE,    
+        INUSE,
     },
     {
         "ohos.permission.MODIFY_AUDIO_SETTINGS",
         "for test use",
-        INUSE,    
+        INUSE,
     },
 };
 
@@ -116,12 +117,12 @@ protected:
 
 /*
  ** @tc.name: testSecPMPMS_001
- ** @tc.desc:check permission tp large and small PIDS
- ** @tc.type:FUNC
- ** @tc.require:
+ ** @tc.desc: check permission tp large and small PIDS
+ ** @tc.type: FUNC
+ ** @tc.require: test
  */
 
-HWTEST_F(ActsPMSCheckTest, testSecPMPMS_001, Function | MediumTest | Level2)
+HWTEST_F(ActsPMSCheckTest, testSecPMPMS_001, Function | MediumTest | Level0)
 {
     SaveOrUpdatePermissions(TEST_APP_ID, g_systemPers, SYS_PERM_NUM, FIRST_INSTALL);
     LoadPermissions(TEST_APP_ID, MAX_PID);
@@ -136,5 +137,3 @@ HWTEST_F(ActsPMSCheckTest, testSecPMPMS_001, Function | MediumTest | Level2)
     UnLoadPermissions(MIN_PID);
     DeletePermissions(TEST_APP_ID);
 }
-
-

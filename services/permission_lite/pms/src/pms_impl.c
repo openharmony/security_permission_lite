@@ -317,7 +317,7 @@ char *QueryPermissionString(const char *identifier, int *errCode)
 int QueryPermission(const char *identifier, PermissionSaved **permissions, int *permNum)
 {
     int errCode = 0;
-    char *jsonStr = QueryPermissionString(identifier, &errCode);
+    const char *jsonStr = QueryPermissionString(identifier, &errCode);
     if (errCode) {
         return errCode;
     }

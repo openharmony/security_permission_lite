@@ -13,8 +13,9 @@
  * limitations under the License.
  */
 
-#ifndef _ACTSPMSTEST_H
-#define _ACTSPMSTEST_H
+
+#ifndef _ACTS_PMS_TEST_H_
+#define _ACTS_PMS_TEST_H_
 
 #include <cstdio>
 #include <cstdlib>
@@ -27,7 +28,6 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
-#include "feature.h"
 #include "gtest/gtest.h"
 #include "iunknown.h"
 #include "perm_define.h"
@@ -39,6 +39,8 @@
 #include "pms_types.h"
 #include "samgr_lite.h"
 #include "service.h"
+#include "feature.h"
+
 
 #define TEST_APP_ID "com.permission.test"
 #define TEST_APP_ID2 "com.permission.test2"
@@ -69,16 +71,14 @@ const int MIN_PID = 0;
 const int ABNORMAL_PKG_NUM = 5;
 const int DIR_MODE = 777;
 
-int IsUserGrant(const char* pname);
+int IsUserGrant(const char *pname);
 
-int CheckPermData(const PermissionTrans* pt, const PermissionSaved* ps,const PermissionSaved * pre, int len, int plen);
+int CheckPermData(const PermissionTrans *pt, const PermissionSaved *ps, const PermissionSaved *pre, int len, int plen);
 
-void ClrPers(PermissionSaved* &permisions);
+void CheckAppPermission(const char *identifier, int expRet, int expNum, const PermissionTrans *installPers,
+    const PermissionSaved *lastPers = nullptr, int lastLen = 0);
 
-void CheckAppPermission(const char* identifier, int expRet, int expNum, const PermissionTrans* installPers,
-    const PermissionSaved* lastPers = nullptr, int lastLen = 0);
-
-void SubTestWithoutCheck(const char* identifier, int taskId);
+void SubTestWithoutCheck(const char *identifier, int taskId);
 
 void CreateAppDir(void);
 
