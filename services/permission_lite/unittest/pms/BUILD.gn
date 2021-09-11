@@ -17,7 +17,7 @@ import("//build/lite/config/test.gni")
 unittest("security_test") {
   output_extension = "bin"
   output_dir = "$root_out_dir/test/unittest/security"
-  sources = [ "src/ActsPMSCheckTest.cpp" ]
+  sources = [ "src/acts_pms_check_test.cpp" ]
 
   include_dirs = [
     "src",
