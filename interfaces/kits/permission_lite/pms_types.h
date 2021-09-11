@@ -157,6 +157,8 @@ enum PmsErrorCode {
     PERM_ERRORCODE_PERM_NUM_ERROR,
     /** Failed to generate udid */
     PERM_ERRORCODE_GENERATE_UDID_FAILED,
+    /** Failed to format data using the <b>sprintf_s</b> function. */
+    PERM_ERRORCODE_SPRINTFS_FAIL,
 };
 
 #ifdef __cplusplus

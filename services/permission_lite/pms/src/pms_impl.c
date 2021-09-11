@@ -46,7 +46,7 @@ static char *ConcatString(const char *s1, const char *s2)
     if (allocSize > BUFF_SIZE_1024) {
         return NULL;
     }
-    char *rst = (char *) HalMalloc(allocSize);
+    char *rst = (char *)HalMalloc(allocSize);
     if (rst == NULL) {
         return NULL;
     }
@@ -146,7 +146,7 @@ static int ParseFixedPermissionsItem(const cJSON *object, PermissionSaved *perms
     cJSON *itemName = cJSON_GetObjectItem(object, FIELD_NAME);
     cJSON *itemDesc = cJSON_GetObjectItem(object, FIELD_DESC);
     cJSON *itemGranted = cJSON_GetObjectItem(object, FIELD_IS_GRANTED);
-    if (itemName == NULL || itemDesc == NULL || itemGranted == NULL || 
+    if (itemName == NULL || itemDesc == NULL || itemGranted == NULL ||
         !cJSON_IsString(itemName) || !cJSON_IsString(itemDesc)) {
         return PERM_ERRORCODE_JSONPARSE_FAIL;
     }
@@ -186,7 +186,7 @@ static int ParsePermissions(const char *jsonStr, PermissionSaved **perms, int *p
         cJSON_Delete(root);
         return PERM_ERRORCODE_SUCCESS;
     }
-    *perms = (PermissionSaved *) HalMalloc(allocSize);
+    *perms = (PermissionSaved *)HalMalloc(allocSize);
     if (*perms == NULL) {
         cJSON_Delete(root);
         return PERM_ERRORCODE_MALLOC_FAIL;
@@ -213,19 +213,20 @@ static int ParsePermissions(const char *jsonStr, PermissionSaved **perms, int *p
     return PERM_ERRORCODE_SUCCESS;
 }
 
-static int WritePermissions(const cJSON *root, const char *path)
+static int WritePermissions(const char *identifier, const cJSON *root)
 {
-    char *jsonStr = NULL;
-    jsonStr = cJSON_PrintUnformatted(root);
+    const char *path = GetPath(identifier);
+    if (path == NULL) {
+        return PERM_ERRORCODE_PATH_INVALID;
+    }
+    const char *jsonStr = cJSON_PrintUnformatted(root);
     if (jsonStr == NULL) {
-        HalFree((void *)path);
-        cJSON_Delete((cJSON *)root);
+        HalFree(path);
         return PERM_ERRORCODE_MALLOC_FAIL;
     }
     int ret = WriteString(path, jsonStr);
+    HalFree(path);
     free(jsonStr);
-    HalFree((void *)path);
-    cJSON_Delete((cJSON *)root);
     return ret;
 }
 
@@ -235,29 +236,19 @@ static int SavePermissions(const char *identifier, const PermissionSaved *permis
         return PERM_ERRORCODE_INVALID_PARAMS;
     }
 
-    cJSON *root = NULL;
-    cJSON *array = NULL;
-    char *path = NULL;
     char buf[BUFF_SIZE_16] = {0};
-    root = cJSON_CreateObject();
+    cJSON *root = cJSON_CreateObject();
     if (root == NULL) {
         return PERM_ERRORCODE_MALLOC_FAIL;
     }
-    array = cJSON_CreateArray();
+    cJSON *array = cJSON_CreateArray();
     if (array == NULL) {
-        cJSON_Delete(root);
-        return PERM_ERRORCODE_MALLOC_FAIL;
-    }
-    path = GetPath(identifier);
-    if (path == NULL) {
-        cJSON_Delete(array);
         cJSON_Delete(root);
         return PERM_ERRORCODE_MALLOC_FAIL;
     }
     for (int i = 0; i < permNum; i++) {
         cJSON *object = cJSON_CreateObject();
         if (object == NULL) {
-            HalFree(path);
             cJSON_Delete(array);
             cJSON_Delete(root);
             return PERM_ERRORCODE_MALLOC_FAIL;
@@ -267,22 +258,24 @@ static int SavePermissions(const char *identifier, const PermissionSaved *permis
         cJSON_AddItemToObject(object, FIELD_IS_GRANTED, cJSON_CreateBool(permissions[i].granted));
 
         if (memset_s(buf, BUFF_SIZE_16, 0, BUFF_SIZE_16) != EOK) {
-            HalFree(path);
             cJSON_Delete(array);
             cJSON_Delete(root);
+            cJSON_Delete(object);
             return PERM_ERRORCODE_MEMSET_FAIL;
         }
         if (sprintf_s(buf, BUFF_SIZE_16 - 1, "%d", permissions[i].flags) < 0) {
-            HalFree(path);
             cJSON_Delete(array);
             cJSON_Delete(root);
-            return PERM_ERRORCODE_INVALID_PERMNAME;
+            cJSON_Delete(object);
+            return PERM_ERRORCODE_SPRINTFS_FAIL;
         }
         cJSON_AddItemToObject(object, FIELD_FLAGS, cJSON_CreateString(buf));
         cJSON_AddItemToArray(array, object);
     }
     cJSON_AddItemToObject(root, FIELD_PERMISSION, array);
-    return WritePermissions(root, path);
+    int ret = WritePermissions(identifier, root);
+    cJSON_Delete(root);
+    return ret;
 }
 
 static bool IsValidFlags(const unsigned int flags)
@@ -350,7 +343,7 @@ int QueryAppCapabilities(const char *identifier, unsigned int **caps, unsigned i
         HalFree(permissions);
         return PERM_ERRORCODE_SUCCESS;
     }
-    unsigned int *capsBinded = (unsigned int *) HalMalloc(allocSize);
+    unsigned int *capsBinded = (unsigned int *)HalMalloc(allocSize);
     if (capsBinded == NULL) {
         HalFree(permissions);
         return PERM_ERRORCODE_MALLOC_FAIL;
@@ -401,7 +394,7 @@ static int UpdateAppPermission(
         return retCode;
     }
     int allocSize = sizeof(PermissionSaved) * newPermNum;
-    PermissionSaved *updatePerms = (PermissionSaved *) HalMalloc(allocSize);
+    PermissionSaved *updatePerms = (PermissionSaved *)HalMalloc(allocSize);
     if (updatePerms == NULL) {
         HalFree(permissions);
         return PERM_ERRORCODE_MALLOC_FAIL;
@@ -557,7 +550,7 @@ int LoadPermissions(const char *identifier, int uid)
         HalMutexUnlock();
         return ret;
     }
-    TNode *node = (TNode *) HalMalloc(sizeof(TNode));
+    TNode *node = (TNode *)HalMalloc(sizeof(TNode));
     if (node == NULL) {
         HalFree(permissions);
         HalMutexUnlock();
@@ -735,7 +728,7 @@ int UpdatePermissionFlags(const char *identifier, const char *permissionName, co
 {
     if ((identifier == NULL) || (permissionName == NULL) || !IsValidFlags(flags)) {
         return PERM_ERRORCODE_INVALID_PARAMS;
-    }  
+    }
 
     return OnPermissionFlagsFileSync(identifier, permissionName, flags);
 }

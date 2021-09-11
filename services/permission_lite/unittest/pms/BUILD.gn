@@ -1,0 +1,37 @@
+import("//build/lite/config/component/lite_component.gni")
+import("//build/lite/config/test.gni")
+
+unittest("security_test") {
+    output_extension = "bin"
+    output_dir = "$root_out_dir/test/unittest/security"
+    sources = [
+        "src/ActsPMSCheckTest.cpp"
+    ]
+    
+    include_dirs = [
+        "src",
+        "include",
+        "//utils/native/lite/include",
+        "//foundation/distributedschedule/samgr_lite/interfaces/kits/samgr/",
+        "//foundation/distributedschedule/samgr_lite/interfaces/kits/communication/broadcast/",
+        "//base/security/permission/interfaces/innerkits/permission_lite",
+        "//base/security/permission/interfaces/kits/permission_lite",
+        "//base/security/permission/services/permission_lite/pms_base/include",
+        "//base/security/permission/services/permission_lite/pms/include",
+        "//base/security/permission/services/permission_lite/ipc_auth/include",
+        "//third_party/bounds_checking_function/include",
+    ]
+    
+    deps = [
+        "//base/security/permission/services/permission_lite:permission_lite",
+        "//build/lite/config/component/cJSON:cjson_shared",
+        "//foundation/appexecfwk/appexecfwk_lite/frameworks/bundle_lite:bundle",
+        "//foundation/distributedschedule/samgr_lite/communication/broadcast",
+        "//foundation/distributedschedule/samgr_lite/samgr:samgr",
+        "//third_party/bounds_checking_function:libsec_shared",
+    ]
+}
+
+group("unittest") {
+    deps = [ ":security_test" ]
+}
