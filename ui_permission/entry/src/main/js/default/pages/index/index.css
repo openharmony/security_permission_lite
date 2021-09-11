@@ -1,0 +1,19 @@
+/* index.css */
+.container {
+    flex-direction: column; /* 设置容器内的项目纵向排列 */
+    justify-content: center; /* 设置项目位于容器主轴的中心 */
+    align-items: center; /* 项目在交叉轴居中 */
+}
+/* 对class="text"的组件设置样式 */
+.text{
+    font-size: 72px;
+}
+/* 对class="button"的组件设置样式 */
+.button {
+    width: 362px;
+    height: 80px;
+    background-color: #007dff;
+    font-size: 39px;
+    text-color: white;
+    margin-top: 20px;
+}

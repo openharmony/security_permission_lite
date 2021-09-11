@@ -1,0 +1,7 @@
+<element name="head-component" src="../component/headComponent/headComponent.hml"></element>
+<element name='blankpage-component' src="../component/blankPageComponent/blankPageComponent.hml"></element>
+
+<div class="container">
+    <head-component title-name="{{ appName }}" back-is-show="true"></head-component>
+    <blankpage-component description="没有数据"  ></blankpage-component>
+</div>

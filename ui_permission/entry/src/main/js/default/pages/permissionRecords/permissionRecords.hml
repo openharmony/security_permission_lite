@@ -1,0 +1,100 @@
+<element name='head-component' src='../component/headComponent/headComponent.hml'  ></element>
+<element name="entry-component" src = "../component/entryComponent/entryComponent.hml"></element>
+<element name='loading-component' src="../component/loadingComponent/loadingComponent.hml"></element>
+<element name='blank-page-component' src='../component/blankpagecomponent/blankpagecomponent.hml'></element>
+<div class="container">
+    <head-component title-name="{{ $t('records.permissionAccessRecords') }}"></head-component>
+<!-- content -->
+
+    <tabs class="tabs" index="0" vertical="false">
+        <tab-bar class="tab-bar" mode="fixed" >
+            <text class="tab-text">{{ $t('records.permission') }}</text>
+            <text class="tab-text">{{ $t('records.application') }}</text>
+        </tab-bar>
+        <tab-content class="tabcontent" scrollable="true" >
+            <div>
+                <block if="{{loadingOn}}">
+                    <loading-component ></loading-component>
+                </block>
+                <block else>
+                    <block if="{{blankPageOn}}">
+                        <blank-page-component description="{{ $t('records.noAccessRecords') }}"></blank-page-component>
+                    </block>
+                    <block else>
+                        <list id="permissionlist">
+                            <list-item-group for="{{listgroup in permissionList}}" id="{{listgroup.permissionName}}"  class="list-item-group">
+                                <list-item for="{{app_list in listgroup.applicationRecords}}" type="item">
+                                    <entry-component title="{{ app_list.applicationName }}"
+                                                     @action-type="onclick"
+                                                     item="{{listgroup.permissionName}}"
+                                                     item-type="{{'routerPermission'}}"
+                                                     icon-show="{{ app_list.applicationIcon == '' ? false : true }}"
+                                                     icon="{{app_list.applicationIcon}}"
+                                                     entrance-to-item-show="false"
+                                                     summary="{{ $t('records.accessCount') }}{{app_list.accessCountFg}}{{ $t('records.symbol') }}{{ $t('records.lastAccessTime') }}{{app_list.lastAccessTime}}">
+                                    </entry-component>
+                                </list-item>
+                                <list-item type="item" primary="true" >
+                                    <entry-component title="{{ listgroup.permissionName }}"
+                                                     icon-show="{{ listgroup.permissionIcon == '' ? false : true }}"
+                                                     icon="{{listgroup.permissionIcon}}"
+                                                     entrance-to-item-show="false"
+                                                     @action-type="onclick"
+                                                     item="{{listgroup.permissionName}}"
+                                                     item-type="{{'expandPermission'}}"
+                                                     item-flag="true"
+                                                     summary=" {{ $t('records.accessCount') }}{{listgroup.accessCount}}">
+                                    </entry-component>
+                                </list-item>
+                            </list-item-group>
+
+                        </list>
+                    </block>
+                </block>
+            </div>
+                <!--application list-->
+            <div>
+                <block if="{{loadingOn}}">
+                    <loading-component ></loading-component>
+                </block>
+                <block else>
+                    <block if="{{blankPageOn}}">
+                        <blank-page-component description="{{ $t('records.noAccessRecords') }}"></blank-page-component>
+                    </block>
+                    <block else>
+                        <list id="applicationlist">
+                            <list-item-group for="{{listgroup in applicationShowList}}" class="list-item-group" id="{{listgroup.appName}}">
+                                <list-item for="{{permission_list in listgroup.permissionRecords}}" type="item" class="list-expand">
+                                    <entry-component title="{{ permission_list.permissionName }}"
+                                                     @action-type="onclick"
+                                                     item="{{listgroup.permissionName}}"
+                                                     item-type="routerApp"
+                                                     icon-show="{{ permission_list.permissionIcon == '' ? false : true }}"
+                                                     icon="{{permission_list.permissionIcon}}"
+                                                     entrance-to-item-show="false"
+                                                     summary="{{ $t('records.accessCount') }}{{permission_list.accessCountFg}}{{ $t('records.symbol') }}{{ $t('records.lastAccessTime') }}{{permission_list.lastAccessTime}}">
+                                    </entry-component>
+                                </list-item>
+                                <list-item type="item" primary="true" class="list-items">
+                                    <entry-component title="{{ listgroup.appName }}"
+                                                     icon-show="{{ listgroup.applicationIcon == '' ? false : true }}"
+                                                     icon="{{listgroup.applicationIcon}}"
+                                                     entrance-to-item-show="false"
+                                                     @action-type="onclick"
+                                                     item="{{listgroup.appName}}"
+                                                     item-type="expandApp"
+                                                     item-flag="true"
+                                                     summary=" {{ $t('records.accessCount') }}"
+                                                     is-summary-show="false"
+                                                     icon-list="{{listgroup.permissionIconList}}"
+                                                     is-icon-list-show="true">
+                                    </entry-component>
+                                </list-item>
+                            </list-item-group>
+                        </list>
+                    </block>
+                </block>
+            </div>
+        </tab-content>
+    </tabs>
+</div>

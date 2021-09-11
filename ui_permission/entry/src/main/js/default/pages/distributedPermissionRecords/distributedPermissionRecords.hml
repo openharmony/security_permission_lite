@@ -1,0 +1,47 @@
+<element name='head-component' src='../component/headComponent/headComponent.hml'  ></element>
+<element name="entry-component" src = "../component/entryComponent/entryComponent.hml"></element>
+<element name='loading-component' src="../component/loadingComponent/loadingComponent.hml"></element>
+<element name='blank-page-component' src='../component/blankpagecomponent/blankpagecomponent.hml'></element>
+<div class="container">
+    <head-component title-name="{{ $t('records.distributedAccessedRecords') }}"></head-component>
+    <div class="sub-title">
+        <text class="sub-title-font">
+            {{ $t('records.lastSevenDays') }}
+        </text>
+    </div>
+    <block if="{{loading_on}}">
+        <loading-component ></loading-component>
+    </block>
+    <block else>
+        <block if="{{blankpage_on}}">
+            <blank-page-component description="{{ $t('records.noAccessRecords') }}">
+            </blank-page-component>
+        </block>
+        <block else>
+            <list id="deviceList">
+                <list-item-group for="{{listgroup in permissionList}}" class="list-item-group" id="{{listgroup.permissionName}}">
+                    <list-item for="{{device_list in listgroup.deviceRecords}}" type="item">
+                        <entry-component title="{{ device_list.deviceName }}"
+                                         summary="{{ $t('records.access') }}{{device_list.accessCountFg}}{{ $t('records.symbol') }}{{ $t('records.lastAccessTime') }}{{device_list.lastAccessTime}}"
+                                         entrance-to-item-show="false"
+                                         space-show="true">
+                        </entry-component>
+                    </list-item>
+                    <list-item type="item" primary="true">
+                        <entry-component title="{{ listgroup.permissionName }}"
+                                         icon-show="{{ listgroup.permissionIcon == '' ? false : true }}"
+                                         icon="{{listgroup.permissionIcon}}"
+                                         @action-type="onclick"
+                                         item="{{listgroup.permissionName}}"
+                                         item-type="expandPermission"
+                                         item-flag="true"
+                                         entrance-to-item-show="false"
+                                         space-show="false"
+                                         is-summary-show="false">
+                        </entry-component>
+                    </list-item>
+                </list-item-group>
+            </list>
+        </block>
+    </block>
+</div>

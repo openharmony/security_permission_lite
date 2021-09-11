@@ -1,0 +1,29 @@
+{
+  "permissionGroup": {
+    "permissions_1": [
+      "permissions_2",
+      "permissions_3"
+    ],
+    "permissions_4": [
+      "permissions_5",
+      "permissions_7"
+    ],
+    "permissions_8": [
+      "permissions_6"
+    ],
+    "permissions_9": [
+    ],
+    "permissions_10": [
+      "permissions_13",
+      "permissions_16"
+    ],
+    "permissions_11": [
+      "permissions_12",
+      "permissions_14",
+      "permissions_15"
+    ],
+    "permissions_19": [
+      "permissions_18"
+    ]
+  }
+}

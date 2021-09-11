@@ -1,0 +1,3 @@
+<div class="animator_div">
+    <image-animator class="animator" ref="animator" images="{{frames}}" duration="1s" />
+</div>
