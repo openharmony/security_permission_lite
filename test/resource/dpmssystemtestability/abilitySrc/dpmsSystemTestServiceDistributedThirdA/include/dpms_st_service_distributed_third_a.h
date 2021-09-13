@@ -22,14 +22,12 @@
 #include "ability_loader.h"
 #include "common_event.h"
 #include "common_event_manager.h"
-
 namespace OHOS {
 namespace AppExecFwk {
 using AbilityConnectionStub = OHOS::AAFwk::AbilityConnectionStub;
 using AbilityConnectionProxy = OHOS::AAFwk::AbilityConnectionProxy;
 const std::string RESP_EVENT_NAME_THIRD_A = "resp_com_ohos_dpmsst_service_distributed_third_a";
 const std::string REQ_EVENT_NAME_THIRD_A = "req_com_ohos_dpmsst_service_distributed_third_a";
-
 class DpmsStServiceDistributedThirdA : public Ability {
 public:
     ~DpmsStServiceDistributedThirdA();
@@ -58,7 +56,6 @@ private:
     void CanRequestPermissionFromRemote();
     string GetAppIdInfo(int32_t pid, int32_t uid);
     std::string permName = {};
-
     typedef void (DpmsStServiceDistributedThirdA::*func)();
     static std::map<std::string, func> funcMap_;
     class AbilityConnectCallback;
@@ -66,12 +63,10 @@ private:
     sptr<AbilityConnectionProxy> connCallback_ = {};
     class AppEventSubscriber;
     std::shared_ptr<AppEventSubscriber> subscriber_ = {};
-
     std::string permission_ = "";
     std::string nodeId_ = "";
     std::string bundleName_ = "";
     int32_t reasonResId_ = 1;
-
     class AbilityConnectCallback : public AbilityConnectionStub {
     public:
         sptr<IRemoteObject> AsObject() override

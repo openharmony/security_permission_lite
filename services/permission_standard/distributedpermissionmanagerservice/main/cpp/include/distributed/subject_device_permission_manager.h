@@ -183,15 +183,6 @@ public:
      */
     void ReGrantAllDuidPermissions();
 
-    /**
-     * interface for test
-     * @param type type.
-     * @param deviceId deviceId.
-     * @param uid uid.
-     * @return true/false.
-     */
-    bool TestInterfaceForDuid(const std::string type, const std::string deviceId, const int32_t uid, const int32_t num);
-
 private:
     bool IsDuidReady(const int32_t duid);
 

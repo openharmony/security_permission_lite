@@ -42,9 +42,6 @@ void SoftBusServiceConnectionListener::OnServiceConnected()
 {
     bool init = false;
     if (hasConnected_.compare_exchange_strong(init, true)) {
-        // TODO DeviceManager
-        // boolean isSuccess = deviceManager.addDeviceChangeListener(deviceListener);
-
         bool hasListener = (deviceListener_ != nullptr);
         PERMISSION_LOG_INFO(LABEL, "onServiceConnected: device listener success: %{public}d", hasListener);
 
@@ -75,10 +72,6 @@ void SoftBusServiceConnectionListener::OnServiceDisconnected()
             }
 
             std::this_thread::sleep_for(std::chrono::milliseconds(DELAY_AFTER_DISCONNECT));
-            // TODO
-            // SoftBusAdapter.getInstance().retryBindDevMonitor();
-            // or
-            // deviceManager.bindDevMonitor();
             times += 1;
         }
         PERMISSION_LOG_INFO(LABEL, "retry bind failed, retry times: %{public}d", times);
@@ -93,7 +86,6 @@ void SoftBusServiceConnectionListener::OnServiceDisconnected()
     std::string taskName("dpms_softbus_service_connect");
     handler->PostTask(retrys, taskName);
 }
-
 }  // namespace Permission
 }  // namespace Security
 }  // namespace OHOS

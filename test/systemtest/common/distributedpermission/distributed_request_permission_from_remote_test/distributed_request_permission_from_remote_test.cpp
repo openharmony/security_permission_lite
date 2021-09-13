@@ -31,7 +31,6 @@
 #include "common_event.h"
 #include "common_event_manager.h"
 #include "ability_lifecycle_executor.h"
-
 using namespace testing::ext;
 using namespace OHOS;
 using namespace OHOS::Security::Permission;
@@ -57,31 +56,24 @@ static const std::string SYSTEM_TEST_BUNDLE_NAME_DISTRIBUTED_SYSTEM_SIGNED =
     "com.ohos.dpmsst.service.distributed.system.signed";
 static const std::string SYSTEM_TEST_DISTRIBUTED_SYSTEM_SIGNED_ABILITY = "DpmsStServiceDistributedSystemSigned";
 const std::string REQ_EVENT_NAME_SYSTEM_SIGNED = "req_com_ohos_dpmsst_service_distributed_system_signed";
-
 static const std::string SYSTEM_TEST_BUNDLE_NAME_DISTRIBUTED_THIRD_A = "com.ohos.dpmsst.service.distributed.third.a";
 static const std::string SYSTEM_TEST_DISTRIBUTED_THIRD_A_ABILITY = "DpmsStServiceDistributedThirdA";
 const std::string REQ_EVENT_NAME_THIRD_A = "req_com_ohos_dpmsst_service_distributed_third_a";
-
 string deviceId_;
-
 }  // namespace
-
 class DistributedRequestPermissionFromRemoteTest : public testing::Test {
 public:
     static void SetUpTestCase(void);
     static void TearDownTestCase(void){};
     static bool SubscribeEvent();
-
     class AppEventSubscriber : public OHOS::EventFwk::CommonEventSubscriber {
     public:
         explicit AppEventSubscriber(const OHOS::EventFwk::CommonEventSubscribeInfo &sp) : CommonEventSubscriber(sp){};
         ~AppEventSubscriber() = default;
         virtual void OnReceiveEvent(const OHOS::EventFwk::CommonEventData &data) override;
     };
-
     void SetUp()
     {
-
         std::vector<OHOS::Security::Permission::PermissionDef> permDefList;
         OHOS::Security::Permission::PermissionDef permissionDef_Camera = {.permissionName = Constant::CAMERA,
             .bundleName = SYSTEM_TEST_BUNDLE_NAME_DISTRIBUTED_SYSTEM_SIGNED,
@@ -91,14 +83,10 @@ public:
             .labelId = 9527,
             .description = "test description",
             .descriptionId = 9528};
-
         permDefList.emplace_back(permissionDef_Camera);
-
         PermissionKit::AddDefPermissions(permDefList);
-
         std::vector<std::string> permList_user;
         permList_user.push_back(Constant::CAMERA);
-
         PermissionKit::AddUserGrantedReqPermissions(
             SYSTEM_TEST_BUNDLE_NAME_DISTRIBUTED_SYSTEM_SIGNED, permList_user, 0);
         PermissionKit::GrantUserGrantedPermission(
@@ -108,23 +96,18 @@ public:
     {}
 
 public:
-    // std::shared_ptr<DistributedPermissionManagerService> request_service;
     string GetAppIdInfo(int32_t pid, int32_t uid);
-
     static std::vector<std::string> eventList_;
     static STtools::Event event_;
     static sptr<OHOS::AppExecFwk::IAppMgr> appMs_;
     static sptr<OHOS::AAFwk::IAbilityManager> abilityMs_;
     static std::shared_ptr<AppEventSubscriber> subscriber_;
 };
-
 class TestCallback : public OnRequestPermissionsResultStub {
 public:
     TestCallback() = default;
     virtual ~TestCallback() = default;
-
     int32_t result = -1;
-
     void OnResult(const std::string nodeId, std::vector<std::string> permissions, std::vector<int32_t> grantResults)
     {
         // Default only one permission, so only one grantResult
@@ -133,7 +116,6 @@ public:
         }
         PERMISSION_LOG_INFO(LABEL, "DistributedRequestPermissionFromRemoteTest  TestCallback :OnResult  is run!!!");
     }
-
     void OnCancel(const std::string nodeId, std::vector<std::string> permissions)
     {
         PERMISSION_LOG_INFO(LABEL, "DistributedRequestPermissionFromRemoteTest  TestCallback :OnCancel  is run!!!");
@@ -145,26 +127,19 @@ public:
             nodeId.c_str());
     }
 };
-
-//生成appinfo
 string DistributedRequestPermissionFromRemoteTest::GetAppIdInfo(int32_t pid, int32_t uid)
 {
     return DistributedPermissionKit::AppIdInfoHelper::CreateAppIdInfo(pid, uid);
 }
-
 std::vector<std::string> DistributedRequestPermissionFromRemoteTest::eventList_ = {
     "resp_com_ohos_dpmsst_service_distributed_system_signed", "resp_com_ohos_dpmsst_service_distributed_third_a"};
-
 STtools::Event DistributedRequestPermissionFromRemoteTest::event_ = STtools::Event();
 sptr<OHOS::AppExecFwk::IAppMgr> DistributedRequestPermissionFromRemoteTest::appMs_ = nullptr;
 sptr<OHOS::AAFwk::IAbilityManager> DistributedRequestPermissionFromRemoteTest::abilityMs_ = nullptr;
 std::shared_ptr<DistributedRequestPermissionFromRemoteTest::AppEventSubscriber>
     DistributedRequestPermissionFromRemoteTest::subscriber_ = nullptr;
-
 void DistributedRequestPermissionFromRemoteTest::SetUpTestCase(void)
 {
-    // RemoveStorage();
-
     SubscribeEvent();
     appMs_ = STAbilityUtil::GetAppMgrService();
     abilityMs_ = STAbilityUtil::GetAbilityManagerService();
@@ -174,13 +149,11 @@ void DistributedRequestPermissionFromRemoteTest::SetUpTestCase(void)
         appMs_->GetAppFreezingTime(time);
         std::cout << "appMs_->GetAppFreezingTime();" << time << std::endl;
     }
-
     std::vector<DmDeviceInfo> deviceList;
     std::string str = "com.ohos.distributedmusicplayer";
     STDistibutePermissionUtil::GetTrustedDeviceList(str, deviceList);
     deviceId_ = deviceList[0].deviceId;
 }
-
 bool DistributedRequestPermissionFromRemoteTest::SubscribeEvent()
 {
     MatchingSkills matchingSkills;
@@ -192,7 +165,6 @@ bool DistributedRequestPermissionFromRemoteTest::SubscribeEvent()
     subscriber_ = std::make_shared<AppEventSubscriber>(subscribeInfo);
     return CommonEventManager::SubscribeCommonEvent(subscriber_);
 }
-
 void DistributedRequestPermissionFromRemoteTest::AppEventSubscriber::OnReceiveEvent(const CommonEventData &data)
 {
     GTEST_LOG_(INFO) << "OnReceiveEvent: event=" << data.GetWant().GetAction();
@@ -200,7 +172,6 @@ void DistributedRequestPermissionFromRemoteTest::AppEventSubscriber::OnReceiveEv
     GTEST_LOG_(INFO) << "OnReceiveEvent: code=" << data.GetCode();
     GTEST_LOG_(INFO) << "OnReceiveEvent: ret=" << data.GetWant().GetIntParam("ret", hapRet);
     GTEST_LOG_(INFO) << "OnReceiveEvent: hapRet=" << hapRet;
-
     auto eventName = data.GetWant().GetAction();
     auto iter = std::find(DistributedRequestPermissionFromRemoteTest::eventList_.begin(),
         DistributedRequestPermissionFromRemoteTest::eventList_.end(),
@@ -209,7 +180,6 @@ void DistributedRequestPermissionFromRemoteTest::AppEventSubscriber::OnReceiveEv
         STAbilityUtil::Completed(event_, data.GetData(), data.GetCode());
     }
 }
-
 /**
  * @tc.number    : DPMS_VerifyPermissionFromRemote_0100
  * @tc.name      : VerifyPermissionFromRemote
@@ -227,11 +197,9 @@ HWTEST_F(DistributedRequestPermissionFromRemoteTest, DPMS_VerifyPermissionFromRe
     int32_t expectation = Constant::PERMISSION_DENIED;
     string appInfo = GetAppIdInfo(pid, uid);
     int32_t result = service->VerifyPermissionFromRemote(permission, nodeId, appInfo);
-
     EXPECT_EQ(expectation, result);
     GTEST_LOG_(INFO) << "DistributedRequestPermissionFromRemoteTest DPMS_VerifyPermissionFromRemote_0100 end";
 }
-
 /**
  * @tc.number    : DPMS_VerifyPermissionFromRemote_0200
  * @tc.name      : VerifyPermissionFromRemote
@@ -1082,9 +1050,6 @@ HWTEST_F(DistributedRequestPermissionFromRemoteTest, DPMS_VerifySelfPermissionFr
     string nodeId = deviceId_;
     int32_t expectation = Constant::PERMISSION_DENIED;
     string deviceId = deviceId_;
-    // DeviceInfoRepository::GetInstance().SaveDeviceInfo(
-    //     nodeId, "universallyUniqueId", deviceId, "deviceName", "deviceType");
-
     std::string bundleName = SYSTEM_TEST_BUNDLE_NAME_DISTRIBUTED_THIRD_A;
     std::string abilityName = SYSTEM_TEST_DISTRIBUTED_THIRD_A_ABILITY;
 
@@ -1332,9 +1297,6 @@ HWTEST_F(DistributedRequestPermissionFromRemoteTest, DPMS_VerifySelfPermissionFr
     string nodeId = deviceId_;
     int32_t expectation = Constant::PERMISSION_DENIED;
     string deviceId = deviceId_;
-    // DeviceInfoRepository::GetInstance().SaveDeviceInfo(
-    //     nodeId, "universallyUniqueId", deviceId, "deviceName", "deviceType");
-
     std::string bundleName = SYSTEM_TEST_BUNDLE_NAME_DISTRIBUTED_THIRD_A;
     std::string abilityName = SYSTEM_TEST_DISTRIBUTED_THIRD_A_ABILITY;
 
@@ -1371,9 +1333,6 @@ HWTEST_F(DistributedRequestPermissionFromRemoteTest, DPMS_VerifySelfPermissionFr
     string nodeId = deviceId_;
     int32_t expectation = Constant::PERMISSION_DENIED;
     string deviceId = deviceId_;
-    // DeviceInfoRepository::GetInstance().SaveDeviceInfo(
-    //     nodeId, "universallyUniqueId", deviceId, "deviceName", "deviceType");
-
     std::string bundleName = SYSTEM_TEST_BUNDLE_NAME_DISTRIBUTED_THIRD_A;
     std::string abilityName = SYSTEM_TEST_DISTRIBUTED_THIRD_A_ABILITY;
 
@@ -1502,16 +1461,6 @@ HWTEST_F(DistributedRequestPermissionFromRemoteTest, DPMS_CanRequestPermissionFr
 HWTEST_F(DistributedRequestPermissionFromRemoteTest, DPMS_CanRequestPermissionFromRemote_0300, TestSize.Level1)
 {
     GTEST_LOG_(INFO) << "DistributedRequestPermissionFromRemoteTest DPMS_CanRequestPermissionFromRemote_0300 start";
-    // std::unique_ptr<DistributedPermissionKit> service = std::make_unique<DistributedPermissionKit>();
-    // string permission = "";
-    // string nodeId = "networkId";
-    // bool expectation = false;
-    // string deviceId = "deviceid";
-    // DeviceInfoRepository::GetInstance().SaveDeviceInfo(
-    //     nodeId, "universallyUniqueId", deviceId, "deviceName", "deviceType");
-
-    // bool result = service->CanRequestPermissionFromRemote(permission, nodeId);
-    // EXPECT_EQ(expectation, result);
     string permission = "";
     string nodeId = deviceId_;
     string deviceId = deviceId_;
@@ -1544,16 +1493,6 @@ HWTEST_F(DistributedRequestPermissionFromRemoteTest, DPMS_CanRequestPermissionFr
 HWTEST_F(DistributedRequestPermissionFromRemoteTest, DPMS_CanRequestPermissionFromRemote_0400, TestSize.Level1)
 {
     GTEST_LOG_(INFO) << "DistributedRequestPermissionFromRemoteTest DPMS_CanRequestPermissionFromRemote_0400 start";
-    // std::unique_ptr<DistributedPermissionKit> service = std::make_unique<DistributedPermissionKit>();
-    // string permission = long_string_257;
-    // string nodeId = "networkId";
-    // bool expectation = false;
-    // string deviceId = "deviceid";
-    // DeviceInfoRepository::GetInstance().SaveDeviceInfo(
-    //     nodeId, "universallyUniqueId", deviceId, "deviceName", "deviceType");
-
-    // bool result = service->CanRequestPermissionFromRemote(permission, nodeId);
-    // EXPECT_EQ(expectation, result);
     string permission = long_string_257;
     string nodeId = deviceId_;
     string deviceId = deviceId_;
@@ -1631,120 +1570,6 @@ HWTEST_F(DistributedRequestPermissionFromRemoteTest, DPMS_CanRequestPermissionFr
     EXPECT_TRUE(ret);
     GTEST_LOG_(INFO) << "DistributedRequestPermissionFromRemoteTest DPMS_CanRequestPermissionFromRemote_0600 end";
 }
-
-/**
- * @tc.number    : DPMS_CanRequestPermissionFromRemote_0700
- * @tc.name      : CanRequestPermissionFromRemote
- * @tc.desc      : If the uid is foreground, result true. Has permission
- * return: true.
- */
-// TODO  do not have foreground API
-// HWTEST_F(DistributedRequestPermissionFromRemoteTest, DPMS_CanRequestPermissionFromRemote_0700, TestSize.Level1)
-// {
-//     GTEST_LOG_(INFO) << "DistributedRequestPermissionFromRemoteTest DPMS_CanRequestPermissionFromRemote_0700 start";
-//     std::unique_ptr<DistributedPermissionKit> service = std::make_unique<DistributedPermissionKit>();
-//     string permission = Constant::CAMERA;
-//     string nodeId = "networkId";
-//     bool expectation = true;
-//     string deviceId = "deviceid";
-//     DeviceInfoRepository::GetInstance().SaveDeviceInfo(
-//         nodeId, "universallyUniqueId", deviceId, "deviceName", "deviceType");
-
-//     bool result = service->CanRequestPermissionFromRemote(permission, nodeId);
-//     EXPECT_EQ(expectation, result);
-//     GTEST_LOG_(INFO) << "DistributedRequestPermissionFromRemoteTest DPMS_CanRequestPermissionFromRemote_0700 end";
-// }
-
-/**
- * @tc.number    : DPMS_CanRequestPermissionFromRemote_0800
- * @tc.name      : CanRequestPermissionFromRemote
- * @tc.desc      : If the uid is not foreground, result false. No permission
- * return: false.
- */
-// TODO  do not have foreground API
-// HWTEST_F(DistributedRequestPermissionFromRemoteTest, DPMS_CanRequestPermissionFromRemote_0800, TestSize.Level1)
-// {
-//     GTEST_LOG_(INFO) << "DistributedRequestPermissionFromRemoteTest DPMS_CanRequestPermissionFromRemote_0800 start";
-//     std::unique_ptr<DistributedPermissionKit> service = std::make_unique<DistributedPermissionKit>();
-//     string permission = Constant::CAMERA;
-//     string nodeId = "networkId";
-//     bool expectation = false;
-//     string deviceId = "deviceid";
-//     DeviceInfoRepository::GetInstance().SaveDeviceInfo(
-//         nodeId, "universallyUniqueId", deviceId, "deviceName", "deviceType");
-
-//     bool result = service->CanRequestPermissionFromRemote(permission, nodeId);
-//     EXPECT_EQ(expectation, result);
-//     GTEST_LOG_(INFO) << "DistributedRequestPermissionFromRemoteTest DPMS_CanRequestPermissionFromRemote_0800 end";
-// }
-
-/**
- * @tc.number    : DPMS_CanRequestPermissionFromRemote_0900
- * @tc.name      : CanRequestPermissionFromRemote
- * @tc.desc      : The remote access sensitive permission switch corresponding to the current permission is on, result
- * true. Has permission return: false.
- */
-// TODO  switch now can not test
-// HWTEST_F(DistributedRequestPermissionFromRemoteTest, DPMS_CanRequestPermissionFromRemote_0900, TestSize.Level1)
-// {
-//     GTEST_LOG_(INFO) << "DistributedRequestPermissionFromRemoteTest DPMS_CanRequestPermissionFromRemote_0900 start";
-//     std::unique_ptr<DistributedPermissionKit> service = std::make_unique<DistributedPermissionKit>();
-//     string permission = Constant::CAMERA;
-//     string nodeId = "networkId";
-//     bool expectation = true;
-//     string deviceId = "deviceid";
-//     DeviceInfoRepository::GetInstance().SaveDeviceInfo(
-//         nodeId, "universallyUniqueId", deviceId, "deviceName", "deviceType");
-
-//     std::shared_ptr<SensitiveResourceSwitchSetting> switchSetting = SensitiveResourceSwitchSetting::CreateBuilder()
-//                                                                         ->DeviceId(deviceId)
-//                                                                         .Camera(true)
-//                                                                         .HealthSensor(false)
-//                                                                         .Location(false)
-//                                                                         .Microphone(false)
-//                                                                         .Build();
-
-//     ResourceSwitchCache::GetInstance().UpdateSwitchSetting(switchSetting);
-
-//     bool result = service->CanRequestPermissionFromRemote(permission, nodeId);
-//     EXPECT_EQ(expectation, result);
-//     GTEST_LOG_(INFO) << "DistributedRequestPermissionFromRemoteTest DPMS_CanRequestPermissionFromRemote_0900 end";
-// }
-
-/**
- * @tc.number    : DPMS_CanRequestPermissionFromRemote_1000
- * @tc.name      : CanRequestPermissionFromRemote
- * @tc.desc      : The remote access sensitive permission switch corresponding to the current permission is ff, result
- * false. No permission return: false.
- */
-// TODO  switch now can not test
-// HWTEST_F(DistributedRequestPermissionFromRemoteTest, DPMS_CanRequestPermissionFromRemote_1000, TestSize.Level1)
-// {
-//     GTEST_LOG_(INFO) << "DistributedRequestPermissionFromRemoteTest DPMS_CanRequestPermissionFromRemote_1000 start";
-//     std::unique_ptr<DistributedPermissionKit> service = std::make_unique<DistributedPermissionKit>();
-//     string permission = Constant::CAMERA;
-//     string nodeId = "networkId";
-//     bool expectation = false;
-//     string deviceId = "deviceid";
-//     DeviceInfoRepository::GetInstance().SaveDeviceInfo(
-//         nodeId, "universallyUniqueId", deviceId, "deviceName", "deviceType");
-
-//     std::shared_ptr<SensitiveResourceSwitchSetting> switchSetting = SensitiveResourceSwitchSetting::CreateBuilder()
-//                                                                         ->DeviceId(deviceId)
-//                                                                         .Camera(false)
-//                                                                         .HealthSensor(false)
-//                                                                         .Location(false)
-//                                                                         .Microphone(false)
-//                                                                         .Build();
-
-//     ResourceSwitchCache::GetInstance().UpdateSwitchSetting(switchSetting);
-
-//     bool result = service->CanRequestPermissionFromRemote(permission, nodeId);
-//     EXPECT_EQ(expectation, result);
-
-//     GTEST_LOG_(INFO) << "DistributedRequestPermissionFromRemoteTest DPMS_CanRequestPermissionFromRemote_1000 end";
-// }
-
 /**
  * @tc.number    : DPMS_CanRequestPermissionFromRemote_1100
  * @tc.name      : CanRequestPermissionFromRemote
@@ -1754,18 +1579,6 @@ HWTEST_F(DistributedRequestPermissionFromRemoteTest, DPMS_CanRequestPermissionFr
 HWTEST_F(DistributedRequestPermissionFromRemoteTest, DPMS_CanRequestPermissionFromRemote_1100, TestSize.Level1)
 {
     GTEST_LOG_(INFO) << "DistributedRequestPermissionFromRemoteTest DPMS_CanRequestPermissionFromRemote_1100 start";
-    // std::unique_ptr<DistributedPermissionKit> service = std::make_unique<DistributedPermissionKit>();
-    // string permission = Constant::READ_CALENDAR;
-    // string nodeId = "networkId";
-    // string deviceId = "deviceId";
-
-    // bool expectation = false;
-    // DeviceInfoRepository::GetInstance().SaveDeviceInfo(
-    //     nodeId, "universallyUniqueId", deviceId, "deviceName", "deviceType");
-
-    // bool result = service->CanRequestPermissionFromRemote(permission, nodeId);
-    // EXPECT_EQ(expectation, result);
-
     std::unique_ptr<DistributedPermissionKit> service = std::make_unique<DistributedPermissionKit>();
 
     string permission = Constant::READ_CALENDAR;
@@ -1801,23 +1614,6 @@ HWTEST_F(DistributedRequestPermissionFromRemoteTest, DPMS_CanRequestPermissionFr
 HWTEST_F(DistributedRequestPermissionFromRemoteTest, DPMS_CanRequestPermissionFromRemote_1200, TestSize.Level1)
 {
     GTEST_LOG_(INFO) << "DistributedRequestPermissionFromRemoteTest DPMS_CanRequestPermissionFromRemote_1200 start";
-    // std::unique_ptr<DistributedPermissionKit> service = std::make_unique<DistributedPermissionKit>();
-    // string permission = Constant::CAMERA;
-    // string nodeId = "networkId";
-    // string deviceId = "deviceId";
-    // int32_t uid = IPCSkeleton::GetCallingUid();
-    // bool expectation = true;
-    // DeviceInfoRepository::GetInstance().SaveDeviceInfo(
-    //     nodeId, "universallyUniqueId", deviceId, "deviceName", "deviceType");
-
-    // std::set<std::string> permissionSet;
-    // permissionSet.insert(permission);
-    // ObjectDevicePermissionRepository::GetInstance().GetOrCreateObjectDevice(deviceId)->AddObjectUid(uid);
-    // ObjectDevicePermissionRepository::GetInstance().GetOrCreateObjectDevice(deviceId)->ResetGrantSensitivePermission(
-    //     uid, permissionSet);
-
-    // bool result = service->CanRequestPermissionFromRemote(permission, nodeId);
-    // EXPECT_EQ(expectation, result);
     string permission = Constant::CAMERA;
 
     string nodeId = deviceId_;
@@ -1859,23 +1655,6 @@ HWTEST_F(DistributedRequestPermissionFromRemoteTest, DPMS_CanRequestPermissionFr
 HWTEST_F(DistributedRequestPermissionFromRemoteTest, DPMS_CanRequestPermissionFromRemote_1300, TestSize.Level1)
 {
     GTEST_LOG_(INFO) << "DistributedRequestPermissionFromRemoteTest DPMS_CanRequestPermissionFromRemote_1300 start";
-    // std::unique_ptr<DistributedPermissionKit> service = std::make_unique<DistributedPermissionKit>();
-    // string permission = Constant::READ_HEALTH_DATA;
-    // string nodeId = "networkId";
-    // string deviceId = "deviceId";
-    // int32_t uid = IPCSkeleton::GetCallingUid();
-    // bool expectation = true;
-    // DeviceInfoRepository::GetInstance().SaveDeviceInfo(
-    //     nodeId, "universallyUniqueId", deviceId, "deviceName", "deviceType");
-
-    // std::set<std::string> permissionSet;
-    // permissionSet.insert(permission);
-    // ObjectDevicePermissionRepository::GetInstance().GetOrCreateObjectDevice(deviceId)->AddObjectUid(uid);
-    // ObjectDevicePermissionRepository::GetInstance().GetOrCreateObjectDevice(deviceId)->ResetGrantSensitivePermission(
-    //     uid, permissionSet);
-
-    // bool result = service->CanRequestPermissionFromRemote(permission, nodeId);
-    // EXPECT_EQ(expectation, result);
     string permission = Constant::READ_HEALTH_DATA;
 
     string nodeId = deviceId_;
@@ -1918,23 +1697,6 @@ HWTEST_F(DistributedRequestPermissionFromRemoteTest, DPMS_CanRequestPermissionFr
 HWTEST_F(DistributedRequestPermissionFromRemoteTest, DPMS_CanRequestPermissionFromRemote_1400, TestSize.Level1)
 {
     GTEST_LOG_(INFO) << "DistributedRequestPermissionFromRemoteTest DPMS_CanRequestPermissionFromRemote_1400 start";
-    // std::unique_ptr<DistributedPermissionKit> service = std::make_unique<DistributedPermissionKit>();
-    // string permission = Constant::LOCATION;
-    // string nodeId = "networkId";
-    // string deviceId = "deviceId";
-    // int32_t uid = IPCSkeleton::GetCallingUid();
-    // bool expectation = true;
-    // DeviceInfoRepository::GetInstance().SaveDeviceInfo(
-    //     nodeId, "universallyUniqueId", deviceId, "deviceName", "deviceType");
-
-    // std::set<std::string> permissionSet;
-    // permissionSet.insert(permission);
-    // ObjectDevicePermissionRepository::GetInstance().GetOrCreateObjectDevice(deviceId)->AddObjectUid(uid);
-    // ObjectDevicePermissionRepository::GetInstance().GetOrCreateObjectDevice(deviceId)->ResetGrantSensitivePermission(
-    //     uid, permissionSet);
-
-    // bool result = service->CanRequestPermissionFromRemote(permission, nodeId);
-    // EXPECT_EQ(expectation, result);
     string permission = Constant::LOCATION;
 
     string nodeId = deviceId_;
@@ -1977,23 +1739,6 @@ HWTEST_F(DistributedRequestPermissionFromRemoteTest, DPMS_CanRequestPermissionFr
 HWTEST_F(DistributedRequestPermissionFromRemoteTest, DPMS_CanRequestPermissionFromRemote_1500, TestSize.Level1)
 {
     GTEST_LOG_(INFO) << "DistributedRequestPermissionFromRemoteTest DPMS_CanRequestPermissionFromRemote_1500 start";
-    // std::unique_ptr<DistributedPermissionKit> service = std::make_unique<DistributedPermissionKit>();
-    // string permission = Constant::MICROPHONE;
-    // string nodeId = "networkId";
-    // string deviceId = "deviceId";
-    // int32_t uid = IPCSkeleton::GetCallingUid();
-    // bool expectation = true;
-    // DeviceInfoRepository::GetInstance().SaveDeviceInfo(
-    //     nodeId, "universallyUniqueId", deviceId, "deviceName", "deviceType");
-
-    // std::set<std::string> permissionSet;
-    // permissionSet.insert(permission);
-    // ObjectDevicePermissionRepository::GetInstance().GetOrCreateObjectDevice(deviceId)->AddObjectUid(uid);
-    // ObjectDevicePermissionRepository::GetInstance().GetOrCreateObjectDevice(deviceId)->ResetGrantSensitivePermission(
-    //     uid, permissionSet);
-
-    // bool result = service->CanRequestPermissionFromRemote(permission, nodeId);
-    // EXPECT_EQ(expectation, result);
     string permission = Constant::MICROPHONE;
 
     string nodeId = deviceId_;
@@ -2036,16 +1781,6 @@ HWTEST_F(DistributedRequestPermissionFromRemoteTest, DPMS_CanRequestPermissionFr
 HWTEST_F(DistributedRequestPermissionFromRemoteTest, DPMS_CanRequestPermissionFromRemote_1600, TestSize.Level1)
 {
     GTEST_LOG_(INFO) << "DistributedRequestPermissionFromRemoteTest DPMS_CanRequestPermissionFromRemote_1600 start";
-    // std::unique_ptr<DistributedPermissionKit> service = std::make_unique<DistributedPermissionKit>();
-    // string permission = Constant::CAMERA;
-    // string nodeId = "networkId";
-    // string deviceId = "deviceId";
-    // bool expectation = false;
-    // DeviceInfoRepository::GetInstance().SaveDeviceInfo(
-    //     nodeId, "universallyUniqueId", deviceId, "deviceName", "deviceType");
-
-    // bool result = service->CanRequestPermissionFromRemote(permission, nodeId);
-    // EXPECT_EQ(expectation, result);
     std::unique_ptr<DistributedPermissionKit> service = std::make_unique<DistributedPermissionKit>();
 
     string permission = Constant::CAMERA;
@@ -2081,16 +1816,6 @@ HWTEST_F(DistributedRequestPermissionFromRemoteTest, DPMS_CanRequestPermissionFr
 HWTEST_F(DistributedRequestPermissionFromRemoteTest, DPMS_CanRequestPermissionFromRemote_1700, TestSize.Level1)
 {
     GTEST_LOG_(INFO) << "DistributedRequestPermissionFromRemoteTest DPMS_CanRequestPermissionFromRemote_1700 start";
-    // std::unique_ptr<DistributedPermissionKit> service = std::make_unique<DistributedPermissionKit>();
-    // string permission = Constant::READ_HEALTH_DATA;
-    // string nodeId = "networkId";
-    // string deviceId = "deviceId";
-    // bool expectation = false;
-    // DeviceInfoRepository::GetInstance().SaveDeviceInfo(
-    //     nodeId, "universallyUniqueId", deviceId, "deviceName", "deviceType");
-
-    // bool result = service->CanRequestPermissionFromRemote(permission, nodeId);
-    // EXPECT_EQ(expectation, result);
     std::unique_ptr<DistributedPermissionKit> service = std::make_unique<DistributedPermissionKit>();
 
     string permission = Constant::READ_HEALTH_DATA;
@@ -2126,16 +1851,6 @@ HWTEST_F(DistributedRequestPermissionFromRemoteTest, DPMS_CanRequestPermissionFr
 HWTEST_F(DistributedRequestPermissionFromRemoteTest, DPMS_CanRequestPermissionFromRemote_1800, TestSize.Level1)
 {
     GTEST_LOG_(INFO) << "DistributedRequestPermissionFromRemoteTest DPMS_CanRequestPermissionFromRemote_1800 start";
-    // std::unique_ptr<DistributedPermissionKit> service = std::make_unique<DistributedPermissionKit>();
-    // string permission = Constant::LOCATION;
-    // string nodeId = "networkId";
-    // string deviceId = "deviceId";
-    // bool expectation = false;
-    // DeviceInfoRepository::GetInstance().SaveDeviceInfo(
-    //     nodeId, "universallyUniqueId", deviceId, "deviceName", "deviceType");
-
-    // bool result = service->CanRequestPermissionFromRemote(permission, nodeId);
-    // EXPECT_EQ(expectation, result);
     std::unique_ptr<DistributedPermissionKit> service = std::make_unique<DistributedPermissionKit>();
 
     string permission = Constant::LOCATION;
@@ -2171,16 +1886,6 @@ HWTEST_F(DistributedRequestPermissionFromRemoteTest, DPMS_CanRequestPermissionFr
 HWTEST_F(DistributedRequestPermissionFromRemoteTest, DPMS_CanRequestPermissionFromRemote_1900, TestSize.Level1)
 {
     GTEST_LOG_(INFO) << "DistributedRequestPermissionFromRemoteTest DPMS_CanRequestPermissionFromRemote_1900 start";
-    // std::unique_ptr<DistributedPermissionKit> service = std::make_unique<DistributedPermissionKit>();
-    // string permission = Constant::MICROPHONE;
-    // string nodeId = "networkId";
-    // string deviceId = "deviceId";
-    // bool expectation = false;
-    // DeviceInfoRepository::GetInstance().SaveDeviceInfo(
-    //     nodeId, "universallyUniqueId", deviceId, "deviceName", "deviceType");
-
-    // bool result = service->CanRequestPermissionFromRemote(permission, nodeId);
-    // EXPECT_EQ(expectation, result);
     std::unique_ptr<DistributedPermissionKit> service = std::make_unique<DistributedPermissionKit>();
 
     string permission = Constant::MICROPHONE;
@@ -2487,37 +2192,6 @@ HWTEST_F(DistributedRequestPermissionFromRemoteTest, DPMS_RequestPermissionsFrom
 }
 
 /**
- * @tc.number    : DPMS_RequestPermissionsFromRemote_1000
- * @tc.name      : RequestPermissionsFromRemote
- * @tc.desc      : If the uid is system, result 0.
- * return: 0.
- */
-// HWTEST_F(DistributedRequestPermissionFromRemoteTest, DPMS_RequestPermissionsFromRemote_1000, TestSize.Level1)
-// {
-//     GTEST_LOG_(INFO) << "DistributedRequestPermissionFromRemoteTest DPMS_RequestPermissionsFromRemote_1000 start";
-//     std::unique_ptr<DistributedPermissionKit> service = std::make_unique<DistributedPermissionKit>();
-//     auto timeFast = std::chrono::milliseconds(200);
-//     std::vector<std::string> permissions;
-//     permissions.push_back(Constant::CAMERA);
-//     OHOS::sptr<TestCallback> callback(new TestCallback());
-//     string nodeId = "networkId";
-//     string bundleName = "testBundle";
-//     string deviceId = "deviceId";
-//     int32_t reasonResId = 1;
-//     int32_t expectation = 0;
-
-//     DeviceInfoRepository::GetInstance().SaveDeviceInfo(
-//         nodeId, "universallyUniqueId", deviceId, "deviceName", "deviceType");
-
-//     service->RequestPermissionsFromRemote(permissions, callback, nodeId, bundleName, reasonResId);
-//     std::this_thread::sleep_for(timeFast);
-
-//     PERMISSION_LOG_INFO(LABEL, "onResult_ : %{public}d,", callback->result);
-//     EXPECT_EQ(expectation, callback->result);
-//     GTEST_LOG_(INFO) << "DistributedRequestPermissionFromRemoteTest DPMS_RequestPermissionsFromRemote_1000 end";
-// }
-
-/**
  * @tc.number    : DPMS_RequestPermissionsFromRemote_1100
  * @tc.name      : RequestPermissionsFromRemote
  * @tc.desc      : If the uid system signature, result 0.
@@ -2633,37 +2307,6 @@ HWTEST_F(DistributedRequestPermissionFromRemoteTest, DPMS_RequestPermissionsFrom
 }
 
 /**
- * @tc.number    : DPMS_RequestPermissionsFromRemote_1400
- * @tc.name      : RequestPermissionsFromRemote
- * @tc.desc      : If the uid is not foreground, result -1.
- * return: -1.
- */
-// HWTEST_F(DistributedRequestPermissionFromRemoteTest, DPMS_RequestPermissionsFromRemote_1400, TestSize.Level1)
-// {
-//     GTEST_LOG_(INFO) << "DistributedRequestPermissionFromRemoteTest DPMS_RequestPermissionsFromRemote_1400 start";
-//     std::unique_ptr<DistributedPermissionKit> service = std::make_unique<DistributedPermissionKit>();
-//     auto timeFast = std::chrono::milliseconds(200);
-//     std::vector<std::string> permissions;
-//     permissions.push_back(Constant::CAMERA);
-//     OHOS::sptr<TestCallback> callback(new TestCallback());
-//     string nodeId = "networkId";
-//     string bundleName = "testBundle";
-//     string deviceId = "deviceId";
-//     int32_t reasonResId = 1;
-//     int32_t expectation = -1;
-
-//     DeviceInfoRepository::GetInstance().SaveDeviceInfo(
-//         nodeId, "universallyUniqueId", deviceId, "deviceName", "deviceType");
-
-//     service->RequestPermissionsFromRemote(permissions, callback, nodeId, bundleName, reasonResId);
-//     std::this_thread::sleep_for(timeFast);
-
-//     PERMISSION_LOG_INFO(LABEL, "onResult_ : %{public}d,", callback->result);
-//     EXPECT_EQ(expectation, callback->result);
-//     GTEST_LOG_(INFO) << "DistributedRequestPermissionFromRemoteTest DPMS_RequestPermissionsFromRemote_1400 end";
-// }
-
-/**
  * @tc.number    : DPMS_RequestPermissionsFromRemote_1500
  * @tc.name      : RequestPermissionsFromRemote
  * @tc.desc      : If request time out, result -1.
@@ -2700,19 +2343,6 @@ HWTEST_F(DistributedRequestPermissionFromRemoteTest, DPMS_RequestPermissionsFrom
     EXPECT_TRUE(ret);
     GTEST_LOG_(INFO) << "DistributedRequestPermissionFromRemoteTest DPMS_RequestPermissionsFromRemote_1500 end";
 }
-
-/**
- * @tc.number    : DPMS_RequestPermissionsFromRemote_1600
- * @tc.name      : RequestPermissionsFromRemote
- * @tc.desc      : when request app is uninstall, result -1.
- * return: -1.
- */
-// HWTEST_F(DistributedRequestPermissionFromRemoteTest, DPMS_RequestPermissionsFromRemote_1600, TestSize.Level1)
-// {
-//     GTEST_LOG_(INFO) << "DistributedRequestPermissionFromRemoteTest DPMS_RequestPermissionsFromRemote_1600 start";
-
-//     GTEST_LOG_(INFO) << "DistributedRequestPermissionFromRemoteTest DPMS_RequestPermissionsFromRemote_1600 end";
-// }
 
 /**
  * @tc.number    : DPMS_RequestPermissionsFromRemote_1700
@@ -3103,11 +2733,12 @@ HWTEST_F(DistributedRequestPermissionFromRemoteTest, DPMS_GrantSensitivePermissi
     std::unique_ptr<DistributedPermissionKit> service = std::make_unique<DistributedPermissionKit>();
     string permission = Constant::CAMERA;
     string nodeId = "";
-    string deviceId = "deviceId";
-    int ruid = 100100;
-
-    service->GrantSensitivePermissionToRemoteApp(permission, nodeId, ruid);
-    EXPECT_TRUE(SubjectDevicePermissionManager::GetInstance().distributedPermissionMapping_.size() == 0);
+    int32_t expectation = Constant::PERMISSION_DENIED;
+    int32_t uid = STDistibutePermissionUtil::GetUidByBundleName(SYSTEM_TEST_BUNDLE_NAME_DISTRIBUTED_THIRD_A);
+    service->GrantSensitivePermissionToRemoteApp(permission, nodeId, uid);
+    int32_t duid = DistributedPermissionKit::AllocateDuid(nodeId, uid);
+    int32_t RESULT = DistributedPermissionKit::CheckDPermission(duid, permission);
+    EXPECT_EQ(RESULT, expectation);
     GTEST_LOG_(INFO) << "DistributedRequestPermissionFromRemoteTest DPMS_GrantSensitivePermissionToRemoteApp_0100 end";
 }
 
@@ -3124,57 +2755,14 @@ HWTEST_F(DistributedRequestPermissionFromRemoteTest, DPMS_GrantSensitivePermissi
     std::unique_ptr<DistributedPermissionKit> service = std::make_unique<DistributedPermissionKit>();
     string permission = Constant::CAMERA;
     string nodeId = long_string_65;
-    string deviceId = "deviceId";
-    int ruid = 100100;
-
-    service->GrantSensitivePermissionToRemoteApp(permission, nodeId, ruid);
-    EXPECT_TRUE(SubjectDevicePermissionManager::GetInstance().distributedPermissionMapping_.size() == 0);
+    int32_t expectation = Constant::PERMISSION_DENIED;
+    int32_t uid = STDistibutePermissionUtil::GetUidByBundleName(SYSTEM_TEST_BUNDLE_NAME_DISTRIBUTED_THIRD_A);
+    service->GrantSensitivePermissionToRemoteApp(permission, nodeId, uid);
+    int32_t duid = DistributedPermissionKit::AllocateDuid(nodeId, uid);
+    int32_t RESULT = DistributedPermissionKit::CheckDPermission(duid, permission);
+    EXPECT_EQ(RESULT, expectation);
     GTEST_LOG_(INFO) << "DistributedRequestPermissionFromRemoteTest DPMS_GrantSensitivePermissionToRemoteApp_0200 end";
 }
-
-/**
- * @tc.number    : DPMS_GrantSensitivePermissionToRemoteApp_0300
- * @tc.name      : GrantSensitivePermissionToRemoteApp
- * @tc.desc      : If the ruid is root, end of processing, do not authorization
- * return: .
- */
-// HWTEST_F(DistributedRequestPermissionFromRemoteTest, DPMS_GrantSensitivePermissionToRemoteApp_0300, TestSize.Level1)
-// {
-//     GTEST_LOG_(INFO)
-//         << "DistributedRequestPermissionFromRemoteTest DPMS_GrantSensitivePermissionToRemoteApp_0300 start";
-//     std::unique_ptr<DistributedPermissionKit> service = std::make_unique<DistributedPermissionKit>();
-//     string permission = Constant::CAMERA;
-//     string nodeId = "networkId";
-//     string deviceId = "deviceId";
-//     int ruid = 100000;
-
-//     service->GrantSensitivePermissionToRemoteApp(permission, nodeId, ruid);
-//     EXPECT_TRUE(SubjectDevicePermissionManager::GetInstance().distributedPermissionMapping_.size() == 0);
-//     GTEST_LOG_(INFO) << "DistributedRequestPermissionFromRemoteTest DPMS_GrantSensitivePermissionToRemoteApp_0300
-//     end";
-// }
-
-/**
- * @tc.number    : DPMS_GrantSensitivePermissionToRemoteApp_0400
- * @tc.name      : GrantSensitivePermissionToRemoteApp
- * @tc.desc      : If the ruid is system, end of processing, do not authorization
- * return: .
- */
-// HWTEST_F(DistributedRequestPermissionFromRemoteTest, DPMS_GrantSensitivePermissionToRemoteApp_0400, TestSize.Level1)
-// {
-//     GTEST_LOG_(INFO)
-//         << "DistributedRequestPermissionFromRemoteTest DPMS_GrantSensitivePermissionToRemoteApp_0400 start";
-//     std::unique_ptr<DistributedPermissionKit> service = std::make_unique<DistributedPermissionKit>();
-//     string permission = Constant::CAMERA;
-//     string nodeId = "networkId";
-//     string deviceId = "deviceId";
-//     int ruid = 101000;
-
-//     service->GrantSensitivePermissionToRemoteApp(permission, nodeId, ruid);
-//     EXPECT_TRUE(SubjectDevicePermissionManager::GetInstance().distributedPermissionMapping_.size() == 0);
-//     GTEST_LOG_(INFO) << "DistributedRequestPermissionFromRemoteTest DPMS_GrantSensitivePermissionToRemoteApp_0400
-//     end";
-// }
 
 /**
  * @tc.number    : DPMS_GrantSensitivePermissionToRemoteApp_0500
@@ -3190,14 +2778,12 @@ HWTEST_F(DistributedRequestPermissionFromRemoteTest, DPMS_GrantSensitivePermissi
     string permission = Constant::READ_CALENDAR;
     string nodeId = deviceId_;
     string deviceId = deviceId_;
-    int ruid = 102345;
-
-    service->GrantSensitivePermissionToRemoteApp(permission, nodeId, ruid);
-
-    EXPECT_TRUE(SubjectDevicePermissionManager::GetInstance().distributedPermissionMapping_.size() == 1);
-    EXPECT_TRUE(
-        SubjectDevicePermissionManager::GetInstance().GetGrantSensitivePermissionToRemoteApp(deviceId, ruid).size() ==
-        0);
+    int32_t expectation = Constant::PERMISSION_DENIED;
+    int32_t uid = STDistibutePermissionUtil::GetUidByBundleName(SYSTEM_TEST_BUNDLE_NAME_DISTRIBUTED_THIRD_A);
+    service->GrantSensitivePermissionToRemoteApp(permission, nodeId, uid);
+    int32_t duid = DistributedPermissionKit::AllocateDuid(deviceId, uid);
+    int32_t RESULT = DistributedPermissionKit::CheckDPermission(duid, permission);
+    EXPECT_EQ(RESULT, expectation);
     GTEST_LOG_(INFO) << "DistributedRequestPermissionFromRemoteTest DPMS_GrantSensitivePermissionToRemoteApp_0500 end";
 }
 
@@ -3215,13 +2801,12 @@ HWTEST_F(DistributedRequestPermissionFromRemoteTest, DPMS_GrantSensitivePermissi
     string permission = Constant::CAMERA;
     string nodeId = deviceId_;
     string deviceId = deviceId_;
-    int ruid = 102345;
-
-    service->GrantSensitivePermissionToRemoteApp(permission, nodeId, ruid);
-
-    std::set<std::string> temp_permissionList =
-        SubjectDevicePermissionManager::GetInstance().GetGrantSensitivePermissionToRemoteApp(deviceId, ruid);
-    EXPECT_TRUE(temp_permissionList.find(permission) != std::end(temp_permissionList));
+    int32_t expectation = Constant::PERMISSION_GRANTED;
+    int32_t uid = STDistibutePermissionUtil::GetUidByBundleName(SYSTEM_TEST_BUNDLE_NAME_DISTRIBUTED_THIRD_A);
+    service->GrantSensitivePermissionToRemoteApp(permission, nodeId, uid);
+    int32_t duid = DistributedPermissionKit::AllocateDuid(deviceId, uid);
+    int32_t RESULT = DistributedPermissionKit::CheckDPermission(duid, permission);
+    EXPECT_EQ(RESULT, expectation);
     GTEST_LOG_(INFO) << "DistributedRequestPermissionFromRemoteTest DPMS_GrantSensitivePermissionToRemoteApp_0600 end";
 }
 
@@ -3239,12 +2824,12 @@ HWTEST_F(DistributedRequestPermissionFromRemoteTest, DPMS_GrantSensitivePermissi
     string permission = Constant::READ_HEALTH_DATA;
     string nodeId = deviceId_;
     string deviceId = deviceId_;
-    int ruid = 102345;
-
-    service->GrantSensitivePermissionToRemoteApp(permission, nodeId, ruid);
-    std::set<std::string> temp_permissionList =
-        SubjectDevicePermissionManager::GetInstance().GetGrantSensitivePermissionToRemoteApp(deviceId, ruid);
-    EXPECT_TRUE(temp_permissionList.find(permission) != std::end(temp_permissionList));
+    int32_t expectation = Constant::PERMISSION_GRANTED;
+    int32_t uid = STDistibutePermissionUtil::GetUidByBundleName(SYSTEM_TEST_BUNDLE_NAME_DISTRIBUTED_THIRD_A);
+    service->GrantSensitivePermissionToRemoteApp(permission, nodeId, uid);
+    int32_t duid = DistributedPermissionKit::AllocateDuid(deviceId, uid);
+    int32_t RESULT = DistributedPermissionKit::CheckDPermission(duid, permission);
+    EXPECT_EQ(RESULT, expectation);
     GTEST_LOG_(INFO) << "DistributedRequestPermissionFromRemoteTest DPMS_GrantSensitivePermissionToRemoteApp_0700 end";
 }
 
@@ -3262,12 +2847,12 @@ HWTEST_F(DistributedRequestPermissionFromRemoteTest, DPMS_GrantSensitivePermissi
     string permission = Constant::LOCATION;
     string nodeId = deviceId_;
     string deviceId = deviceId_;
-    int ruid = 102345;
-
-    service->GrantSensitivePermissionToRemoteApp(permission, nodeId, ruid);
-    std::set<std::string> temp_permissionList =
-        SubjectDevicePermissionManager::GetInstance().GetGrantSensitivePermissionToRemoteApp(deviceId, ruid);
-    EXPECT_TRUE(temp_permissionList.find(permission) != std::end(temp_permissionList));
+    int32_t expectation = Constant::PERMISSION_GRANTED;
+    int32_t uid = STDistibutePermissionUtil::GetUidByBundleName(SYSTEM_TEST_BUNDLE_NAME_DISTRIBUTED_THIRD_A);
+    service->GrantSensitivePermissionToRemoteApp(permission, nodeId, uid);
+    int32_t duid = DistributedPermissionKit::AllocateDuid(deviceId, uid);
+    int32_t RESULT = DistributedPermissionKit::CheckDPermission(duid, permission);
+    EXPECT_EQ(RESULT, expectation);
     GTEST_LOG_(INFO) << "DistributedRequestPermissionFromRemoteTest DPMS_GrantSensitivePermissionToRemoteApp_0800 end";
 }
 
@@ -3285,12 +2870,12 @@ HWTEST_F(DistributedRequestPermissionFromRemoteTest, DPMS_GrantSensitivePermissi
     string permission = Constant::MICROPHONE;
     string nodeId = deviceId_;
     string deviceId = deviceId_;
-    int ruid = 102345;
-
-    service->GrantSensitivePermissionToRemoteApp(permission, nodeId, ruid);
-    std::set<std::string> temp_permissionList =
-        SubjectDevicePermissionManager::GetInstance().GetGrantSensitivePermissionToRemoteApp(deviceId, ruid);
-    EXPECT_TRUE(temp_permissionList.find(permission) != std::end(temp_permissionList));
+    int32_t expectation = Constant::PERMISSION_GRANTED;
+    int32_t uid = STDistibutePermissionUtil::GetUidByBundleName(SYSTEM_TEST_BUNDLE_NAME_DISTRIBUTED_THIRD_A);
+    service->GrantSensitivePermissionToRemoteApp(permission, nodeId, uid);
+    int32_t duid = DistributedPermissionKit::AllocateDuid(deviceId, uid);
+    int32_t RESULT = DistributedPermissionKit::CheckDPermission(duid, permission);
+    EXPECT_EQ(RESULT, expectation);
     GTEST_LOG_(INFO) << "DistributedRequestPermissionFromRemoteTest DPMS_GrantSensitivePermissionToRemoteApp_0900 end";
 }
 
@@ -3433,7 +3018,6 @@ HWTEST_F(DistributedRequestPermissionFromRemoteTest, DPMS_AllocateDuid_0100, Tes
     int32_t rUidThird_ = STDistibutePermissionUtil::GetUidByBundleName(SYSTEM_TEST_BUNDLE_NAME_DISTRIBUTED_THIRD_A);
     DistributedPermissionKit::AllocateDuid(deviceId_, rUidThird_);
 }
-
 }  // namespace Permission
 }  // namespace Security
 }  // namespace OHOS

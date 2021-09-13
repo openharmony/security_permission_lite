@@ -25,7 +25,9 @@
         "//base/security/permission:distributed_permission"
       ],
       "test_list": [
-        "//base/security/permission:permission_build_module_standard_test"
+        "//base/security/permission:permission_build_module_standard_test",
+        "//base/security/permission/services/permission_standard/distributedpermissionmanagerservice/test:unittest",
+        "//base/security/permission/test:systemtest"
       ]
     }
   }

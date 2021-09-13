@@ -30,7 +30,10 @@ int CheckSelfPermissionAbilityA1::AbilityConnectCallback::onAbilityConnectDoneCo
 int hapRet = -1;
 std::map<std::string, CheckSelfPermissionAbilityA1::func> CheckSelfPermissionAbilityA1::funcMap_ = {
     {"DPMS_CheckSelfPermission_0100", &CheckSelfPermissionAbilityA1::CheckSelfPermission0100},
+    {"DPMS_CheckSelfPermission_0400", &CheckSelfPermissionAbilityA1::CheckSelfPermission0400},
+    {"DPMS_CheckCallingPermission_0600", &CheckSelfPermissionAbilityA1::CheckCallingPermission0600},
     {"DPMS_CheckCallingOrSelfPermission_0300", &CheckSelfPermissionAbilityA1::CheckCallingOrSelfPermission0300},
+    {"DPMS_CheckCallingOrSelfPermission_0400", &CheckSelfPermissionAbilityA1::CheckCallingOrSelfPermission0400},
     {"DPMS_CheckCallerPermission_0100", &CheckSelfPermissionAbilityA1::CheckCallerPermission0100},
     {"StopSelfAbility", &CheckSelfPermissionAbilityA1::StopSelfAbility},
 };
@@ -165,6 +168,34 @@ void CheckSelfPermissionAbilityA1::CheckSelfPermission0100()
     PublishEvent(APP_A1_RESP_EVENT_NAME, result, "CheckSelfPermission0100");
     APP_LOGI("app func CheckSelfPermission0100 end");
 }
+void CheckSelfPermissionAbilityA1::CheckSelfPermission0400()
+{
+    APP_LOGI("app func CheckSelfPermission0400 start");
+    std::unique_ptr<DistributedPermissionKit> service = std::make_unique<DistributedPermissionKit>();
+    std::string permissionName = "ohos.permission.GET_NETWORK_INFO";
+    auto startTime = std::chrono::high_resolution_clock::now();
+    service->CheckSelfPermission(permissionName);
+    auto endTime = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double, std::milli> fp_ms = endTime - startTime;
+    int32_t timeCount = (int32_t)fp_ms.count();
+    APP_LOGI("timeCount:%{public}d", timeCount);
+    PublishEvent(APP_A1_RESP_EVENT_NAME, timeCount, "CheckSelfPermission0400");
+    APP_LOGI("app func CheckSelfPermission0400 end");
+}
+void CheckSelfPermissionAbilityA1::CheckCallingPermission0600()
+{
+    APP_LOGI("app func CheckCallingPermission0600 start");
+    std::unique_ptr<DistributedPermissionKit> service = std::make_unique<DistributedPermissionKit>();
+    std::string permissionName = "ohos.permission.GET_NETWORK_INFO";
+    auto startTime = std::chrono::high_resolution_clock::now();
+    service->CheckCallingPermission(permissionName);
+    auto endTime = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double, std::milli> fp_ms = endTime - startTime;
+    int32_t timeCount = (int32_t)fp_ms.count();
+    APP_LOGI("timeCount:%{public}d", timeCount);
+    PublishEvent(APP_A1_RESP_EVENT_NAME, timeCount, "CheckCallingPermission0600");
+    APP_LOGI("app func CheckCallingPermission0600 end");
+}
 void CheckSelfPermissionAbilityA1::CheckCallingOrSelfPermission0300()
 {
     APP_LOGI("app func CheckCallingOrSelfPermission0300 start");
@@ -174,13 +205,31 @@ void CheckSelfPermissionAbilityA1::CheckCallingOrSelfPermission0300()
     PublishEvent(APP_A1_RESP_EVENT_NAME, result, "CheckCallingOrSelfPermission0300");
     APP_LOGI("app func CheckCallingOrSelfPermission0300 end");
 }
+void CheckSelfPermissionAbilityA1::CheckCallingOrSelfPermission0400()
+{
+    APP_LOGI("app func CheckCallingOrSelfPermission0400 start");
+    std::unique_ptr<DistributedPermissionKit> service = std::make_unique<DistributedPermissionKit>();
+    std::string permissionName = "ohos.permission.GET_NETWORK_INFO";
+    auto startTime = std::chrono::high_resolution_clock::now();
+    service->CheckCallingOrSelfPermission(permissionName);
+    auto endTime = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double, std::milli> fp_ms = endTime - startTime;
+    int32_t timeCount = (int32_t)fp_ms.count();
+    APP_LOGI("timeCount:%{public}d", timeCount);
+    PublishEvent(APP_A1_RESP_EVENT_NAME, timeCount, "CheckCallingOrSelfPermission0400");
+    APP_LOGI("app func CheckCallingOrSelfPermission0400 end");
+}
 void CheckSelfPermissionAbilityA1::CheckCallerPermission0100()
 {
     APP_LOGI("app func CheckCallerPermission0100 start");
     std::unique_ptr<DistributedPermissionKit> service = std::make_unique<DistributedPermissionKit>();
     std::string permissionName = "ohos.permission.INTERNET";
-    int32_t result = service->CheckCallerPermission(permissionName);
-    PublishEvent(APP_A1_RESP_EVENT_NAME, result, "CheckCallerPermission0100");
+    auto startTime = std::chrono::high_resolution_clock::now();
+    service->CheckCallerPermission(permissionName);
+    auto endTime = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double, std::milli> fp_ms = endTime - startTime;
+    int32_t timeCount = (int32_t)fp_ms.count();
+    PublishEvent(APP_A1_RESP_EVENT_NAME, timeCount, "CheckCallerPermission0100");
     APP_LOGI("app func CheckCallerPermission0100 end");
 }
 bool CheckSelfPermissionAbilityA1::SubscribeEvent()

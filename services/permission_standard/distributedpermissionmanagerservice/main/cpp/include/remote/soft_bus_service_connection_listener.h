@@ -25,7 +25,6 @@
 namespace OHOS {
 namespace Security {
 namespace Permission {
-
 class ServiceConnectionListener {
 public:
     ServiceConnectionListener() = default;
@@ -52,7 +51,6 @@ private:
     static const int MAX_RETRY_TIMES = 5;
     static const int DELAY_AFTER_DISCONNECT = 500;
 };
-
 }  // namespace Permission
 }  // namespace Security
 }  // namespace OHOS

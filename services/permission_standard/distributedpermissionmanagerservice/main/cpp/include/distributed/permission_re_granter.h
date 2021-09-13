@@ -27,14 +27,14 @@ namespace Permission {
 class PermissionReGranter final {
 public:
     static void ReGrantDuidPermissions(UidBundleBo &uidBundlePermInfo);
-    static bool IsGranted(PermissionDto &permission);
-    static bool IsRemoteGranted(PermissionDto &permission);
-    static void SetStatusGranted(bool isGranted, PermissionDto &permission);
-    static void SetFlagRemoteGranted(bool isRemoteGranted, PermissionDto &permission);
+    static bool IsGranted(const PermissionDto &permission);
+    static bool IsRemoteGranted(const PermissionDto &permission);
+    static void SetStatusGranted(const bool isGranted, PermissionDto &permission);
+    static void SetFlagRemoteGranted(const bool isRemoteGranted, PermissionDto &permission);
 
 private:
-    static void GetPermissionInfoNoThrow(std::string &permission, PermissionDefParcel &permInfo);
-    static bool VerifySignatruePermission(PermissionDefParcel &permInfo, UidBundleBo &uidBundlePermInfo);
+    static void GetPermissionInfoNoThrow(const std::string &permission, PermissionDefParcel &permInfo);
+    static bool VerifySignatruePermission(const PermissionDefParcel &permInfo, const UidBundleBo &uidBundlePermInfo);
 
 private:
     static const int FLAG_PERMISSION_DEFINED_BY_SYSTEM = 1 << 0;

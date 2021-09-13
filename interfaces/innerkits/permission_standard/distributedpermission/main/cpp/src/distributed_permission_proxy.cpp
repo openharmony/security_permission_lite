@@ -36,7 +36,7 @@ DistributedPermissionProxy::~DistributedPermissionProxy()
 int32_t DistributedPermissionProxy::AllocateDuid(const std::string &nodeId, const int32_t rUid)
 {
     PERMISSION_LOG_INFO(LABEL, "enter");
-    PERMISSION_LOG_INFO(LABEL, "nodeId = %{public}s, rUid = %{public}d", nodeId.c_str(), rUid);
+    PERMISSION_LOG_INFO(LABEL, "nodeId = %{public}s, rUid = %{public}d", Constant::EncryptDevId(nodeId).c_str(), rUid);
     MessageParcel data;
     if (!data.WriteString(nodeId)) {
         PERMISSION_LOG_ERROR(LABEL, "failed to WriteString(nodeId).");
@@ -109,7 +109,7 @@ int32_t DistributedPermissionProxy::CheckPermission(
     PERMISSION_LOG_INFO(LABEL,
         "permissionName = %{public}s, nodeId = %{public}s, pid = %{public}d, uid = %{public}d",
         permissionName.c_str(),
-        nodeId.c_str(),
+        Constant::EncryptDevId(nodeId).c_str(),
         pid,
         uid);
     MessageParcel data;
@@ -240,7 +240,7 @@ int32_t DistributedPermissionProxy::VerifyPermissionFromRemote(
     PERMISSION_LOG_INFO(LABEL,
         "permission = %{public}s, nodeId = %{public}s, pid = %{public}d, uid = %{public}d",
         permission.c_str(),
-        nodeId.c_str(),
+        Constant::EncryptDevId(nodeId).c_str(),
         pid,
         uid);
     MessageParcel data;
@@ -273,8 +273,10 @@ int32_t DistributedPermissionProxy::VerifySelfPermissionFromRemote(
     const std::string &permissionName, const std::string &nodeId)
 {
     PERMISSION_LOG_INFO(LABEL, "enter");
-    PERMISSION_LOG_INFO(
-        LABEL, "permissionName = %{public}s, nodeId = %{public}s", permissionName.c_str(), nodeId.c_str());
+    PERMISSION_LOG_INFO(LABEL,
+        "permissionName = %{public}s, nodeId = %{public}s",
+        permissionName.c_str(),
+        Constant::EncryptDevId(nodeId).c_str());
     MessageParcel data;
     if (!data.WriteString(permissionName)) {
         PERMISSION_LOG_ERROR(LABEL, "failed to WriteString(permissionName).");
@@ -297,8 +299,10 @@ bool DistributedPermissionProxy::CanRequestPermissionFromRemote(
     const std::string &permissionName, const std::string &nodeId)
 {
     PERMISSION_LOG_INFO(LABEL, "enter");
-    PERMISSION_LOG_INFO(
-        LABEL, "permissionName = %{public}s, nodeId = %{public}s", permissionName.c_str(), nodeId.c_str());
+    PERMISSION_LOG_INFO(LABEL,
+        "permissionName = %{public}s, nodeId = %{public}s",
+        permissionName.c_str(),
+        Constant::EncryptDevId(nodeId).c_str());
     MessageParcel data;
     if (!data.WriteString(permissionName)) {
         PERMISSION_LOG_ERROR(LABEL, "failed to WriteString(permissionName).");
@@ -322,7 +326,10 @@ void DistributedPermissionProxy::RequestPermissionsFromRemote(const std::vector<
     int32_t reasonResId)
 {
     PERMISSION_LOG_INFO(LABEL, "enter");
-    PERMISSION_LOG_INFO(LABEL, "bundleName = %{public}s, nodeId = %{public}s,", bundleName.c_str(), nodeId.c_str());
+    PERMISSION_LOG_INFO(LABEL,
+        "bundleName = %{public}s, nodeId = %{public}s,",
+        bundleName.c_str(),
+        Constant::EncryptDevId(nodeId).c_str());
     MessageParcel data;
     if (!data.WriteStringVector(permissions)) {
         PERMISSION_LOG_ERROR(LABEL, "failed to WriteStringVector(permissions).");
@@ -360,7 +367,7 @@ void DistributedPermissionProxy::GrantSensitivePermissionToRemoteApp(
     PERMISSION_LOG_INFO(LABEL,
         "permissionName = %{public}s, nodeId = %{public}s, ruid = %{public}d",
         permissionName.c_str(),
-        nodeId.c_str(),
+        Constant::EncryptDevId(nodeId).c_str(),
         ruid);
     MessageParcel data;
     if (!data.WriteString(permissionName)) {

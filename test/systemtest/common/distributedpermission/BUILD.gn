@@ -44,8 +44,8 @@ config("distributed_permission_test_config") {
   configs = [ "${appexecfwk_path}/services/bundlemgr:bundlemgr_common_config" ]
 
   defines = [
-    "APP_LOG_TAG = \"DistributedPermissionTest\"",  # TODO log tag for test
-    "LOG_DOMAIN = 0xD001025",  # TODO log domain for test
+    "APP_LOG_TAG = \"DistributedPermissionTest\"",
+    "LOG_DOMAIN = 0xD001025",
   ]
   cflags_cc = [ "-DHILOG_ENABLE" ]
   configs = []
@@ -55,7 +55,14 @@ group("systemtest") {
   testonly = true
 
   deps = [
+    "check_distributed_permission_test:systemtest",
+    "distributed_permission_duid_transform_test:systemtest",
+    "distributed_permission_remind_test:systemtest",
+    "distributed_permission_used_records_test:systemtest",
     "distributed_request_permission_from_remote_test:systemtest",
-    "tool:system_test_ability_util",
+    "fuzz_test:systemtest",
+    "notify_sync_permission_test:systemtest",
+    "random_stress_test:systemtest",
+    "stress_test:systemtest",
   ]
 }

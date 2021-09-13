@@ -29,17 +29,13 @@ static const std::string TASK_NAME_FULFILL_DEVICE_INFO = "dpms_taskname_fulfill_
 static const std::string SESSION_GROUP_ID = "dpms_dsoftbus_session_group_id";
 static const SessionAttribute SESSION_ATTR = {.dataType = TYPE_BYTES};
 
-// TODO need REASON_EXIST?
 static const int REASON_EXIST = -3;
-// static const int REGISTER_RETRY_TIMES = 5;
-// static const int REGISTER_RETRY_INTERVAL_MS = 500;
-// static const std::string PACKAGE_NAME = "dpms";
 static const int OPENSESSION_RETRY_TIMES = 10 * 60;
 static const int OPENSESSION_RETRY_INTERVAL_MS = 100;
 }  // namespace
 
 const std::string SoftBusManager::DPMS_PACKAGE_NAME = "ohos.security.distributed_permission";
-const std::string SoftBusManager::SESSION_NAME = "com.huawei.systemserver_CHANNEL_DPMS";
+const std::string SoftBusManager::SESSION_NAME = "ohos.security.dpms_channel";
 
 SoftBusManager::SoftBusManager() : isSoftBusServiceBindSuccess_(false), inited_(false), mutex_(), fulfillMutex_()
 {
@@ -59,14 +55,6 @@ SoftBusManager &SoftBusManager::GetInstance()
 
 void SoftBusManager::Initialize()
 {
-    // TODO old code
-    // if (!ptrDeviceManager_) {
-    //     // TODO serviceConnectionListener
-    //     ptrDeviceManager_ = std::make_shared<DeviceManager>();
-    //     // maybe failed
-    //     // ptrDeviceManager_->QueryOnlineDevice();
-    // }
-
     bool inited = false;
     // cas failed means already inited.
     if (!inited_.compare_exchange_strong(inited, true)) {
@@ -75,9 +63,6 @@ void SoftBusManager::Initialize()
     }
 
     std::function<void()> runner = [&]() {
-        // TODO device manager
-        // deviceManager.bindDevMonitor();
-
         std::unique_lock<std::mutex> lock(mutex_);
 
         // register device state change listener
@@ -111,7 +96,7 @@ void SoftBusManager::Initialize()
 
         ret = ::CreateSessionServer(DPMS_PACKAGE_NAME.c_str(), SESSION_NAME.c_str(), &sessionListener);
         PERMISSION_LOG_INFO(LABEL, "Initialize: createSessionServer, result: %{public}d", ret);
-        // TODO REASON_EXIST?
+        // REASON_EXIST
         if ((ret != Constant::SUCCESS) && (ret != REASON_EXIST)) {
             PERMISSION_LOG_ERROR(LABEL, "Initialize: CreateSessionServer error, result: %{public}d", ret);
             // init failed.
@@ -153,14 +138,12 @@ void SoftBusManager::Destroy()
         isSoftBusServiceBindSuccess_ = false;
     }
 
-    // deviceManager.unbindDevMonitor();
     std::string packageName = DPMS_PACKAGE_NAME;
     int ret = DistributedHardware::DeviceManager::GetInstance().UnRegisterDevStateCallback(packageName);
     if (ret != ERR_OK) {
         PERMISSION_LOG_ERROR(LABEL, "UnRegisterDevStateCallback failed, code: %{public}d", ret);
     }
     ret = DistributedHardware::DeviceManager::GetInstance().UnInitDeviceManager(packageName);
-
     if (ret != ERR_OK) {
         PERMISSION_LOG_ERROR(LABEL, "UnInitDeviceManager failed, code: %{public}d", ret);
     }
@@ -208,11 +191,8 @@ int32_t SoftBusManager::OpenSession(const std::string &deviceId)
     }
     int64_t state = SoftBusSessionListener::GetSessionState(sessionId);
     if (state < 0) {
-        PERMISSION_LOG_ERROR(LABEL, "openSession, timeout, session: %{public}lld", state);
         return Constant::FAILURE;
     }
-
-    PERMISSION_LOG_DEBUG(LABEL, "openSession, succeed, session: %{public}lld", state);
     return sessionId;
 }
 
@@ -249,14 +229,7 @@ std::string SoftBusManager::GetUniversallyUniqueIdByNodeId(const std::string &no
         std::string dimUuid = info.deviceId.universallyUniqueId;
         if (uuid == dimUuid) {
             // refresh cache
-            // std::shared_ptr<DistributedPermissionEventHandler> handler =
-            //     DelayedSingleton<DistributedPermissionManagerService>::GetInstance()->GetEventHandler();
-            // if (handler == nullptr) {
-            //     PERMISSION_LOG_ERROR(LABEL,"fail to get EventHandler");
-            //     return "";
-            // }
             std::function<void()> fulfillDeviceInfo = std::bind(&SoftBusManager::FulfillLocalDeviceInfo, this);
-            // handler->PostTask(fulfillDeviceInfo, TASK_NAME_FULFILL_DEVICE_INFO);
             std::thread fulfill(fulfillDeviceInfo);
             fulfill.detach();
         }
@@ -277,48 +250,19 @@ std::string SoftBusManager::GetUniqueDisabilityIdByNodeId(const std::string &nod
         return "";
     }
     char localUdid[Constant::DEVICE_UUID_LENGTH] = {0};
-    // int result = ::GetDevUdid(localUdid, Constant::DEVICE_UUID_LENGTH);
     ::GetDevUdid(localUdid, Constant::DEVICE_UUID_LENGTH);
     if (udid == localUdid) {
         // refresh cache
-        // std::shared_ptr<DistributedPermissionEventHandler> handler =
-        //     DelayedSingleton<DistributedPermissionManagerService>::GetInstance()->GetEventHandler();
-        // if (handler == nullptr) {
-        //     PERMISSION_LOG_ERROR(LABEL,"fail to get EventHandler");
-        //     return "";
-        // }
         std::function<void()> fulfillDeviceInfo = std::bind(&SoftBusManager::FulfillLocalDeviceInfo, this);
-        // handler->PostTask(fulfillDeviceInfo, TASK_NAME_FULFILL_DEVICE_INFO);
         std::thread fulfill(fulfillDeviceInfo);
         fulfill.detach();
     }
     return udid;
-
-    // TODO old code
-    // auto idnet = DnetworkAdapter::GetInstance();
-    //     if (idnet == nullptr) {
-    //         PERMISSION_LOG_ERROR(LABEL, "GetDnetService error");
-    //         return "";
-    //     }
-    //     return idnet->GetUdidByNodeId(nodeId);
 }
 
 std::string SoftBusManager::GetUuidByNodeId(const std::string &nodeId) const
 {
-    // TODO device manager
-    //  long identity = Binder.clearCallingIdentity();
-    // try {
-    //     return Optional.ofNullable(deviceManager.getUuidByNodeId(nodeId));
-    // } finally {
-    //     Binder.restoreCallingIdentity(identity);
-    // }
-
-    // TODO old code
-    //     std::shared_ptr<Communication::DnetworkAdapter> adapter = Communication::DnetworkAdapter::GetInstance();
-    // std::string udid = adapter->GetUdidByNodeId(networkId);
-    // return udid;
-
-    // TODO udid/uuid max length?
+    // udid/uuid max length
     int len = 128;
     uint8_t *info = (uint8_t *)malloc(len + 1);
     memset(info, 0, len + 1);
@@ -342,19 +286,6 @@ std::string SoftBusManager::GetUuidByNodeId(const std::string &nodeId) const
 
 std::string SoftBusManager::GetUdidByNodeId(const std::string &nodeId) const
 {
-    // TODO device manager
-    //  long identity = Binder.clearCallingIdentity();
-    //     try {
-    //         return Optional.ofNullable(deviceManager.getUdidByNodeId(nodeId));
-    //     } finally {
-    //         Binder.restoreCallingIdentity(identity);
-    //     }
-
-    // TODO old source?
-    // auto adapter = Communication::DnetworkAdapter::GetInstance();
-    // std::string udid = adapter->GetUdidByNodeId(networkId);
-    // return udid;
-
     int len = 128;
     uint8_t *info = (uint8_t *)malloc(len + 1);
     memset(info, 0, len + 1);
@@ -378,39 +309,6 @@ std::string SoftBusManager::GetUdidByNodeId(const std::string &nodeId) const
 
 int SoftBusManager::FulfillLocalDeviceInfo()
 {
-    // TODO L3 code
-    // Optional<NodeBasicInfo> localInfoOpt = getLocalBasicInfo();
-    // if (!localInfoOpt.isPresent()) {
-    //     HiLog.error(LABEL, "fulfillLocalDeviceInfo: localInfo is null from dnetwork, abort.");
-    //     return;
-    // }
-    // NodeBasicInfo localInfo = localInfoOpt.get();
-    // Optional<String> uuidOpt = getUuidByNodeId(localInfo.getNodeId());
-    // Optional<String> udidOpt = getUdidByNodeId(localInfo.getNodeId());
-    // if (!uuidOpt.isPresent() || !udidOpt.isPresent()) {
-    //     HiLog.error(LABEL, "fulfillLocalDeviceInfo: uuidOpt or udidOpt is not present, abort.");
-    //     return;
-    // }
-    // DeviceInfoManager.getInstance()
-    //     .addDeviceInfo(localInfo.getNodeId(), uuidOpt.get(), udidOpt.get(), localInfo.getDeviceName(),
-    //         Objects.toString(localInfo.getDeviceType()));
-
-    //     // TODO old code
-    //     std::shared_ptr<Communication::DnetworkAdapter> adapter = Communication::DnetworkAdapter::GetInstance();
-    //     std::shared_ptr<Communication::NodeBasicInfo> localInfoOpt = adapter->GetLocalBasicInfo();
-    //     if (localDevice == nullptr) {
-    //         PERMISSION_LOG_ERROR(LABEL, "fulfillLocalDeviceInfo: localInfo is null from dnetwork, abort.");
-    //         return;
-    //     }
-    //     std::string uuidOpt = getUuidByNodeId(localInfoOpt.getNodeId());
-    //     std::string udidOpt = getUdidByNodeId(localInfoOpt.getNodeId());
-    //     if (uuidOpt == nullptr || udidOpt == nullptr) {
-    //         PERMISSION_LOG_ERROR(LABEL, "fulfillLocalDeviceInfo: uuidOpt or udidOpt is not present, abort.");
-    //         return;
-    //     }
-    //     DeviceInfoManager.getInstance().addDeviceInfo(
-    //         localDevice->GetNodeId(), uuidOpt, uuidOpt, localInfo.getDeviceName(), localInfo.getDeviceType());
-
     // repeated task will just skip
     if (!fulfillMutex_.try_lock()) {
         PERMISSION_LOG_INFO(LABEL, "FulfillLocalDeviceInfo already running, skip.");
@@ -450,7 +348,6 @@ int SoftBusManager::FulfillLocalDeviceInfo()
     fulfillMutex_.unlock();
     return Constant::SUCCESS;
 }
-
 }  // namespace Permission
 }  // namespace Security
 }  // namespace OHOS

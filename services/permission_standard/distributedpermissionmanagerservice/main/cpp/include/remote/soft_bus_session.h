@@ -22,13 +22,11 @@
 namespace OHOS {
 namespace Security {
 namespace Permission {
-
 struct SoftBusSession {
     bool inited = false;
     int sessionId = -1;
     DeviceId deviceId;
 };
-
 }  // namespace Permission
 }  // namespace Security
 }  // namespace OHOS

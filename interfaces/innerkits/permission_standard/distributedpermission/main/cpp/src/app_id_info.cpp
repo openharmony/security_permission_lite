@@ -18,7 +18,6 @@
 namespace OHOS {
 namespace Security {
 namespace Permission {
-
 bool AppIdInfo::Valid() const
 {
     if (this->pid < 0) {

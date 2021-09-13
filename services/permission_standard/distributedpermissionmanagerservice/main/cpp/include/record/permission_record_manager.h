@@ -105,7 +105,7 @@ private:
      * @param queryResult Response dto for permission used records.
      * @return true if succeeded; false if failed.
      */
-    bool GetRecordFromDB(const int allFlag, const std::vector<GenericValues> &recordValues,
+    bool GetRecordFromDB(const int32_t allFlag, const std::vector<GenericValues> &recordValues,
         BundlePermissionUsedRecord &bundleRecord, QueryPermissionUsedResult &queryResult);
 
     /**
@@ -128,12 +128,9 @@ private:
     /**
      * Produce permissionRecord dto.
      *
-     * @param permissionName Permission name.
-     * @param visitorId PermissionVisitor table primary key.
+     * @param deviceId Device id.
      * @param uid The application uid of caller device.
-     * @param sucCount Succeed count.
-     * @param failCount Failed count.
-     * @param PermissionRecord permissionRecord dto.
+     * @param PermissionVisitor PermissionVisitor dto.
      * @return true if succeeded; false if failed.
      */
     bool GetPermissionVisitor(const std::string &deviceId, const int32_t uid, PermissionVisitor &permissionVisitor);

@@ -57,7 +57,7 @@ void SyncUidStateCommand::Prepare()
 {
     remoteProtocol_.statusCode = Constant::SUCCESS;
     remoteProtocol_.message = Constant::COMMAND_RESULT_SUCCESS;
-    uidState_ = 1;  // TODO AMS
+    uidState_ = 1;
 
     PERMISSION_LOG_DEBUG(LABEL, "%{public}s: end as: SyncUidStateCommand", __func__);
 }

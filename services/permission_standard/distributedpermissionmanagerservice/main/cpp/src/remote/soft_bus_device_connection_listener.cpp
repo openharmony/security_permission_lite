@@ -43,10 +43,9 @@ void SoftBusDeviceConnectionListener::OnDeviceOnline(const DmDeviceInfo &info)
     std::string udid = SoftBusManager::GetInstance().GetUniqueDisabilityIdByNodeId(networkId);
 
     PERMISSION_LOG_INFO(LABEL,
-        "networkId: %{public}s, deviceName: %{public}s, deviceType: %{public}zu, uuid: %{public}s, udid: %{public}s",
+        "networkId: %{public}s, deviceName: %{public}s, uuid: %{public}s, udid: %{public}s",
         networkId.c_str(),
         info.deviceName.c_str(),
-        info.deviceTypeId,
         uuid.c_str(),
         udid.c_str());
 
@@ -58,7 +57,6 @@ void SoftBusDeviceConnectionListener::OnDeviceOnline(const DmDeviceInfo &info)
         PERMISSION_LOG_ERROR(LABEL, "uuid or udid is empty, online failed.");
     }
     // no need to load local permissions by now.
-    // PermissionBmsManager::GetInstance().InitSystemDefinedPermissions();
 }
 
 void SoftBusDeviceConnectionListener::OnDeviceOffline(const DmDeviceInfo &info)
@@ -68,10 +66,9 @@ void SoftBusDeviceConnectionListener::OnDeviceOffline(const DmDeviceInfo &info)
     std::string udid = DeviceInfoManager::GetInstance().ConvertToUniqueDisabilityIdOrFetch(networkId);
 
     PERMISSION_LOG_INFO(LABEL,
-        "networkId: %{public}s, deviceName: %{public}s, deviceType: %{public}zu, uuid: %{public}s, udid: %{public}s",
+        "networkId: %{public}s, deviceName: %{public}s,  uuid: %{public}s, udid: %{public}s",
         networkId.c_str(),
         info.deviceName.c_str(),
-        info.deviceTypeId,
         uuid.c_str(),
         udid.c_str());
 
@@ -88,22 +85,19 @@ void SoftBusDeviceConnectionListener::OnDeviceReady(const DmDeviceInfo &info)
 {
     std::string networkId = info.deviceId;
     PERMISSION_LOG_INFO(LABEL,
-        "networkId: %{public}s, deviceName: %{public}s, deviceType: %{public}zu",
+        "networkId: %{public}s, deviceName: %{public}s",
         networkId.c_str(),
-        info.deviceName.c_str(),
-        info.deviceTypeId);
+        info.deviceName.c_str());
 }
 
 void SoftBusDeviceConnectionListener::OnDeviceChanged(const DmDeviceInfo &info)
 {
     std::string networkId = info.deviceId;
     PERMISSION_LOG_INFO(LABEL,
-        "networkId: %{public}s, deviceName: %{public}s, deviceType: %{public}zu",
+        "networkId: %{public}s, deviceName: %{public}s",
         networkId.c_str(),
-        info.deviceName.c_str(),
-        info.deviceTypeId);
+        info.deviceName.c_str());
 }
-
 }  // namespace Permission
 }  // namespace Security
 }  // namespace OHOS

@@ -110,7 +110,6 @@ public:
         GET_PERMISSION_RECORDS = 0xf024,
         GET_PERMISSION_RECORDS_ASYNCH = 0xf025,
         REQUEST_PERMISSION_FROM_REMOTE = 0xf026,
-        TEST_INTERFACE_FOR_DUID = 0xf027,
     };
 };
 }  // namespace Permission

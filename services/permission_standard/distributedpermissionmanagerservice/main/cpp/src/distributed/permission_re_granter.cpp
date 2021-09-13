@@ -67,7 +67,7 @@ void PermissionReGranter::ReGrantDuidPermissions(UidBundleBo &uidBundlePermInfo)
     PERMISSION_LOG_DEBUG(LABEL, "end");
 }
 
-void PermissionReGranter::GetPermissionInfoNoThrow(std::string &permission, PermissionDefParcel &permInfo)
+void PermissionReGranter::GetPermissionInfoNoThrow(const std::string &permission, PermissionDefParcel &permInfo)
 {
     std::unique_ptr<ExternalDeps> externalDeps = std::make_unique<ExternalDeps>();
     if (externalDeps == nullptr) {
@@ -79,7 +79,8 @@ void PermissionReGranter::GetPermissionInfoNoThrow(std::string &permission, Perm
     iPermissionManager_->GetDefPermission(permission, permInfo);
 }
 
-bool PermissionReGranter::VerifySignatruePermission(PermissionDefParcel &permInfo, UidBundleBo &uidBundlePermInfo)
+bool PermissionReGranter::VerifySignatruePermission(
+    const PermissionDefParcel &permInfo, const UidBundleBo &uidBundlePermInfo)
 {
     sptr<AppExecFwk::IBundleMgr> iBundleManager_;
     std::shared_ptr<ExternalDeps> externalDeps = std::make_shared<ExternalDeps>();
@@ -111,17 +112,17 @@ bool PermissionReGranter::VerifySignatruePermission(PermissionDefParcel &permInf
     return true;
 }
 
-bool PermissionReGranter::IsGranted(PermissionDto &permission)
+bool PermissionReGranter::IsGranted(const PermissionDto &permission)
 {
     return (permission.status & FLAG_PERMISSION_STATUS_DISTRIBUTED_GRANTED) != 0;
 }
 
-bool PermissionReGranter::IsRemoteGranted(PermissionDto &permission)
+bool PermissionReGranter::IsRemoteGranted(const PermissionDto &permission)
 {
     return (permission.status & FLAG_PERMISSION_STATUS_REMOTE_GRANTED) != 0;
 }
 
-void PermissionReGranter::SetStatusGranted(bool isGranted, PermissionDto &permission)
+void PermissionReGranter::SetStatusGranted(const bool isGranted, PermissionDto &permission)
 {
     PERMISSION_LOG_DEBUG(LABEL, "begin, isGranted: %{public}d, status: %{public}d", isGranted, permission.status);
     if (isGranted) {
@@ -134,7 +135,7 @@ void PermissionReGranter::SetStatusGranted(bool isGranted, PermissionDto &permis
     PERMISSION_LOG_DEBUG(LABEL, "end, isGranted: %{public}d, status: %{public}d", isGranted, permission.status);
 }
 
-void PermissionReGranter::SetFlagRemoteGranted(bool isRemoteGranted, PermissionDto &permission)
+void PermissionReGranter::SetFlagRemoteGranted(const bool isRemoteGranted, PermissionDto &permission)
 {
     if (isRemoteGranted) {
         permission.status |= FLAG_PERMISSION_STATUS_REMOTE_GRANTED;

@@ -148,15 +148,15 @@ void PermissionUsedRecord::updateRecordWithTime(const PermissionUsedRecord &reco
 {
     updateRecord(record);
     if (record.accessCountFg > 0 || record.rejectCountFg > 0) {
-        if (record.lastAccessTime > 0 && this->accessRecordFg.size() <= 10) {
+        if (record.lastAccessTime > 0 && this->accessRecordFg.size() <= Constant::MAX_DETAIL_RECORDS) {
             this->accessRecordFg.emplace_back(record.lastAccessTime);
-        } else if (record.lastRejectTime > 0 && this->rejectRecordFg.size() <= 10) {
+        } else if (record.lastRejectTime > 0 && this->rejectRecordFg.size() <= Constant::MAX_DETAIL_RECORDS) {
             this->rejectRecordFg.emplace_back(record.lastRejectTime);
         }
     } else {
-        if (record.lastAccessTime > 0 && this->accessRecordBg.size() <= 10) {
+        if (record.lastAccessTime > 0 && this->accessRecordBg.size() <= Constant::MAX_DETAIL_RECORDS) {
             this->accessRecordBg.emplace_back(record.lastAccessTime);
-        } else if (record.lastRejectTime > 0 && this->rejectRecordBg.size() <= 10) {
+        } else if (record.lastRejectTime > 0 && this->rejectRecordBg.size() <= Constant::MAX_DETAIL_RECORDS) {
             this->rejectRecordBg.emplace_back(record.lastRejectTime);
         }
     }

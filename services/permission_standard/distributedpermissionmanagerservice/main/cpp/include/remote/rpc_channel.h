@@ -19,7 +19,6 @@
 namespace OHOS {
 namespace Security {
 namespace Permission {
-
 /*
  * Channel used for communicate with peer devices.
  */
@@ -74,7 +73,6 @@ public:
      */
     virtual void Release(){};
 };
-
 }  // namespace Permission
 }  // namespace Security
 }  // namespace OHOS

@@ -21,7 +21,6 @@
 namespace OHOS {
 namespace Security {
 namespace Permission {
-
 enum DeviceIdType {
     NETWORK_ID,
     UNIVERSALLY_UNIQUE_ID,
@@ -40,7 +39,6 @@ struct DeviceInfo {
     std::string deviceName;
     std::string deviceType;
 };
-
 }  // namespace Permission
 }  // namespace Security
 }  // namespace OHOS

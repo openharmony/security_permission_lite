@@ -95,7 +95,7 @@ std::vector<ObjectDeviceJson> ObjectDevicePermissionRepository::GetDevicesJsonVe
     std::map<std::string, std::shared_ptr<ObjectDevice>>::iterator iter;
     for (iter = objectDevices_.begin(); iter != objectDevices_.end(); iter++) {
         std::string deviceId = iter->first;
-        if (iter->second != nullptr) {
+        if (iter->second == nullptr) {
             continue;
         }
         std::map<int32_t, std::shared_ptr<ObjectUid>> objectUids = iter->second->GetUidPermissions();

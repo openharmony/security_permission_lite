@@ -54,10 +54,6 @@ void ObjectDevicePermissionManager::Init()
             std::make_shared<std::function<void(int32_t uid, const std::string &packageName)>>(
                 [&](int32_t uid, const std::string &packageName) { this->NotifyPermissionChanged(uid); }));
     }
-    std::shared_ptr<ExternalDeps> externalDeps = std::make_shared<ExternalDeps>();
-    OHOS::sptr<PermissionCallback> permissionCallback_ = new PermissionCallback();
-    iBundleManager_ = externalDeps->GetBundleManager(iBundleManager_);
-    iBundleManager_->RegisterAllPermissionsChanged(permissionCallback_);
 }
 
 /**
@@ -341,7 +337,7 @@ int32_t ObjectDevicePermissionManager::RemoveNotifyPermissionMonitorUserId(const
 
 void ObjectDevicePermissionManager::Clear()
 {
-    PERMISSION_LOG_INFO(LABEL, "rclear: remove caches related to all object devices");
+    PERMISSION_LOG_INFO(LABEL, "clear: remove caches related to all object devices");
     ObjectDevicePermissionRepository::GetInstance().Clear();
     ObjectDevicePermissionRepository::GetInstance().SaveToFile();
 };

@@ -54,15 +54,6 @@ struct AsyncGetRecordCallbackInfo {
     napi_ref callback = 0;
 };
 
-typedef struct {
-    std::string bundleName;
-    int32_t accessCountFg;
-    int64_t lastAccessTime;
-    int32_t appIconId;
-} PermissionInfo;
-
-// extern napi_value g_classRecord;
-
 napi_value GetPermissionRecord(napi_env env, napi_callback_info info);
 napi_value GetPermissionRecordAsync(napi_env env, napi_callback_info info);
 

@@ -27,16 +27,13 @@
 namespace OHOS {
 namespace Security {
 namespace Permission {
-
 using OHOS::DistributedHardware::DeviceStateCallback;
 using OHOS::DistributedHardware::DmDeviceInfo;
 using OHOS::DistributedHardware::DmInitCallback;
 
 class MyDmInitCallback final : public DmInitCallback {
     void OnRemoteDied() override
-    {
-        // PERMISSION_LOG_WARN(LABEL, "OnRemoteDied");
-    }
+    {}
 };
 
 class SoftBusDeviceConnectionListener final : public DeviceStateCallback {
@@ -72,7 +69,6 @@ public:
      */
     void OnDeviceChanged(const DmDeviceInfo &deviceInfo) override;
 };
-
 }  // namespace Permission
 }  // namespace Security
 }  // namespace OHOS

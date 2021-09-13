@@ -289,9 +289,14 @@ public:
     static const std::string COMMAND_RESULT_FAILED;
 
     /**
+     * The maximum number of detailed reocrds in search results.
+     */
+    const static int32_t MAX_DETAIL_RECORDS = 10;
+
+    /**
      * Database auto delete data time.
      */
-    const static int32_t DELETETIME = 30 * 86400;
+    const static int32_t RECORD_DELETE_TIME = 30 * 86400;
 
     /**
      * Drop precision of timestamp, merge data which are inserted in specified time.
@@ -389,7 +394,6 @@ public:
      */
     static std::string GetLocalDeviceId();
 };
-
 }  // namespace Permission
 }  // namespace Security
 }  // namespace OHOS

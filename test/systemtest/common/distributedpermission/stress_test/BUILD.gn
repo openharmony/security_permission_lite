@@ -1,0 +1,88 @@
+# Copyright (c) 2021 Huawei Device Co., Ltd.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+import("//base/security/permission/permission.gni")
+import("//build/test.gni")
+
+module_output_path = "permission_standard/permissiontest"
+EVENT_DIR = "//base/notification/ces_standard/"
+ohos_systemtest("StressTest") {
+  module_out_path = module_output_path
+  include_dirs = [
+    "${permission_path}/test/resource/stresstest/include",
+    "//foundation/distributedschedule/services/safwk/include",
+    "//base/security/permission/test/systemtest/common/distributedpermission/tool/include",
+    "${EVENT_DIR}/frameworks/core/include",
+    "${EVENT_DIR}/interfaces/innerkits/native/include",
+    "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy/include",
+  ]
+
+  sources = [
+    "${distributed_permission_sttest_path}/tool/src/system_test_distributed_permission_util.cpp",
+    "${permission_path}/test/resource/stresstest/src/stress_test_api.cpp",
+    "//base/security/permission/test/systemtest/common/distributedpermission/tool/src/event.cpp",
+    "//base/security/permission/test/systemtest/common/distributedpermission/tool/src/module_test_dump_util.cpp",
+    "//base/security/permission/test/systemtest/common/distributedpermission/tool/src/stoperator.cpp",
+    "//base/security/permission/test/systemtest/common/distributedpermission/tool/src/system_test_ability_util.cpp",
+    "stress_test.cpp",
+  ]
+
+  configs = [ "//base/security/permission/test/systemtest/common/distributedpermission:distributed_permission_test_config" ]
+
+  deps = [
+    "${aafwk_path}/frameworks/kits/ability/native:abilitykit_native",
+    "${aafwk_path}/services/abilitymgr:abilityms",
+    "${appexecfwk_path}/common:libappexecfwk_common",
+    "${appexecfwk_path}/kits:appkit_native",
+    "${appexecfwk_path}/services/bundlemgr:libbms",
+    "${distributed_permission_frameworks_log_path}:permission_standard_infrastructure_cxx",
+    "${distributed_permission_innerkits_distributed_path}:distributed_permission_innerkits",
+    "${distributed_permission_services_path}:distributed_permission_services",
+    "${foundation_services_path}/test/moduletest/utils:tool_common",
+    "${permission_path}/frameworks/permission_standard/permissioncommunicationadapter:permission_standard_communication_adapter_cxx",
+    "//base/notification/ans_standard/frameworks/ans/core:ans_core",
+    "//base/notification/ans_standard/frameworks/wantagent:wantagent_innerkits",
+    "//base/notification/ces_standard/interfaces/kits/napi:napi_packages",
+    "//base/security/permission/interfaces/innerkits/permission_standard/permissionsdk:libpermissionsdk_standard",
+    "//base/startup/syspara_lite/interfaces/innerkits/native/syspara:syspara",
+    "//base/startup/syspara_lite/interfaces/innerkits/native/syspara:syspara",
+    "//base/startup/syspara_lite/interfaces/innerkits/native/syspara:syspara",
+    "//foundation/aafwk/standard/interfaces/innerkits/base:base",
+    "//foundation/aafwk/standard/interfaces/innerkits/base:base",
+    "//foundation/aafwk/standard/interfaces/innerkits/want:want",
+    "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_base:appexecfwk_base",
+    "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_core:appexecfwk_core",
+    "//foundation/appexecfwk/standard/interfaces/innerkits/libeventhandler:libeventhandler",
+    "//foundation/distributedhardware/devicemanager/interfaces/inner_kits/native_cpp:devicemanagersdk",
+    "//foundation/distributedhardware/devicemanager/interfaces/inner_kits/native_cpp:devicemanagersdk",
+    "//foundation/distributedhardware/devicemanager/interfaces/inner_kits/native_cpp:devicemanagersdk",
+    "//foundation/distributedschedule/safwk/interfaces/innerkits/safwk:system_ability_fwk",
+    "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
+    "//third_party/googletest:gtest_main",
+    "//third_party/sqlite:sqlite",
+    "//third_party/zlib:libz",
+    "//utils/native/base:utils",
+  ]
+
+  external_deps = [
+    "ces_standard:cesfwk_core",
+    "ces_standard:cesfwk_innerkits",
+    "hiviewdfx_hilog_native:libhilog",
+    "ipc:ipc_core",
+  ]
+}
+
+group("systemtest") {
+  testonly = true
+  deps = [ ":StressTest" ]
+}

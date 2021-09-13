@@ -57,7 +57,7 @@ void DeviceInfoManager::RemoveAllRemoteDeviceInfo()
     GetDevUdid(deviceIdCharArray, Constant::DEVICE_UUID_LENGTH);
     DeviceInfo localDeviceInfoOpt;
     if (DeviceInfoRepository::GetInstance().FindDeviceInfo(
-        deviceIdCharArray, DeviceIdType::UNIQUE_DISABILITY_ID, localDeviceInfoOpt)) {
+            deviceIdCharArray, DeviceIdType::UNIQUE_DISABILITY_ID, localDeviceInfoOpt)) {
         DeviceInfoRepository::GetInstance().DeleteAllDeviceInfoExceptOne(localDeviceInfoOpt);
     }
 }
@@ -115,15 +115,19 @@ std::string DeviceInfoManager::ConvertToUniqueDisabilityIdOrFetch(const std::str
             if (!udid.empty()) {
                 result = udid;
             } else {
-                PERMISSION_LOG_DEBUG(
-                    LABEL, "FindDeviceInfo succeed, udid and local udid is empty, nodeId(%{public}s)", nodeId.c_str());
+                PERMISSION_LOG_DEBUG(LABEL,
+                    "FindDeviceInfo succeed, udid and local udid is empty, nodeId(%{public}s)",
+                    Constant::EncryptDevId(nodeId).c_str());
             }
         } else {
-            PERMISSION_LOG_DEBUG(LABEL, "FindDeviceInfo succeed, udid is empty, nodeId(%{public}s) ", nodeId.c_str());
+            PERMISSION_LOG_DEBUG(LABEL,
+                "FindDeviceInfo succeed, udid is empty, nodeId(%{public}s) ",
+                Constant::EncryptDevId(nodeId).c_str());
             result = uniqueDisabilityId;
         }
     } else {
-        PERMISSION_LOG_DEBUG(LABEL, "FindDeviceInfo failed, nodeId(%{public}s)", nodeId.c_str());
+        PERMISSION_LOG_DEBUG(
+            LABEL, "FindDeviceInfo failed, nodeId(%{public}s)", Constant::EncryptDevId(nodeId).c_str());
         auto list = DeviceInfoRepository::GetInstance().ListDeviceInfo();
         auto iter = list.begin();
         for (; iter != list.end(); iter++) {
@@ -134,13 +138,13 @@ std::string DeviceInfoManager::ConvertToUniqueDisabilityIdOrFetch(const std::str
                 LABEL, ">>> DistributedPermissionDuidTransformTest device type: %{public}s", info.deviceType.c_str());
             PERMISSION_LOG_DEBUG(LABEL,
                 ">>> DistributedPermissionDuidTransformTest device network id: %{public}s",
-                info.deviceId.networkId.c_str());
+                Constant::EncryptDevId(info.deviceId.networkId).c_str());
             PERMISSION_LOG_DEBUG(LABEL,
                 ">>> DistributedPermissionDuidTransformTest device udid: %{public}s",
-                info.deviceId.uniqueDisabilityId.c_str());
+                Constant::EncryptDevId(info.deviceId.uniqueDisabilityId).c_str());
             PERMISSION_LOG_DEBUG(LABEL,
                 ">>> DistributedPermissionDuidTransformTest device uuid: %{public}s",
-                info.deviceId.universallyUniqueId.c_str());
+                Constant::EncryptDevId(info.deviceId.universallyUniqueId).c_str());
         }
     }
     return result;

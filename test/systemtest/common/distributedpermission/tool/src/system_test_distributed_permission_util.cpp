@@ -91,6 +91,7 @@ sptr<IBundleMgr> STDistibutePermissionUtil::GetBundleMgrProxy()
         PERMISSION_LOG_ERROR(LABEL, "fail to get bundle manager proxy.");
         return nullptr;
     }
+
     PERMISSION_LOG_INFO(LABEL, "get bundle manager proxy success.");
     return iface_cast<IBundleMgr>(remoteObject);
 }

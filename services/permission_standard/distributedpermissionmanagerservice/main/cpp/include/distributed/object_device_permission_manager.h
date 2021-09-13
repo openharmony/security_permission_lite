@@ -12,12 +12,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#ifndef OBJECT_DEVICE_PERMISSON_MANAGER_H
+#define OBJECT_DEVICE_PERMISSON_MANAGER_H
 #include <string>
 #include <set>
 #include <mutex>
 #include <atomic>
 #include <condition_variable>
-
 #include "permission_log.h"
 #include "distributed_data_validator.h"
 #include "object_device_permission_repository.h"
@@ -35,8 +36,6 @@
 #include "remote_command_manager.h"
 #include "delete_uid_permission_command.h"
 
-#ifndef OBJECT_DEVICE_PERMISSON_MANAGER_H
-#define OBJECT_DEVICE_PERMISSON_MANAGER_H
 namespace OHOS {
 namespace Security {
 namespace Permission {

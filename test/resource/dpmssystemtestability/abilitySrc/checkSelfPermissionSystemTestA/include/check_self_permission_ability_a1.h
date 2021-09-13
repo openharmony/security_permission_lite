@@ -53,7 +53,10 @@ private:
     static bool PublishEvent(const std::string &eventName, const int &code, const std::string &data);
     void StopSelfAbility();
     void CheckSelfPermission0100();
+    void CheckSelfPermission0400();
+    void CheckCallingPermission0600();
     void CheckCallingOrSelfPermission0300();
+    void CheckCallingOrSelfPermission0400();
     void CheckCallerPermission0100();
     std::string permName = {};
 

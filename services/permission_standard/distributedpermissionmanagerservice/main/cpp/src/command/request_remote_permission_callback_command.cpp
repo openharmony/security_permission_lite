@@ -43,6 +43,7 @@ RequestRemotePermissionCallbackCommand::RequestRemotePermissionCallbackCommand(c
 
 RequestRemotePermissionCallbackCommand::RequestRemotePermissionCallbackCommand(const std::string &json)
 {
+    PERMISSION_LOG_INFO(LABEL, "Create RequestRemotePermissionCallbackCommand  start");
     nlohmann::json jsonObject = nlohmann::json::parse(json, nullptr, false);
     BaseRemoteCommand::FromRemoteProtocolJson(jsonObject);
     if (jsonObject.find("uid") != jsonObject.end() && jsonObject.at("uid").is_number()) {
@@ -54,7 +55,10 @@ RequestRemotePermissionCallbackCommand::RequestRemotePermissionCallbackCommand(c
     if (jsonObject.find("bundleName") != jsonObject.end() && jsonObject.at("bundleName").is_string()) {
         jsonObject.at("bundleName").get_to<std::string>(bundleName_);
     }
-    jsonObject.at("objectGrantedResult").get_to<std::set<std::string>>(objectGrantedResult_);
+    if (jsonObject.find("objectGrantedResult") != jsonObject.end() && jsonObject.at("objectGrantedResult") != nullptr) {
+        jsonObject.at("objectGrantedResult").get_to<std::set<std::string>>(objectGrantedResult_);
+    }
+    PERMISSION_LOG_INFO(LABEL, "Create RequestRemotePermissionCallbackCommand  end");
 }
 
 std::string RequestRemotePermissionCallbackCommand::ToJsonPayload()

@@ -422,33 +422,6 @@ void SubjectDevicePermissionManager::ReGrantDuidPermissionsLocked(UidBundleBo &u
 
     PermissionBmsManager::GetInstance().ReGrantDuidPermissions(uidBundlePermInfo);
 }
-
-bool SubjectDevicePermissionManager::TestInterfaceForDuid(
-    const std::string type, const std::string deviceId, const int32_t uid, const int32_t num)
-{
-    if (type == "allocateDuid") {
-        int32_t startNum = 20000;
-        for (int32_t i = startNum; i < startNum + num; i++) {
-            PERMISSION_LOG_INFO(LABEL, "%{public}s called, allocateDuid  i: %{public}d", __func__, i);
-            int32_t duid = DistributedUidAllocator::GetInstance().AllocateDuid(deviceId, i);
-            PERMISSION_LOG_INFO(LABEL, "%{public}s called, allocateDuid  duid: %{public}d", __func__, duid);
-        }
-        return true;
-    } else if (type == "deleteDuid") {
-        PERMISSION_LOG_INFO(LABEL, "%{public}s called, deleteDuid", __func__);
-        int32_t result = DistributedUidAllocator::GetInstance().DeleteDuid(deviceId, uid);
-        if (result < 0) {
-            return false;
-        }
-        return true;
-    } else if (type == "clear") {
-        PERMISSION_LOG_INFO(LABEL, "%{public}s called, Clear", __func__);
-        DistributedUidAllocator::GetInstance().Clear();
-        return true;
-    } else {
-        return false;
-    }
-}
 }  // namespace Permission
 }  // namespace Security
 }  // namespace OHOS

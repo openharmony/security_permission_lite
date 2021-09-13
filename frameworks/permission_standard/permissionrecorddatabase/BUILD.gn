@@ -24,7 +24,7 @@ config("permission_standard_infrastructure_cxx_public_config") {
 
   defines = [
     "APP_LOG_TAG = \"DistributedPermission\"",
-    "LOG_DOMAIN = 0xD001024",  # TODO
+    "LOG_DOMAIN = 0xD001024",
   ]
 }
 

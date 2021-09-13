@@ -22,7 +22,6 @@ namespace OHOS {
 namespace Security {
 namespace Permission {
 struct AppIdInfo {
-
     bool Valid() const;
     int pid;
     int uid;

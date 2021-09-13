@@ -89,7 +89,6 @@ bool BaseRemoteCommand::IsGrantedSensitivePermission(const UidBundleBo &uidBundl
  */
 void BaseRemoteCommand::FromRemoteProtocolJson(nlohmann::json jsonObject)
 {
-
     if (jsonObject.find("commandName") != jsonObject.end() && jsonObject.at("commandName").is_string()) {
         remoteProtocol_.commandName = jsonObject.at("commandName").get<std::string>();
     }
@@ -138,7 +137,7 @@ void BaseRemoteCommand::FromUidBundlePermissionsJson(const nlohmann::json &uidBu
     uidBundleBoJson.at("appAttribute").get_to(uidBundleBo.appAttribute);
     uidBundleBoJson.at("uidState").get_to(uidBundleBo.uidState);
 
-    if (uidBundleBoJson.find("remoteSensitivePermission") != uidBundleBoJson.end() &&
+    if ((uidBundleBoJson.find("remoteSensitivePermission") != uidBundleBoJson.end()) &&
         uidBundleBoJson.at("remoteSensitivePermission").is_string()) {
         uidBundleBoJson.at("remoteSensitivePermission")
             .get_to<std::set<std::string>>(uidBundleBo.remoteSensitivePermission);
@@ -148,29 +147,24 @@ void BaseRemoteCommand::FromUidBundlePermissionsJson(const nlohmann::json &uidBu
         std::vector<BundlePermissionsDto> bundles;
         nlohmann::json bundlesJson = uidBundleBoJson.at("bundles").get<nlohmann::json>();
         for (auto bundleJson : bundlesJson) {
-
             BundlePermissionsDto bundle;
             bundleJson.at("name").get_to(bundle.name);
             bundleJson.at("bundleLabel").get_to(bundle.bundleLabel);
             bundleJson.at("appId").get_to(bundle.appId);
-
             if (bundleJson.find("sign") != bundleJson.end()) {
                 std::vector<SignDto> signs;
                 nlohmann::json signsJson = bundleJson.at("sign").get<nlohmann::json>();
                 for (auto signJson : signsJson) {
-
                     SignDto signDto;
                     signJson.at("sha256").get_to(signDto.sha256);
                     signs.emplace_back(signDto);
                 }
                 bundle.sign = signs;
             }
-
             if (bundleJson.find("permissions") != bundleJson.end()) {
                 std::vector<PermissionDto> permissions;
                 nlohmann::json permissionsJson = bundleJson.at("permissions").get<nlohmann::json>();
                 for (auto permissionJson : permissionsJson) {
-
                     PermissionDto permission;
                     permissionJson.at("name").get_to(permission.name);
                     permissionJson.at("type").get_to(permission.type);
@@ -178,7 +172,6 @@ void BaseRemoteCommand::FromUidBundlePermissionsJson(const nlohmann::json &uidBu
                     permissionJson.at("level").get_to(permission.level);
                     permissionJson.at("status").get_to(permission.status);
                     permissionJson.at("grantMode").get_to(permission.grantMode);
-
                     permissions.emplace_back(permission);
                 }
                 bundle.permissions = permissions;
@@ -216,7 +209,6 @@ nlohmann::json BaseRemoteCommand::ToUidBundlePermissionsJson(const UidBundleBo &
 {
     nlohmann::json bundlesJson;
     for (auto bundle : uidBundleBo.bundles) {
-
         nlohmann::json permissionsJson;
         for (auto permission : bundle.permissions) {
             nlohmann::json permissionJson = nlohmann::json{
@@ -232,7 +224,6 @@ nlohmann::json BaseRemoteCommand::ToUidBundlePermissionsJson(const UidBundleBo &
 
         nlohmann::json signsJson;
         for (auto sign : bundle.sign) {
-
             nlohmann::json signJson = nlohmann::json{
                 {"sha256", sign.sha256},
             };
@@ -265,7 +256,6 @@ nlohmann::json BaseRemoteCommand::ToUidBundlePermissionsJson(const UidBundleBo &
     };
     return uidBundleBoJson;
 }
-
 }  // namespace Permission
 }  // namespace Security
 }  // namespace OHOS

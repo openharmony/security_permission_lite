@@ -94,26 +94,26 @@ void PermissionReminderInfo::Init()
 
 void PermissionReminderInfo::SetDeviceId(std::string strParam)
 {
-    deviceId = std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t>{}.from_bytes(strParam);
+    deviceId = Str8ToStr16(strParam);
 }
 
 void PermissionReminderInfo::SetDeviceLabel(std::string strParam)
 {
-    deviceLabel = std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t>{}.from_bytes(strParam);
+    deviceLabel = Str8ToStr16(strParam);
 }
 
 void PermissionReminderInfo::SetBundleName(std::string strParam)
 {
-    bundleName = std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t>{}.from_bytes(strParam);
+    bundleName = Str8ToStr16(strParam);
 }
 
 void PermissionReminderInfo::SetBundleLabel(std::string strParam)
 {
-    bundleLabel = std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t>{}.from_bytes(strParam);
+    bundleLabel = Str8ToStr16(strParam);
 }
 void PermissionReminderInfo::SetPermName(std::string strParam)
 {
-    permName = std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t>{}.from_bytes(strParam);
+    permName = Str8ToStr16(strParam);
 }
 }  // namespace Permission
 }  // namespace Security

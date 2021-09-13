@@ -38,7 +38,6 @@ static const int RPC_TRANSFER_HEAD_BYTES_LENGTH = 1024 * 256;
 // decompress buf size
 static const int RPC_TRANSFER_BYTES_MAX_LENGTH = 1024 * 1024;
 }  // namespace
-
 SoftBusChannel::SoftBusChannel(const std::string &deviceId)
     : deviceId_(deviceId), mutex_(), callbacks_(), responseResult_(""), loadedCond_()
 {
@@ -128,38 +127,10 @@ std::string SoftBusChannel::ExecuteCommand(const std::string &commandName, const
         return "";
     }
 
-    // TODO libuuid
-    // uuid_t uuid0;
-    // uuid_generate_random(uuid0);
-    // std::string uuid((char *)uuid0);
+    // to use a lib like libuuid
     char uuidbuf[37];  // 32+4+1
     random_uuid(uuidbuf);
     std::string uuid(uuidbuf);
-
-// TODO for mock
-#ifdef UT
-    if (session_ == 1) {
-        PERMISSION_LOG_DEBUG(LABEL, "jsonPayload: %{public}s", jsonPayload.c_str());
-        bool found = false;
-        std::string uidstr("\"uid\":");
-        std::string str = jsonPayload;
-        size_t index1 = str.find(uidstr);
-        if (index1 != std::string::npos) {
-            size_t index2 = str.find(',', index1);
-            if (index2 != std::string::npos) {
-                int start = index1 + uidstr.length();
-                str = str.substr(start, index2 - start);
-                PERMISSION_LOG_DEBUG(LABEL, "mock uid: %{public}s", str.c_str());
-                uuid = "message-unique-id-" + str;
-                found = true;
-            }
-        }
-        if (!found) {
-            uuid = "message-unique-id-001";
-        }
-    }
-#endif
-
     PERMISSION_LOG_DEBUG(LABEL, "generated message uuid: %{public}s", uuid.c_str());
 
     int len = RPC_TRANSFER_HEAD_BYTES_LENGTH + jsonPayload.length();
@@ -263,7 +234,7 @@ int SoftBusChannel::Compress(const std::string &json, const unsigned char *compr
             "compress error. data length overflow, bound length: %{public}d, buffer length: %{public}d",
             (int)len,
             compressedLength);
-        return -2;
+        return Constant::FAILURE;
     }
 
     int result = compress((Byte *)compressedBytes, &len, (unsigned char *)json.c_str(), json.size() + 1);
@@ -370,21 +341,21 @@ void SoftBusChannel::HandleRequest(
         PERMISSION_LOG_WARN(
             LABEL, "command %{public}s cannot get from json %{public}s", commandName.c_str(), jsonPayload.c_str());
 
-        int len = RPC_TRANSFER_HEAD_BYTES_LENGTH + jsonPayload.length();
-        unsigned char *buf = (unsigned char *)malloc(len + 1);
-        memset(buf, 0, len + 1);
-        if (buf == nullptr) {
-            PERMISSION_LOG_ERROR(LABEL, "no enough memory: %{public}d", len);
+        int sendlen = RPC_TRANSFER_HEAD_BYTES_LENGTH + jsonPayload.length();
+        unsigned char *sendbuf = (unsigned char *)malloc(sendlen + 1);
+        memset(sendbuf, 0, sendlen + 1);
+        if (sendbuf == nullptr) {
+            PERMISSION_LOG_ERROR(LABEL, "no enough memory: %{public}d", sendlen);
             return;
         }
-        int result = PrepareBytes(RESPONSE_TYPE, id, commandName, jsonPayload, buf, len);
-        if (result != Constant::SUCCESS) {
-            free(buf);
+        int sendResult = PrepareBytes(RESPONSE_TYPE, id, commandName, jsonPayload, sendbuf, sendlen);
+        if (sendResult != Constant::SUCCESS) {
+            free(sendbuf);
             return;
         }
-        int retCode = SendResponseBytes(session, buf, len);
-        free(buf);
-        PERMISSION_LOG_DEBUG(LABEL, "send response result= %{public}d ", retCode);
+        int sendResultCode = SendResponseBytes(session, sendbuf, sendlen);
+        free(sendbuf);
+        PERMISSION_LOG_DEBUG(LABEL, "send response result= %{public}d ", sendResultCode);
         return;
     }
 
@@ -417,10 +388,10 @@ void SoftBusChannel::HandleRequest(
 
 void SoftBusChannel::HandleResponse(const std::string &id, const std::string &jsonPayload)
 {
-    PERMISSION_LOG_DEBUG(LABEL,
-        "notify response data back for message id: %{public}s, callback size: %{public}d",
-        id.c_str(),
-        callbacks_.size());
+    // PERMISSION_LOG_DEBUG(LABEL,
+    //     "notify response data back for message id: %{public}s, callback size: %{public}d",
+    //     id.c_str(),
+    //     callbacks_.size());
 
     std::unique_lock<std::mutex> lock(sessionMutex_);
     auto callback = callbacks_.find(id);
@@ -428,7 +399,7 @@ void SoftBusChannel::HandleResponse(const std::string &id, const std::string &js
         (callback->second)(jsonPayload);
         callbacks_.erase(callback);
     }
-    PERMISSION_LOG_DEBUG(LABEL, "callbacks size: %{public}d ", callbacks_.size());
+    // PERMISSION_LOG_DEBUG(LABEL, "callbacks size: %{public}d ", callbacks_.size());
 }
 
 int SoftBusChannel::SendResponseBytes(int session, const unsigned char *bytes, const int bytesLength)
@@ -442,7 +413,6 @@ int SoftBusChannel::SendResponseBytes(int session, const unsigned char *bytes, c
     PERMISSION_LOG_DEBUG(LABEL, "send successfully.");
     return Constant::SUCCESS;
 }
-
 }  // namespace Permission
 }  // namespace Security
 }  // namespace OHOS

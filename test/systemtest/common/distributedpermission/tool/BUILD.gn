@@ -60,6 +60,7 @@ ohos_shared_library("dpms_system_test_ability_util_lib") {
   external_deps = [
     "ces_standard:cesfwk_core",
     "ces_standard:cesfwk_innerkits",
+    "device_manager_base:devicemanagersdk",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
   ]

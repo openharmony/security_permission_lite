@@ -26,7 +26,6 @@
 namespace OHOS {
 namespace Security {
 namespace Permission {
-
 class SoftBusSessionListener final {
 public:
     /**
@@ -107,7 +106,6 @@ private:
      */
     static std::mutex g_SessionMutex_;
 };
-
 }  // namespace Permission
 }  // namespace Security
 }  // namespace OHOS

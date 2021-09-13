@@ -6,6 +6,22 @@
     "cancel": "Cancel",
     "search": "Search"
   },
+  "records": {
+    "permissionAccessRecords": "permission access records",
+    "distributedAccessedRecords": "distributed accessed records",
+    "permission": "permission",
+    "application": "application",
+    "accessCount": "access count:  ",
+    "symbol": "  ",
+    "lastAccessTime": "  last access time:  ",
+    "lastSevenDays": "last seven days",
+    "access": "access：  ",
+    "noAccessRecords": "no access records",
+    "month": "month",
+    "date": "date ",
+    "morning": "morning",
+    "afternoon": "afternoon"
+  },
   "permissions": {
     "MEDIA":"媒体与文件",
     "PHONE": "电话",

@@ -27,12 +27,12 @@ static constexpr OHOS::HiviewDFX::HiLogLabel LABEL = {
 }
 OnUsingPermissionReminderStub::OnUsingPermissionReminderStub()
 {
-    PERMISSION_LOG_INFO(LABEL, "create instance (%{public}p)", this);
+    PERMISSION_LOG_DEBUG(LABEL, "create instance (%{public}p)", this);
 }
 
 OnUsingPermissionReminderStub::~OnUsingPermissionReminderStub()
 {
-    PERMISSION_LOG_INFO(LABEL, "destroy instance (%{public}p)", this);
+    PERMISSION_LOG_DEBUG(LABEL, "destroy instance (%{public}p)", this);
 }
 
 int32_t OnUsingPermissionReminderStub::OnRemoteRequest(

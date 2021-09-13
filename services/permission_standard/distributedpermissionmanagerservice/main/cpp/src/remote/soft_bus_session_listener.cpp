@@ -61,10 +61,10 @@ int32_t SoftBusSessionListener::OnSessionOpened(int32_t session, int32_t result)
     auto iter = g_SessionOpenedMap_.find(session);
     if (iter == g_SessionOpenedMap_.end()) {
         g_SessionOpenedMap_.insert(std::pair<int32_t, int64_t>(session, (int64_t)1));
-        PERMISSION_LOG_DEBUG(LABEL, "OnSessionOpened, save state to %{public}lld", (int64_t)1);
+        // PERMISSION_LOG_DEBUG(LABEL, "OnSessionOpened, save state to %{public}lld", (int64_t)1);
     } else {
         iter->second = iter->second + 1;
-        PERMISSION_LOG_DEBUG(LABEL, "OnSessionOpened, update state to %{public}lld", iter->second);
+        // PERMISSION_LOG_DEBUG(LABEL, "OnSessionOpened, update state to %{public}lld", iter->second);
     }
 
     return SESSION_ACCEPTED;
@@ -78,7 +78,7 @@ void SoftBusSessionListener::OnSessionClosed(int32_t session)
     std::lock_guard<std::mutex> guard(g_SessionMutex_);
     auto iter = g_SessionOpenedMap_.find(session);
     if (iter != g_SessionOpenedMap_.end()) {
-        PERMISSION_LOG_DEBUG(LABEL, "OnSessionClosed, delete session %{public}lld", iter->second);
+        // PERMISSION_LOG_DEBUG(LABEL, "OnSessionClosed, delete session %{public}lld", iter->second);
         g_SessionOpenedMap_.erase(iter);
     }
 }
@@ -122,7 +122,6 @@ int64_t SoftBusSessionListener::GetSessionState(int32_t sessionId)
     }
     return (iter->second);
 }
-
 }  // namespace Permission
 }  // namespace Security
 }  // namespace OHOS

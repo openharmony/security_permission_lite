@@ -32,7 +32,6 @@
 namespace OHOS {
 namespace Security {
 namespace Permission {
-
 class RemoteCommandManager final {
 public:
     ~RemoteCommandManager();
@@ -160,7 +159,6 @@ private:
      */
     std::shared_ptr<RemoteCommandExecutor> GetOrCreateRemoteCommandExecutor(const std::string &nodeId);
 };
-
 }  // namespace Permission
 }  // namespace Security
 }  // namespace OHOS

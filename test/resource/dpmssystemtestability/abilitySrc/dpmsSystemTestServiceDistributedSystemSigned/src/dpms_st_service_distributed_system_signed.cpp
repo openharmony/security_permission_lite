@@ -35,7 +35,6 @@ std::map<std::string, DpmsStServiceDistributedSystemSigned::func> DpmsStServiceD
     {"VerifySelfPermissionFromRemote", &DpmsStServiceDistributedSystemSigned::VerifySelfPermissionFromRemote},
     {"RequestPermissionsFromRemote", &DpmsStServiceDistributedSystemSigned::RequestPermissionsFromRemote},
     {"CanRequestPermissionFromRemote", &DpmsStServiceDistributedSystemSigned::CanRequestPermissionFromRemote},
-
 };
 
 DpmsStServiceDistributedSystemSigned::~DpmsStServiceDistributedSystemSigned()
@@ -98,7 +97,6 @@ void DpmsStServiceDistributedSystemSigned::StopSelfAbility()
     TerminateAbility();
 }
 
-//生成appinfo
 string DpmsStServiceDistributedSystemSigned::GetAppIdInfo(int32_t pid, int32_t uid)
 {
     return DistributedPermissionKit::AppIdInfoHelper::CreateAppIdInfo(pid, uid);
@@ -203,7 +201,6 @@ void DpmsStServiceDistributedSystemSigned::RequestPermissionsFromRemote()
     permissions.push_back(permission);
     DistributedPermissionKit::RequestPermissionsFromRemote(permissions, callback, nodeId, bundleName, reasonResId);
     sleep(1);
-
     APP_LOGI("DpmsStServiceDistributedSystemSigned::RequestPermissionsFromRemote  callback->result = %{public}d, ",
         callback->result);
     PublishEvent(RESP_EVENT_NAME_SYSTEM_SIGNED, callback->result, "RequestPermissionsFromRemote");
@@ -224,10 +221,7 @@ void DpmsStServiceDistributedSystemSigned::OnCommand(const AAFwk::Want &want, bo
 {
     APP_LOGI("DpmsStServiceDistributedSystemSigned::OnCommand");
 
-    // GetWantInfo(want);
     Ability::OnCommand(want, restart, startId);
-
-    // PublishEvent(RESP_EVENT_NAME_SYSTEM_SIGNED, AbilityLifecycleExecutor::LifecycleState::ACTIVE, "OnCommand");
 }
 void DpmsStServiceDistributedSystemSigned::OnNewWant(const Want &want)
 {
@@ -248,22 +242,18 @@ void DpmsStServiceDistributedSystemSigned::OnActive()
     APP_LOGI("DpmsStServiceDistributedSystemSigned::OnActive");
 
     Ability::OnActive();
-    // PublishEvent(RESP_EVENT_NAME_SYSTEM_SIGNED, AbilityLifecycleExecutor::LifecycleState::ACTIVE, "OnActive");
 }
 void DpmsStServiceDistributedSystemSigned::OnInactive()
 {
     APP_LOGI("DpmsStServiceDistributedSystemSigned::OnInactive");
 
     Ability::OnInactive();
-    // PublishEvent(RESP_EVENT_NAME_SYSTEM_SIGNED, AbilityLifecycleExecutor::LifecycleState::INACTIVE, "OnInactive");
 }
 void DpmsStServiceDistributedSystemSigned::OnBackground()
 {
     APP_LOGI("DpmsStServiceDistributedSystemSigned::OnBackground");
 
     Ability::OnBackground();
-    // PublishEvent(RESP_EVENT_NAME_SYSTEM_SIGNED, AbilityLifecycleExecutor::LifecycleState::BACKGROUND,
-    // "OnBackground");
 }
 
 void DpmsStServiceDistributedSystemSigned::Clear()

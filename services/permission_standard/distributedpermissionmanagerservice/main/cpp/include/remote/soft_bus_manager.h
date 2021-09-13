@@ -33,7 +33,6 @@
 namespace OHOS {
 namespace Security {
 namespace Permission {
-
 class SoftBusManager final {
 public:
     virtual ~SoftBusManager();
@@ -117,8 +116,6 @@ private:
      * @version 1.0
      */
     int FulfillLocalDeviceInfo();
-    // void retryBindDevMonitor();
-    // std::shared_ptr<NodeBasicInfo> GetLocalBasicInfo() const;
     std::string GetUuidByNodeId(const std::string &nodeId) const;
     std::string GetUdidByNodeId(const std::string &nodeId) const;
 
@@ -133,12 +130,6 @@ private:
 
     // fulfill thread mutex
     std::mutex fulfillMutex_;
-
-    // TODO no device manager
-    // std::shared_ptr<ISessionListener> sessionListener_;
-    // std::map<std::string, SoftBusSession> softBusSessions_;
-    // DeviceManager::ServiceConnectionListener serviceConnectionListener;
-    // std::shared_ptr<DeviceManager> ptrDeviceManager_;
 };
 }  // namespace Permission
 }  // namespace Security

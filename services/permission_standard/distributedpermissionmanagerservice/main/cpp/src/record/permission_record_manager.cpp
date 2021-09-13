@@ -38,7 +38,6 @@ PermissionRecordManager::~PermissionRecordManager()
 void PermissionRecordManager::AddPermissionsRecord(const std::string &permissionName, const std::string &deviceId,
     const int32_t uid, const int sucCount, const int failCount)
 {
-    // temp use for ST
     DeviceInfoManager::GetInstance().AddDeviceInfo("device_0", "device_0", "device_0", "device_name_0", "device_type");
     DeviceInfoManager::GetInstance().AddDeviceInfo("device_1", "device_1", "device_1", "device_name_1", "device_type");
     DeviceInfoManager::GetInstance().AddDeviceInfo("device_2", "device_2", "device_2", "device_name_2", "device_type");
@@ -54,8 +53,7 @@ void PermissionRecordManager::AddPermissionsRecord(const std::string &permission
 
     auto DelRecordsTask = [this]() {
         PERMISSION_LOG_INFO(LABEL, "---DeletePermissionRecords task called");
-        DeletePermissionRecords(Constant::DELETETIME);
-        // PermissionRecordManager::GetInstance().GetPermissionRecords(queryJsonStr, defaultResult);
+        DeletePermissionRecords(Constant::RECORD_DELETE_TIME);
     };
     std::thread recordThread(DelRecordsTask);
     recordThread.detach();
@@ -164,6 +162,10 @@ int32_t PermissionRecordManager::GetPermissionRecordsBase(
     const std::string &queryGzipStr, unsigned long &codeLen, unsigned long &zipLen, std::string &resultStr)
 {
     QueryPermissionUsedResult queryResult;
+    if (codeLen <= 0) {
+        PERMISSION_LOG_ERROR(LABEL, "%{public}s: decode length less than 0!", __func__);
+        return Constant::FAILURE;
+    }
     unsigned char *pOut = (unsigned char *)malloc(codeLen + 1);
     Base64Util::Decode(queryGzipStr, pOut, codeLen);
     std::string queryJsonStr;
@@ -172,13 +174,17 @@ int32_t PermissionRecordManager::GetPermissionRecordsBase(
     }
     if (pOut) {
         free(pOut);
-        pOut = NULL;
+        pOut = nullptr;
     }
     int32_t flag = GetPermissionRecords(queryJsonStr, queryResult);
     nlohmann::json jsonObj = queryResult.to_json(queryResult);
     std::string result = jsonObj.dump();
     zipLen = result.length();
     codeLen = compressBound(zipLen);
+    if (codeLen <= 0) {
+        PERMISSION_LOG_ERROR(LABEL, "%{public}s: compress length less than 0!", __func__);
+        return Constant::FAILURE;
+    }
     unsigned char *buf = (unsigned char *)malloc(codeLen + 1);
     if (!ZipUtil::ZipCompress(result, zipLen, buf, codeLen)) {
         return Constant::FAILURE;
@@ -186,7 +192,7 @@ int32_t PermissionRecordManager::GetPermissionRecordsBase(
     Base64Util::Encode(buf, codeLen, resultStr);
     if (buf) {
         free(buf);
-        buf = NULL;
+        buf = nullptr;
     }
     return flag;
 }
@@ -194,11 +200,19 @@ int32_t PermissionRecordManager::GetPermissionRecordsBase(
 int32_t PermissionRecordManager::GetPermissionRecordsAsync(const std::string &queryGzipStr, unsigned long &codeLen,
     unsigned long &zipLen, const sptr<OnPermissionUsedRecord> &callback)
 {
+    if (codeLen <= 0) {
+        PERMISSION_LOG_ERROR(LABEL, "%{public}s: decode length less than 0!", __func__);
+        return Constant::FAILURE;
+    }
     unsigned char *pOut = (unsigned char *)malloc(codeLen + 1);
     Base64Util::Decode(queryGzipStr, pOut, codeLen);
     std::string queryJsonStr;
     ZipUtil::ZipUnCompress(pOut, codeLen, queryJsonStr, zipLen);
 
+    if (pOut) {
+        free(pOut);
+        pOut = nullptr;
+    }
     auto task = [queryJsonStr, callback]() {
         PERMISSION_LOG_INFO(LABEL, "---GetPermissionRecords task called");
         QueryPermissionUsedResult defaultResult;
@@ -220,7 +234,7 @@ int32_t PermissionRecordManager::GetPermissionRecords(
 
     auto DelRecordsTask = [this]() {
         PERMISSION_LOG_INFO(LABEL, "---DeletePermissionRecords task called");
-        DeletePermissionRecords(Constant::DELETETIME);
+        DeletePermissionRecords(Constant::RECORD_DELETE_TIME);
         // PermissionRecordManager::GetInstance().GetPermissionRecords(queryJsonStr, defaultResult);
     };
     std::thread recordThread(DelRecordsTask);
@@ -295,7 +309,7 @@ bool PermissionRecordManager::GetBundlePermissionUsedRecord(const QueryPermissio
     return true;
 }
 
-bool PermissionRecordManager::GetRecordFromDB(const int allFlag, const std::vector<GenericValues> &recordValues,
+bool PermissionRecordManager::GetRecordFromDB(const int32_t allFlag, const std::vector<GenericValues> &recordValues,
     BundlePermissionUsedRecord &bundleRecord, QueryPermissionUsedResult &queryResult)
 {
     PERMISSION_LOG_INFO(LABEL, "%{public}s called", __func__);
@@ -421,7 +435,6 @@ bool PermissionRecordManager::GetPermissionRecord(const std::string &permissionN
     const int32_t uid, const int32_t sucCount, const int32_t failCount, PermissionRecord &permissionRecord)
 {
     int32_t opCode = 0;
-    // zyqtodo
     // get isforeground by uid
     bool isForeground = (sucCount + failCount) % 2 == 1 ? true : false;
     std::string tempName = permissionName;

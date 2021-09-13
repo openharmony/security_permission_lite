@@ -40,7 +40,7 @@ std::vector<DeviceInfo> DeviceInfoRepository::ListDeviceInfo()
     return deviceInfo;
 }
 
-bool DeviceInfoRepository::FindDeviceInfo(const std::string &nodeId, const DeviceIdType type, DeviceInfo &deviceInfo)
+bool DeviceInfoRepository::FindDeviceInfo(const std::string &nodeId, DeviceIdType type, DeviceInfo &deviceInfo)
 {
     std::lock_guard<std::recursive_mutex> guard(stackLock_);
     DeviceId deviceId;

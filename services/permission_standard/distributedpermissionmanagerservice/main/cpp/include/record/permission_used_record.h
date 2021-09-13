@@ -19,6 +19,7 @@
 #include <string>
 #include <vector>
 
+#include "constant.h"
 #include "nlohmann/json.hpp"
 #include "parcel.h"
 

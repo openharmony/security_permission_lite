@@ -224,6 +224,7 @@ int32_t DistributedPermissionKit::GetPermissionUsedRecords(
 {
     return DistributedPermissionManagerClient::GetInstance().GetPermissionUsedRecords(request, callback);
 }
+
 }  // namespace Permission
 }  // namespace Security
 }  // namespace OHOS

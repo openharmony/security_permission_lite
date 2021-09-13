@@ -39,7 +39,7 @@ DistributedPermissionManagerClient &DistributedPermissionManagerClient::GetInsta
 
 int32_t DistributedPermissionManagerClient::AllocateDuid(const std::string &nodeId, const int32_t rUid)
 {
-    PERMISSION_LOG_INFO(LABEL, "nodeId = %{public}s, rUid = %{public}d", nodeId.c_str(), rUid);
+    PERMISSION_LOG_INFO(LABEL, "nodeId = %{public}s, rUid = %{public}d", Constant::EncryptDevId(nodeId).c_str(), rUid);
     if (!GetDistributedPermissionProxy()) {
         return ERROR;
     }
@@ -74,7 +74,7 @@ int32_t DistributedPermissionManagerClient::CheckPermission(
     PERMISSION_LOG_INFO(LABEL,
         "permissionName = %{public}s, nodeId = %{public}s, nodeId = %{public}d, nodeId = %{public}d",
         permissionName.c_str(),
-        nodeId.c_str(),
+        Constant::EncryptDevId(nodeId).c_str(),
         pid,
         uid);
     if (!GetDistributedPermissionProxy()) {
@@ -171,8 +171,10 @@ int32_t DistributedPermissionManagerClient::VerifyPermissionFromRemote(
 int32_t DistributedPermissionManagerClient::VerifySelfPermissionFromRemote(
     const std::string &permissionName, const std::string &nodeId)
 {
-    PERMISSION_LOG_INFO(
-        LABEL, "permissionName = %{public}s, nodeId = %{public}s", permissionName.c_str(), nodeId.c_str());
+    PERMISSION_LOG_INFO(LABEL,
+        "permissionName = %{public}s, nodeId = %{public}s",
+        permissionName.c_str(),
+        Constant::EncryptDevId(nodeId).c_str());
     if (!GetDistributedPermissionProxy()) {
         return ERROR;
     }
@@ -183,8 +185,10 @@ int32_t DistributedPermissionManagerClient::VerifySelfPermissionFromRemote(
 bool DistributedPermissionManagerClient::CanRequestPermissionFromRemote(
     const std::string &permissionName, const std::string &nodeId)
 {
-    PERMISSION_LOG_INFO(
-        LABEL, "permissionName = %{public}s, nodeId = %{public}s", permissionName.c_str(), nodeId.c_str());
+    PERMISSION_LOG_INFO(LABEL,
+        "permissionName = %{public}s, nodeId = %{public}s",
+        permissionName.c_str(),
+        Constant::EncryptDevId(nodeId).c_str());
     if (!GetDistributedPermissionProxy()) {
         return ERROR;
     }
@@ -196,7 +200,10 @@ void DistributedPermissionManagerClient::RequestPermissionsFromRemote(const std:
     const sptr<OnRequestPermissionsResult> &callback, const std::string &nodeId, const std::string &bundleName,
     int32_t reasonResId)
 {
-    PERMISSION_LOG_INFO(LABEL, "bundleName = %{public}s, nodeId = %{public}s", bundleName.c_str(), nodeId.c_str());
+    PERMISSION_LOG_INFO(LABEL,
+        "bundleName = %{public}s, nodeId = %{public}s",
+        bundleName.c_str(),
+        Constant::EncryptDevId(nodeId).c_str());
     if (!GetDistributedPermissionProxy()) {
         return;
     }
@@ -211,7 +218,7 @@ void DistributedPermissionManagerClient::GrantSensitivePermissionToRemoteApp(
     PERMISSION_LOG_INFO(LABEL,
         "permissionName = %{public}s, nodeId = %{public}s, ruid = %{public}d",
         permissionName.c_str(),
-        nodeId.c_str(),
+        Constant::EncryptDevId(nodeId).c_str(),
         ruid);
     if (!GetDistributedPermissionProxy()) {
         return;

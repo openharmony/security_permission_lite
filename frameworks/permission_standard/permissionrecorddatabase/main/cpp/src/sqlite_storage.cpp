@@ -252,8 +252,8 @@ std::string SqliteStorage::CreateUpdatePrepareSqlCmd(const DataType type, const 
 
     std::string sql = "update " + it->second.tableName_ + " set ";
     int i = 1;
-    for (const auto &columnName : modifyColumns) {
-        sql.append(columnName + "=:" + columnName);
+    for (const auto &ConditionName : modifyColumns) {
+        sql.append(ConditionName + "=:" + ConditionName);
         if (i < (int)modifyColumns.size()) {
             sql.append(",");
         }

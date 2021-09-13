@@ -15,7 +15,11 @@
     "lastAccessTime": "  最近访问:  ",
     "lastSevenDays": "近7天",
     "access": "访问：  ",
-    "noAccessRecords": "无访问记录"
+    "noAccessRecords": "无访问记录",
+    "month": "月",
+    "date": "日 ",
+    "morning": "上午",
+    "afternoon": "下午"
   },
   "permissions": {
     "MEDIA":"媒体与文件",

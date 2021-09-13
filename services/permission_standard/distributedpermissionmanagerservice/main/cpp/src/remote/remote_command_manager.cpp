@@ -208,7 +208,6 @@ std::shared_ptr<RemoteCommandExecutor> RemoteCommandManager::GetOrCreateRemoteCo
 
     std::unique_lock<std::mutex> lock(mutex_);
     auto executorIter = executors_.find(nodeId);
-
     if (executorIter != executors_.end()) {
         return executorIter->second;
     }
@@ -248,7 +247,6 @@ std::shared_ptr<RpcChannel> RemoteCommandManager::GetExecutorChannel(const std::
     }
     return executor->GetChannel();
 }
-
 }  // namespace Permission
 }  // namespace Security
 }  // namespace OHOS

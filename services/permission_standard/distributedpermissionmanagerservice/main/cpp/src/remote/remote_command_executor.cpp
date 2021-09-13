@@ -29,7 +29,6 @@ namespace Permission {
 namespace {
 static constexpr OHOS::HiviewDFX::HiLogLabel LABEL = {LOG_CORE, SECURITY_DOMAIN_PERMISSION, "RemoteCommandExecutor"};
 static const std::string TASK_NAME = "RemoteCommandExecutor::ProcessBufferedCommandsWithThread";
-
 }  // namespace
 RemoteCommandExecutor::RemoteCommandExecutor(const std::string &targetNodeId)
     : targetNodeId_(targetNodeId), ptrChannel_(nullptr), mutex_(), commands_(), running_(false)
@@ -85,7 +84,6 @@ int RemoteCommandExecutor::ProcessOneCommand(const std::shared_ptr<BaseRemoteCom
     }
 
     char localUdid[Constant::DEVICE_UUID_LENGTH] = {0};
-    // int result = ::GetDevUdid(localUdid, Constant::DEVICE_UUID_LENGTH);
     ::GetDevUdid(localUdid, Constant::DEVICE_UUID_LENGTH);
     if (targetNodeId_ == localUdid) {
         return ExecuteRemoteCommand(ptrCommand, false);
@@ -337,7 +335,6 @@ int RemoteCommandExecutor::ClientProcessResult(const std::shared_ptr<BaseRemoteC
     }
     return status;
 }
-
 }  // namespace Permission
 }  // namespace Security
 }  // namespace OHOS

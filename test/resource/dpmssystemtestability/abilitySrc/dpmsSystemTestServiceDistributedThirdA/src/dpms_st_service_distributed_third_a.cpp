@@ -35,7 +35,6 @@ std::map<std::string, DpmsStServiceDistributedThirdA::func> DpmsStServiceDistrib
     {"VerifySelfPermissionFromRemote", &DpmsStServiceDistributedThirdA::VerifySelfPermissionFromRemote},
     {"RequestPermissionsFromRemote", &DpmsStServiceDistributedThirdA::RequestPermissionsFromRemote},
     {"CanRequestPermissionFromRemote", &DpmsStServiceDistributedThirdA::CanRequestPermissionFromRemote},
-
 };
 
 DpmsStServiceDistributedThirdA::~DpmsStServiceDistributedThirdA()
@@ -98,7 +97,6 @@ void DpmsStServiceDistributedThirdA::StopSelfAbility()
     TerminateAbility();
 }
 
-//生成appinfo
 string DpmsStServiceDistributedThirdA::GetAppIdInfo(int32_t pid, int32_t uid)
 {
     return DistributedPermissionKit::AppIdInfoHelper::CreateAppIdInfo(pid, uid);
@@ -220,10 +218,7 @@ void DpmsStServiceDistributedThirdA::OnCommand(const AAFwk::Want &want, bool res
 {
     APP_LOGI("DpmsStServiceDistributedThirdA::OnCommand");
 
-    // GetWantInfo(want);
     Ability::OnCommand(want, restart, startId);
-
-    // PublishEvent(RESP_EVENT_NAME_THIRD_A, AbilityLifecycleExecutor::LifecycleState::ACTIVE, "OnCommand");
 }
 void DpmsStServiceDistributedThirdA::OnNewWant(const Want &want)
 {
@@ -245,22 +240,18 @@ void DpmsStServiceDistributedThirdA::OnActive()
     APP_LOGI("DpmsStServiceDistributedThirdA::OnActive");
 
     Ability::OnActive();
-    // PublishEvent(RESP_EVENT_NAME_THIRD_A, AbilityLifecycleExecutor::LifecycleState::ACTIVE, "OnActive");
 }
 void DpmsStServiceDistributedThirdA::OnInactive()
 {
     APP_LOGI("DpmsStServiceDistributedThirdA::OnInactive");
 
     Ability::OnInactive();
-    // PublishEvent(RESP_EVENT_NAME_THIRD_A, AbilityLifecycleExecutor::LifecycleState::INACTIVE, "OnInactive");
 }
 void DpmsStServiceDistributedThirdA::OnBackground()
 {
     APP_LOGI("DpmsStServiceDistributedThirdA::OnBackground");
 
     Ability::OnBackground();
-    // PublishEvent(RESP_EVENT_NAME_THIRD_A, AbilityLifecycleExecutor::LifecycleState::BACKGROUND,
-    // "OnBackground");
 }
 
 void DpmsStServiceDistributedThirdA::Clear()

@@ -13,6 +13,8 @@
  * limitations under the License.
  */
 
+#ifndef OBJECT_DEVICE_PERMISSION_REPOSITORY
+#define OBJECT_DEVICE_PERMISSION_REPOSITORY
 #include <string>
 #include <memory>
 #include <map>
@@ -26,8 +28,6 @@
 #include "object_device_json.h"
 #include "permission_log.h"
 #include "permission_log.h"
-#ifndef OBJECT_DEVICE_PERMISSION_REPOSITORY
-#define OBJECT_DEVICE_PERMISSION_REPOSITORY
 namespace OHOS {
 namespace Security {
 namespace Permission {

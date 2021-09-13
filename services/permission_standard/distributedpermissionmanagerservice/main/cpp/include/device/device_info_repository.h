@@ -32,7 +32,7 @@ public:
 
     std::vector<DeviceInfo> ListDeviceInfo();
 
-    bool FindDeviceInfo(const std::string &nodeId, const DeviceIdType type, DeviceInfo &deviceInfo);
+    bool FindDeviceInfo(const std::string &nodeId, DeviceIdType type, DeviceInfo &deviceInfo);
 
     void DeleteAllDeviceInfoExceptOne(const DeviceInfo deviceInfo);
 

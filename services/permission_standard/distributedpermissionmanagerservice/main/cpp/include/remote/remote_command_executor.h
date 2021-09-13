@@ -21,13 +21,11 @@
 #include "base_remote_command.h"
 #include "remote_command_factory.h"
 #include "rpc_channel.h"
-
 #include "permission_log.h"
 
 namespace OHOS {
 namespace Security {
 namespace Permission {
-
 class RemoteCommandExecutor final {
 public:
     RemoteCommandExecutor(const std::string &targetNodeId);
