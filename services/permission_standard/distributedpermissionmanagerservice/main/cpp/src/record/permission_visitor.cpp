@@ -18,7 +18,6 @@
 namespace OHOS {
 namespace Security {
 namespace Permission {
-
 bool PermissionVisitor::SetPermissionVisitor(const std::string &deviceId, const std::string &deviceName,
     const int32_t bundleUserId, const std::string &bundleName, const std::string &bundleLabel,
     PermissionVisitor &permissionVisitor)
@@ -30,7 +29,6 @@ bool PermissionVisitor::SetPermissionVisitor(const std::string &deviceId, const 
     permissionVisitor.bundleLabel = bundleLabel;
     return true;
 };
-
 }  // namespace Permission
 }  // namespace Security
 }  // namespace OHOS

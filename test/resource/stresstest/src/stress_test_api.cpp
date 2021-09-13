@@ -112,96 +112,6 @@ void SetUid()
     }
 }
 
-void InitVisitorData(std::string bundleName)
-{
-    std::vector<GenericValues> visitor;
-    GenericValues genericVisitor;
-    genericVisitor.Put(FIELD_DEVICE_ID, "device_0");
-    genericVisitor.Put(FIELD_DEVICE_NAME, "device_name_0");
-    genericVisitor.Put(FIELD_BUNDLE_USER_ID, 0);
-    genericVisitor.Put(FIELD_BUNDLE_NAME, bundleName);
-    genericVisitor.Put(FIELD_BUNDLE_LABEL, "bundleInfo.label_0");
-    visitor.emplace_back(genericVisitor);
-
-    GenericValues genericVisitor1;
-    genericVisitor1.Put(FIELD_DEVICE_ID, "device_1");
-    genericVisitor1.Put(FIELD_DEVICE_NAME, "device_name_1");
-    genericVisitor1.Put(FIELD_BUNDLE_USER_ID, 0);
-    genericVisitor1.Put(FIELD_BUNDLE_NAME, "bundleName_1");
-    genericVisitor1.Put(FIELD_BUNDLE_LABEL, "bundleInfo.label_1");
-    visitor.emplace_back(genericVisitor1);
-    DataStorage::GetRealDataStorage().Add(DataStorage::PERMISSION_VISITOR, visitor);
-}
-void InitRecordData()
-{
-    std::vector<GenericValues> visitor;
-    DataStorage::GetRealDataStorage().Find(DataStorage::PERMISSION_VISITOR, visitor);
-    int visitorId = 0;
-    if (visitor.size() > 0) {
-        visitorId = visitor[0].GetInt(FIELD_ID);
-    }
-
-    std::vector<GenericValues> record;
-    GenericValues genericRecordFore;
-    genericRecordFore.Put(FIELD_TIMESTAMP, 100);
-    genericRecordFore.Put(FIELD_VISITOR_ID, visitorId);
-    genericRecordFore.Put(FIELD_OP_CODE, 4);
-    genericRecordFore.Put(FIELD_IS_FOREGROUND, 1);
-    genericRecordFore.Put(FIELD_ACCESS_COUNT, 3);
-    genericRecordFore.Put(FIELD_REJECT_COUNT, 2);
-
-    GenericValues genericRecordBack;
-    genericRecordBack.Put(FIELD_TIMESTAMP, 200);
-    genericRecordBack.Put(FIELD_VISITOR_ID, visitorId);
-    genericRecordBack.Put(FIELD_OP_CODE, 4);
-    genericRecordBack.Put(FIELD_IS_FOREGROUND, 0);
-    genericRecordBack.Put(FIELD_ACCESS_COUNT, 1);
-    genericRecordBack.Put(FIELD_REJECT_COUNT, 0);
-
-    GenericValues genericRecord;
-    genericRecord.Put(FIELD_TIMESTAMP, 300);
-    genericRecord.Put(FIELD_VISITOR_ID, visitorId);
-    genericRecord.Put(FIELD_OP_CODE, 1);
-    genericRecord.Put(FIELD_IS_FOREGROUND, 0);
-    genericRecord.Put(FIELD_ACCESS_COUNT, 1);
-    genericRecord.Put(FIELD_REJECT_COUNT, 3);
-    record.emplace_back(genericRecordFore);
-    record.emplace_back(genericRecordBack);
-    record.emplace_back(genericRecord);
-    DataStorage::GetRealDataStorage().Add(DataStorage::PERMISSION_RECORD, record);
-}
-
-void AddData(int64_t timestamp)
-{
-    std::vector<GenericValues> visitor;
-    GenericValues genericVisitor;
-
-    genericVisitor.Put(FIELD_DEVICE_ID, "device_1");
-    genericVisitor.Put(FIELD_DEVICE_NAME, "device_name_1");
-    genericVisitor.Put(FIELD_BUNDLE_USER_ID, 0);
-    genericVisitor.Put(FIELD_BUNDLE_NAME, "bundleName");
-    genericVisitor.Put(FIELD_BUNDLE_LABEL, "bundleInfo.label");
-    visitor.emplace_back(genericVisitor);
-    DataStorage::GetRealDataStorage().Add(DataStorage::PERMISSION_VISITOR, visitor);
-    visitor.clear();
-    DataStorage::GetRealDataStorage().Find(DataStorage::PERMISSION_VISITOR, visitor);
-    int visitorId = 0;
-    if (visitor.size() > 0) {
-        visitorId = visitor[0].GetInt(FIELD_ID);
-    }
-    std::vector<GenericValues> record;
-    GenericValues genericRecordFore;
-
-    genericRecordFore.Put(FIELD_TIMESTAMP, timestamp);
-    genericRecordFore.Put(FIELD_VISITOR_ID, visitorId);
-    genericRecordFore.Put(FIELD_OP_CODE, 1);
-    genericRecordFore.Put(FIELD_IS_FOREGROUND, 1);
-    genericRecordFore.Put(FIELD_ACCESS_COUNT, 1);
-    genericRecordFore.Put(FIELD_REJECT_COUNT, 0);
-    record.emplace_back(genericRecordFore);
-    DataStorage::GetRealDataStorage().Add(DataStorage::PERMISSION_RECORD, record);
-}
-
 class TestCallback : public OnPermissionUsedRecordStub {
 public:
     TestCallback() = default;
@@ -285,7 +195,8 @@ bool DistibutePermissionStressTest::AddPermissionUsedRecordTest_03()
     string deviceId_ = "device_0";
     string appInfo = DistributedPermissionKit::AppIdInfoHelper::CreateAppIdInfo(0, uid_, deviceId_);
     DistributedPermissionKit::AddPermissionUsedRecord(permName_, appInfo, 1, 0);
-    sleep(3);
+    int sleepTime = 3;
+    sleep(sleepTime);
     DistributedPermissionKit::AddPermissionUsedRecord(permName_, appInfo, 1, 0);
 
     std::vector<GenericValues> visitorAfter;
@@ -321,7 +232,7 @@ bool DistibutePermissionStressTest::AddPermissionUsedRecordTest_05()
 {
     SetUid();
     RemoveStorage();
-    AddData(TimeUtil::GetTimestamp() - 2592000);
+    // AddData(TimeUtil::GetTimestamp() - 2592000);
 
     std::vector<GenericValues> visitorBefore;
     std::vector<GenericValues> recordBefore;
@@ -345,7 +256,7 @@ bool DistibutePermissionStressTest::AddPermissionUsedRecordTest_06()
 {
     SetUid();
     RemoveStorage();
-    AddData(TimeUtil::GetTimestamp() - 2591999);
+    // AddData(TimeUtil::GetTimestamp() - 2591999);
 
     std::vector<GenericValues> visitorBefore;
     std::vector<GenericValues> recordBefore;
@@ -367,24 +278,6 @@ bool DistibutePermissionStressTest::AddPermissionUsedRecordTest_06()
 
 bool DistibutePermissionStressTest::GetPermissionUsedRecordTest_01()
 {
-    RemoveStorage();
-    AddData(TimeUtil::GetTimestamp() - 2592000);
-
-    QueryPermissionUsedRequest request;
-    QueryPermissionUsedResult result;
-    DistributedPermissionKit::GetPermissionUsedRecords(request, result);
-    sleep(3);
-    std::vector<GenericValues> record;
-    SqliteStorage::GetRealDataStorage().Find(DataStorage::PERMISSION_RECORD, record);
-    int recordSize = (int)record.size();
-    return recordSize == 0;
-}
-
-bool DistibutePermissionStressTest::GetPermissionUsedRecordTest_02()
-{
-    RemoveStorage();
-    InitVisitorData("bundleName_0");
-    InitRecordData();
     QueryPermissionUsedRequest request;
     request.endTimeMillis = 250;
     QueryPermissionUsedResult result;
@@ -394,11 +287,8 @@ bool DistibutePermissionStressTest::GetPermissionUsedRecordTest_02()
     return recordSize == 1;
 }
 
-bool DistibutePermissionStressTest::GetPermissionUsedRecordTest_03()
+bool DistibutePermissionStressTest::GetPermissionUsedRecordTest_02()
 {
-    RemoveStorage();
-    InitVisitorData("bundleName_0");
-    InitRecordData();
     QueryPermissionUsedRequest request;
     request.beginTimeMillis = 150;
     QueryPermissionUsedResult result;
@@ -408,11 +298,8 @@ bool DistibutePermissionStressTest::GetPermissionUsedRecordTest_03()
     return recordSize == 2;
 }
 
-bool DistibutePermissionStressTest::GetPermissionUsedRecordTest_04()
+bool DistibutePermissionStressTest::GetPermissionUsedRecordTest_03()
 {
-    RemoveStorage();
-    InitVisitorData("bundleName_0");
-    InitRecordData();
     QueryPermissionUsedRequest request;
     QueryPermissionUsedResult result;
     DistributedPermissionKit::GetPermissionUsedRecords(request, result);
@@ -421,11 +308,8 @@ bool DistibutePermissionStressTest::GetPermissionUsedRecordTest_04()
     return recordSize == 2;
 }
 
-bool DistibutePermissionStressTest::GetPermissionUsedRecordTest_05()
+bool DistibutePermissionStressTest::GetPermissionUsedRecordTest_04()
 {
-    RemoveStorage();
-    InitVisitorData("bundleName_0");
-    InitRecordData();
     QueryPermissionUsedRequest request;
     QueryPermissionUsedResult result;
     DistributedPermissionKit::GetPermissionUsedRecords(request, result);
@@ -442,11 +326,8 @@ bool DistibutePermissionStressTest::GetPermissionUsedRecordTest_05()
     return !detailFlag;
 }
 
-bool DistibutePermissionStressTest::GetPermissionUsedRecordTest_06()
+bool DistibutePermissionStressTest::GetPermissionUsedRecordTest_05()
 {
-    RemoveStorage();
-    InitVisitorData("bundleName_0");
-    InitRecordData();
     QueryPermissionUsedRequest request;
     request.flag = 1;
     QueryPermissionUsedResult result;
@@ -464,11 +345,8 @@ bool DistibutePermissionStressTest::GetPermissionUsedRecordTest_06()
     return detailFlag;
 }
 
-bool DistibutePermissionStressTest::GetPermissionUsedRecordTest_07()
+bool DistibutePermissionStressTest::GetPermissionUsedRecordTest_06()
 {
-    RemoveStorage();
-    InitVisitorData("bundleName_0");
-    InitRecordData();
     QueryPermissionUsedRequest request;
     request.deviceLabel = "device_name_0";
     request.permissionNames.emplace_back("ohos.permission.LOCATION");
@@ -488,11 +366,8 @@ bool DistibutePermissionStressTest::GetPermissionUsedRecordTest_07()
     return resultFlag;
 }
 
-bool DistibutePermissionStressTest::GetPermissionUsedRecordTest_08()
+bool DistibutePermissionStressTest::GetPermissionUsedRecordTest_07()
 {
-    RemoveStorage();
-    InitVisitorData("bundleName_0");
-    InitRecordData();
     QueryPermissionUsedRequest request;
     request.bundleName = "bundleName_0";
     request.permissionNames.emplace_back("ohos.permission.LOCATION");
@@ -503,6 +378,33 @@ bool DistibutePermissionStressTest::GetPermissionUsedRecordTest_08()
     resultFlag = (int)result.bundlePermissionUsedRecords.size() == 1;
     resultFlag == true
         ? resultFlag = result.bundlePermissionUsedRecords[0].bundleName.c_str() == request.bundleName.c_str()
+        : resultFlag = false;
+    resultFlag == true ? resultFlag = (int)result.bundlePermissionUsedRecords[0].permissionUsedRecords.size() == 1
+                       : resultFlag = false;
+    resultFlag == true
+        ? resultFlag = result.bundlePermissionUsedRecords[0].permissionUsedRecords[0].permissionName.c_str() ==
+                       request.permissionNames[0].c_str()
+        : resultFlag = false;
+
+    return resultFlag;
+}
+
+bool DistibutePermissionStressTest::GetPermissionUsedRecordTest_08()
+{
+    QueryPermissionUsedRequest request;
+    request.deviceLabel = "device_name_0";
+    request.bundleName = "bundleName_0";
+    request.permissionNames.emplace_back("ohos.permission.LOCATION");
+    QueryPermissionUsedResult result;
+    DistributedPermissionKit::GetPermissionUsedRecords(request, result);
+
+    bool resultFlag = false;
+    resultFlag = (int)result.bundlePermissionUsedRecords.size() == 1;
+    resultFlag == true
+        ? resultFlag = result.bundlePermissionUsedRecords[0].bundleName.c_str() == request.bundleName.c_str()
+        : resultFlag = false;
+    resultFlag == true
+        ? resultFlag = result.bundlePermissionUsedRecords[0].deviceLabel.c_str() == request.deviceLabel.c_str()
         : resultFlag = false;
     resultFlag == true ? resultFlag = (int)result.bundlePermissionUsedRecords[0].permissionUsedRecords.size() == 1
                        : resultFlag = false;
@@ -516,13 +418,9 @@ bool DistibutePermissionStressTest::GetPermissionUsedRecordTest_08()
 
 bool DistibutePermissionStressTest::GetPermissionUsedRecordTest_09()
 {
-    RemoveStorage();
-    InitVisitorData("bundleName_0");
-    InitRecordData();
     QueryPermissionUsedRequest request;
     request.deviceLabel = "device_name_0";
     request.bundleName = "bundleName_0";
-    request.permissionNames.emplace_back("ohos.permission.LOCATION");
     QueryPermissionUsedResult result;
     DistributedPermissionKit::GetPermissionUsedRecords(request, result);
 
@@ -534,32 +432,18 @@ bool DistibutePermissionStressTest::GetPermissionUsedRecordTest_09()
     resultFlag == true
         ? resultFlag = result.bundlePermissionUsedRecords[0].deviceLabel.c_str() == request.deviceLabel.c_str()
         : resultFlag = false;
-    resultFlag == true ? resultFlag = (int)result.bundlePermissionUsedRecords[0].permissionUsedRecords.size() == 1
-                       : resultFlag = false;
-    resultFlag == true
-        ? resultFlag = result.bundlePermissionUsedRecords[0].permissionUsedRecords[0].permissionName.c_str() ==
-                       request.permissionNames[0].c_str()
-        : resultFlag = false;
-
     return resultFlag;
 }
 
 bool DistibutePermissionStressTest::GetPermissionUsedRecordTest_10()
 {
-    RemoveStorage();
-    InitVisitorData("bundleName_0");
-    InitRecordData();
     QueryPermissionUsedRequest request;
     request.deviceLabel = "device_name_0";
-    request.bundleName = "bundleName_0";
     QueryPermissionUsedResult result;
     DistributedPermissionKit::GetPermissionUsedRecords(request, result);
 
     bool resultFlag = false;
     resultFlag = (int)result.bundlePermissionUsedRecords.size() == 1;
-    resultFlag == true
-        ? resultFlag = result.bundlePermissionUsedRecords[0].bundleName.c_str() == request.bundleName.c_str()
-        : resultFlag = false;
     resultFlag == true
         ? resultFlag = result.bundlePermissionUsedRecords[0].deviceLabel.c_str() == request.deviceLabel.c_str()
         : resultFlag = false;
@@ -568,27 +452,6 @@ bool DistibutePermissionStressTest::GetPermissionUsedRecordTest_10()
 
 bool DistibutePermissionStressTest::GetPermissionUsedRecordTest_11()
 {
-    RemoveStorage();
-    InitVisitorData("bundleName_0");
-    InitRecordData();
-    QueryPermissionUsedRequest request;
-    request.deviceLabel = "device_name_0";
-    QueryPermissionUsedResult result;
-    DistributedPermissionKit::GetPermissionUsedRecords(request, result);
-
-    bool resultFlag = false;
-    resultFlag = (int)result.bundlePermissionUsedRecords.size() == 1;
-    resultFlag == true
-        ? resultFlag = result.bundlePermissionUsedRecords[0].deviceLabel.c_str() == request.deviceLabel.c_str()
-        : resultFlag = false;
-    return resultFlag;
-}
-
-bool DistibutePermissionStressTest::GetPermissionUsedRecordTest_12()
-{
-    RemoveStorage();
-    InitVisitorData("bundleName_0");
-    InitRecordData();
     QueryPermissionUsedRequest request;
     request.bundleName = "bundleName_0";
     QueryPermissionUsedResult result;
@@ -603,11 +466,8 @@ bool DistibutePermissionStressTest::GetPermissionUsedRecordTest_12()
     return resultFlag;
 }
 
-bool DistibutePermissionStressTest::GetPermissionUsedRecordTest_13()
+bool DistibutePermissionStressTest::GetPermissionUsedRecordTest_12()
 {
-    RemoveStorage();
-    InitVisitorData("bundleName_0");
-    InitRecordData();
     QueryPermissionUsedRequest request;
     request.permissionNames.emplace_back("ohos.permission.LOCATION");
     request.permissionNames.emplace_back("ohos.permission.READ_CONTACTS");
@@ -638,11 +498,8 @@ bool DistibutePermissionStressTest::GetPermissionUsedRecordTest_13()
     return flag;
 }
 
-bool DistibutePermissionStressTest::GetPermissionUsedRecordTest_14()
+bool DistibutePermissionStressTest::GetPermissionUsedRecordTest_13()
 {
-    RemoveStorage();
-    InitVisitorData("bundleName_0");
-    InitRecordData();
     QueryPermissionUsedRequest request;
     QueryPermissionUsedResult result;
     int state = DistributedPermissionKit::GetPermissionUsedRecords(request, result);
@@ -754,10 +611,8 @@ std::string DistibutePermissionStressTest::remotePermissionPrepare()
 }
 void DistibutePermissionStressTest::GetTestFunction(std::vector<FnPtr> &vector)
 {
-    // vector.push_back(CheckDPermissionTest_01);
-    // vector.push_back(CheckDPermissionTest_02);
-    vector.push_back(AddPermissionUsedRecordTest_01);
-    // vector.push_back(AddPermissionUsedRecordTest_02);
+    vector.push_back(CheckDPermissionTest_01);
+    vector.push_back(CheckDPermissionTest_02);
     vector.push_back(GetPermissionUsedRecordTest_01);
     vector.push_back(GetPermissionUsedRecordTest_02);
     vector.push_back(GetPermissionUsedRecordTest_03);
@@ -771,16 +626,7 @@ void DistibutePermissionStressTest::GetTestFunction(std::vector<FnPtr> &vector)
     vector.push_back(GetPermissionUsedRecordTest_11);
     vector.push_back(GetPermissionUsedRecordTest_12);
     vector.push_back(GetPermissionUsedRecordTest_13);
-    vector.push_back(GetPermissionUsedRecordTest_14);
-    // vector.push_back(GetPermissionUsedRecordAsyncTest);
-    // vector.push_back(DeletePermissionUsedRecordTest_01);
-    // vector.push_back(DeletePermissionUsedRecordTest_02);
-    // vector.push_back(DPMS_VerifyPermissionFromRemote_2200);
-    // vector.push_back(GetPermissionUsedRecordTest_01);
-    // vector.push_back(GetPermissionUsedRecordTest_02);
-    // vector.push_back(GetPermissionUsedRecordAsyncTest);
-    // vector.push_back(DeletePermissionUsedRecordTest_01);
-    // vector.push_back(DeletePermissionUsedRecordTest_02);
+
     vector.push_back(DPMS_VerifyPermissionFromRemote_2200);
     vector.push_back(DPMS_VerifySelfPermissionFromRemote_2200);
     vector.push_back(DPMS_CanRequestPermissionFromRemote_2100);

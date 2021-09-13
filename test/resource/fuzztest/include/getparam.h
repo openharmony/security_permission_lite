@@ -69,10 +69,6 @@ std::vector<int64_t> GetS64VectorParam();
 sptr<OnRequestPermissionsResult> GetOnRequestPermissionsResultCallBack();
 sptr<OnUsingPermissionReminder> GetOnUsingPermissionReminderSptrParam();
 QueryPermissionUsedRequest GetQueryPermissionUsedRequestParam();
-static const int STR_NUM = 255;
-static const int HALF_NUM = 2;
-static const int INT_RAN_1 = -128;
-static const int INT_RAN_2 = 127;
 }  // namespace Permission
 }  // namespace Security
 }  // namespace OHOS

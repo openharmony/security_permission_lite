@@ -181,74 +181,74 @@ HWTEST_F(BeforeNotifySyncPermissionTest, DPMS_BeforeNotifySyncPermissionTest_020
 
     std::string bundleName = "com.system.hiworld.include_use_by_local_app";
 
-    // GTEST_LOG_(INFO) << "Install dpmsSystemIncludeUseByLocalApp start.";
-    // STDistibutePermissionUtil::Install("dpmsSystemIncludeUseByLocalApp");
-    // GTEST_LOG_(INFO) << "Install dpmsSystemIncludeUseByLocalApp end.";
+    GTEST_LOG_(INFO) << "Install dpmsSystemIncludeUseByLocalApp start.";
+    STDistibutePermissionUtil::Install("dpmsSystemIncludeUseByLocalApp");
+    GTEST_LOG_(INFO) << "Install dpmsSystemIncludeUseByLocalApp end.";
 
-    // std::vector<OHOS::Security::Permission::PermissionDef> permDefList;
-    // // system grant
-    // OHOS::Security::Permission::PermissionDef permissionDef_network = {.permissionName = permission_network,
-    //     .bundleName = bundleName,
-    //     .grantMode = 1,
-    //     .availableScope = 1 << 0,
-    //     .label = "test label",
-    //     .labelId = 9527,
-    //     .description = "test description",
-    //     .descriptionId = 9528};
-    // OHOS::Security::Permission::PermissionDef permissionDef_wifi = {.permissionName = permission_wifi,
-    //     .bundleName = bundleName,
-    //     .grantMode = 1,
-    //     .availableScope = 1 << 0,
-    //     .label = "test label",
-    //     .labelId = 9527,
-    //     .description = "test description",
-    //     .descriptionId = 9528};
-    // OHOS::Security::Permission::PermissionDef permissionDef_location = {.permissionName = permission_location,
-    //     .bundleName = bundleName,
-    //     .grantMode = 1,
-    //     .availableScope = 1 << 0,
-    //     .label = "test label",
-    //     .labelId = 9527,
-    //     .description = "test description",
-    //     .descriptionId = 9528};
-    // // user grant
-    // OHOS::Security::Permission::PermissionDef permissionDef_camera = {.permissionName = permission_camera,
-    //     .bundleName = bundleName,
-    //     .grantMode = 0,
-    //     .availableScope = 1 << 0,
-    //     .label = "test label",
-    //     .labelId = 9527,
-    //     .description = "test description",
-    //     .descriptionId = 9528};
-    // OHOS::Security::Permission::PermissionDef permissionDef_microphone = {.permissionName = permission_microphone,
-    //     .bundleName = bundleName,
-    //     .grantMode = 0,
-    //     .availableScope = 1 << 0,
-    //     .label = "test label",
-    //     .labelId = 9527,
-    //     .description = "test description",
-    //     .descriptionId = 9528};
-    // permDefList.emplace_back(permissionDef_network);
-    // permDefList.emplace_back(permissionDef_wifi);
-    // permDefList.emplace_back(permissionDef_location);
-    // permDefList.emplace_back(permissionDef_camera);
-    // permDefList.emplace_back(permissionDef_microphone);
-    // PermissionKit::AddDefPermissions(permDefList);
-    // // system grant
-    // std::vector<std::string> permList_system;
-    // permList_system.push_back(permission_network);
-    // permList_system.push_back(permission_wifi);
-    // permList_system.push_back(permission_location);
-    // PermissionKit::AddSystemGrantedReqPermissions(bundleName, permList_system);
-    // PermissionKit::GrantSystemGrantedPermission(bundleName, permission_network);
-    // PermissionKit::GrantSystemGrantedPermission(bundleName, permission_wifi);
-    // PermissionKit::GrantSystemGrantedPermission(bundleName, permission_location);
-    // // user grant
-    // std::vector<std::string> permList_user;
-    // permList_user.push_back(permission_camera);
-    // permList_user.push_back(permission_microphone);
-    // PermissionKit::AddUserGrantedReqPermissions(bundleName, permList_user, 0);
-    // PermissionKit::GrantUserGrantedPermission(bundleName, permission_camera, 0);
+    std::vector<OHOS::Security::Permission::PermissionDef> permDefList;
+    // system grant
+    OHOS::Security::Permission::PermissionDef permissionDef_network = {.permissionName = permission_network,
+        .bundleName = bundleName,
+        .grantMode = 1,
+        .availableScope = 1 << 0,
+        .label = "test label",
+        .labelId = 9527,
+        .description = "test description",
+        .descriptionId = 9528};
+    OHOS::Security::Permission::PermissionDef permissionDef_wifi = {.permissionName = permission_wifi,
+        .bundleName = bundleName,
+        .grantMode = 1,
+        .availableScope = 1 << 0,
+        .label = "test label",
+        .labelId = 9527,
+        .description = "test description",
+        .descriptionId = 9528};
+    OHOS::Security::Permission::PermissionDef permissionDef_location = {.permissionName = permission_location,
+        .bundleName = bundleName,
+        .grantMode = 1,
+        .availableScope = 1 << 0,
+        .label = "test label",
+        .labelId = 9527,
+        .description = "test description",
+        .descriptionId = 9528};
+    // user grant
+    OHOS::Security::Permission::PermissionDef permissionDef_camera = {.permissionName = permission_camera,
+        .bundleName = bundleName,
+        .grantMode = 0,
+        .availableScope = 1 << 0,
+        .label = "test label",
+        .labelId = 9527,
+        .description = "test description",
+        .descriptionId = 9528};
+    OHOS::Security::Permission::PermissionDef permissionDef_microphone = {.permissionName = permission_microphone,
+        .bundleName = bundleName,
+        .grantMode = 0,
+        .availableScope = 1 << 0,
+        .label = "test label",
+        .labelId = 9527,
+        .description = "test description",
+        .descriptionId = 9528};
+    permDefList.emplace_back(permissionDef_network);
+    permDefList.emplace_back(permissionDef_wifi);
+    permDefList.emplace_back(permissionDef_location);
+    permDefList.emplace_back(permissionDef_camera);
+    permDefList.emplace_back(permissionDef_microphone);
+    PermissionKit::AddDefPermissions(permDefList);
+    // system grant
+    std::vector<std::string> permList_system;
+    permList_system.push_back(permission_network);
+    permList_system.push_back(permission_wifi);
+    permList_system.push_back(permission_location);
+    PermissionKit::AddSystemGrantedReqPermissions(bundleName, permList_system);
+    PermissionKit::GrantSystemGrantedPermission(bundleName, permission_network);
+    PermissionKit::GrantSystemGrantedPermission(bundleName, permission_wifi);
+    PermissionKit::GrantSystemGrantedPermission(bundleName, permission_location);
+    // user grant
+    std::vector<std::string> permList_user;
+    permList_user.push_back(permission_camera);
+    permList_user.push_back(permission_microphone);
+    PermissionKit::AddUserGrantedReqPermissions(bundleName, permList_user, 0);
+    PermissionKit::GrantUserGrantedPermission(bundleName, permission_camera, 0);
 
     GTEST_LOG_(INFO) << "BeforeNotifySyncPermissionTest system hap set end";
 }
@@ -256,6 +256,6 @@ HWTEST_F(BeforeNotifySyncPermissionTest, DPMS_BeforeNotifySyncPermissionTest_020
 HWTEST_F(BeforeNotifySyncPermissionTest, DPMS_BeforeNotifySyncPermissionTest_0300, TestSize.Level1)
 {
     GTEST_LOG_(INFO) << "BeforeNotifySyncPermissionTest 1025 permission hap install start";
-    // STDistibutePermissionUtil::Install(THIRD_EQ_MAXPERMISSION_HAP_NAME);
+    STDistibutePermissionUtil::Install(THIRD_EQ_MAXPERMISSION_HAP_NAME);
     GTEST_LOG_(INFO) << "BeforeNotifySyncPermissionTest 1025 permission hap install end";
 }

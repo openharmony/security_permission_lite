@@ -27,7 +27,6 @@ namespace OHOS {
 namespace Security {
 namespace Permission {
 struct PermissionUsedRecord : public Parcelable {
-
     PermissionUsedRecord() = default;
 
     ~PermissionUsedRecord() override = default;

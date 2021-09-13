@@ -23,6 +23,14 @@ using namespace std;
 namespace OHOS {
 namespace Security {
 namespace Permission {
+
+namespace{
+static const int STR_NUM = 255;
+static const int HALF_NUM = 2;
+static const int INT_RAN_1 = -128;
+static const int INT_RAN_2 = 127;
+} // namespace
+
 bool GetBoolParam()
 {
     bool param;

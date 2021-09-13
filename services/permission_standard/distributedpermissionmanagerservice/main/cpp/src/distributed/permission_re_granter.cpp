@@ -21,7 +21,7 @@ namespace Permission {
 namespace {
 static constexpr OHOS::HiviewDFX::HiLogLabel LABEL = {LOG_CORE, SECURITY_DOMAIN_PERMISSION, "PermissionReGranter"};
 }
-void PermissionReGranter::ReGrantDuidPermissions(UidBundleBo &uidBundlePermInfo)
+void PermissionReGranter::ReGrantDuidPermissions(UidBundleBo& uidBundlePermInfo)
 {
     if (BaseRemoteCommand::IsValid(uidBundlePermInfo)) {
         PERMISSION_LOG_ERROR(LABEL, "ReGrantDuidPermissions:No remoteSensitivePermission need to reGrand");
@@ -31,8 +31,7 @@ void PermissionReGranter::ReGrantDuidPermissions(UidBundleBo &uidBundlePermInfo)
     PERMISSION_LOG_DEBUG(LABEL, "begin");
 
     for (auto item = uidBundlePermInfo.bundles.at(0).permissions.begin();
-         item != uidBundlePermInfo.bundles.at(0).permissions.end();
-         item++) {
+         item != uidBundlePermInfo.bundles.at(0).permissions.end(); item++) {
         PERMISSION_LOG_DEBUG(LABEL, "loop, status: %{public}d, grant mode: %{public}d", item->status, item->grantMode);
         PermissionDefParcel permInfo;
 
@@ -40,15 +39,15 @@ void PermissionReGranter::ReGrantDuidPermissions(UidBundleBo &uidBundlePermInfo)
 
         if (item->grantMode == SYSTEM_GRANT && permInfo.permissionDef.availableScope != AVAILABLE_SCOPE_RESTRICTED) {
             SetStatusGranted(true, *item);
-            PERMISSION_LOG_ERROR(
-                LABEL, "ReGrantDuidPermissions: remote permission granted due to normal protect level");
+            PERMISSION_LOG_ERROR(LABEL,
+                "ReGrantDuidPermissions: remote permission granted due to normal protect level");
             continue;
         }
 
         if (item->grantMode == USER_GRANT && permInfo.permissionDef.availableScope != AVAILABLE_SCOPE_RESTRICTED) {
             SetStatusGranted(IsRemoteGranted(*item), *item);
-            PERMISSION_LOG_ERROR(
-                LABEL, "ReGrantDuidPermissions: remote permission set granted due to remote granted status");
+            PERMISSION_LOG_ERROR(LABEL,
+                "ReGrantDuidPermissions: remote permission set granted due to remote granted status");
             continue;
         }
 
@@ -60,14 +59,14 @@ void PermissionReGranter::ReGrantDuidPermissions(UidBundleBo &uidBundlePermInfo)
         }
 
         SetStatusGranted(false, *item);
-        PERMISSION_LOG_ERROR(
-            LABEL, "ReGrantDuidPermissions: remote permission set no granted due to unknown availableScope");
+        PERMISSION_LOG_ERROR(LABEL,
+            "ReGrantDuidPermissions: remote permission set no granted due to unknown availableScope");
     }
 
     PERMISSION_LOG_DEBUG(LABEL, "end");
 }
 
-void PermissionReGranter::GetPermissionInfoNoThrow(const std::string &permission, PermissionDefParcel &permInfo)
+void PermissionReGranter::GetPermissionInfoNoThrow(const std::string& permission, PermissionDefParcel& permInfo)
 {
     std::unique_ptr<ExternalDeps> externalDeps = std::make_unique<ExternalDeps>();
     if (externalDeps == nullptr) {
@@ -79,20 +78,18 @@ void PermissionReGranter::GetPermissionInfoNoThrow(const std::string &permission
     iPermissionManager_->GetDefPermission(permission, permInfo);
 }
 
-bool PermissionReGranter::VerifySignatruePermission(
-    const PermissionDefParcel &permInfo, const UidBundleBo &uidBundlePermInfo)
+bool PermissionReGranter::VerifySignatruePermission(const PermissionDefParcel& permInfo,
+    const UidBundleBo& uidBundlePermInfo)
 {
     sptr<AppExecFwk::IBundleMgr> iBundleManager_;
     std::shared_ptr<ExternalDeps> externalDeps = std::make_shared<ExternalDeps>();
     iBundleManager_ = externalDeps->GetBundleManager(iBundleManager_);
 
     AppExecFwk::BundleInfo bundleInfo;
-    int result = iBundleManager_->GetBundleInfo(
-        permInfo.permissionDef.bundleName, AppExecFwk::BundleFlag::GET_BUNDLE_DEFAULT, bundleInfo);
+    int result = iBundleManager_->GetBundleInfo(permInfo.permissionDef.bundleName,
+        AppExecFwk::BundleFlag::GET_BUNDLE_DEFAULT, bundleInfo);
     if (!result) {
-        PERMISSION_LOG_INFO(LABEL,
-            "%{public}s cannot get bundleInfo by bundleName %{public}s",
-            __func__,
+        PERMISSION_LOG_INFO(LABEL, "%{public}s cannot get bundleInfo by bundleName %{public}s", __func__,
             permInfo.permissionDef.bundleName.c_str());
         return false;
     }
@@ -112,30 +109,30 @@ bool PermissionReGranter::VerifySignatruePermission(
     return true;
 }
 
-bool PermissionReGranter::IsGranted(const PermissionDto &permission)
+bool PermissionReGranter::IsGranted(const PermissionDto& permission)
 {
     return (permission.status & FLAG_PERMISSION_STATUS_DISTRIBUTED_GRANTED) != 0;
 }
 
-bool PermissionReGranter::IsRemoteGranted(const PermissionDto &permission)
+bool PermissionReGranter::IsRemoteGranted(const PermissionDto& permission)
 {
     return (permission.status & FLAG_PERMISSION_STATUS_REMOTE_GRANTED) != 0;
 }
 
-void PermissionReGranter::SetStatusGranted(const bool isGranted, PermissionDto &permission)
+void PermissionReGranter::SetStatusGranted(const bool isGranted, PermissionDto& permission)
 {
     PERMISSION_LOG_DEBUG(LABEL, "begin, isGranted: %{public}d, status: %{public}d", isGranted, permission.status);
     if (isGranted) {
         permission.status = (permission.status | FLAG_PERMISSION_STATUS_DISTRIBUTED_GRANTED) &
-                            (~FLAG_PERMISSION_STATUS_DISTRIBUTED_DENIED);
+            (~FLAG_PERMISSION_STATUS_DISTRIBUTED_DENIED);
     } else {
         permission.status = (permission.status | FLAG_PERMISSION_STATUS_DISTRIBUTED_DENIED) &
-                            (~FLAG_PERMISSION_STATUS_DISTRIBUTED_GRANTED);
+            (~FLAG_PERMISSION_STATUS_DISTRIBUTED_GRANTED);
     }
     PERMISSION_LOG_DEBUG(LABEL, "end, isGranted: %{public}d, status: %{public}d", isGranted, permission.status);
 }
 
-void PermissionReGranter::SetFlagRemoteGranted(const bool isRemoteGranted, PermissionDto &permission)
+void PermissionReGranter::SetFlagRemoteGranted(const bool isRemoteGranted, PermissionDto& permission)
 {
     if (isRemoteGranted) {
         permission.status |= FLAG_PERMISSION_STATUS_REMOTE_GRANTED;
@@ -143,6 +140,6 @@ void PermissionReGranter::SetFlagRemoteGranted(const bool isRemoteGranted, Permi
         permission.status &= (~FLAG_PERMISSION_STATUS_REMOTE_GRANTED);
     }
 }
-}  // namespace Permission
-}  // namespace Security
-}  // namespace OHOS
+} // namespace Permission
+} // namespace Security
+} // namespace OHOS

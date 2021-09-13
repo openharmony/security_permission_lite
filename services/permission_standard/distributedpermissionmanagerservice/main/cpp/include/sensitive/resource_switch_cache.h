@@ -22,7 +22,6 @@
 namespace OHOS {
 namespace Security {
 namespace Permission {
-
 class ResourceSwitchCache {
 public:
     static ResourceSwitchCache &GetInstance();
@@ -52,7 +51,6 @@ private:
     std::map<std::string, std::shared_ptr<SensitiveResourceSwitchSetting>> cache_;
     std::recursive_mutex sensitiveResourceSwitchSettingMutex_;
 };
-
 }  // namespace Permission
 }  // namespace Security
 }  // namespace OHOS

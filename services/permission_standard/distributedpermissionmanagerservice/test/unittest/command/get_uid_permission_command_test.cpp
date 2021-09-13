@@ -15,7 +15,6 @@
 #include <thread>
 #include <functional>
 
-#include "gtest/gtest.h"
 #include <map>
 #include <iostream>
 #include <algorithm>
@@ -28,6 +27,7 @@
 #include "base_remote_command.h"
 #include "get_uid_permission_command.h"
 
+#include "gtest/gtest.h"
 #include "if_system_ability_manager.h"
 #include "iservice_registry.h"
 #include "ability_manager_interface.h"
@@ -58,14 +58,11 @@ void GetUidPermissionCommandTest::SetUpTestCase()
 {
     OHOS::sptr<OHOS::IRemoteObject> bundleObject = new OHOS::AppExecFwk::BundleMgrService();
     OHOS::sptr<OHOS::IRemoteObject> permissionObject = new PermissionManagerService();
-
     auto sysMgr = OHOS::SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
-
     if (sysMgr == NULL) {
         GTEST_LOG_(ERROR) << "fail to get ISystemAbilityManager";
         return;
     }
-
     sysMgr->AddSystemAbility(Constant::ServiceId::BUNDLE_MGR_SERVICE_SYS_ABILITY_ID, bundleObject);
     sysMgr->AddSystemAbility(Constant::ServiceId::SUBSYS_SECURITY_PERMISSION_SYS_SERVICE_ID, permissionObject);
 }

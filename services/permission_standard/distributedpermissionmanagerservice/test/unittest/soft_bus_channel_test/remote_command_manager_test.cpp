@@ -33,7 +33,6 @@ namespace {
 static constexpr OHOS::HiviewDFX::HiLogLabel LABEL = {LOG_CORE, SECURITY_DOMAIN_PERMISSION, "RemoteCommandManagerTest"};
 }
 namespace {
-static const int UID_GetPermissions_FAILED = 1;
 static const int UID_GetRegrantedPermissions_FAILED = 100;
 static const int UID_FINISH_SUCCESS_INDEX = 1000;
 
@@ -211,6 +210,7 @@ HWTEST_F(RemoteCommandManagerTest, RemoteCommandManager_ExecuteCommand_001, Test
     {
         PERMISSION_LOG_DEBUG(LABEL, "RemoteCommandManager_ExecuteCommand_001-4");
         // fail
+        const int UID_GetPermissions_FAILED = 1;
         const int32_t uid = UID_GetPermissions_FAILED;
         const std::string srcDeviceId = SELF_DEVICE_;
         const std::string dstDeviceId = TARGET_DEVICE_;

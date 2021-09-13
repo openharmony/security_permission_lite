@@ -30,7 +30,6 @@
 namespace OHOS {
 namespace Security {
 namespace Permission {
-
 class ExternalDeps {
 public:
     ExternalDeps() = default;
@@ -44,7 +43,6 @@ private:
     std::mutex saMutex_;
     sptr<IRemoteObject> GetSystemAbility(const Constant::ServiceId systemAbilityId);
 };
-
 }  // namespace Permission
 }  // namespace Security
 }  // namespace OHOS

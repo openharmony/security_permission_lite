@@ -18,41 +18,64 @@
 namespace OHOS {
 namespace Security {
 namespace Permission {
-#define RETURN_IF_FALSE(expr) \
-    if (!(expr)) {            \
-        return false;         \
-    }
-
-#define RELEASE_IF_FALSE(expr, obj) \
-    if (!(expr)) {                  \
-        delete obj;                 \
-        obj = nullptr;              \
-        return obj;                 \
-    }
 using namespace std;
 bool QueryPermissionUsedResult::Marshalling(Parcel &out) const
 {
-    RETURN_IF_FALSE(out.WriteInt32(this->code));
-    RETURN_IF_FALSE(out.WriteInt64(this->beginTimeMillis));
-    RETURN_IF_FALSE(out.WriteInt64(this->endTimeMillis));
-    RETURN_IF_FALSE(out.WriteInt32(this->bundlePermissionUsedRecords.size()));
+    if (!out.WriteInt32(this->code)) {
+        return false;
+    }
+    if (!out.WriteInt64(this->beginTimeMillis)) {
+        return false;
+    }
+    if (!out.WriteInt64(this->endTimeMillis)) {
+        return false;
+    }
+    if (!out.WriteInt32(this->bundlePermissionUsedRecords.size())) {
+        return false;
+    }
     for (const auto &record : this->bundlePermissionUsedRecords) {
-        RETURN_IF_FALSE(out.WriteParcelable(&record));
+        if (!out.WriteParcelable(&record)) {
+            return false;
+        }
     }
     return true;
 }
 QueryPermissionUsedResult *QueryPermissionUsedResult::Unmarshalling(Parcel &in)
 {
     auto *result = new (nothrow) QueryPermissionUsedResult();
-    RELEASE_IF_FALSE(result != nullptr, result);
-    RELEASE_IF_FALSE(in.ReadInt32(result->code), result);
-    RELEASE_IF_FALSE(in.ReadInt64(result->beginTimeMillis), result);
-    RELEASE_IF_FALSE(in.ReadInt64(result->endTimeMillis), result);
+    if (result == nullptr) {
+        delete result;
+        result = nullptr;
+        return result;
+    }
+    if (!in.ReadInt32(result->code)) {
+        delete result;
+        result = nullptr;
+        return result;
+    }
+    if (!in.ReadInt64(result->beginTimeMillis)) {
+        delete result;
+        result = nullptr;
+        return result;
+    }
+    if (!in.ReadInt64(result->endTimeMillis)) {
+        delete result;
+        result = nullptr;
+        return result;
+    }
     int size = 0;
-    RELEASE_IF_FALSE(in.ReadInt32(size), result);
+    if (!in.ReadInt32(size)) {
+        delete result;
+        result = nullptr;
+        return result;
+    }
     for (int i = 0; i < size; i++) {
         sptr<BundlePermissionUsedRecord> record = in.ReadParcelable<BundlePermissionUsedRecord>();
-        RELEASE_IF_FALSE(record != nullptr, result);
+        if (record == nullptr) {
+            delete result;
+            result = nullptr;
+            return result;
+        }
         result->bundlePermissionUsedRecords.push_back(*record);
     }
     return result;
@@ -96,7 +119,6 @@ void QueryPermissionUsedResult::from_json(const nlohmann::json &jsonObj, QueryPe
     }
     result.bundlePermissionUsedRecords = bundleVector;
 }
-
 }  // namespace Permission
 }  // namespace Security
 }  // namespace OHOS

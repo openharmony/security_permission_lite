@@ -24,14 +24,12 @@
 namespace OHOS {
 namespace Security {
 namespace Permission {
-
 EXTERN_C_START
 /*
  * function for module exports
  */
 static napi_value Init(napi_env env, napi_value exports)
 {
-
     /*
      * Propertise define
      */
@@ -63,7 +61,6 @@ extern "C" __attribute__((constructor)) void RegisterModule(void)
 {
     napi_module_register(&_module);
 }
-
 }  // namespace Permission
 }  // namespace Security
 }  // namespace OHOS

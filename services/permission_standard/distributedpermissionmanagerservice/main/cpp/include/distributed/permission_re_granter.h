@@ -26,15 +26,15 @@ namespace Security {
 namespace Permission {
 class PermissionReGranter final {
 public:
-    static void ReGrantDuidPermissions(UidBundleBo &uidBundlePermInfo);
-    static bool IsGranted(const PermissionDto &permission);
-    static bool IsRemoteGranted(const PermissionDto &permission);
-    static void SetStatusGranted(const bool isGranted, PermissionDto &permission);
-    static void SetFlagRemoteGranted(const bool isRemoteGranted, PermissionDto &permission);
+    static void ReGrantDuidPermissions(UidBundleBo& uidBundlePermInfo);
+    static bool IsGranted(const PermissionDto& permission);
+    static bool IsRemoteGranted(const PermissionDto& permission);
+    static void SetStatusGranted(const bool isGranted, PermissionDto& permission);
+    static void SetFlagRemoteGranted(const bool isRemoteGranted, PermissionDto& permission);
 
 private:
-    static void GetPermissionInfoNoThrow(const std::string &permission, PermissionDefParcel &permInfo);
-    static bool VerifySignatruePermission(const PermissionDefParcel &permInfo, const UidBundleBo &uidBundlePermInfo);
+    static void GetPermissionInfoNoThrow(const std::string& permission, PermissionDefParcel& permInfo);
+    static bool VerifySignatruePermission(const PermissionDefParcel& permInfo, const UidBundleBo& uidBundlePermInfo);
 
 private:
     static const int FLAG_PERMISSION_DEFINED_BY_SYSTEM = 1 << 0;
@@ -52,7 +52,7 @@ private:
         AVAILABLE_SCOPE_RESTRICTED = 1 << 2
     };
 };
-}  // namespace Permission
-}  // namespace Security
-}  // namespace OHOS
-#endif  // PERMISSION_RE_GRANTER_H
+} // namespace Permission
+} // namespace Security
+} // namespace OHOS
+#endif // PERMISSION_RE_GRANTER_H

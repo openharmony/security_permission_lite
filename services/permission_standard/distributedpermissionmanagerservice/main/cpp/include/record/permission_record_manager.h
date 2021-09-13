@@ -42,7 +42,6 @@ namespace OHOS {
 namespace Security {
 namespace Permission {
 class PermissionRecordManager final {
-
 public:
     static PermissionRecordManager &GetInstance();
 

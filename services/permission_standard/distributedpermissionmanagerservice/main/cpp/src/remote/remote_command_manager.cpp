@@ -147,7 +147,6 @@ int RemoteCommandManager::NotifyDeviceOnline(const std::string &nodeId)
         PERMISSION_LOG_INFO(LABEL, "invalid nodeId: %{public}s", nodeId.c_str());
         return Constant::FAILURE;
     }
-
     PERMISSION_LOG_INFO(LABEL, "operation start with nodeId:  %{public}s", nodeId.c_str());
 
     auto executor = GetOrCreateRemoteCommandExecutor(nodeId);

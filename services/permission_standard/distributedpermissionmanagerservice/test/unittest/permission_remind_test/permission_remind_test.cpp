@@ -31,13 +31,19 @@
 using namespace std;
 using namespace testing::ext;
 using namespace OHOS::Security::Permission;
-
+using namespace OHOS;
 namespace OHOS {
 pid_t IPCSkeleton::pid_ = 1;
 pid_t IPCSkeleton::uid_ = 1;
 std::string IPCSkeleton::localDeviceId_ = "1004";
 std::string IPCSkeleton::deviceId_ = "";
-}  // namespace OHOS
+
+static const int32_t uid_normal_1_ = 12612345;
+static const int32_t uid_normal_2_ = 12512345;
+static const int32_t uid_normal_3_ = 12600000;
+static const int32_t uid_normal_4_ = 12500000;
+
+} // namespace OHOS
 
 class PermissionRemindTest : public testing::Test {
 public:
@@ -46,7 +52,7 @@ public:
 public:
     std::string permName = Constant::CAMERA;
     int32_t pid = 101;
-    int32_t uid = 12612345;
+    int32_t uid = uid_normal_1_;
     std::string deviceId = "ohos.deviceId.test";
     std::string deviceName = "ohos.deviceLabel.test";
 
@@ -89,9 +95,9 @@ public:
         bundles.permissions.push_back(permission);
 
         UidBundleBo uidBundleBo;
-        uidBundleBo.DEFAULT_SIZE = 10;         // default 10
-        uidBundleBo.MIN_UID_PACKAGES_NUM = 1;  // default 1
-        uidBundleBo.uid = 12612345;
+        uidBundleBo.DEFAULT_SIZE = 10; // default 10
+        uidBundleBo.MIN_UID_PACKAGES_NUM = 1; // default 1
+        uidBundleBo.uid = uid_normal_1_;
         uidBundleBo.appAttribute = 0;
         uidBundleBo.bundles.push_back(bundles);
         uidBundleBo.uidState = 1;
@@ -117,12 +123,12 @@ public:
 
     std::string permName = Constant::CAMERA;
 
-    void StartUsingPermission(const PermissionReminderInfo &permReminderInfo)
+    void StartUsingPermission(const PermissionReminderInfo& permReminderInfo)
     {
         EXPECT_EQ(permName, OHOS::Str16ToStr8(permReminderInfo.permName));
     }
 
-    void StopUsingPermission(const PermissionReminderInfo &permReminderInfo)
+    void StopUsingPermission(const PermissionReminderInfo& permReminderInfo)
     {
         EXPECT_EQ(permName, OHOS::Str16ToStr8(permReminderInfo.permName));
     }
@@ -168,7 +174,7 @@ HWTEST_F(PermissionRemindTest, PermissionRemindTest03, Function | MediumTest | L
     // Case 01
     permName = Constant::CAMERA;
     pid = 101;
-    uid = 12612345;
+    uid = uid_normal_1_;
     deviceId = "ohos.deviceId.test";
 
     dpms_->StartUsingPermission(permName, pid, uid, deviceId);
@@ -178,7 +184,7 @@ HWTEST_F(PermissionRemindTest, PermissionRemindTest03, Function | MediumTest | L
     // Case 02
     permName = "";
     pid = 101;
-    uid = 12612345;
+    uid = uid_normal_1_;
     deviceId = "ohos.deviceId.test";
     dpms_->StartUsingPermission(permName, pid, uid, deviceId);
     dpms_->StopUsingPermission(permName, pid, uid, deviceId);
@@ -198,7 +204,7 @@ HWTEST_F(PermissionRemindTest, PermissionRemindTest04, Function | MediumTest | L
     // Case 01
     permName = Constant::CAMERA;
     pid = 101;
-    uid = 12612345;
+    uid = uid_normal_1_;
     deviceId = "ohos.deviceId.test";
     ret = dpms_->CheckPermissionAndStartUsing(permName, pid, uid, deviceId);
     EXPECT_EQ(0, ret);
@@ -206,7 +212,7 @@ HWTEST_F(PermissionRemindTest, PermissionRemindTest04, Function | MediumTest | L
     // Case 02
     permName = "ohos.permission.NotSensitivePermission";
     pid = 101;
-    uid = 12612345;
+    uid = uid_normal_1_;
     deviceId = "ohos.deviceId.test";
     ret = dpms_->CheckPermissionAndStartUsing(permName, pid, uid, deviceId);
     EXPECT_EQ(-1, ret);
@@ -214,7 +220,7 @@ HWTEST_F(PermissionRemindTest, PermissionRemindTest04, Function | MediumTest | L
     // Case 03
     permName = Constant::CAMERA;
     pid = 101;
-    uid = 12512345;
+    uid = uid_normal_2_;
     deviceId = "ohos.deviceId.test1";
     ret = dpms_->CheckPermissionAndStartUsing(permName, pid, uid, deviceId);
     EXPECT_EQ(-1, ret);
@@ -222,7 +228,7 @@ HWTEST_F(PermissionRemindTest, PermissionRemindTest04, Function | MediumTest | L
     // Case 04
     permName = Constant::CAMERA;
     pid = 101;
-    uid = 12600000;
+    uid = uid_normal_3_;
     deviceId = "ohos.deviceId.test";
     ret = dpms_->CheckPermissionAndStartUsing(permName, pid, uid, deviceId);
     EXPECT_EQ(0, ret);
@@ -230,7 +236,7 @@ HWTEST_F(PermissionRemindTest, PermissionRemindTest04, Function | MediumTest | L
     // Case 05
     permName = "";
     pid = 101;
-    uid = 12500000;
+    uid = uid_normal_4_;
     deviceId = "ohos.deviceId.test";
     ret = dpms_->CheckPermissionAndStartUsing(permName, pid, uid, deviceId);
     EXPECT_EQ(-1, ret);
@@ -306,21 +312,21 @@ HWTEST_F(PermissionRemindTest, PermissionRemindTest09, Function | MediumTest | L
 {
     permName = Constant::CAMERA;
     pid = 101;
-    uid = 12612345;
+    uid = uid_normal_1_;
     deviceId = "ohos.deviceId.test";
 
     dpms_->StartUsingPermission(permName, pid, uid, deviceId);
 
     permName = Constant::LOCATION;
     pid = 101;
-    uid = 12612345;
+    uid = uid_normal_1_;
     deviceId = "ohos.deviceId.test";
 
     dpms_->StartUsingPermission(permName, pid, uid, deviceId);
 
     permName = Constant::LOCATION_IN_BACKGROUND;
     pid = 101;
-    uid = 12612345;
+    uid = uid_normal_1_;
     deviceId = "ohos.deviceId.test";
 
     dpms_->StopUsingPermission(permName, pid, uid, deviceId);

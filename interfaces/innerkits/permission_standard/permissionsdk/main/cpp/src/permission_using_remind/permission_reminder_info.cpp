@@ -24,7 +24,7 @@ namespace {
 static constexpr OHOS::HiviewDFX::HiLogLabel LABEL = {LOG_CORE, SECURITY_DOMAIN_PERMISSION, "PermissionReminderInfo"};
 }
 using namespace std;
-bool PermissionReminderInfo::Marshalling(Parcel &out) const
+bool PermissionReminderInfo::Marshalling(Parcel& out) const
 {
     PERMISSION_LOG_INFO(LABEL, "%{public}s called", __func__);
     if (!out.WriteString16(this->deviceId)) {
@@ -51,10 +51,10 @@ bool PermissionReminderInfo::Marshalling(Parcel &out) const
     return true;
 }
 
-PermissionReminderInfo *PermissionReminderInfo::Unmarshalling(Parcel &in)
+PermissionReminderInfo* PermissionReminderInfo::Unmarshalling(Parcel& in)
 {
     PERMISSION_LOG_INFO(LABEL, "%{public}s called", __func__);
-    PermissionReminderInfo *permReminderInfo = new PermissionReminderInfo();
+    PermissionReminderInfo* permReminderInfo = new PermissionReminderInfo();
     if (permReminderInfo == nullptr) {
         delete permReminderInfo;
         permReminderInfo = nullptr;
@@ -115,6 +115,6 @@ void PermissionReminderInfo::SetPermName(std::string strParam)
 {
     permName = Str8ToStr16(strParam);
 }
-}  // namespace Permission
-}  // namespace Security
-}  // namespace OHOS
+} // namespace Permission
+} // namespace Security
+} // namespace OHOS

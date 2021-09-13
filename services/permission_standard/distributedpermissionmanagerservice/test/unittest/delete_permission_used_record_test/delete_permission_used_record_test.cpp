@@ -46,9 +46,7 @@ public:
     {
         OHOS::sptr<OHOS::IRemoteObject> bundleObject = new OHOS::AppExecFwk::BundleMgrService();
         OHOS::sptr<OHOS::IRemoteObject> permissionObject = new PermissionManagerService();
-
         auto sysMgr = OHOS::SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
-
         if (sysMgr == NULL) {
             GTEST_LOG_(ERROR) << "fail to get ISystemAbilityManager";
             return;
@@ -100,6 +98,7 @@ void AddPermissionUsedRecordTest::InitVisitorData()
 
 void AddPermissionUsedRecordTest::InitRecordData(int64_t timestamp)
 {
+    int opCode = 4;
     std::vector<GenericValues> visitor;
     DataStorage::GetRealDataStorage().Find(DataStorage::PERMISSION_VISITOR, visitor);
     int visitorId = 0;
@@ -112,7 +111,7 @@ void AddPermissionUsedRecordTest::InitRecordData(int64_t timestamp)
 
     genericRecordFore.Put(FIELD_TIMESTAMP, timestamp);
     genericRecordFore.Put(FIELD_VISITOR_ID, visitorId);
-    genericRecordFore.Put(FIELD_OP_CODE, 4);
+    genericRecordFore.Put(FIELD_OP_CODE, opCode);
     genericRecordFore.Put(FIELD_IS_FOREGROUND, 1);
     genericRecordFore.Put(FIELD_ACCESS_COUNT, 1);
     genericRecordFore.Put(FIELD_REJECT_COUNT, 0);
@@ -120,7 +119,7 @@ void AddPermissionUsedRecordTest::InitRecordData(int64_t timestamp)
 
     genericRecordBack.Put(FIELD_TIMESTAMP, timestamp);
     genericRecordBack.Put(FIELD_VISITOR_ID, visitorId);
-    genericRecordBack.Put(FIELD_OP_CODE, 4);
+    genericRecordBack.Put(FIELD_OP_CODE, opCode);
     genericRecordBack.Put(FIELD_IS_FOREGROUND, 0);
     genericRecordBack.Put(FIELD_ACCESS_COUNT, 1);
     genericRecordBack.Put(FIELD_REJECT_COUNT, 0);

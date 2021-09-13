@@ -78,8 +78,8 @@ public:
     {
         // simulator unregister
         ::UnregNodeDeviceStateCb(nullptr);
-
-        for (int i = 0; i < 20 + 1; i++) {
+        int sessionLimit = 20;
+        for (int i = 0; i < sessionLimit + 1; i++) {
             // 1: mock session id
             ::CloseSession(1);
         }
@@ -221,8 +221,6 @@ HWTEST_F(SoftBusChannelTest, SoftBusChannel_BuildConnection_004, TestSize.Level1
         int code = channel->BuildConnection();
         EXPECT_EQ(code, 0);
     }
-
-    // channel->CloseConnection();
 }
 
 /*
@@ -243,10 +241,8 @@ HWTEST_F(SoftBusChannelTest, SoftBusChannel_Compress_001, TestSize.Level1)
         int compressedLength = 1024;
         unsigned char compressedBytes[compressedLength];
         int code = channel->Compress(json, compressedBytes, compressedLength);
-        // PERMISSION_LOG_DEBUG(LABEL, "origin str length: %{public}d", json.length());
         PERMISSION_LOG_DEBUG(LABEL, "compressed length: %{public}d", compressedLength);
         EXPECT_EQ(code, 0);
-        // EXPECT_LT((unsigned int)compressedLength, json.length());
     }
     {
         PERMISSION_LOG_DEBUG(LABEL, "SoftBusChannel_Compress_001-2");
@@ -278,10 +274,8 @@ HWTEST_F(SoftBusChannelTest, SoftBusChannel_Compress_002, TestSize.Level1)
         unsigned char compressedBytes[compressedLength];
         int code = channel->Compress(json, compressedBytes, compressedLength);
 
-        // PERMISSION_LOG_DEBUG(LABEL, "origin str length: %{public}d", json.length());
         PERMISSION_LOG_DEBUG(LABEL, "compressed length: %{public}d", compressedLength);
         EXPECT_EQ(code, 0);
-        // EXPECT_LT((unsigned int)compressedLength, json.length());
 
         std::string dec = channel->Decompress(compressedBytes, compressedLength);
         PERMISSION_LOG_DEBUG(LABEL, "decompressed: %{public}s", dec.c_str());
@@ -294,10 +288,8 @@ HWTEST_F(SoftBusChannelTest, SoftBusChannel_Compress_002, TestSize.Level1)
         unsigned char compressedBytes[compressedLength];
         int code = channel->Compress(json, compressedBytes, compressedLength);
 
-        // PERMISSION_LOG_DEBUG(LABEL, "origin str length: %{public}d", json.length());
         PERMISSION_LOG_DEBUG(LABEL, "compressed length: %{public}d", compressedLength);
         EXPECT_EQ(code, 0);
-        // EXPECT_LT((unsigned int)compressedLength, json.length());
 
         std::string dec = channel->Decompress(compressedBytes, compressedLength);
 
@@ -389,7 +381,6 @@ HWTEST_F(SoftBusChannelTest, SoftBusChannel_CheckSessionMayReopenLocked_001, Tes
 
         // will open session
         int ret2 = channel->CheckSessionMayReopenLocked();
-        // return (sessionId != Constant::INVALID_SESSION) ? 0 : -1;
         EXPECT_TRUE(ret2 == 0);
     }
     {
@@ -509,7 +500,6 @@ HWTEST_F(SoftBusChannelTest, SoftBusChannel_HandleResponse_001, TestSize.Level1)
     auto channel = std::make_shared<SoftBusChannel>(TARGET_DEVICE_ID_);
     channel->BuildConnection();
     {
-
         const std::string id = "message-unique-id-001";
         const std::string jsonPayload =
             "\"{\"name\":\"test\",\"number\":100,\"flag\":true,\"array\":[0,1,2],\"uid\":\"test-device-id-001-uid\"}\"";
@@ -701,7 +691,6 @@ HWTEST_F(SoftBusChannelTest, SoftBusChannel_HandleDataReceived_001, TestSize.Lev
     channel->CloseConnection();
     PERMISSION_LOG_DEBUG(LABEL, "SoftBusChannel_HandleDataReceived_001 end");
 }
-
 }  // namespace Permission
 }  // namespace Security
 }  // namespace OHOS

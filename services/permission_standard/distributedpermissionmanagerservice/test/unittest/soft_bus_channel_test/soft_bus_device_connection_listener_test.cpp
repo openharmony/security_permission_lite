@@ -14,8 +14,8 @@
  */
 
 #include <gtest/gtest.h>
-#include "constant.h"
 #include <string>
+#include "constant.h"
 
 #define private public
 #include "rpc_channel.h"

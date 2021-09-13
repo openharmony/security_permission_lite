@@ -130,7 +130,6 @@ void BaseRemoteCommand::FromRemoteProtocolJson(nlohmann::json jsonObject)
  */
 void BaseRemoteCommand::FromUidBundlePermissionsJson(const nlohmann::json &uidBundleBoJson, UidBundleBo &uidBundleBo)
 {
-
     uidBundleBoJson.at("DEFAULT_SIZE").get_to(uidBundleBo.DEFAULT_SIZE);
     uidBundleBoJson.at("MIN_UID_PACKAGES_NUM").get_to(uidBundleBo.MIN_UID_PACKAGES_NUM);
     uidBundleBoJson.at("uid").get_to(uidBundleBo.uid);
@@ -138,7 +137,7 @@ void BaseRemoteCommand::FromUidBundlePermissionsJson(const nlohmann::json &uidBu
     uidBundleBoJson.at("uidState").get_to(uidBundleBo.uidState);
 
     if ((uidBundleBoJson.find("remoteSensitivePermission") != uidBundleBoJson.end()) &&
-        uidBundleBoJson.at("remoteSensitivePermission").is_string()) {
+        (uidBundleBoJson.at("remoteSensitivePermission").is_string())) {
         uidBundleBoJson.at("remoteSensitivePermission")
             .get_to<std::set<std::string>>(uidBundleBo.remoteSensitivePermission);
     }

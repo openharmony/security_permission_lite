@@ -22,7 +22,6 @@ using namespace OHOS::HiviewDFX;
 namespace OHOS {
 namespace Security {
 namespace Permission {
-
 static constexpr HiLogLabel LABEL = {LOG_CORE, SECURITY_DOMAIN_PERMISSION, "ResourceSwitchLocal"};
 ResourceSwitchLocal &ResourceSwitchLocal::GetInstance()
 {
@@ -91,7 +90,6 @@ bool ResourceSwitchLocal::GetSwitchStatus(std::string sensitiveResource)
         (isSwitchAllow ? "allowed." : "denied."));
     return isSwitchAllow;
 }
-
 }  // namespace Permission
 }  // namespace Security
 }  // namespace OHOS

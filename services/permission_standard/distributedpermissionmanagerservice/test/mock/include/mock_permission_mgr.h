@@ -57,7 +57,6 @@ public:
     ~PermissionManagerService()
     {}
 };
-
 }  // namespace Permission
 }  // namespace Security
 }  // namespace OHOS

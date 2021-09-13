@@ -19,6 +19,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <set>
+#include <cstring>
 #include "constant.h"
 #include "distributed_permission_stub.h"
 #include "event_handler.h"
@@ -27,6 +28,7 @@
 #include "permission_record_manager.h"
 #include "singleton.h"
 #include "system_ability.h"
+#include "string_ex.h"
 #include "distributed_permission_event_handler.h"
 #include "on_using_permission_reminder.h"
 #include "external_deps.h"
@@ -62,7 +64,7 @@ public:
      * @param rUid the app uid of the caller application
      * @return Duid allocated from idle pool.
      */
-    virtual int32_t AllocateDuid(const std::string &nodeId, const int32_t rUid) override;
+    virtual int32_t AllocateDuid(const std::string& nodeId, const int32_t rUid) override;
 
     /**
      * Get allocated Duid for target across-device accessing application.
@@ -71,7 +73,7 @@ public:
      * @param rUid the app uid of the caller application
      * @return Duid already allocated.
      */
-    virtual int32_t QueryDuid(const std::string &deviceId, const int32_t rUid) override;
+    virtual int32_t QueryDuid(const std::string& deviceId, const int32_t rUid) override;
 
     /**
      * Wait for duid assignment within a peroid of time.
@@ -81,7 +83,7 @@ public:
      * @param timeout Timeout interval for waiting.
      * @return A positive number is a duid been allocated, -1 failure, -5 wait time out.
      */
-    int32_t WaitDuidReady(const std::string &nodeId, const int32_t rUid, const int32_t timeout);
+    int32_t WaitDuidReady(const std::string& nodeId, const int32_t rUid, const int32_t timeout);
 
     /**
      * Notify current device sync uid's permissions to peer device.
@@ -91,7 +93,7 @@ public:
      * @param packageName The package name.
      * @return 0 success, -1 failure.
      */
-    int32_t NotifySyncPermission(std::string &nodeId, int uid, std::string &packageName);
+    int32_t NotifySyncPermission(std::string& nodeId, int uid, std::string& packageName);
 
     /**
      * Check if the given across-device accessing application has been granted permission with the given name.
@@ -100,7 +102,7 @@ public:
      * @param permissionName permission name.
      * @return Check Distributed Permission result.
      */
-    virtual int32_t CheckDPermission(int dUid, const std::string &permissionName) override;
+    virtual int32_t CheckDPermission(int dUid, const std::string& permissionName) override;
 
     /**
      * Check the given permission if granted based on nodeId, pid, uid.
@@ -111,8 +113,8 @@ public:
      * @param uid, The application uid of caller device.
      * @return Permission checked result, 0: GRANTED, -1: DENIED.
      */
-    virtual int32_t CheckPermission(
-        const std::string &permissionName, const std::string &nodeId, int32_t pid, int32_t uid) override;
+    virtual int32_t CheckPermission(const std::string& permissionName, const std::string& nodeId, int32_t pid,
+        int32_t uid) override;
 
     /**
      * Check self permission.
@@ -120,7 +122,7 @@ public:
      * @param permissionName, permission name.
      * @return If the permission is granted, 0: GRANTED; otherwise, -1: DENIED.
      */
-    virtual int32_t CheckSelfPermission(const std::string &permissionName) override;
+    virtual int32_t CheckSelfPermission(const std::string& permissionName) override;
 
     /**
      * Check current process's permission.
@@ -128,7 +130,7 @@ public:
      * @param permissionName, permission name.
      * @return If the permission is granted, 0: GRANTED; otherwise, -1: DENIED.
      */
-    virtual int32_t CheckCallingPermission(const std::string &permissionName) override;
+    virtual int32_t CheckCallingPermission(const std::string& permissionName) override;
 
     /**
      * Check current process's or self permission.
@@ -136,7 +138,7 @@ public:
      * @param permissionName, permission name.
      * @return If the permission is granted, 0: GRANTED; otherwise, -1: DENIED.
      */
-    virtual int32_t CheckCallingOrSelfPermission(const std::string &permissionName) override;
+    virtual int32_t CheckCallingOrSelfPermission(const std::string& permissionName) override;
 
     /**
      * Check caller's permission.
@@ -144,7 +146,7 @@ public:
      * @param permissionName, permission name.
      * @return If the permission is granted, 0: GRANTED; otherwise, -1: DENIED.
      */
-    virtual int32_t CheckCallerPermission(const std::string &permissionName) override;
+    virtual int32_t CheckCallerPermission(const std::string& permissionName) override;
 
     /**
      * Check if the permission is restricted.
@@ -152,7 +154,7 @@ public:
      * @param permissionName, permission name.
      * @return If the permission is restricted, return true; otherwise, return false.
      */
-    virtual bool IsRestrictedPermission(const std::string &permissionName) override;
+    virtual bool IsRestrictedPermission(const std::string& permissionName) override;
 
     /**
      * Verify if the given application has been granted permission with the given name to access the remote device.
@@ -162,8 +164,8 @@ public:
      * @param appIdInfo The appliaction information to be verified, include ruid, nodeId, pid and bundlename.
      * @return 0 Granted, -1 denied.
      */
-    virtual int32_t VerifyPermissionFromRemote(
-        const std::string &permission, const std::string &nodeId, int32_t pid, int32_t uid) override;
+    virtual int32_t VerifyPermissionFromRemote(const std::string& permission, const std::string& nodeId, int32_t pid,
+        int32_t uid) override;
 
     /**
      * Verify self whether has been granted permission with the given name to access the remote device.
@@ -172,8 +174,8 @@ public:
      * @param nodeId Remote device networkId, not null.
      * @return 0 Granted, -1 denied.
      */
-    virtual int32_t VerifySelfPermissionFromRemote(
-        const std::string &permissionName, const std::string &nodeId) override;
+    virtual int32_t VerifySelfPermissionFromRemote(const std::string& permissionName,
+        const std::string& nodeId) override;
 
     /**
      * Check whether this app allows you to dynamically apply for specified permissions from a specified device.
@@ -182,7 +184,7 @@ public:
      * @param nodeId Remote device networkId, not null.
      * @return true can request permission, false cannot request permission.
      */
-    virtual bool CanRequestPermissionFromRemote(const std::string &permissionName, const std::string &nodeId) override;
+    virtual bool CanRequestPermissionFromRemote(const std::string& permissionName, const std::string& nodeId) override;
 
     /**
      * Grants cross-device applications the permission to access sensitive resources on the local device.
@@ -191,21 +193,21 @@ public:
      * @param nodeId The remote device networkId, not null.
      * @param ruid The remote app uid.
      */
-    virtual void GrantSensitivePermissionToRemoteApp(
-        const std::string &permissionName, const std::string &nodeId, int32_t ruid) override;
+    virtual void GrantSensitivePermissionToRemoteApp(const std::string& permissionName, const std::string& nodeId,
+        int32_t ruid) override;
 
-    virtual int32_t RegisterUsingPermissionReminder(const sptr<OnUsingPermissionReminder> &callback) override;
+    virtual int32_t RegisterUsingPermissionReminder(const sptr<OnUsingPermissionReminder>& callback) override;
 
-    virtual int32_t UnregisterUsingPermissionReminder(const sptr<OnUsingPermissionReminder> &callback) override;
+    virtual int32_t UnregisterUsingPermissionReminder(const sptr<OnUsingPermissionReminder>& callback) override;
 
-    virtual int32_t CheckPermissionAndStartUsing(
-        const std::string &permissionName, int32_t pid, int32_t uid, const std::string &deviceId) override;
+    virtual int32_t CheckPermissionAndStartUsing(const std::string& permissionName, int32_t pid, int32_t uid,
+        const std::string& deviceId) override;
 
-    virtual void StartUsingPermission(
-        const std::string &permName, int32_t pid, int32_t uid, const std::string &deviceId) override;
+    virtual void StartUsingPermission(const std::string& permName, int32_t pid, int32_t uid,
+        const std::string& deviceId) override;
 
-    virtual void StopUsingPermission(
-        const std::string &permName, int32_t pid, int32_t uid, const std::string &deviceId) override;
+    virtual void StopUsingPermission(const std::string& permName, int32_t pid, int32_t uid,
+        const std::string& deviceId) override;
 
     /**
      * Add one permission used/access record.
@@ -216,7 +218,7 @@ public:
      * @param sucCount Succeed count.
      * @param failCount Failed count.
      */
-    virtual void AddPermissionsRecord(const std::string &permissionName, const std::string &deviceId, const int32_t uid,
+    virtual void AddPermissionsRecord(const std::string& permissionName, const std::string& deviceId, const int32_t uid,
         const int32_t sucCount, const int32_t failCount) override;
 
     /**
@@ -228,8 +230,8 @@ public:
      * @param resultStr Response ziped json string.
      * @return 0 if succeeded; -1 if failed.
      */
-    virtual int32_t GetPermissionRecords(const std::string &queryGzipStr, unsigned long &codeLen, unsigned long &zipLen,
-        std::string &resultStr) override;
+    virtual int32_t GetPermissionRecords(const std::string& queryGzipStr, unsigned long& codeLen, unsigned long& zipLen,
+        std::string& resultStr) override;
 
     /**
      * Sychronized blocking requesting permission used records.
@@ -240,11 +242,11 @@ public:
      * @param callback The callback function provided for caller to handle response data.
      * @return 0 if succeeded; -1 if failed.
      */
-    virtual int32_t GetPermissionRecords(const std::string &queryGzipStr, unsigned long &codeLen, unsigned long &zipLen,
-        const sptr<OnPermissionUsedRecord> &callback) override;
+    virtual int32_t GetPermissionRecords(const std::string& queryGzipStr, unsigned long& codeLen, unsigned long& zipLen,
+        const sptr<OnPermissionUsedRecord>& callback) override;
 
     virtual void RequestPermissionsFromRemote(const std::vector<std::string> permissions,
-        const sptr<OnRequestPermissionsResult> &callback, const std::string &nodeId, const std::string &bundleName,
+        const sptr<OnRequestPermissionsResult>& callback, const std::string& nodeId, const std::string& bundleName,
         int32_t reasonResId) override;
 
 public:
@@ -269,18 +271,18 @@ private:
         GRANTED = 0,
     };
     std::set<sptr<OnUsingPermissionReminder>> reminderSet_;
-    void GetPermissionReminderInfo(const std::string &permName, int32_t pid, int32_t uid, const std::string &deviceId,
-        PermissionReminderInfo &permReminderInfo);
-    void InsertPermissionReminderInfo(const std::string &permName, int32_t pid, int32_t uid,
-        const std::string &deviceId, PermissionReminderInfo &permReminderInfo);
-    void RemovePermissionReminderInfo(const std::string &permName, int32_t pid, int32_t uid,
-        const std::string &deviceId, PermissionReminderInfo &permReminderInfo);
-    int32_t CheckLocalPermission(int32_t uid, const std::string &permissionName);
+    void GetPermissionReminderInfo(const std::string& permName, int32_t pid, int32_t uid, const std::string& deviceId,
+        PermissionReminderInfo& permReminderInfo);
+    void InsertPermissionReminderInfo(const std::string& permName, int32_t pid, int32_t uid,
+        const std::string& deviceId, PermissionReminderInfo& permReminderInfo);
+    void RemovePermissionReminderInfo(const std::string& permName, int32_t pid, int32_t uid,
+        const std::string& deviceId, PermissionReminderInfo& permReminderInfo);
+    int32_t CheckLocalPermission(int32_t uid, const std::string& permissionName);
     void CreatAns();
     void CloseAns();
     int32_t convert(int32_t duid);
     std::mutex mutex_;
-    const char *g_resFilePath = "/data/test/resources.index";
+    const char* g_resFilePath = "/data/test/resources.index";
     DISALLOW_COPY_AND_MOVE(DistributedPermissionManagerService);
 
     const std::string perm_using_remind_label_ = "系统";
@@ -315,8 +317,8 @@ private:
         {Constant::WRITE_MEDIA, "媒体"},
     };
 };
-}  // namespace Permission
-}  // namespace Security
-}  // namespace OHOS
+} // namespace Permission
+} // namespace Security
+} // namespace OHOS
 
-#endif  // PERMISSION_SERVICES_INCLUDE_DISRIBUTED_PERMISSION_MANAGER_SERVICE_H
+#endif // PERMISSION_SERVICES_INCLUDE_DISRIBUTED_PERMISSION_MANAGER_SERVICE_H

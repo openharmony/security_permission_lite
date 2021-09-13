@@ -18,7 +18,6 @@
 namespace OHOS {
 namespace Security {
 namespace Permission {
-
 bool PermissionRecord::SetPermissionRecord(const int64_t timestamp, const int32_t visitorId, const int32_t opCode,
     const bool isForeground, const int32_t accessCount, const int32_t rejectCount, PermissionRecord &permissionRecord)
 {
@@ -30,7 +29,6 @@ bool PermissionRecord::SetPermissionRecord(const int64_t timestamp, const int32_
     permissionRecord.rejectCount = rejectCount;
     return true;
 };
-
 }  // namespace Permission
 }  // namespace Security
 }  // namespace OHOS

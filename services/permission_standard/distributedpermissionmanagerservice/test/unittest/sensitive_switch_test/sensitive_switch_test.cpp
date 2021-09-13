@@ -1,7 +1,19 @@
-
+/*
+ * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 #include <gtest/gtest.h>
 #include "constant.h"
-
 #define private public
 #include "distributed_permission_manager_service.h"
 #include "resource_switch.h"
@@ -10,14 +22,11 @@
 #include "resource_switch_remote.h"
 #include "sensitive_resource_switch_setting.h"
 #include "ipc_skeleton.h"
-
 using namespace testing::ext;
-
 namespace OHOS {
 std::string IPCSkeleton::localDeviceId_ = "1004";
 namespace Security {
 namespace Permission {
-
 namespace {
 static const std::string DEVICE_("test-device-id-001");
 }  // namespace
@@ -35,7 +44,8 @@ public:
     void SetUp()
     {
         ResourceSwitch::GetInstance().Initialize();
-        sleep(5);
+        int32_t time = 5;
+        sleep(time);
     }
     void TearDown()
     {
@@ -230,7 +240,6 @@ HWTEST_F(SensitiveSwitchTest, SensitiveSwitch_RegisterContentObserver_001, TestS
         });
     EXPECT_TRUE(ResourceSwitchLocal::GetInstance().hasRegistered_);
 }
-
 }  // namespace Permission
 }  // namespace Security
 }  // namespace OHOS

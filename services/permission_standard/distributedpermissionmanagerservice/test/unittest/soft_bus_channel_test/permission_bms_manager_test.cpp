@@ -59,7 +59,8 @@ public:
     {
         // simulator unregister
         ::UnregNodeDeviceStateCb(nullptr);
-        for (int i = 0; i < 20 + 1; i++) {
+        int sessionLimit = 20;
+        for (int i = 0; i < sessionLimit + 1; i++) {
             // 1: mock session id
             ::CloseSession(1);
         }
@@ -401,7 +402,7 @@ HWTEST_F(PermissionBmsManagerTest, PermissionBmsManager_ReGrantDuidPermissions_0
 
             // 2)set logic
             // (permission.status | FLAG_PERMISSION_STATUS_DISTRIBUTED_GRANTED) &
-            //             (~FLAG_PERMISSION_STATUS_DISTRIBUTED_DENIED);
+            //             (bit-not(~) FLAG_PERMISSION_STATUS_DISTRIBUTED_DENIED)
             // FLAG_PERMISSION_STATUS_DISTRIBUTED_GRANTED: 0b01
             // FLAG_PERMISSION_STATUS_DISTRIBUTED_DENIED: 0b10
             // ~FLAG_PERMISSION_STATUS_DISTRIBUTED_DENIED: 0xFFFF_FFFD
@@ -411,7 +412,7 @@ HWTEST_F(PermissionBmsManagerTest, PermissionBmsManager_ReGrantDuidPermissions_0
 
             // 3)reset logic:
             // (permission.status | FLAG_PERMISSION_STATUS_DISTRIBUTED_DENIED) &
-            //                     (~FLAG_PERMISSION_STATUS_DISTRIBUTED_GRANTED);
+            //                     (bit-not(~) FLAG_PERMISSION_STATUS_DISTRIBUTED_GRANTED)
             // (0b10 | 0b10) & ~0b01 -> 0b10 & ~0b01 -> 0bxxxx10
             PERMISSION_LOG_INFO(LABEL, "status1 reset willbe: %{public}d", (pd.status | 2) & (~1));
 
@@ -473,7 +474,6 @@ HWTEST_F(PermissionBmsManagerTest, PermissionBmsManager_ReGrantDuidPermissions_0
         }
     }
 }
-
 }  // namespace Permission
 }  // namespace Security
 }  // namespace OHOS

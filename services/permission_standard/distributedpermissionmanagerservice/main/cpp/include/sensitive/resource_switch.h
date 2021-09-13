@@ -22,7 +22,6 @@
 namespace OHOS {
 namespace Security {
 namespace Permission {
-
 class ResourceSwitch {
 public:
     static ResourceSwitch &GetInstance();
@@ -73,7 +72,6 @@ private:
     ResourceSwitch()
     {}
 };
-
 }  // namespace Permission
 }  // namespace Security
 }  // namespace OHOS

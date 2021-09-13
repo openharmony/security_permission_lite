@@ -26,6 +26,6 @@ void PermissionListener::Init()
     PERMISSION_LOG_ERROR(LABEL, "register listener for all type of permission");
     PermissionChangeReceiver::Register();
 }
-}  // namespace Permission
-}  // namespace Security
-}  // namespace OHOS
+} // namespace Permission
+} // namespace Security
+} // namespace OHOS

@@ -24,11 +24,8 @@
 namespace OHOS {
 namespace Security {
 namespace Permission {
-
 class Builder;
-
 class SensitiveResourceSwitchSetting {
-
 public:
     SensitiveResourceSwitchSetting(Builder &builder);
     SensitiveResourceSwitchSetting()

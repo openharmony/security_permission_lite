@@ -60,7 +60,8 @@ void StressTest::TestFountion(int i)
     PERMISSION_LOG_INFO(LABEL, "%{public}s", str.c_str());
     while (true) {
         ExeAPI();
-        sleep(2);
+        int sleepTime = 2;
+        sleep(sleepTime);
     }
 }
 

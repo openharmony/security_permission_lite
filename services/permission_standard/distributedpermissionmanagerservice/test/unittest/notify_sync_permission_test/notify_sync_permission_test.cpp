@@ -25,7 +25,6 @@
 using namespace std;
 using namespace testing::ext;
 namespace OHOS {
-
 pid_t IPCSkeleton::pid_ = 1;
 pid_t IPCSkeleton::uid_ = 1;
 std::string IPCSkeleton::localDeviceId_ = "1004";
@@ -33,27 +32,21 @@ std::string IPCSkeleton::deviceId_ = "";
 
 namespace Security {
 namespace Permission {
-
 class NotifySyncPermissionTest : public testing::Test {
 public:
     static void SetUpTestCase()
     {
         cout << "SetUpTestCase()" << endl;
-
         OHOS::sptr<OHOS::IRemoteObject> bundleObject = new OHOS::AppExecFwk::BundleMgrService();
         OHOS::sptr<OHOS::IRemoteObject> permissionObject = new PermissionManagerService();
-
         auto sysMgr = OHOS::SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
-
         if (sysMgr == NULL) {
             GTEST_LOG_(ERROR) << "fail to get ISystemAbilityManager";
             return;
         }
-
         sysMgr->AddSystemAbility(Constant::ServiceId::BUNDLE_MGR_SERVICE_SYS_ABILITY_ID, bundleObject);
         sysMgr->AddSystemAbility(Constant::ServiceId::SUBSYS_SECURITY_PERMISSION_SYS_SERVICE_ID, permissionObject);
     }
-
     static void TearDownTestCase()
     {
         cout << "TearDownTestCase()" << endl;
@@ -74,7 +67,6 @@ std::shared_ptr<DistributedPermissionManagerService> NotifySyncPermissionTest::G
 {
     return std::make_shared<DistributedPermissionManagerService>();
 }
-
 HWTEST_F(NotifySyncPermissionTest, NotifySyncPermission_0001, Function | MediumTest | Level1)
 {
     DeviceInfoRepository::GetInstance().SaveDeviceInfo(
@@ -90,7 +82,6 @@ HWTEST_F(NotifySyncPermissionTest, NotifySyncPermission_0001, Function | MediumT
     int32_t result = class_->NotifySyncPermission(nodeId, uid, packageName);
     EXPECT_EQ(result, 0);
 }
-
 }  // namespace Permission
 }  // namespace Security
 }  // namespace OHOS

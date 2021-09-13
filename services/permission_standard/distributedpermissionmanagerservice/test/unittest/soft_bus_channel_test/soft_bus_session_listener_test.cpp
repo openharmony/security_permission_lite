@@ -35,8 +35,6 @@ namespace Permission {
 namespace {
 static constexpr OHOS::HiviewDFX::HiLogLabel LABEL = {
     LOG_CORE, SECURITY_DOMAIN_PERMISSION, "SoftBusSessionListenerTest"};
-// static const std::string INVALID_DEVICE_("test-device-id-invalid");
-// static const std::string SELF_DEVICE_("test-device-id-001");
 static const std::string TARGET_DEVICE_("test-device-id-002");
 static const std::string TARGET_NETWORK_ID_(TARGET_DEVICE_ + ":network-id-001");
 static const std::string TARGET_UUID_(TARGET_NETWORK_ID_ + ":uuid-001");
@@ -228,7 +226,6 @@ HWTEST_F(SoftBusSessionListenerTest, SoftBusSessionListener_OnBytesReceived_001,
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
 }
-
 }  // namespace Permission
 }  // namespace Security
 }  // namespace OHOS

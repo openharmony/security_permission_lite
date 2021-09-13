@@ -75,14 +75,16 @@ public:
     void SetUp()
     {
         std::vector<OHOS::Security::Permission::PermissionDef> permDefList;
+        int32_t labelIdInt = 9527;
+        int32_t descriptionIdInt = 9528;
         OHOS::Security::Permission::PermissionDef permissionDef_Camera = {.permissionName = Constant::CAMERA,
             .bundleName = SYSTEM_TEST_BUNDLE_NAME_DISTRIBUTED_SYSTEM_SIGNED,
             .grantMode = 0,
             .availableScope = 1 << 0,
             .label = "test label",
-            .labelId = 9527,
+            .labelId = labelIdInt,
             .description = "test description",
-            .descriptionId = 9528};
+            .descriptionId = descriptionIdInt};
         permDefList.emplace_back(permissionDef_Camera);
         PermissionKit::AddDefPermissions(permDefList);
         std::vector<std::string> permList_user;
@@ -144,7 +146,8 @@ void DistributedRequestPermissionFromRemoteTest::SetUpTestCase(void)
     appMs_ = STAbilityUtil::GetAppMgrService();
     abilityMs_ = STAbilityUtil::GetAbilityManagerService();
     if (appMs_) {
-        appMs_->SetAppFreezingTime(60);
+        int32_t freezingTime = 60;
+        appMs_->SetAppFreezingTime(freezingTime);
         int time = 0;
         appMs_->GetAppFreezingTime(time);
         std::cout << "appMs_->GetAppFreezingTime();" << time << std::endl;

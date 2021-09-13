@@ -243,14 +243,9 @@ int RemoteCommandExecutor::ExecuteRemoteCommand(
         isRemote);
 
     ptrCommand->remoteProtocol_.statusCode = Constant::STATUS_CODE_BEFORE_RPC;
-
     if (!isRemote) {
         // Local device, play myself.
         ptrCommand->Execute();
-        PERMISSION_LOG_DEBUG(LABEL,
-            "command executed with status: %{public}d, message: %{public}s",
-            ptrCommand->remoteProtocol_.statusCode,
-            ptrCommand->remoteProtocol_.message.c_str());
         int code = ClientProcessResult(ptrCommand);
         PERMISSION_LOG_DEBUG(LABEL,
             "command finished with status: %{public}d, message: %{public}s",
@@ -262,12 +257,6 @@ int RemoteCommandExecutor::ExecuteRemoteCommand(
     std::string responseString =
         ptrChannel_->ExecuteCommand(ptrCommand->remoteProtocol_.commandName, ptrCommand->ToJsonPayload());
     PERMISSION_LOG_INFO(LABEL, "command executed uniqueId %{public}s", uniqueId.c_str());
-    PERMISSION_LOG_DEBUG(LABEL, "command executed command's response: %{public}s", responseString.c_str());
-    PERMISSION_LOG_DEBUG(LABEL,
-        "command executed with status: %{public}d, message: %{public}s",
-        ptrCommand->remoteProtocol_.statusCode,
-        ptrCommand->remoteProtocol_.message.c_str());
-
     if (responseString.empty()) {
         PERMISSION_LOG_WARN(LABEL,
             "targetNodeId %{public}s, uniqueId %{public}s, execute remote command error, response is empty.",
@@ -284,7 +273,6 @@ int RemoteCommandExecutor::ExecuteRemoteCommand(
         return Constant::FAILURE;
     }
     int32_t result = ClientProcessResult(ptrResponseCommand);
-
     if (commands_.empty()) {
         ptrChannel_->CloseConnection();
     }

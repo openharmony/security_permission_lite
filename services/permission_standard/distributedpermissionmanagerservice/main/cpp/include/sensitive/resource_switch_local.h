@@ -22,7 +22,6 @@
 namespace OHOS {
 namespace Security {
 namespace Permission {
-
 typedef void (*OnChangeCallback)(std::initializer_list<std::string> sensitiveResources);
 class ResourceSwitchLocal {
 public:
@@ -59,7 +58,6 @@ private:
 private:
     bool hasRegistered_;
 };
-
 }  // namespace Permission
 }  // namespace Security
 }  // namespace OHOS

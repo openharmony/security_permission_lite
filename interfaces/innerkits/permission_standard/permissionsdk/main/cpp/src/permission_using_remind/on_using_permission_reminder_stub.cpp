@@ -22,8 +22,8 @@ namespace OHOS {
 namespace Security {
 namespace Permission {
 namespace {
-static constexpr OHOS::HiviewDFX::HiLogLabel LABEL = {
-    LOG_CORE, SECURITY_DOMAIN_PERMISSION, "OnUsingPermissionReminderStub"};
+static constexpr OHOS::HiviewDFX::HiLogLabel LABEL = {LOG_CORE, SECURITY_DOMAIN_PERMISSION,
+    "OnUsingPermissionReminderStub"};
 }
 OnUsingPermissionReminderStub::OnUsingPermissionReminderStub()
 {
@@ -35,14 +35,14 @@ OnUsingPermissionReminderStub::~OnUsingPermissionReminderStub()
     PERMISSION_LOG_DEBUG(LABEL, "destroy instance (%{public}p)", this);
 }
 
-int32_t OnUsingPermissionReminderStub::OnRemoteRequest(
-    uint32_t code, MessageParcel &data, MessageParcel &reply, MessageOption &option)
+int32_t OnUsingPermissionReminderStub::OnRemoteRequest(uint32_t code, MessageParcel& data, MessageParcel& reply,
+    MessageOption& option)
 {
     PERMISSION_LOG_INFO(LABEL, "message code is %{public}u", code);
     std::u16string descriptor = data.ReadInterfaceToken();
     if (descriptor != OnUsingPermissionReminder::GetDescriptor()) {
-        PERMISSION_LOG_INFO(
-            LABEL, "%{public}s get unexpected descriptor %{public}s", __func__, Str16ToStr8(descriptor).c_str());
+        PERMISSION_LOG_INFO(LABEL, "%{public}s get unexpected descriptor %{public}s", __func__,
+            Str16ToStr8(descriptor).c_str());
         return INVALID_DATA;
     }
     OnUsingPermissionReminder::Message msgCode = static_cast<OnUsingPermissionReminder::Message>(code);
@@ -74,6 +74,6 @@ int32_t OnUsingPermissionReminderStub::OnRemoteRequest(
     }
     return ERR_NONE;
 }
-}  // namespace Permission
-}  // namespace Security
-}  // namespace OHOS
+} // namespace Permission
+} // namespace Security
+} // namespace OHOS

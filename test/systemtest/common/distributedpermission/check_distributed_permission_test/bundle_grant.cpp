@@ -18,8 +18,7 @@
 #include <chrono>
 #include <gtest/gtest.h>
 #include <mutex>
-#include <stdio.h>
-#include <string.h>
+#include <cstring.h>
 #include <iostream>
 #include <thread>
 #include "system_test_distributed_permission_util.h"

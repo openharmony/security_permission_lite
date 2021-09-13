@@ -24,11 +24,9 @@
 #include "permission_log.h"
 #include "constant.h"
 using namespace OHOS::HiviewDFX;
-
 namespace OHOS {
 namespace Security {
 namespace Permission {
-
 static const HiLogLabel LABEL = {LOG_CORE, SECURITY_DOMAIN_PERMISSION, "ResourceSwitch"};
 ResourceSwitch &ResourceSwitch::GetInstance()
 {
@@ -155,16 +153,13 @@ int ResourceSwitch::GetRemoteSensitiveResourceSwitch(std::string deviceId, std::
             permission.c_str());
         return Constant::RESOURCE_SWITCH_STATUS_DENIED;
     }
-
     bool isSwitchAllow = ResourceSwitchCache::GetInstance().GetSwitchStatus(deviceId, permission);
-
     if (isSwitchAllow) {
         return Constant::RESOURCE_SWITCH_STATUS_ALLOWED;
     } else {
         return Constant::RESOURCE_SWITCH_STATUS_DENIED;
     }
 }
-
 }  // namespace Permission
 }  // namespace Security
 }  // namespace OHOS

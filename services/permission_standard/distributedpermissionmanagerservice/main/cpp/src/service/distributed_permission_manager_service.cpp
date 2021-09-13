@@ -17,7 +17,6 @@
 #include "permission_log.h"
 #include "ipc_skeleton.h"
 #include "system_ability_definition.h"
-
 #include "soft_bus_manager.h"
 #include "object_device_permission_manager.h"
 #include "subject_device_permission_manager.h"
@@ -28,8 +27,8 @@ namespace OHOS {
 namespace Security {
 namespace Permission {
 namespace {
-static constexpr OHOS::HiviewDFX::HiLogLabel LABEL = {
-    LOG_CORE, SECURITY_DOMAIN_PERMISSION, "DistributedPermissionManagerService"};
+static constexpr OHOS::HiviewDFX::HiLogLabel LABEL = {LOG_CORE, SECURITY_DOMAIN_PERMISSION,
+    "DistributedPermissionManagerService"};
 }
 const bool REGISTER_RESULT =
     SystemAbility::MakeAndRegisterAbility(DelayedSingleton<DistributedPermissionManagerService>::GetInstance().get());
@@ -101,13 +100,10 @@ void DistributedPermissionManagerService::OnStop()
     serviceRunningState_ = ServiceRunningState::STATE_NOT_START;
 }
 
-int32_t DistributedPermissionManagerService::AllocateDuid(const std::string &nodeId, const int32_t rUid)
+int32_t DistributedPermissionManagerService::AllocateDuid(const std::string& nodeId, const int32_t rUid)
 {
-    PERMISSION_LOG_INFO(LABEL,
-        "%{public}s called, nodeId: %{public}s, rUid: %{public}d",
-        __func__,
-        Constant::EncryptDevId(nodeId).c_str(),
-        rUid);
+    PERMISSION_LOG_INFO(LABEL, "%{public}s called, nodeId: %{public}s, rUid: %{public}d", __func__,
+        Constant::EncryptDevId(nodeId).c_str(), rUid);
     const std::string deviceId = DeviceInfoManager::GetInstance().ConvertToUniqueDisabilityIdOrFetch(nodeId);
     if (deviceId.empty()) {
         PERMISSION_LOG_ERROR(LABEL, "%{public}s: invalid params!", __func__);
@@ -124,13 +120,10 @@ int32_t DistributedPermissionManagerService::AllocateDuid(const std::string &nod
     return convert(duid);
 }
 
-int32_t DistributedPermissionManagerService::QueryDuid(const std::string &nodeId, const int32_t rUid)
+int32_t DistributedPermissionManagerService::QueryDuid(const std::string& nodeId, const int32_t rUid)
 {
-    PERMISSION_LOG_INFO(LABEL,
-        "%{public}s called, nodeId: %{public}s, rUid: %{public}d",
-        __func__,
-        Constant::EncryptDevId(nodeId).c_str(),
-        rUid);
+    PERMISSION_LOG_INFO(LABEL, "%{public}s called, nodeId: %{public}s, rUid: %{public}d", __func__,
+        Constant::EncryptDevId(nodeId).c_str(), rUid);
     const std::string deviceId = DeviceInfoManager::GetInstance().ConvertToUniqueDisabilityIdOrFetch(nodeId);
     if (deviceId.empty()) {
         PERMISSION_LOG_ERROR(LABEL, "%{public}s: nodeId cannot convert to deviceId, failure.", __func__);
@@ -141,15 +134,11 @@ int32_t DistributedPermissionManagerService::QueryDuid(const std::string &nodeId
     return convert(duid);
 }
 
-int32_t DistributedPermissionManagerService::WaitDuidReady(
-    const std::string &nodeId, const int32_t rUid, const int32_t timeout)
+int32_t DistributedPermissionManagerService::WaitDuidReady(const std::string& nodeId, const int32_t rUid,
+    const int32_t timeout)
 {
-    PERMISSION_LOG_INFO(LABEL,
-        "%{public}s called, nodeId: %{public}s, rUid: %{public}d, timeout: %{public}d",
-        __func__,
-        Constant::EncryptDevId(nodeId).c_str(),
-        rUid,
-        timeout);
+    PERMISSION_LOG_INFO(LABEL, "%{public}s called, nodeId: %{public}s, rUid: %{public}d, timeout: %{public}d", __func__,
+        Constant::EncryptDevId(nodeId).c_str(), rUid, timeout);
 
     const std::string deviceId = DeviceInfoManager::GetInstance().ConvertToUniqueDisabilityIdOrFetch(nodeId);
     if (deviceId.empty()) {
@@ -159,38 +148,31 @@ int32_t DistributedPermissionManagerService::WaitDuidReady(
     return SubjectDevicePermissionManager::GetInstance().WaitDuidReady(deviceId, rUid, timeout);
 }
 
-int32_t DistributedPermissionManagerService::NotifySyncPermission(
-    std::string &nodeId, int uid, std::string &packageName)
+int32_t DistributedPermissionManagerService::NotifySyncPermission(std::string& nodeId, int uid,
+    std::string& packageName)
 {
-    PERMISSION_LOG_INFO(LABEL,
-        "nodeId = %{public}s, uid = %{public}d, packageName = %{public}s",
-        Constant::EncryptDevId(nodeId).c_str(),
-        uid,
-        packageName.c_str());
+    PERMISSION_LOG_INFO(LABEL, "nodeId = %{public}s, uid = %{public}d, packageName = %{public}s",
+        Constant::EncryptDevId(nodeId).c_str(), uid, packageName.c_str());
 
     std::string deviceId = DeviceInfoManager::GetInstance().ConvertToUniqueDisabilityIdOrFetch(nodeId);
     if (deviceId.empty()) {
-        PERMISSION_LOG_DEBUG(LABEL,
-            "notifySyncPermission: nodeId [%{public}s] cannot convert to deviceId, failure.",
+        PERMISSION_LOG_DEBUG(LABEL, "notifySyncPermission: nodeId [%{public}s] cannot convert to deviceId, failure.",
             Constant::EncryptDevId(nodeId).c_str());
         return Constant::INVALID_DEVICE_ID;
     }
     return ObjectDevicePermissionManager::GetInstance().NotifySyncPermission(deviceId, uid, packageName);
 }
 
-int32_t DistributedPermissionManagerService::CheckDPermission(int dUid, const std::string &permissionName)
+int32_t DistributedPermissionManagerService::CheckDPermission(int dUid, const std::string& permissionName)
 {
-    PERMISSION_LOG_INFO(LABEL,
-        "%{public}s called, dUid: %{public}d, permissionName: %{public}s",
-        __func__,
-        dUid,
+    PERMISSION_LOG_INFO(LABEL, "%{public}s called, dUid: %{public}d, permissionName: %{public}s", __func__, dUid,
         permissionName.c_str());
     int32_t checkResult =
         SubjectDevicePermissionManager::GetInstance().CheckDistributedPermission(dUid, permissionName);
     PERMISSION_LOG_DEBUG(LABEL, "%{public}s returned: %{public}d", __func__, checkResult);
     return checkResult;
 }
-int32_t DistributedPermissionManagerService::CheckLocalPermission(int32_t uid, const std::string &permissionName)
+int32_t DistributedPermissionManagerService::CheckLocalPermission(int32_t uid, const std::string& permissionName)
 {
     std::shared_ptr<ExternalDeps> externalDeps = std::make_shared<ExternalDeps>();
     iBundleManager_ = externalDeps->GetBundleManager(iBundleManager_);
@@ -214,15 +196,11 @@ int32_t DistributedPermissionManagerService::CheckLocalPermission(int32_t uid, c
     }
     return Constant::PERMISSION_GRANTED;
 }
-int32_t DistributedPermissionManagerService::CheckPermission(
-    const std::string &permissionName, const std::string &nodeId, int32_t pid, int32_t uid)
+int32_t DistributedPermissionManagerService::CheckPermission(const std::string& permissionName,
+    const std::string& nodeId, int32_t pid, int32_t uid)
 {
-    PERMISSION_LOG_INFO(LABEL,
-        "permissionName = %{public}s, nodeId = %{public}s, pid = %{public}d, uid = %{public}d, ",
-        permissionName.c_str(),
-        Constant::EncryptDevId(nodeId).c_str(),
-        pid,
-        uid);
+    PERMISSION_LOG_INFO(LABEL, "permissionName = %{public}s, nodeId = %{public}s, pid = %{public}d, uid = %{public}d, ",
+        permissionName.c_str(), Constant::EncryptDevId(nodeId).c_str(), pid, uid);
     if (!DistributedDataValidator::IsPermissionNameValid(permissionName)) {
         PERMISSION_LOG_ERROR(LABEL, "PermissionName data invalid");
         return Constant::PERMISSION_DENIED;
@@ -251,7 +229,7 @@ int32_t DistributedPermissionManagerService::CheckPermission(
     return SubjectDevicePermissionManager::GetInstance().CheckDistributedPermission(distributedUid, permissionName);
 }
 
-int32_t DistributedPermissionManagerService::CheckSelfPermission(const std::string &permissionName)
+int32_t DistributedPermissionManagerService::CheckSelfPermission(const std::string& permissionName)
 {
     PERMISSION_LOG_INFO(LABEL, "permissionName = %{public}s", permissionName.c_str());
     if (!DistributedDataValidator::IsPermissionNameValid(permissionName)) {
@@ -265,7 +243,7 @@ int32_t DistributedPermissionManagerService::CheckSelfPermission(const std::stri
     return CheckPermission(permissionName, "", pid, uid);
 }
 
-int32_t DistributedPermissionManagerService::CheckCallingPermission(const std::string &permissionName)
+int32_t DistributedPermissionManagerService::CheckCallingPermission(const std::string& permissionName)
 {
     PERMISSION_LOG_INFO(LABEL, "permissionName = %{public}s", permissionName.c_str());
     if (!DistributedDataValidator::IsPermissionNameValid(permissionName)) {
@@ -278,13 +256,13 @@ int32_t DistributedPermissionManagerService::CheckCallingPermission(const std::s
     std::string deviceId = IPCSkeleton::GetCallingDeviceID();
     char localDeviceId[Constant::DEVICE_UUID_LENGTH] = {0};
     GetDevUdid(localDeviceId, Constant::DEVICE_UUID_LENGTH);
-    if (pid == getpid() && uid == (pid_t)getuid() && deviceId == localDeviceId) {
+    if (pid == getpid() && uid == (pid_t) getuid() && deviceId == localDeviceId) {
         return Constant::PERMISSION_DENIED;
     }
     return CheckPermission(permissionName, deviceId, pid, uid);
 }
 
-int32_t DistributedPermissionManagerService::CheckCallingOrSelfPermission(const std::string &permissionName)
+int32_t DistributedPermissionManagerService::CheckCallingOrSelfPermission(const std::string& permissionName)
 {
     PERMISSION_LOG_INFO(LABEL, "permissionName = %{public}s", permissionName.c_str());
     if (!DistributedDataValidator::IsPermissionNameValid(permissionName)) {
@@ -298,28 +276,25 @@ int32_t DistributedPermissionManagerService::CheckCallingOrSelfPermission(const 
     return CheckPermission(permissionName, deviceID, pid, uid);
 }
 
-int32_t DistributedPermissionManagerService::CheckCallerPermission(const std::string &permissionName)
+int32_t DistributedPermissionManagerService::CheckCallerPermission(const std::string& permissionName)
 {
     PERMISSION_LOG_INFO(LABEL, "permissionName = %{public}s", permissionName.c_str());
     return CheckCallingOrSelfPermission(permissionName);
 }
 
-bool DistributedPermissionManagerService::IsRestrictedPermission(const std::string &permissionName)
+bool DistributedPermissionManagerService::IsRestrictedPermission(const std::string& permissionName)
 {
     PERMISSION_LOG_INFO(LABEL, "permissionName = %{public}s", permissionName.c_str());
     return PermissionDefinition::GetInstance().IsRestrictedPermission(permissionName);
 }
 
-int32_t DistributedPermissionManagerService::VerifyPermissionFromRemote(
-    const std::string &permission, const std::string &nodeId, int32_t pid, int32_t uid)
+int32_t DistributedPermissionManagerService::VerifyPermissionFromRemote(const std::string& permission,
+    const std::string& nodeId, int32_t pid, int32_t uid)
 {
     PERMISSION_LOG_DEBUG(LABEL,
         "verifyPermissionFromRemote() called with: permission= %{public}s, nodeId= %{public}s, "
         " pid= %{public}d  , uid= %{public}d",
-        permission.c_str(),
-        Constant::EncryptDevId(nodeId).c_str(),
-        pid,
-        uid);
+        permission.c_str(), Constant::EncryptDevId(nodeId).c_str(), pid, uid);
     std::string deviceId = DeviceInfoManager::GetInstance().ConvertToUniqueDisabilityIdOrFetch(nodeId);
     if (deviceId.empty()) {
         PERMISSION_LOG_ERROR(LABEL,
@@ -333,13 +308,11 @@ int32_t DistributedPermissionManagerService::VerifyPermissionFromRemote(
     return result;
 }
 
-int32_t DistributedPermissionManagerService::VerifySelfPermissionFromRemote(
-    const std::string &permissionName, const std::string &nodeId)
+int32_t DistributedPermissionManagerService::VerifySelfPermissionFromRemote(const std::string& permissionName,
+    const std::string& nodeId)
 {
-    PERMISSION_LOG_DEBUG(LABEL,
-        "verifyPermissionFromRemote() called with: permission= %{public}s, nodeId= %{public}s ",
-        permissionName.c_str(),
-        Constant::EncryptDevId(nodeId).c_str());
+    PERMISSION_LOG_DEBUG(LABEL, "verifyPermissionFromRemote() called with: permission= %{public}s, nodeId= %{public}s ",
+        permissionName.c_str(), Constant::EncryptDevId(nodeId).c_str());
     const pid_t pid = IPCSkeleton::GetCallingPid();
     const pid_t uid = IPCSkeleton::GetCallingUid();
     std::string deviceId = DeviceInfoManager::GetInstance().ConvertToUniqueDisabilityIdOrFetch(nodeId);
@@ -355,13 +328,12 @@ int32_t DistributedPermissionManagerService::VerifySelfPermissionFromRemote(
     return result;
 }
 
-bool DistributedPermissionManagerService::CanRequestPermissionFromRemote(
-    const std::string &permissionName, const std::string &nodeId)
+bool DistributedPermissionManagerService::CanRequestPermissionFromRemote(const std::string& permissionName,
+    const std::string& nodeId)
 {
     PERMISSION_LOG_DEBUG(LABEL,
         "CanRequestPermissionFromRemote() called with: permission= %{public}s, nodeId= %{public}s ",
-        permissionName.c_str(),
-        Constant::EncryptDevId(nodeId).c_str());
+        permissionName.c_str(), Constant::EncryptDevId(nodeId).c_str());
     const pid_t pid = IPCSkeleton::GetCallingPid();
     const pid_t uid = IPCSkeleton::GetCallingUid();
     const std::string deviceId = DeviceInfoManager::GetInstance().ConvertToUniqueDisabilityIdOrFetch(nodeId);
@@ -376,15 +348,13 @@ bool DistributedPermissionManagerService::CanRequestPermissionFromRemote(
     PERMISSION_LOG_ERROR(LABEL, "canRequestPermissionFromRemote() returned: %{public}s .", result ? "true" : "false");
     return result;
 }
-void DistributedPermissionManagerService::GrantSensitivePermissionToRemoteApp(
-    const std::string &permissionName, const std::string &nodeId, int ruid)
+void DistributedPermissionManagerService::GrantSensitivePermissionToRemoteApp(const std::string& permissionName,
+    const std::string& nodeId, int ruid)
 {
     PERMISSION_LOG_DEBUG(LABEL,
         "GrantSensitivePermissionToRemoteApp() called with: permission= %{public}s, nodeId= %{public}s, "
         " ruid= %{public}d ",
-        permissionName.c_str(),
-        Constant::EncryptDevId(nodeId).c_str(),
-        ruid);
+        permissionName.c_str(), Constant::EncryptDevId(nodeId).c_str(), ruid);
     std::string deviceId = DeviceInfoManager::GetInstance().ConvertToUniqueDisabilityIdOrFetch(nodeId);
     if (deviceId.empty()) {
         PERMISSION_LOG_ERROR(LABEL,
@@ -396,18 +366,16 @@ void DistributedPermissionManagerService::GrantSensitivePermissionToRemoteApp(
 }
 
 void DistributedPermissionManagerService::RequestPermissionsFromRemote(const std::vector<std::string> permissions,
-    const sptr<OnRequestPermissionsResult> &callback, const std::string &nodeId, const std::string &bundleName,
+    const sptr<OnRequestPermissionsResult>& callback, const std::string& nodeId, const std::string& bundleName,
     int32_t reasonResId)
 {
     PERMISSION_LOG_DEBUG(LABEL,
         "RequestPermissionsFromRemote() called with: nodeId= %{public}s, "
         " bundleName= %{public}s , reasonResId= %{public}d",
-        Constant::EncryptDevId(nodeId).c_str(),
-        bundleName.c_str(),
-        reasonResId);
+        Constant::EncryptDevId(nodeId).c_str(), bundleName.c_str(), reasonResId);
     // RequestRemotePermission need the node Id, please do not convert it to deviceId
-    RequestRemotePermission::GetInstance().RequestPermissionsFromRemote(
-        permissions, callback, nodeId, bundleName, reasonResId);
+    RequestRemotePermission::GetInstance().RequestPermissionsFromRemote(permissions, callback, nodeId, bundleName,
+        reasonResId);
 }
 
 /**
@@ -417,7 +385,7 @@ void DistributedPermissionManagerService::RequestPermissionsFromRemote(const std
  * @return result code indicates callback if register successfully.
  */
 int32_t DistributedPermissionManagerService::RegisterUsingPermissionReminder(
-    const sptr<OnUsingPermissionReminder> &callback)
+    const sptr<OnUsingPermissionReminder>& callback)
 {
     PERMISSION_LOG_INFO(LABEL, "%{public}s: called!", __func__);
 
@@ -440,7 +408,7 @@ int32_t DistributedPermissionManagerService::RegisterUsingPermissionReminder(
  * @return result code indicates callback if unregister successfully.
  */
 int32_t DistributedPermissionManagerService::UnregisterUsingPermissionReminder(
-    const sptr<OnUsingPermissionReminder> &callback)
+    const sptr<OnUsingPermissionReminder>& callback)
 {
     PERMISSION_LOG_INFO(LABEL, "%{public}s: called!", __func__);
 
@@ -465,8 +433,8 @@ int32_t DistributedPermissionManagerService::UnregisterUsingPermissionReminder(
  * @param deviceId thd deviceId from pid json string indicates app information
  * @return Permission checked result, {@link #GRANTED} indicates permission granted, otherwise {@link #DENIED}.
  */
-int32_t DistributedPermissionManagerService::CheckPermissionAndStartUsing(
-    const std::string &permissionName, int32_t pid, int32_t uid, const std::string &deviceId)
+int32_t DistributedPermissionManagerService::CheckPermissionAndStartUsing(const std::string& permissionName,
+    int32_t pid, int32_t uid, const std::string& deviceId)
 {
     PERMISSION_LOG_INFO(LABEL, "%{public}s: called!", __func__);
     if (permissionName.empty()) {
@@ -516,7 +484,6 @@ int32_t DistributedPermissionManagerService::CheckPermissionAndStartUsing(
     }
 
     bool isRootOrSystem = DistributedDataValidator::IsSpecRuid(uid);
-
     if (GRANTED == iGranted && !isRootOrSystem) {
         StartUsingPermission(permissionName, pid, uid, deviceId);
     }
@@ -536,8 +503,8 @@ int32_t DistributedPermissionManagerService::CheckPermissionAndStartUsing(
  * @param uid the uid from pid json string indicates app information
  * @param deviceId thd deviceId from pid json string indicates app information
  */
-void DistributedPermissionManagerService::StartUsingPermission(
-    const std::string &permName, int32_t pid, int32_t uid, const std::string &deviceId)
+void DistributedPermissionManagerService::StartUsingPermission(const std::string& permName, int32_t pid, int32_t uid,
+    const std::string& deviceId)
 {
     PERMISSION_LOG_INFO(LABEL, "%{public}s: called!", __func__);
 
@@ -570,8 +537,8 @@ void DistributedPermissionManagerService::StartUsingPermission(
  * @param uid the uid from pid json string indicates app information
  * @param deviceId thd deviceId from pid json string indicates app information
  */
-void DistributedPermissionManagerService::StopUsingPermission(
-    const std::string &permName, int32_t pid, int32_t uid, const std::string &deviceId)
+void DistributedPermissionManagerService::StopUsingPermission(const std::string& permName, int32_t pid, int32_t uid,
+    const std::string& deviceId)
 {
     PERMISSION_LOG_INFO(LABEL, "%{public}s: called!", __func__);
 
@@ -605,8 +572,8 @@ void DistributedPermissionManagerService::StopUsingPermission(
  * @param deviceId thd deviceId from pid json string indicates app information
  * @param permReminderInfo permmission reminder infomation
  */
-void DistributedPermissionManagerService::GetPermissionReminderInfo(const std::string &permName, int32_t pid,
-    int32_t uid, const std::string &deviceId, PermissionReminderInfo &permReminderInfo)
+void DistributedPermissionManagerService::GetPermissionReminderInfo(const std::string& permName, int32_t pid,
+    int32_t uid, const std::string& deviceId, PermissionReminderInfo& permReminderInfo)
 {
     PERMISSION_LOG_INFO(LABEL, "%{public}s: called!", __func__);
 
@@ -635,8 +602,8 @@ void DistributedPermissionManagerService::GetPermissionReminderInfo(const std::s
     }
     result = iBundleManager_->GetBundleInfo(bundleName, AppExecFwk::BundleFlag::GET_BUNDLE_DEFAULT, bundleInfo);
     if (!result) {
-        PERMISSION_LOG_INFO(
-            LABEL, "%{public}s cannot get bundleInfo by bundleName %{public}s", __func__, bundleName.c_str());
+        PERMISSION_LOG_INFO(LABEL, "%{public}s cannot get bundleInfo by bundleName %{public}s", __func__,
+            bundleName.c_str());
         return;
     }
 
@@ -646,7 +613,6 @@ void DistributedPermissionManagerService::GetPermissionReminderInfo(const std::s
     // set bundleLabel
     int indexS = bundleInfo.label.find("$");
     int indexE = bundleInfo.label.find(":");
-
     if (indexS == 0 && indexE > 0) {
         bundleInfo.label = bundleInfo.label.erase(indexS, ++indexE);
     }
@@ -694,8 +660,8 @@ void DistributedPermissionManagerService::GetPermissionReminderInfo(const std::s
  * @param deviceId thd deviceId from pid json string indicates app information
  * @param permReminderInfo permmission reminder infomation
  */
-void DistributedPermissionManagerService::InsertPermissionReminderInfo(const std::string &permName, int32_t pid,
-    int32_t uid, const std::string &deviceId, PermissionReminderInfo &permReminderInfo)
+void DistributedPermissionManagerService::InsertPermissionReminderInfo(const std::string& permName, int32_t pid,
+    int32_t uid, const std::string& deviceId, PermissionReminderInfo& permReminderInfo)
 {
     PERMISSION_LOG_INFO(LABEL, "%{public}s: called!", __func__);
 
@@ -711,8 +677,7 @@ void DistributedPermissionManagerService::InsertPermissionReminderInfo(const std
 
     std::vector<PermissionRemindInfo>::iterator item;
     for (item = RemindInfo::GetInstance().permRemindInfos_.begin();
-         item != RemindInfo::GetInstance().permRemindInfos_.end();
-         item++) {
+         item != RemindInfo::GetInstance().permRemindInfos_.end(); item++) {
         if (!(deviceId != localDeviceId && item->deviceId == deviceId) &&
             !(deviceId == localDeviceId && item->pid == pid && item->uid == uid)) {
             continue;
@@ -726,10 +691,7 @@ void DistributedPermissionManagerService::InsertPermissionReminderInfo(const std
 
         if (permName == Constant::LOCATION || permName == Constant::LOCATION_IN_BACKGROUND) {
             it = find(item->permissions.begin(), item->permissions.end(), Constant::LOCATION);
-            if (it != item->permissions.end()) {
-                PERMISSION_LOG_INFO(LABEL, "The permission is haved. permssionName :%{public}s", permName.c_str());
-                return;
-            }
+
             it = find(item->permissions.begin(), item->permissions.end(), Constant::LOCATION_IN_BACKGROUND);
             if (it != item->permissions.end()) {
                 PERMISSION_LOG_INFO(LABEL, "The permission is haved. permssionName :%{public}s", permName.c_str());
@@ -791,12 +753,9 @@ void DistributedPermissionManagerService::InsertPermissionReminderInfo(const std
     permItem.uid = uid;
     permItem.deviceId = deviceId;
     permItem.notificationId = uid;
-    permItem.bundleName =
-        std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t>{}.to_bytes(permReminderInfo.bundleName);
-    permItem.bundleLabel =
-        std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t>{}.to_bytes(permReminderInfo.bundleLabel);
-    permItem.deviceName =
-        std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t>{}.to_bytes(permReminderInfo.deviceLabel);
+    permItem.bundleName = Str16ToStr8(permReminderInfo.bundleName);
+    permItem.bundleLabel = Str16ToStr8(permReminderInfo.bundleLabel);
+    permItem.deviceName = Str16ToStr8(permReminderInfo.deviceLabel);
     permItem.appName = permReminderInfo.appName;
     RemindInfo::GetInstance().permRemindInfos_.push_back(permItem);
 }
@@ -810,15 +769,10 @@ void DistributedPermissionManagerService::InsertPermissionReminderInfo(const std
  * @param deviceId thd deviceId from pid json string indicates app information
  * @param permReminderInfo permmission reminder infomation
  */
-void DistributedPermissionManagerService::RemovePermissionReminderInfo(const std::string &permName, int32_t pid,
-    int32_t uid, const std::string &deviceId, PermissionReminderInfo &permReminderInfo)
+void DistributedPermissionManagerService::RemovePermissionReminderInfo(const std::string& permName, int32_t pid,
+    int32_t uid, const std::string& deviceId, PermissionReminderInfo& permReminderInfo)
 {
-    PERMISSION_LOG_INFO(LABEL, "%{public}s: called!", __func__);
-
-    // PERMISSION_LOG_INFO(LABEL,
-    //     "%{public}s called, RemindInfo::GetInstance().permRemindInfos_.size: %{public}d",
-    //     __func__,
-    //     RemindInfo::GetInstance().permRemindInfos_.size());
+    PERMISSION_LOG_INFO(LABEL, "%{public}s called", __func__);
 
     char localDeviceId[Constant::DEVICE_UUID_LENGTH] = {0};
     GetDevUdid(localDeviceId, Constant::DEVICE_UUID_LENGTH);
@@ -826,15 +780,13 @@ void DistributedPermissionManagerService::RemovePermissionReminderInfo(const std
 
     std::vector<PermissionRemindInfo>::iterator item;
     for (item = RemindInfo::GetInstance().permRemindInfos_.begin();
-         item != RemindInfo::GetInstance().permRemindInfos_.end();
-         item++) {
+         item != RemindInfo::GetInstance().permRemindInfos_.end(); item++) {
         if (!(deviceId != localDeviceId && item->deviceId == deviceId) &&
             !(deviceId == localDeviceId && item->pid == pid && item->uid == uid)) {
             continue;
         }
 
         std::vector<std::string>::iterator it = find(item->permissions.begin(), item->permissions.end(), permName);
-
         if (it != item->permissions.end()) {
             item->permissions.erase(it);
         }
@@ -913,7 +865,6 @@ void DistributedPermissionManagerService::CreatAns()
         PERMISSION_LOG_INFO(LABEL, "RemindInfo::GetInstance().permRemindInfos_ is nullptr.");
         return;
     }
-
     bool ret = true;
     ret = resourceManager->AddResource(g_resFilePath);
     if (!ret) {
@@ -946,8 +897,7 @@ void DistributedPermissionManagerService::CreatAns()
     std::vector<std::string>::iterator perm;
 
     for (item = RemindInfo::GetInstance().permRemindInfos_.begin();
-         item != RemindInfo::GetInstance().permRemindInfos_.end();
-         item++) {
+         item != RemindInfo::GetInstance().permRemindInfos_.end(); item++) {
         if (item->permissions.size() <= 0) {
             continue;
         }
@@ -1026,36 +976,31 @@ void DistributedPermissionManagerService::CloseAns()
     std::vector<PermissionRemindInfo>::iterator item;
 
     for (item = RemindInfo::GetInstance().permRemindInfos_.begin();
-         item != RemindInfo::GetInstance().permRemindInfos_.end();
-         item++) {
+         item != RemindInfo::GetInstance().permRemindInfos_.end(); item++) {
         Notification::NotificationHelper::CancelNotification(item->label, item->notificationId);
     }
 }
 
-void DistributedPermissionManagerService::AddPermissionsRecord(const std::string &permissionName,
-    const std::string &deviceId, const int32_t uid, const int32_t sucCount, const int32_t failCount)
+void DistributedPermissionManagerService::AddPermissionsRecord(const std::string& permissionName,
+    const std::string& deviceId, const int32_t uid, const int32_t sucCount, const int32_t failCount)
 {
     PERMISSION_LOG_INFO(LABEL,
         "permissionName = %{public}s, deviceId = %{public}s, uid = %{public}d, sucCount = "
         "%{public}d, failCount = %{public}d",
-        permissionName.c_str(),
-        Constant::EncryptDevId(deviceId).c_str(),
-        uid,
-        sucCount,
-        failCount);
+        permissionName.c_str(), Constant::EncryptDevId(deviceId).c_str(), uid, sucCount, failCount);
     PermissionRecordManager::GetInstance().AddPermissionsRecord(permissionName, deviceId, uid, sucCount, failCount);
 }
 
-int32_t DistributedPermissionManagerService::GetPermissionRecords(
-    const std::string &queryGzipStr, uLong &codeLen, uLong &zipLen, std::string &resultStr)
+int32_t DistributedPermissionManagerService::GetPermissionRecords(const std::string& queryGzipStr, uLong& codeLen,
+    uLong& zipLen, std::string& resultStr)
 {
-    PERMISSION_LOG_INFO(
-        LABEL, "queryGzipStr = %{public}s, resultStr = %{public}s", queryGzipStr.c_str(), resultStr.c_str());
+    PERMISSION_LOG_INFO(LABEL, "queryGzipStr = %{public}s, resultStr = %{public}s", queryGzipStr.c_str(),
+        resultStr.c_str());
     return PermissionRecordManager::GetInstance().GetPermissionRecordsBase(queryGzipStr, codeLen, zipLen, resultStr);
 }
 
-int32_t DistributedPermissionManagerService::GetPermissionRecords(const std::string &request, unsigned long &codeLen,
-    unsigned long &zipLen, const sptr<OnPermissionUsedRecord> &callback)
+int32_t DistributedPermissionManagerService::GetPermissionRecords(const std::string& request, unsigned long& codeLen,
+    unsigned long& zipLen, const sptr<OnPermissionUsedRecord>& callback)
 {
     PERMISSION_LOG_INFO(LABEL, "request = %{public}s", request.c_str());
     if (callback == nullptr) {
@@ -1073,6 +1018,6 @@ std::shared_ptr<DistributedPermissionEventHandler> DistributedPermissionManagerS
 {
     return handler_;
 }
-}  // namespace Permission
-}  // namespace Security
-}  // namespace OHOS
+} // namespace Permission
+} // namespace Security
+} // namespace OHOS

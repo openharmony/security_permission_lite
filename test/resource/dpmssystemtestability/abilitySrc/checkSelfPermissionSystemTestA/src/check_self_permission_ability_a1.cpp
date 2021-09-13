@@ -177,9 +177,12 @@ void CheckSelfPermissionAbilityA1::CheckSelfPermission0400()
     service->CheckSelfPermission(permissionName);
     auto endTime = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double, std::milli> fp_ms = endTime - startTime;
-    int32_t timeCount = (int32_t)fp_ms.count();
-    APP_LOGI("timeCount:%{public}d", timeCount);
-    PublishEvent(APP_A1_RESP_EVENT_NAME, timeCount, "CheckSelfPermission0400");
+    int32_t result = -1;
+    if (fp_ms.count() <= MAX_ELAPSED) {
+        result = 0;
+    }
+    APP_LOGI("timeCount:%{public}f", fp_ms.count());
+    PublishEvent(APP_A1_RESP_EVENT_NAME, result, "CheckSelfPermission0400");
     APP_LOGI("app func CheckSelfPermission0400 end");
 }
 void CheckSelfPermissionAbilityA1::CheckCallingPermission0600()
@@ -191,9 +194,12 @@ void CheckSelfPermissionAbilityA1::CheckCallingPermission0600()
     service->CheckCallingPermission(permissionName);
     auto endTime = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double, std::milli> fp_ms = endTime - startTime;
-    int32_t timeCount = (int32_t)fp_ms.count();
-    APP_LOGI("timeCount:%{public}d", timeCount);
-    PublishEvent(APP_A1_RESP_EVENT_NAME, timeCount, "CheckCallingPermission0600");
+    int32_t result = -1;
+    if (fp_ms.count() <= MAX_ELAPSED) {
+        result = 0;
+    }
+    APP_LOGI("timeCount:%{public}f", fp_ms.count());
+    PublishEvent(APP_A1_RESP_EVENT_NAME, result, "CheckCallingPermission0600");
     APP_LOGI("app func CheckCallingPermission0600 end");
 }
 void CheckSelfPermissionAbilityA1::CheckCallingOrSelfPermission0300()
@@ -214,9 +220,12 @@ void CheckSelfPermissionAbilityA1::CheckCallingOrSelfPermission0400()
     service->CheckCallingOrSelfPermission(permissionName);
     auto endTime = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double, std::milli> fp_ms = endTime - startTime;
-    int32_t timeCount = (int32_t)fp_ms.count();
-    APP_LOGI("timeCount:%{public}d", timeCount);
-    PublishEvent(APP_A1_RESP_EVENT_NAME, timeCount, "CheckCallingOrSelfPermission0400");
+    int32_t result = -1;
+    if (fp_ms.count() <= MAX_ELAPSED) {
+        result = 0;
+    }
+    APP_LOGI("timeCount:%{public}f", fp_ms.count());
+    PublishEvent(APP_A1_RESP_EVENT_NAME, result, "CheckCallingOrSelfPermission0400");
     APP_LOGI("app func CheckCallingOrSelfPermission0400 end");
 }
 void CheckSelfPermissionAbilityA1::CheckCallerPermission0100()
@@ -228,8 +237,12 @@ void CheckSelfPermissionAbilityA1::CheckCallerPermission0100()
     service->CheckCallerPermission(permissionName);
     auto endTime = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double, std::milli> fp_ms = endTime - startTime;
-    int32_t timeCount = (int32_t)fp_ms.count();
-    PublishEvent(APP_A1_RESP_EVENT_NAME, timeCount, "CheckCallerPermission0100");
+    int32_t result = -1;
+    if (fp_ms.count() <= MAX_ELAPSED) {
+        result = 0;
+    }
+    APP_LOGI("timeCount:%{public}f", fp_ms.count());
+    PublishEvent(APP_A1_RESP_EVENT_NAME, result, "CheckCallerPermission0100");
     APP_LOGI("app func CheckCallerPermission0100 end");
 }
 bool CheckSelfPermissionAbilityA1::SubscribeEvent()

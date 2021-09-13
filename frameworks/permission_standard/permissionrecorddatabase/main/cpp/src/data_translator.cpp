@@ -150,7 +150,6 @@ int DataTranslator::TranslationIntoPermissionUsedRecord(
 
     return Constant::SUCCESS;
 }
-
 }  // namespace Permission
 }  // namespace Security
 }  // namespace OHOS

@@ -22,7 +22,6 @@
 namespace OHOS {
 namespace Security {
 namespace Permission {
-
 class ResourceSwitchRemote {
 public:
     static ResourceSwitchRemote &GetInstance();
@@ -67,7 +66,6 @@ private:
 private:
     bool hasRegistered_;
 };
-
 }  // namespace Permission
 }  // namespace Security
 }  // namespace OHOS

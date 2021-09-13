@@ -431,7 +431,7 @@ HWTEST_F(CheckDistributedPermissionTest, DPMS_CheckDPermission_1000, TestSize.Le
     auto endTime = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double, std::milli> fp_ms = endTime - startTime;
     GTEST_LOG_(INFO) << "runtime fp_ms =" << fp_ms.count();
-    EXPECT_LT(fp_ms.count(), STDistibutePermissionUtil::MAX_ELAPSED * 1000);
+    EXPECT_LT(fp_ms.count(), STDistibutePermissionUtil::MAX_ELAPSED);
     GTEST_LOG_(INFO) << "CheckDistributedPermissionTest DPMS_CheckDPermission_1000 end";
     STDistibutePermissionUtil::Uninstall("com.third.hiworld.include_use_by_local_app");
 }
@@ -753,7 +753,7 @@ HWTEST_F(CheckDistributedPermissionTest, DPMS_CheckPermission_0900, TestSize.Lev
     auto endTime = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double, std::milli> fp_ms = endTime - startTime;
     GTEST_LOG_(INFO) << "runtime fp_ms =" << fp_ms.count();
-    EXPECT_LT(fp_ms.count(), STDistibutePermissionUtil::MAX_ELAPSED * 1000);
+    EXPECT_LT(fp_ms.count(), STDistibutePermissionUtil::MAX_ELAPSED);
     GTEST_LOG_(INFO) << "CheckDistributedPermissionTest DPMS_CheckPermission_0900 end";
     STDistibutePermissionUtil::Uninstall("com.third.hiworld.include_use_by_local_app");
 }
@@ -886,12 +886,14 @@ HWTEST_F(CheckDistributedPermissionTest, DPMS_CheckSelfPermission_0400, TestSize
     Want want = STAbilityUtil::MakeWant("device", abilityName, bundleName, params);
     ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs_, 1000);
     EXPECT_EQ(ERR_OK, eCode);
+    int32_t pass = 0;
     STAbilityUtil::PublishEvent("req_com_ohos_check_self_permission_app_a1", 100, "DPMS_CheckSelfPermission_0400");
-    int timeCount = (int)STDistibutePermissionUtil::MAX_ELAPSED * 1000;
-    EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, "CheckSelfPermission0400", timeCount, 2), 0);
+    EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, "CheckSelfPermission0400", pass, 2), 0);
     bool ret = STAbilityUtil::StopAbility("req_com_ohos_check_self_permission_app_a1", 0, "StopSelfAbility");
     EXPECT_TRUE(ret);
     GTEST_LOG_(INFO) << "CheckDistributedPermissionTest DPMS_CheckSelfPermission_0400 end";
+    PermissionKit::RemoveDefPermissions(bundleName);
+    STDistibutePermissionUtil::Uninstall(bundleName);
 }
 
 /**
@@ -969,11 +971,13 @@ HWTEST_F(CheckDistributedPermissionTest, DPMS_CheckCallingPermission_0600, TestS
     ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs_, 1000);
     EXPECT_EQ(ERR_OK, eCode);
     STAbilityUtil::PublishEvent("req_com_ohos_check_self_permission_app_a1", 100, "DPMS_CheckCallingPermission_0600");
-    int timeCount = (int)STDistibutePermissionUtil::MAX_ELAPSED * 1000;
-    EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, "CheckCallingPermission0600", timeCount, 2), 0);
+    int pass = 0;
+    EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, "CheckCallingPermission0600", pass, 2), 0);
     bool ret = STAbilityUtil::StopAbility("req_com_ohos_check_self_permission_app_a1", 0, "StopSelfAbility");
     EXPECT_TRUE(ret);
     GTEST_LOG_(INFO) << "CheckDistributedPermissionTest DPMS_CheckCallingPermission_0600 end";
+    PermissionKit::RemoveDefPermissions(bundleName);
+    STDistibutePermissionUtil::Uninstall(bundleName);
 }
 
 /**
@@ -1095,11 +1099,13 @@ HWTEST_F(CheckDistributedPermissionTest, DPMS_CheckCallingOrSelfPermission_0400,
     EXPECT_EQ(ERR_OK, eCode);
     STAbilityUtil::PublishEvent(
         "req_com_ohos_check_self_permission_app_a1", 100, "DPMS_CheckCallingOrSelfPermission_0400");
-    int timeCount = (int)STDistibutePermissionUtil::MAX_ELAPSED * 1000;
-    EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, "CheckCallingOrSelfPermission0400", timeCount, 2), 0);
+    int pass = 0;
+    EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, "CheckCallingOrSelfPermission0400", pass, 2), 0);
     bool ret = STAbilityUtil::StopAbility("req_com_ohos_check_self_permission_app_a1", 0, "StopSelfAbility");
     EXPECT_TRUE(ret);
     GTEST_LOG_(INFO) << "CheckDistributedPermissionTest DPMS_CheckCallingOrSelfPermission_0400 end";
+    PermissionKit::RemoveDefPermissions(bundleName);
+    STDistibutePermissionUtil::Uninstall(bundleName);
 }
 
 /**
@@ -1203,7 +1209,7 @@ HWTEST_F(CheckDistributedPermissionTest, DPMS_IsRestrictedPermission_0500, TestS
     auto endTime = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double, std::milli> fp_ms = endTime - startTime;
     GTEST_LOG_(INFO) << "runtime fp_ms =" << fp_ms.count();
-    EXPECT_LT(fp_ms.count(), STDistibutePermissionUtil::MAX_ELAPSED * 1000);
+    EXPECT_LT(fp_ms.count(), STDistibutePermissionUtil::MAX_ELAPSED);
     GTEST_LOG_(INFO) << "CheckDistributedPermissionTest DPMS_IsRestrictedPermission_0500 end";
 }
 
@@ -1241,11 +1247,13 @@ HWTEST_F(CheckDistributedPermissionTest, DPMS_CheckCallerPermission_0100, TestSi
     ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs_, 1000);
     EXPECT_EQ(ERR_OK, eCode);
     STAbilityUtil::PublishEvent("req_com_ohos_check_self_permission_app_a1", 100, "DPMS_CheckCallerPermission_0100");
-    int timeCount = (int)STDistibutePermissionUtil::MAX_ELAPSED * 1000;
-    EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, "CheckCallerPermission0100", timeCount, 2), 0);
+    int pass = 0;
+    EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, "CheckCallerPermission0100", pass, 2), 0);
     bool ret = STAbilityUtil::StopAbility("req_com_ohos_check_self_permission_app_a1", 0, "StopSelfAbility");
     EXPECT_TRUE(ret);
     GTEST_LOG_(INFO) << "CheckDistributedPermissionTest DPMS_CheckCallerPermission_0100 end";
+    PermissionKit::RemoveDefPermissions(bundleName);
+    STDistibutePermissionUtil::Uninstall(bundleName);
     PermissionKit::RemoveDefPermissions(bundleName);
     STDistibutePermissionUtil::Uninstall(bundleName);
 }
@@ -1263,7 +1271,7 @@ HWTEST_F(CheckDistributedPermissionTest, DPMS_CreateAppIdInfo_pid_uid_0100, Test
     auto endTime = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double, std::milli> fp_ms = endTime - startTime;
     GTEST_LOG_(INFO) << "runtime fp_ms =" << fp_ms.count();
-    EXPECT_LT(fp_ms.count(), STDistibutePermissionUtil::MAX_ELAPSED * 1000);
+    EXPECT_LT(fp_ms.count(), STDistibutePermissionUtil::MAX_ELAPSED);
     GTEST_LOG_(INFO) << "CheckDistributedPermissionTest DPMS_CreateAppIdInfo_pid_uid_0100 end";
 }
 
@@ -1281,7 +1289,7 @@ HWTEST_F(CheckDistributedPermissionTest, DPMS_CreateAppIdInfo_pid_uid_deviceID_0
     auto endTime = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double, std::milli> fp_ms = endTime - startTime;
     GTEST_LOG_(INFO) << "runtime fp_ms =" << fp_ms.count();
-    EXPECT_LT(fp_ms.count(), STDistibutePermissionUtil::MAX_ELAPSED * 1000);
+    EXPECT_LT(fp_ms.count(), STDistibutePermissionUtil::MAX_ELAPSED);
     GTEST_LOG_(INFO) << "CheckDistributedPermissionTest DPMS_CreateAppIdInfo_pid_uid_deviceID_0100 end";
 }
 
@@ -1300,7 +1308,7 @@ HWTEST_F(CheckDistributedPermissionTest, DPMS_CreateAppIdInfo_pid_uid_deviceID_b
     auto endTime = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double, std::milli> fp_ms = endTime - startTime;
     GTEST_LOG_(INFO) << "runtime fp_ms =" << fp_ms.count();
-    EXPECT_LT(fp_ms.count(), STDistibutePermissionUtil::MAX_ELAPSED * 1000);
+    EXPECT_LT(fp_ms.count(), STDistibutePermissionUtil::MAX_ELAPSED);
     GTEST_LOG_(INFO) << "CheckDistributedPermissionTest DPMS_CreateAppIdInfo_pid_uid_deviceID_bundleName_0100 end";
 }
 
@@ -1320,6 +1328,6 @@ HWTEST_F(CheckDistributedPermissionTest, DPMS_ParseAppIdInfo_appIdInfo_appIdInfo
     auto endTime = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double, std::milli> fp_ms = endTime - startTime;
     GTEST_LOG_(INFO) << "runtime fp_ms =" << fp_ms.count();
-    EXPECT_LT(fp_ms.count(), STDistibutePermissionUtil::MAX_ELAPSED * 1000);
+    EXPECT_LT(fp_ms.count(), STDistibutePermissionUtil::MAX_ELAPSED);
     GTEST_LOG_(INFO) << "CheckDistributedPermissionTest DPMS_ParseAppIdInfo_appIdInfo_appIdInfoObj_0100 end";
 }

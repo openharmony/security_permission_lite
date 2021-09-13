@@ -38,9 +38,6 @@ PermissionRecordManager::~PermissionRecordManager()
 void PermissionRecordManager::AddPermissionsRecord(const std::string &permissionName, const std::string &deviceId,
     const int32_t uid, const int sucCount, const int failCount)
 {
-    DeviceInfoManager::GetInstance().AddDeviceInfo("device_0", "device_0", "device_0", "device_name_0", "device_type");
-    DeviceInfoManager::GetInstance().AddDeviceInfo("device_1", "device_1", "device_1", "device_name_1", "device_type");
-    DeviceInfoManager::GetInstance().AddDeviceInfo("device_2", "device_2", "device_2", "device_name_2", "device_type");
     PERMISSION_LOG_INFO(LABEL,
         "%{public}s called, permissionName: %{public}s, deviceId: %{public}s, uid: %{public}d, sucCount: %{public}d, "
         "failCount: %{public}d",
@@ -235,7 +232,6 @@ int32_t PermissionRecordManager::GetPermissionRecords(
     auto DelRecordsTask = [this]() {
         PERMISSION_LOG_INFO(LABEL, "---DeletePermissionRecords task called");
         DeletePermissionRecords(Constant::RECORD_DELETE_TIME);
-        // PermissionRecordManager::GetInstance().GetPermissionRecords(queryJsonStr, defaultResult);
     };
     std::thread recordThread(DelRecordsTask);
     recordThread.detach();
@@ -435,8 +431,10 @@ bool PermissionRecordManager::GetPermissionRecord(const std::string &permissionN
     const int32_t uid, const int32_t sucCount, const int32_t failCount, PermissionRecord &permissionRecord)
 {
     int32_t opCode = 0;
+    // blocked
     // get isforeground by uid
-    bool isForeground = (sucCount + failCount) % 2 == 1 ? true : false;
+    int even = 2;
+    bool isForeground = (sucCount + failCount) % even == 1 ? true : false;
     std::string tempName = permissionName;
     if (Constant::PermissionNameToOrFromOpCode(tempName, opCode)) {
         PermissionRecord::SetPermissionRecord(
@@ -445,7 +443,6 @@ bool PermissionRecordManager::GetPermissionRecord(const std::string &permissionN
     }
     return false;
 }
-
 }  // namespace Permission
 }  // namespace Security
 }  // namespace OHOS

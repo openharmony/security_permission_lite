@@ -329,6 +329,31 @@ public:
     const static int32_t DISTRIBUTED_DEVICE = 2;
 
     /**
+     * All record flag(for JS).
+     */
+    const static int32_t ALL_RECORD_FLAG = 1;
+
+    /**
+     * Local device without detailed record flag(for JS).
+     */
+    const static int32_t LOCAL_FLAG = 2;
+
+    /**
+     * Local device with detailed record flag(for JS).
+     */
+    const static int32_t LOCAL_DETAIL_FLAG = 3;
+
+    /**
+     * Distributed device without detailed record flag(for JS).
+     */
+    const static int32_t DISTRIBUTED_FLAG = 4;
+
+    /**
+     * Distributed device with detailed record flag(for JS).
+     */
+    const static int32_t DISTRIBUTED_DETAIL_FLAG = 5;
+
+    /**
      * Device id length.
      */
     const static int32_t DEVICE_UUID_LENGTH = 65;

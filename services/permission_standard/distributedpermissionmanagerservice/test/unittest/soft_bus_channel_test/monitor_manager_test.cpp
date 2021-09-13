@@ -79,7 +79,8 @@ public:
         // simulator unregister
         ::UnregNodeDeviceStateCb(nullptr);
 
-        for (int i = 0; i < 20 + 1; i++) {
+        int sessionLimit = 20;
+        for (int i = 0; i < sessionLimit + 1; i++) {
             // 1: mock session id
             ::CloseSession(1);
         }
@@ -226,7 +227,6 @@ HWTEST_F(MonitorManagerTest, MonitorManager_OnPermissionChange_001, TestSize.Lev
         EXPECT_EQ(count__.load(), 2);
     }
 }
-
 }  // namespace Permission
 }  // namespace Security
 }  // namespace OHOS

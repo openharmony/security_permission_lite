@@ -18,39 +18,60 @@
 namespace OHOS {
 namespace Security {
 namespace Permission {
-#define RETURN_IF_FALSE(expr) \
-    if (!(expr)) {            \
-        return false;         \
-    }
-
-#define RELEASE_IF_FALSE(expr, obj) \
-    if (!(expr)) {                  \
-        delete obj;                 \
-        obj = nullptr;              \
-        return obj;                 \
-    }
 using namespace std;
 bool QueryPermissionUsedRequest::Marshalling(Parcel &out) const
 {
-    RETURN_IF_FALSE(out.WriteString(this->deviceLabel));
-    RETURN_IF_FALSE(out.WriteString(this->bundleName));
-    RETURN_IF_FALSE(out.WriteStringVector(this->permissionNames));
-    RETURN_IF_FALSE(out.WriteInt64(this->beginTimeMillis));
-    RETURN_IF_FALSE(out.WriteInt64(this->endTimeMillis));
-    RETURN_IF_FALSE(out.WriteInt32(this->flag));
+    if (!out.WriteString(this->deviceLabel)) {
+        return false;
+    }
+    if (!out.WriteString(this->bundleName)) {
+        return false;
+    }
+    if (!out.WriteStringVector(this->permissionNames)) {
+        return false;
+    }
+    if (!out.WriteInt64(this->beginTimeMillis)) {
+        return false;
+    }
+    if (!out.WriteInt64(this->endTimeMillis)) {
+        return false;
+    }
+    if (!out.WriteInt32(this->flag)) {
+        return false;
+    }
     return true;
 }
 
 QueryPermissionUsedRequest *QueryPermissionUsedRequest::Unmarshalling(Parcel &in)
 {
     auto *request = new (nothrow) QueryPermissionUsedRequest();
-    RELEASE_IF_FALSE(request != nullptr, request);
+    if (request == nullptr) {
+        delete request;
+        request = nullptr;
+        return request;
+    }
     request->deviceLabel = in.ReadString();
     request->bundleName = in.ReadString();
-    RELEASE_IF_FALSE(in.ReadStringVector(&request->permissionNames), request);
-    RELEASE_IF_FALSE(in.ReadInt64(request->beginTimeMillis), request);
-    RELEASE_IF_FALSE(in.ReadInt64(request->endTimeMillis), request);
-    RELEASE_IF_FALSE(in.ReadInt32(request->flag), request);
+    if (!in.ReadStringVector(&request->permissionNames)) {
+        delete request;
+        request = nullptr;
+        return request;
+    }
+    if (!in.ReadInt64(request->beginTimeMillis)) {
+        delete request;
+        request = nullptr;
+        return request;
+    }
+    if (!in.ReadInt64(request->endTimeMillis)) {
+        delete request;
+        request = nullptr;
+        return request;
+    }
+    if (!in.ReadInt32(request->flag)) {
+        delete request;
+        request = nullptr;
+        return request;
+    }
     return request;
 }
 
@@ -74,7 +95,6 @@ void QueryPermissionUsedRequest::from_json(const nlohmann::json &jsonObj, QueryP
     jsonObj.at("endTimeMillis").get_to(request.endTimeMillis);
     jsonObj.at("flag").get_to(request.flag);
 }
-
 }  // namespace Permission
 }  // namespace Security
 }  // namespace OHOS

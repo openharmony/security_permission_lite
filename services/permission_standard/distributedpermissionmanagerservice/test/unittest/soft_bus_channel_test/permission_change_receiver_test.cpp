@@ -56,7 +56,8 @@ public:
     {
         // simulator unregister
         ::UnregNodeDeviceStateCb(nullptr);
-        for (int i = 0; i < 20 + 1; i++) {
+        int sessionLimit = 20;
+        for (int i = 0; i < sessionLimit + 1; i++) {
             // 1: mock session id
             ::CloseSession(1);
         }
@@ -241,7 +242,6 @@ HWTEST_F(PermissionChangeReceiverTest, PermissionChangeReceiver_OnReceive_001, T
         instance.OnReceive(data);
     }
 }
-
 }  // namespace Permission
 }  // namespace Security
 }  // namespace OHOS

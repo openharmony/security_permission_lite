@@ -33,6 +33,7 @@ const std::string APP_A1_REQ_EVENT_NAME = "req_com_ohos_check_self_permission_ap
 class CheckSelfPermissionAbilityA1 : public Ability {
 public:
     ~CheckSelfPermissionAbilityA1();
+    constexpr static double MAX_ELAPSED = 1.5;
 
 protected:
     virtual void OnStart(const Want &want) override;

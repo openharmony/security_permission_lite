@@ -27,16 +27,13 @@ namespace Permission {
 namespace {
 static constexpr OHOS::HiviewDFX::HiLogLabel LABEL = {LOG_CORE, SECURITY_DOMAIN_PERMISSION, "PermissionRecordMgr"};
 }
-
 namespace {
-
 constexpr size_t ARGS_SIZE_ONE = 1;
 constexpr size_t ARGS_SIZE_TWO = 2;
 constexpr int32_t PARAM0 = 0;
 constexpr int32_t PARAM1 = 1;
 constexpr int32_t CODE_SUCCESS = 0;
 constexpr int32_t CODE_FAILED = -1;
-
 }  // namespace
 
 static void ConvertBundleRecord(napi_env env, const sptr<AppExecFwk::IBundleMgr> &iBundleMgr,
@@ -355,10 +352,10 @@ static bool InnerGetPermissionRecords(napi_env env, int32_t &flag, std::string &
     PERMISSION_LOG_INFO(LABEL, "flag%{public}d", flag);
     char localDeviceId[Constant::DEVICE_UUID_LENGTH] = {0};
     GetDevUdid(localDeviceId, Constant::DEVICE_UUID_LENGTH);
-    if (flag == 1) {
+    if (flag == Constant::ALL_RECORD_FLAG) {
         request.flag = QueryPermissionUsedRequest::FLAG_PERMISSION_USAGE_DETAIL;
-    } else if (flag == 3 || flag == 5) {
-        if (flag == 3) {
+    } else if (flag == Constant::LOCAL_DETAIL_FLAG || flag == Constant::DISTRIBUTED_DETAIL_FLAG) {
+        if (flag == Constant::LOCAL_DETAIL_FLAG) {
             flag = Constant::LOCAL_DEVICE;
             deviceId = localDeviceId;
         } else {
@@ -366,7 +363,7 @@ static bool InnerGetPermissionRecords(napi_env env, int32_t &flag, std::string &
         }
         request.flag = QueryPermissionUsedRequest::FLAG_PERMISSION_USAGE_DETAIL;
     } else {
-        if (flag == 2) {
+        if (flag == Constant::LOCAL_FLAG) {
             flag = Constant::LOCAL_DEVICE;
             deviceId = localDeviceId;
         } else {
@@ -564,7 +561,6 @@ napi_value GetPermissionRecordAsync(napi_env env, napi_callback_info info)
     NAPI_CALL(env, napi_create_int32(env, 1, &result));
     return result;
 }
-
 }  // namespace Permission
 }  // namespace Security
 }  // namespace OHOS

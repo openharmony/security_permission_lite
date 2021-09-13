@@ -399,7 +399,6 @@ void SoftBusChannel::HandleResponse(const std::string &id, const std::string &js
         (callback->second)(jsonPayload);
         callbacks_.erase(callback);
     }
-    // PERMISSION_LOG_DEBUG(LABEL, "callbacks size: %{public}d ", callbacks_.size());
 }
 
 int SoftBusChannel::SendResponseBytes(int session, const unsigned char *bytes, const int bytesLength)

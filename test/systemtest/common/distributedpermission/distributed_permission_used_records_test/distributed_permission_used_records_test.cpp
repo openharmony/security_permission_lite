@@ -16,9 +16,9 @@
 #include <fstream>
 #include <sstream>
 #include <chrono>
-#include "device_info_manager.h"
 #include <gtest/gtest.h>
 #include <mutex>
+#include "device_info_manager.h"
 #include "permission_log.h"
 #include "system_test_distributed_permission_util.h"
 #include "ipc_skeleton.h"
@@ -42,9 +42,11 @@ using std::string;
 namespace {
 std::recursive_mutex statckLock_;
 string deviceId_;
+string deviceName_;
 int32_t pid_ = 0;
 int32_t uid_ = 0;
 std::string bundleName_;
+bool initFlag = false;
 string permName_ = "ohos.permission.WRITE_CONTACTS";
 OHOS::AppExecFwk::BundleInfo bundleInfo_;
 static constexpr OHOS::HiviewDFX::HiLogLabel LABEL = {
@@ -74,10 +76,14 @@ void DistributedPermissionUsedRecordsTest::TearDownTestCase(void)
 
 void DistributedPermissionUsedRecordsTest::SetUp(void)
 {
-    pid_ = IPCSkeleton::GetCallingPid();
-    uid_ = IPCSkeleton::GetCallingUid();
-    PERMISSION_LOG_DEBUG(LABEL, "SetUp, pid =%{public}d, uid =%{public}d ", pid_, uid_);
-    deviceId_ = IPCSkeleton::GetLocalDeviceID();
+    if (initFlag) {
+        return;
+    }
+    char localDeviceId[Constant::DEVICE_UUID_LENGTH] = {0};
+    GetDevUdid(localDeviceId, Constant::DEVICE_UUID_LENGTH);
+    deviceId_ = localDeviceId;
+    PERMISSION_LOG_INFO(LABEL, "localDeviceId  =%{public}s ", localDeviceId);
+
     // install package
     {
         STDistibutePermissionUtil::Install(DPMS_THIRD_HAP_NAME);
@@ -102,6 +108,15 @@ void DistributedPermissionUsedRecordsTest::SetUp(void)
     BundleInfo bundleInfo2;
     STDistibutePermissionUtil::GetBundleInfoByUid(systemBundleUid, bundleInfo2);
     PERMISSION_LOG_DEBUG(LABEL, "GetBundleInfoByUid bundleName = %{public}s", bundleInfo2.name.c_str());
+
+    std::vector<GenericValues> visitor;
+    string appInfo = GetAppIdInfo(deviceId_);
+    DistributedPermissionKit::AddPermissionUsedRecord(permName_, appInfo, 1, 0);
+    FindDataStorageAll(DataStorage::PERMISSION_VISITOR, visitor);
+    deviceName_ = visitor[0].GetString(FIELD_DEVICE_NAME);
+
+    PERMISSION_LOG_INFO(LABEL, "deviceName_  =%{public}s ", deviceName_.c_str());
+    initFlag = true;
 }
 
 void DistributedPermissionUsedRecordsTest::TearDown(void)
@@ -111,8 +126,8 @@ void DistributedPermissionUsedRecordsTest::InitVisitorData(std::string bundleNam
 {
     std::vector<GenericValues> visitor;
     GenericValues genericVisitor;
-    genericVisitor.Put(FIELD_DEVICE_ID, "device_0");
-    genericVisitor.Put(FIELD_DEVICE_NAME, "device_name_0");
+    genericVisitor.Put(FIELD_DEVICE_ID, deviceId_);
+    genericVisitor.Put(FIELD_DEVICE_NAME, deviceName_);
     genericVisitor.Put(FIELD_BUNDLE_USER_ID, 0);
     genericVisitor.Put(FIELD_BUNDLE_NAME, bundleName);
     genericVisitor.Put(FIELD_BUNDLE_LABEL, "bundleInfo.label_0");
@@ -129,6 +144,9 @@ void DistributedPermissionUsedRecordsTest::InitVisitorData(std::string bundleNam
 }
 void DistributedPermissionUsedRecordsTest::InitRecordData()
 {
+    int opCode = 4;
+    int rejectCount = 3;
+    int timeHundred = 100;
     std::vector<GenericValues> visitor;
     DataStorage::GetRealDataStorage().Find(DataStorage::PERMISSION_VISITOR, visitor);
     int visitorId = 0;
@@ -138,28 +156,28 @@ void DistributedPermissionUsedRecordsTest::InitRecordData()
 
     std::vector<GenericValues> record;
     GenericValues genericRecordFore;
-    genericRecordFore.Put(FIELD_TIMESTAMP, 100);
+    genericRecordFore.Put(FIELD_TIMESTAMP, timeHundred);
     genericRecordFore.Put(FIELD_VISITOR_ID, visitorId);
-    genericRecordFore.Put(FIELD_OP_CODE, 4);
+    genericRecordFore.Put(FIELD_OP_CODE, opCode);
     genericRecordFore.Put(FIELD_IS_FOREGROUND, 1);
-    genericRecordFore.Put(FIELD_ACCESS_COUNT, 3);
-    genericRecordFore.Put(FIELD_REJECT_COUNT, 2);
+    genericRecordFore.Put(FIELD_ACCESS_COUNT, rejectCount);
+    genericRecordFore.Put(FIELD_REJECT_COUNT, rejectCount);
 
     GenericValues genericRecordBack;
-    genericRecordBack.Put(FIELD_TIMESTAMP, 200);
+    genericRecordBack.Put(FIELD_TIMESTAMP, timeHundred + timeHundred);
     genericRecordBack.Put(FIELD_VISITOR_ID, visitorId);
-    genericRecordBack.Put(FIELD_OP_CODE, 4);
+    genericRecordBack.Put(FIELD_OP_CODE, opCode);
     genericRecordBack.Put(FIELD_IS_FOREGROUND, 0);
     genericRecordBack.Put(FIELD_ACCESS_COUNT, 1);
     genericRecordBack.Put(FIELD_REJECT_COUNT, 0);
 
     GenericValues genericRecord;
-    genericRecord.Put(FIELD_TIMESTAMP, 300);
+    genericRecord.Put(FIELD_TIMESTAMP, timeHundred + timeHundred + timeHundred);
     genericRecord.Put(FIELD_VISITOR_ID, visitorId);
     genericRecord.Put(FIELD_OP_CODE, 1);
     genericRecord.Put(FIELD_IS_FOREGROUND, 0);
     genericRecord.Put(FIELD_ACCESS_COUNT, 1);
-    genericRecord.Put(FIELD_REJECT_COUNT, 3);
+    genericRecord.Put(FIELD_REJECT_COUNT, rejectCount);
     record.emplace_back(genericRecordFore);
     record.emplace_back(genericRecordBack);
     record.emplace_back(genericRecord);
@@ -188,8 +206,9 @@ public:
 
     void OnQueried(ErrCode code, QueryPermissionUsedResult &result)
     {
+        int successCode = 200;
         PERMISSION_LOG_DEBUG(LABEL, "------------time end-------------");
-        EXPECT_EQ(code, 200);
+        EXPECT_EQ(code, successCode);
     }
 };
 
@@ -249,7 +268,6 @@ HWTEST_F(DistributedPermissionUsedRecordsTest, DPMS_AddPermissionUsedRecord_0100
     EXPECT_EQ((int)visitorBefore.size(), 0);
     EXPECT_EQ((int)recordBefore.size(), 0);
 
-    deviceId_ = "device_0";
     string appInfo = GetAppIdInfo(deviceId_);
     string permName;
     PERMISSION_LOG_DEBUG(LABEL,
@@ -277,7 +295,7 @@ HWTEST_F(DistributedPermissionUsedRecordsTest, DPMS_AddPermissionUsedRecord_0200
 {
     PERMISSION_LOG_INFO(LABEL, "DistributedPermissionRecordsTest DPMS_AddPermissionUsedRecord_0200 start");
     RemoveStorage();
-
+    string deviceId = "";
     std::vector<GenericValues> visitorBefore;
     std::vector<GenericValues> recordBefore;
     FindDataStorageAll(DataStorage::PERMISSION_VISITOR, visitorBefore);
@@ -285,7 +303,7 @@ HWTEST_F(DistributedPermissionUsedRecordsTest, DPMS_AddPermissionUsedRecord_0200
     EXPECT_EQ((int)visitorBefore.size(), 0);
     EXPECT_EQ((int)recordBefore.size(), 0);
 
-    string appInfo = GetAppIdInfo(deviceId_);
+    string appInfo = GetAppIdInfo(deviceId);
     PERMISSION_LOG_DEBUG(LABEL,
         "init DPMS_AddPermissionUsedRecord_0200 deviceId_= %{public}s, appInfo=%{public}s, permName=%{public}s",
         deviceId_.c_str(),
@@ -319,7 +337,6 @@ HWTEST_F(DistributedPermissionUsedRecordsTest, DPMS_AddPermissionUsedRecord_0300
     EXPECT_EQ((int)visitorBefore.size(), 0);
     EXPECT_EQ((int)recordBefore.size(), 0);
 
-    deviceId_ = "device_0";
     string appInfo = GetAppIdInfo(deviceId_);
     PERMISSION_LOG_DEBUG(LABEL,
         "init DPMS_AddPermissionUsedRecord_0300 deviceId_= %{public}s, appInfo=%{public}s, permName=%{public}s",
@@ -355,7 +372,6 @@ HWTEST_F(DistributedPermissionUsedRecordsTest, DPMS_AddPermissionUsedRecord_0400
     EXPECT_EQ((int)visitorBefore.size(), 0);
     EXPECT_EQ((int)recordBefore.size(), 0);
 
-    deviceId_ = "device_0";
     string appInfo = GetAppIdInfo(deviceId_);
     PERMISSION_LOG_DEBUG(LABEL,
         "init DPMS_AddPermissionUsedRecord_0400 deviceId_= %{public}s, appInfo=%{public}s, permName=%{public}s",
@@ -394,7 +410,6 @@ HWTEST_F(DistributedPermissionUsedRecordsTest, DPMS_AddPermissionUsedRecord_0500
     EXPECT_EQ((int)visitorBefore.size(), 0);
     EXPECT_EQ((int)recordBefore.size(), 0);
 
-    deviceId_ = "device_0";
     string appInfo = GetAppIdInfo(deviceId_);
     PERMISSION_LOG_DEBUG(LABEL,
         "init DPMS_AddPermissionUsedRecord_0500 deviceId_= %{public}s, appInfo=%{public}s, permName=%{public}s",
@@ -433,7 +448,6 @@ HWTEST_F(DistributedPermissionUsedRecordsTest, DPMS_AddPermissionUsedRecord_0600
     EXPECT_EQ((int)visitorBefore.size(), 0);
     EXPECT_EQ((int)recordBefore.size(), 0);
 
-    deviceId_ = "device_0";
     string appInfo = GetAppIdInfo(deviceId_);
     PERMISSION_LOG_DEBUG(LABEL,
         "init DPMS_AddPermissionUsedRecord_0600 deviceId_= %{public}s, appInfo=%{public}s, permName=%{public}s",
@@ -472,7 +486,6 @@ HWTEST_F(DistributedPermissionUsedRecordsTest, DPMS_AddPermissionUsedRecord_0700
     EXPECT_EQ((int)visitorBefore.size(), 1);
     EXPECT_EQ((int)recordBefore.size(), 1);
 
-    deviceId_ = "device_0";
     string appInfo = GetAppIdInfo(deviceId_);
     PERMISSION_LOG_DEBUG(LABEL,
         "init DPMS_AddPermissionUsedRecord_0700 deviceId_= %{public}s, appInfo=%{public}s, permName=%{public}s",
@@ -510,7 +523,6 @@ HWTEST_F(DistributedPermissionUsedRecordsTest, DPMS_AddPermissionUsedRecord_0800
     EXPECT_EQ((int)visitorBefore.size(), 1);
     EXPECT_EQ((int)recordBefore.size(), 1);
 
-    deviceId_ = "device_0";
     string appInfo = GetAppIdInfo(deviceId_);
     PERMISSION_LOG_DEBUG(LABEL,
         "init DPMS_AddPermissionUsedRecord_0800 deviceId_= %{public}s, appInfo=%{public}s, permName=%{public}s",
@@ -545,7 +557,6 @@ HWTEST_F(DistributedPermissionUsedRecordsTest, DPMS_AddPermissionUsedRecord_0900
     EXPECT_EQ((int)visitorBefore.size(), 0);
     EXPECT_EQ((int)recordBefore.size(), 0);
 
-    deviceId_ = "device_0";
     string appInfo = GetAppIdInfo(deviceId_);
     PERMISSION_LOG_DEBUG(LABEL,
         "init DPMS_AddPermissionUsedRecord_0500 deviceId_= %{public}s, appInfo=%{public}s, permName=%{public}s",
@@ -588,7 +599,6 @@ HWTEST_F(DistributedPermissionUsedRecordsTest, DPMS_AddPermissionUsedRecord_1200
     EXPECT_EQ((int)visitorBefore.size(), 0);
     EXPECT_EQ((int)recordBefore.size(), 0);
 
-    deviceId_ = "device_0";
     string permName = "ohos.permission.NULL";
     string appInfo = GetAppIdInfo(deviceId_);
     PERMISSION_LOG_DEBUG(LABEL,
@@ -664,6 +674,9 @@ HWTEST_F(DistributedPermissionUsedRecordsTest, DPMS_GetPermissionUsedRecords_020
  */
 HWTEST_F(DistributedPermissionUsedRecordsTest, DPMS_GetPermissionUsedRecords_0300, TestSize.Level1)
 {
+    RemoveStorage();
+    InitVisitorData("bundleName_0");
+    InitRecordData();
     PERMISSION_LOG_INFO(LABEL, "DistributedPermissionRecordsTest DPMS_GetPermissionUsedRecords_0300 start");
 
     QueryPermissionUsedRequest request;
@@ -685,6 +698,9 @@ HWTEST_F(DistributedPermissionUsedRecordsTest, DPMS_GetPermissionUsedRecords_030
  */
 HWTEST_F(DistributedPermissionUsedRecordsTest, DPMS_GetPermissionUsedRecords_0400, TestSize.Level1)
 {
+    RemoveStorage();
+    InitVisitorData("bundleName_0");
+    InitRecordData();
     PERMISSION_LOG_INFO(LABEL, "DistributedPermissionRecordsTest DPMS_GetPermissionUsedRecords_0400 start");
 
     QueryPermissionUsedRequest request;
@@ -705,6 +721,9 @@ HWTEST_F(DistributedPermissionUsedRecordsTest, DPMS_GetPermissionUsedRecords_040
  */
 HWTEST_F(DistributedPermissionUsedRecordsTest, DPMS_GetPermissionUsedRecords_0500, TestSize.Level1)
 {
+    RemoveStorage();
+    InitVisitorData("bundleName_0");
+    InitRecordData();
     PERMISSION_LOG_INFO(LABEL, "DistributedPermissionRecordsTest DPMS_GetPermissionUsedRecords_0500 start");
 
     QueryPermissionUsedRequest request;
@@ -726,6 +745,9 @@ HWTEST_F(DistributedPermissionUsedRecordsTest, DPMS_GetPermissionUsedRecords_050
  */
 HWTEST_F(DistributedPermissionUsedRecordsTest, DPMS_GetPermissionUsedRecords_0600, TestSize.Level1)
 {
+    RemoveStorage();
+    InitVisitorData("bundleName_0");
+    InitRecordData();
     PERMISSION_LOG_INFO(LABEL, "DistributedPermissionRecordsTest DPMS_GetPermissionUsedRecords_0600 start");
 
     QueryPermissionUsedRequest request;
@@ -747,6 +769,9 @@ HWTEST_F(DistributedPermissionUsedRecordsTest, DPMS_GetPermissionUsedRecords_060
  */
 HWTEST_F(DistributedPermissionUsedRecordsTest, DPMS_GetPermissionUsedRecords_0700, TestSize.Level1)
 {
+    RemoveStorage();
+    InitVisitorData("bundleName_0");
+    InitRecordData();
     PERMISSION_LOG_INFO(LABEL, "DistributedPermissionRecordsTest DPMS_GetPermissionUsedRecords_0700 start");
 
     QueryPermissionUsedRequest request;
@@ -766,6 +791,9 @@ HWTEST_F(DistributedPermissionUsedRecordsTest, DPMS_GetPermissionUsedRecords_070
  */
 HWTEST_F(DistributedPermissionUsedRecordsTest, DPMS_GetPermissionUsedRecords_0800, TestSize.Level1)
 {
+    RemoveStorage();
+    InitVisitorData("bundleName_0");
+    InitRecordData();
     PERMISSION_LOG_INFO(LABEL, "DistributedPermissionRecordsTest DPMS_GetPermissionUsedRecords_0800 start");
 
     QueryPermissionUsedRequest request;
@@ -793,6 +821,9 @@ HWTEST_F(DistributedPermissionUsedRecordsTest, DPMS_GetPermissionUsedRecords_080
  */
 HWTEST_F(DistributedPermissionUsedRecordsTest, DPMS_GetPermissionUsedRecords_0900, TestSize.Level1)
 {
+    RemoveStorage();
+    InitVisitorData("bundleName_0");
+    InitRecordData();
     PERMISSION_LOG_INFO(LABEL, "DistributedPermissionRecordsTest DPMS_GetPermissionUsedRecords_0900 start");
 
     QueryPermissionUsedRequest request;
@@ -820,10 +851,13 @@ HWTEST_F(DistributedPermissionUsedRecordsTest, DPMS_GetPermissionUsedRecords_090
  */
 HWTEST_F(DistributedPermissionUsedRecordsTest, DPMS_GetPermissionUsedRecords_1000, TestSize.Level1)
 {
+    RemoveStorage();
+    InitVisitorData("bundleName_0");
+    InitRecordData();
     PERMISSION_LOG_INFO(LABEL, "DistributedPermissionRecordsTest DPMS_GetPermissionUsedRecords_1000 start");
 
     QueryPermissionUsedRequest request;
-    request.deviceLabel = "device_name_0";
+    request.deviceLabel = deviceName_;
     request.permissionNames.emplace_back("ohos.permission.LOCATION");
     QueryPermissionUsedResult result;
     int state = DistributedPermissionKit::GetPermissionUsedRecords(request, result);
@@ -845,6 +879,9 @@ HWTEST_F(DistributedPermissionUsedRecordsTest, DPMS_GetPermissionUsedRecords_100
  */
 HWTEST_F(DistributedPermissionUsedRecordsTest, DPMS_GetPermissionUsedRecords_1100, TestSize.Level1)
 {
+    RemoveStorage();
+    InitVisitorData("bundleName_0");
+    InitRecordData();
     PERMISSION_LOG_INFO(LABEL, "DistributedPermissionRecordsTest DPMS_GetPermissionUsedRecords_1100 start");
 
     QueryPermissionUsedRequest request;
@@ -870,10 +907,13 @@ HWTEST_F(DistributedPermissionUsedRecordsTest, DPMS_GetPermissionUsedRecords_110
  */
 HWTEST_F(DistributedPermissionUsedRecordsTest, DPMS_GetPermissionUsedRecords_1200, TestSize.Level1)
 {
+    RemoveStorage();
+    InitVisitorData("bundleName_0");
+    InitRecordData();
     PERMISSION_LOG_INFO(LABEL, "DistributedPermissionRecordsTest DPMS_GetPermissionUsedRecords_1200 start");
 
     QueryPermissionUsedRequest request;
-    request.deviceLabel = "device_name_0";
+    request.deviceLabel = deviceName_;
     request.bundleName = "bundleName_0";
     request.permissionNames.emplace_back("ohos.permission.LOCATION");
     QueryPermissionUsedResult result;
@@ -896,10 +936,13 @@ HWTEST_F(DistributedPermissionUsedRecordsTest, DPMS_GetPermissionUsedRecords_120
  */
 HWTEST_F(DistributedPermissionUsedRecordsTest, DPMS_GetPermissionUsedRecords_1300, TestSize.Level1)
 {
+    RemoveStorage();
+    InitVisitorData("bundleName_0");
+    InitRecordData();
     PERMISSION_LOG_INFO(LABEL, "DistributedPermissionRecordsTest DPMS_GetPermissionUsedRecords_1300 start");
 
     QueryPermissionUsedRequest request;
-    request.deviceLabel = "device_name_0";
+    request.deviceLabel = deviceName_;
     request.bundleName = "bundleName_0";
     QueryPermissionUsedResult result;
     int state = DistributedPermissionKit::GetPermissionUsedRecords(request, result);
@@ -918,10 +961,13 @@ HWTEST_F(DistributedPermissionUsedRecordsTest, DPMS_GetPermissionUsedRecords_130
  */
 HWTEST_F(DistributedPermissionUsedRecordsTest, DPMS_GetPermissionUsedRecords_1400, TestSize.Level1)
 {
+    RemoveStorage();
+    InitVisitorData("bundleName_0");
+    InitRecordData();
     PERMISSION_LOG_INFO(LABEL, "DistributedPermissionRecordsTest DPMS_GetPermissionUsedRecords_1400 start");
 
     QueryPermissionUsedRequest request;
-    request.deviceLabel = "device_name_0";
+    request.deviceLabel = deviceName_;
     QueryPermissionUsedResult result;
     int state = DistributedPermissionKit::GetPermissionUsedRecords(request, result);
     EXPECT_EQ(state, 0);
@@ -938,6 +984,9 @@ HWTEST_F(DistributedPermissionUsedRecordsTest, DPMS_GetPermissionUsedRecords_140
  */
 HWTEST_F(DistributedPermissionUsedRecordsTest, DPMS_GetPermissionUsedRecords_1500, TestSize.Level1)
 {
+    RemoveStorage();
+    InitVisitorData("bundleName_0");
+    InitRecordData();
     PERMISSION_LOG_INFO(LABEL, "DistributedPermissionRecordsTest DPMS_GetPermissionUsedRecords_1500 start");
 
     QueryPermissionUsedRequest request;
@@ -958,6 +1007,9 @@ HWTEST_F(DistributedPermissionUsedRecordsTest, DPMS_GetPermissionUsedRecords_150
  */
 HWTEST_F(DistributedPermissionUsedRecordsTest, DPMS_GetPermissionUsedRecords_1600, TestSize.Level1)
 {
+    RemoveStorage();
+    InitVisitorData("bundleName_0");
+    InitRecordData();
     PERMISSION_LOG_INFO(LABEL, "DistributedPermissionRecordsTest DPMS_GetPermissionUsedRecords_1600 start");
 
     QueryPermissionUsedRequest request;
@@ -994,6 +1046,9 @@ HWTEST_F(DistributedPermissionUsedRecordsTest, DPMS_GetPermissionUsedRecords_160
  */
 HWTEST_F(DistributedPermissionUsedRecordsTest, DPMS_GetPermissionUsedRecords_1700, TestSize.Level1)
 {
+    RemoveStorage();
+    InitVisitorData("bundleName_0");
+    InitRecordData();
     PERMISSION_LOG_INFO(LABEL, "DistributedPermissionRecordsTest DPMS_GetPermissionUsedRecords_1700 start");
 
     QueryPermissionUsedRequest request;
@@ -1013,6 +1068,9 @@ HWTEST_F(DistributedPermissionUsedRecordsTest, DPMS_GetPermissionUsedRecords_170
  */
 HWTEST_F(DistributedPermissionUsedRecordsTest, DPMS_GetPermissionUsedRecords_1800, TestSize.Level1)
 {
+    RemoveStorage();
+    InitVisitorData("bundleName_0");
+    InitRecordData();
     PERMISSION_LOG_INFO(LABEL, "DistributedPermissionRecordsTest DPMS_GetPermissionUsedRecords_1800 start");
 
     QueryPermissionUsedRequest request;
@@ -1036,6 +1094,9 @@ HWTEST_F(DistributedPermissionUsedRecordsTest, DPMS_GetPermissionUsedRecords_180
  */
 HWTEST_F(DistributedPermissionUsedRecordsTest, DPMS_GetPermissionUsedRecordsAsync_0100, TestSize.Level1)
 {
+    RemoveStorage();
+    InitVisitorData("bundleName_0");
+    InitRecordData();
     PERMISSION_LOG_INFO(LABEL, "DistributedPermissionRecordsTest DPMS_GetPermissionUsedRecordsAsync_0100 start");
     auto timeFast = std::chrono::milliseconds(2000);
     OHOS::sptr<TestCallback> callback(new TestCallback());
@@ -1051,67 +1112,4 @@ HWTEST_F(DistributedPermissionUsedRecordsTest, DPMS_GetPermissionUsedRecordsAsyn
     EXPECT_LT(fp_ms.count(), 0.5);
 
     PERMISSION_LOG_INFO(LABEL, "DistributedPermissionRecordsTest DPMS_GetPermissionUsedRecordsAsync_0100 end");
-}
-
-/**
- * @tc.number    : DPMS_DeletePermissionUsedRecords_0100
- * @tc.name      : DeletePermissionUsedRecords
- * @tc.desc      : DeletePermissionUsedRecords test, when unstall a app, delete permission used records by uid.
- */
-HWTEST_F(DistributedPermissionUsedRecordsTest, DPMS_DeletePermissionUsedRecords_0100, TestSize.Level1)
-{
-    RemoveStorage();
-    InitVisitorData(bundleName_);
-    InitRecordData();
-    PERMISSION_LOG_INFO(LABEL, "DistributedPermissionRecordsTest DPMS_DeletePermissionUsedRecords_0100 start");
-    std::vector<GenericValues> visitorValues;
-    std::vector<GenericValues> recordValues;
-    int visitorSize = 0;
-    int recordSize = 0;
-    int visitorResult = DataStorage::GetRealDataStorage().Find(DataStorage::PERMISSION_VISITOR, visitorValues);
-    int recordResult = DataStorage::GetRealDataStorage().Find(DataStorage::PERMISSION_RECORD, recordValues);
-    EXPECT_EQ(visitorResult, 0);
-    EXPECT_EQ(recordResult, 0);
-    visitorSize = visitorValues.size();
-    recordSize = recordValues.size();
-    std::cout << "\nvisitorSize = " << visitorSize;
-    std::cout << "\nrecordSize = " << recordSize;
-    std::cout << "\nuid = " << uid_;
-    {
-        STDistibutePermissionUtil::Uninstall(THIRD_BUNDLE_NAME2);
-    }
-    visitorValues.clear();
-    recordValues.clear();
-    visitorResult = DataStorage::GetRealDataStorage().Find(DataStorage::PERMISSION_VISITOR, visitorValues);
-    recordResult = DataStorage::GetRealDataStorage().Find(DataStorage::PERMISSION_RECORD, recordValues);
-    EXPECT_EQ(visitorResult, 0);
-    EXPECT_EQ(recordResult, 0);
-    EXPECT_EQ(visitorSize - 1, (int)visitorValues.size());
-    EXPECT_EQ(recordSize - 3, (int)recordValues.size());
-
-    PERMISSION_LOG_INFO(LABEL, "DistributedPermissionRecordsTest DPMS_DeletePermissionUsedRecords_0100 end");
-}
-
-/**
- * @tc.number    : DPMS_DeletePermissionUsedRecords_0200
- * @tc.name      : DeletePermissionUsedRecords
- * @tc.desc      : DeletePermissionUsedRecords test, expect to take less than 0.5ms.
- */
-HWTEST_F(DistributedPermissionUsedRecordsTest, DPMS_DeletePermissionUsedRecords_0200, TestSize.Level1)
-{
-    RemoveStorage();
-    InitVisitorData(bundleName_);
-    InitRecordData();
-    PERMISSION_LOG_INFO(LABEL, "DistributedPermissionRecordsTest DPMS_DeletePermissionUsedRecords_0200 start");
-    auto startTime = std::chrono::high_resolution_clock::now();
-    PERMISSION_LOG_DEBUG(LABEL, "------------time start-------------");
-    {
-        STDistibutePermissionUtil::Uninstall(THIRD_BUNDLE_NAME2);
-    }
-    PERMISSION_LOG_DEBUG(LABEL, "------------time end-------------");
-    auto endTime = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double, std::milli> fp_ms = endTime - startTime;
-    EXPECT_LT(fp_ms.count(), 0.5);
-
-    PERMISSION_LOG_INFO(LABEL, "DistributedPermissionRecordsTest DPMS_DeletePermissionUsedRecords_0200 end");
 }

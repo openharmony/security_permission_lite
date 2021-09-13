@@ -22,7 +22,6 @@ using namespace OHOS::HiviewDFX;
 namespace OHOS {
 namespace Security {
 namespace Permission {
-
 static const HiLogLabel LABEL = {LOG_CORE, SECURITY_DOMAIN_PERMISSION, "ResourceSwitchRemote"};
 ResourceSwitchRemote &ResourceSwitchRemote::GetInstance()
 {
@@ -115,7 +114,6 @@ bool ResourceSwitchRemote::IsPermittedFromProfile(std::pair<std::string, int32_t
         return false;
     }
 }
-
 }  // namespace Permission
 }  // namespace Security
 }  // namespace OHOS

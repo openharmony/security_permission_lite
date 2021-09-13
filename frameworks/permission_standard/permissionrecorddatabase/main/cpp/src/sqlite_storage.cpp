@@ -354,7 +354,6 @@ int SqliteStorage::CreatePermissionRecordTable() const
         .append("))");
     return ExecuteSql(sql);
 }
-
 }  // namespace Permission
 }  // namespace Security
 }  // namespace OHOS

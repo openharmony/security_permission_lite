@@ -31,7 +31,6 @@ ohos_systemtest("DistributedPermissionRemindTest") {
   configs = [ "//base/security/permission/test/systemtest/common/distributedpermission:distributed_permission_test_config" ]
 
   deps = [
-    # 调用 BMS 接口
     "${distributed_permission_frameworks_log_path}:permission_standard_infrastructure_cxx",
     "${distributed_permission_innerkits_distributed_path}:distributed_permission_innerkits",
     "${distributed_permission_services_path}:distributed_permission_services",

@@ -19,7 +19,6 @@
 namespace OHOS {
 namespace Security {
 namespace Permission {
-
 SensitiveResourceSwitchSetting::SensitiveResourceSwitchSetting(Builder &builder)
 {
     this->deviceId_ = builder.deviceId_;
@@ -120,7 +119,6 @@ std::shared_ptr<SensitiveResourceSwitchSetting> Builder::Build()
 {
     return std::make_shared<SensitiveResourceSwitchSetting>(*this);
 }
-
 }  // namespace Permission
 }  // namespace Security
 }  // namespace OHOS

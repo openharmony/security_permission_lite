@@ -284,7 +284,6 @@ int32_t DistributedPermissionManagerClient::CheckPermissionAndStartUsing(
 
 int32_t DistributedPermissionManagerClient::CheckCallerPermissionAndStartUsing(const std::string &permissionName)
 {
-
     PERMISSION_LOG_INFO(LABEL, "%{public}s: called!", __func__);
 
     if (permissionName.empty()) {
@@ -368,7 +367,6 @@ void DistributedPermissionManagerClient::ResetDistributedPermissionProxy()
 void DistributedPermissionManagerClient::AddPermissionUsedRecord(
     const std::string &permissionName, const std::string &appIdInfo, const int32_t sucCount, const int32_t failCount)
 {
-
     PERMISSION_LOG_INFO(LABEL, "enter");
     PERMISSION_LOG_INFO(LABEL,
         "permissionName = %{public}s, appIdInfo = %{public}s, sucCount = "
@@ -411,6 +409,10 @@ int32_t DistributedPermissionManagerClient::GetPermissionUsedRecords(
     std::string queryJsonStr = jsonObj.dump(-1, ' ', false, nlohmann::detail::error_handler_t::replace);
     unsigned long zipLen = queryJsonStr.length();
     unsigned long len = compressBound(zipLen);
+    if (len <= 0) {
+        PERMISSION_LOG_ERROR(LABEL, "%{public}s: compress length less than 0!", __func__);
+        return Constant::FAILURE;
+    }
     unsigned char *buf = (unsigned char *)malloc(len + 1);
 
     if (!ZipUtil::ZipCompress(queryJsonStr, zipLen, buf, len)) {
@@ -425,7 +427,10 @@ int32_t DistributedPermissionManagerClient::GetPermissionUsedRecords(
     }
     std::string resultGzipStr;
     int32_t ret = distributedPermissionProxy_->GetPermissionRecords(queryGzipStr, len, zipLen, resultGzipStr);
-
+    if (len <= 0) {
+        PERMISSION_LOG_ERROR(LABEL, "%{public}s: compress length less than 0!", __func__);
+        return Constant::FAILURE;
+    }
     unsigned char *pOut = (unsigned char *)malloc(len + 1);
     Base64Util::Decode(resultGzipStr, pOut, len);
     std::string resultJsonStr;
@@ -452,6 +457,10 @@ int32_t DistributedPermissionManagerClient::GetPermissionUsedRecords(
 
     unsigned long zipLen = queryJsonStr.length();
     unsigned long len = compressBound(zipLen);
+    if (len <= 0) {
+        PERMISSION_LOG_ERROR(LABEL, "%{public}s: compress length less than 0!", __func__);
+        return Constant::FAILURE;
+    }
     unsigned char *buf = (unsigned char *)malloc(len + 1);
     if (!ZipUtil::ZipCompress(queryJsonStr, zipLen, buf, len)) {
         return Constant::FAILURE;
@@ -470,10 +479,8 @@ int32_t DistributedPermissionManagerClient::GetPermissionUsedRecords(
 bool DistributedPermissionManagerClient::GetDistributedPermissionProxy()
 {
     if (!distributedPermissionProxy_) {
-
         std::lock_guard<std::mutex> lock(mutex_);
         if (!distributedPermissionProxy_) {
-
             sptr<ISystemAbilityManager> systemAbilityManager =
                 SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
             if (!systemAbilityManager) {

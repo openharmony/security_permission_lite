@@ -1,4 +1,17 @@
-// mock event handler
+/*
+ * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 #include <memory>
 #include <deque>
@@ -20,12 +33,7 @@ namespace {
 static constexpr OHOS::HiviewDFX::HiLogLabel LABEL = {
     LOG_CORE, SECURITY_DOMAIN_PERMISSION, "DistributedPermissionEventHandlerMock"};
 }
-///////////////////////
-// var for mock
-///////////////////////
 namespace {
-
-// std::shared_ptr<Callback> callback = nullptr;
 class Task {
 public:
     std::function<void()> callback = nullptr;
@@ -37,7 +45,6 @@ std::deque<Task *> tasks__;
 int count__ = 0;
 bool stopping__ = false;
 std::mutex mutex__;
-std::mutex runnerMutex__;
 std::condition_variable empty__;
 
 std::vector<std::string> delayedTasks_;
@@ -45,13 +52,14 @@ std::vector<std::string> delayedTasks_;
 void Run__()
 {
     PERMISSION_LOG_DEBUG(LABEL, "runner started");
+    std::mutex runnerMutex__;
     std::unique_lock<std::mutex> notifyLock(runnerMutex__);
-    while (stopping__ == false) {
+    while (!stopping__) {
         while (tasks__.empty()) {
             PERMISSION_LOG_DEBUG(LABEL, "runner waiting");
             empty__.wait(notifyLock);
         }
-        if (stopping__ == true) {
+        if (stopping__) {
             break;
         }
 
@@ -84,21 +92,21 @@ void Delay__(std::string taskname, std::function<void()> callback, int64_t delay
     PERMISSION_LOG_DEBUG(LABEL, "task name in delay thread: %{public}s", taskname.c_str());
 
     std::chrono::system_clock::time_point tp1 = std::chrono::system_clock::now() + std::chrono::milliseconds(delayTime);
-    while (stopping__ == false) {
+    while (!stopping__) {
         std::this_thread::sleep_until(tp1);
         std::chrono::system_clock::time_point tp2 = std::chrono::system_clock::now();
         if (tp1 <= tp2) {
             break;
         }
     }
-    if (stopping__ == true) {
+    if (stopping__) {
         return;
     }
 
     std::unique_lock<std::mutex> lock(mutex__);
     int count = 0;
     for (auto it = delayedTasks_.begin(); it != delayedTasks_.end();) {
-        if (stopping__ == true) {
+        if (stopping__) {
             return;
         }
         if (*it == taskname) {
@@ -107,7 +115,6 @@ void Delay__(std::string taskname, std::function<void()> callback, int64_t delay
 
             Task *task = new Task();
             task->name = std::string(taskname);
-            // task->callback = std::make_shared<Callback>(callback);
             task->callback = callback;
             tasks__.push_back(task);
             empty__.notify_all();
@@ -125,14 +132,10 @@ void Delay__(std::string taskname, std::function<void()> callback, int64_t delay
     }
 }
 }  // namespace
-///////////////////////
-// var for mock end
-///////////////////////
 
 namespace {
 const std::string SEP = "$";
 }
-
 DistributedPermissionEventHandler::DistributedPermissionEventHandler(
     const std::shared_ptr<AppExecFwk::EventRunner> &runner)
     : AppExecFwk::EventHandler(runner)
@@ -170,7 +173,8 @@ bool DistributedPermissionEventHandler::ProxyPostTask(
         runner__ = new std::thread(Run__);
     }
 
-    if (delayTime > 1000 * 1000) {
+    int maxDelay = 1000000;
+    if (delayTime > maxDelay) {
         std::cerr << "delay time too large!" << std::endl;
         PERMISSION_LOG_ERROR(LABEL, "delay time too large! time is ms: %{public}ld", (long)delayTime);
         return false;
@@ -182,14 +186,11 @@ bool DistributedPermissionEventHandler::ProxyPostTask(
     }
 
     // store to event runner too.
-    //// PostTask(callback, name, delayTime);
-
     int index = count__++;
 
     if (delayTime <= 0) {
         Task *task = new Task();
         task->name = std::to_string(index) + SEP + name;
-        // task->callback = std::make_shared<Callback>(callback);
         task->callback = callback;
         tasks__.push_back(task);
         empty__.notify_all();
@@ -212,13 +213,10 @@ void DistributedPermissionEventHandler::ProxyRemoveTask(const std::string &aname
 {
     std::string name = std::string(aname);
     PERMISSION_LOG_DEBUG(LABEL, "remove task begin, name: %{public}s", name.c_str());
-    //// RemoveTask(name);
 
     std::unique_lock<std::mutex> lock(mutex__);
     int count = 0;
     for (auto it = delayedTasks_.begin(); it != delayedTasks_.end();) {
-        // if (*it == std::to_string(index) + SEP + name) {
-        // if (str.compare(str.size() - tail.size(), tail.size(), tail) == 0)
         std::string nameSuffix = SEP + name;
         if (it->compare(it->size() - nameSuffix.size(), nameSuffix.size(), nameSuffix) == 0) {
             // delete from delayed list
@@ -231,8 +229,7 @@ void DistributedPermissionEventHandler::ProxyRemoveTask(const std::string &aname
     }
 
     PERMISSION_LOG_DEBUG(LABEL, "removed %{public}d task", count);
-}  // namespace Permission
-
+}
 }  // namespace Permission
 }  // namespace Security
 }  // namespace OHOS

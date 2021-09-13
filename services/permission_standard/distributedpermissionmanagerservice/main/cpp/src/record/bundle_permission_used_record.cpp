@@ -20,26 +20,28 @@ using namespace std;
 namespace OHOS {
 namespace Security {
 namespace Permission {
-#define RETURN_IF_FALSE(expr) \
-    if (!(expr)) {            \
-        return false;         \
-    }
 
-#define RELEASE_IF_FALSE(expr, obj) \
-    if (!(expr)) {                  \
-        delete obj;                 \
-        obj = nullptr;              \
-        return obj;                 \
-    }
 bool BundlePermissionUsedRecord::Marshalling(Parcel &out) const
 {
-    RETURN_IF_FALSE(out.WriteString(this->deviceId));
-    RETURN_IF_FALSE(out.WriteString(this->deviceLabel));
-    RETURN_IF_FALSE(out.WriteString(this->bundleName));
-    RETURN_IF_FALSE(out.WriteString(this->bundleLabel));
-    RETURN_IF_FALSE(out.WriteInt32(this->permissionUsedRecords.size()));
+    if (!out.WriteString(this->deviceId)) {
+        return false;
+    }
+    if (!out.WriteString(this->deviceLabel)) {
+        return false;
+    }
+    if (!out.WriteString(this->bundleName)) {
+        return false;
+    }
+    if (!out.WriteString(this->bundleLabel)) {
+        return false;
+    }
+    if (!out.WriteInt32(this->permissionUsedRecords.size())) {
+        return false;
+    }
     for (const auto &record : this->permissionUsedRecords) {
-        RETURN_IF_FALSE(out.WriteParcelable(&record));
+        if (!out.WriteParcelable(&record)) {
+            return false;
+        }
     }
     return true;
 }
@@ -47,17 +49,29 @@ bool BundlePermissionUsedRecord::Marshalling(Parcel &out) const
 BundlePermissionUsedRecord *BundlePermissionUsedRecord::Unmarshalling(Parcel &in)
 {
     auto *bundleRecord = new (nothrow) BundlePermissionUsedRecord();
-    RELEASE_IF_FALSE(bundleRecord != nullptr, bundleRecord);
+    if (bundleRecord == nullptr) {
+        delete bundleRecord;
+        bundleRecord = nullptr;
+        return bundleRecord;
+    }
     bundleRecord->deviceId = in.ReadString();
     bundleRecord->deviceLabel = in.ReadString();
     bundleRecord->bundleName = in.ReadString();
     bundleRecord->bundleLabel = in.ReadString();
     bundleRecord->applicationIconId = in.ReadInt32();
     int size = 0;
-    RELEASE_IF_FALSE(in.ReadInt32(size), bundleRecord);
+    if (!in.ReadInt32(size)) {
+        delete bundleRecord;
+        bundleRecord = nullptr;
+        return bundleRecord;
+    }
     for (int i = 0; i < size; i++) {
         sptr<PermissionUsedRecord> record = in.ReadParcelable<PermissionUsedRecord>();
-        RELEASE_IF_FALSE(record != nullptr, bundleRecord);
+        if (record == nullptr) {
+            delete bundleRecord;
+            bundleRecord = nullptr;
+            return bundleRecord;
+        }
         bundleRecord->permissionUsedRecords.push_back(*record);
     }
     return bundleRecord;
@@ -108,7 +122,6 @@ void BundlePermissionUsedRecord::from_json(const nlohmann::json &jsonObj, Bundle
     }
     bundle.permissionUsedRecords = recordVector;
 }
-
 }  // namespace Permission
 }  // namespace Security
 }  // namespace OHOS

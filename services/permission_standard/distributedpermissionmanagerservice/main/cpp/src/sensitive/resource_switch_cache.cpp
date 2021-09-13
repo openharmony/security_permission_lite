@@ -22,9 +22,7 @@ using namespace OHOS::HiviewDFX;
 namespace OHOS {
 namespace Security {
 namespace Permission {
-
 static constexpr HiLogLabel LABEL = {LOG_CORE, SECURITY_DOMAIN_PERMISSION, "ResourceSwitchCache"};
-
 ResourceSwitchCache &ResourceSwitchCache::GetInstance()
 {
     static ResourceSwitchCache m_instance;
@@ -132,7 +130,6 @@ void ResourceSwitchCache::RemoveSwitchSetting(std::string deviceId)
         cache_.erase(deviceId);
     }
 }
-
 }  // namespace Permission
 }  // namespace Security
 }  // namespace OHOS

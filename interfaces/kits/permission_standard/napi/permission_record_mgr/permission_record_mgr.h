@@ -33,7 +33,6 @@
 namespace OHOS {
 namespace Security {
 namespace Permission {
-
 struct AsyncRecordsCallbackInfo {
     napi_env env;
     napi_async_work asyncWork;
@@ -56,7 +55,6 @@ struct AsyncGetRecordCallbackInfo {
 
 napi_value GetPermissionRecord(napi_env env, napi_callback_info info);
 napi_value GetPermissionRecordAsync(napi_env env, napi_callback_info info);
-
 }  // namespace Permission
 }  // namespace Security
 }  // namespace OHOS

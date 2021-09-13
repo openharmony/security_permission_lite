@@ -43,9 +43,8 @@ void SoftBusDeviceConnectionListener::OnDeviceOnline(const DmDeviceInfo &info)
     std::string udid = SoftBusManager::GetInstance().GetUniqueDisabilityIdByNodeId(networkId);
 
     PERMISSION_LOG_INFO(LABEL,
-        "networkId: %{public}s, deviceName: %{public}s, uuid: %{public}s, udid: %{public}s",
+        "networkId: %{public}s, uuid: %{public}s, udid: %{public}s",
         networkId.c_str(),
-        info.deviceName.c_str(),
         uuid.c_str(),
         udid.c_str());
 
@@ -66,9 +65,8 @@ void SoftBusDeviceConnectionListener::OnDeviceOffline(const DmDeviceInfo &info)
     std::string udid = DeviceInfoManager::GetInstance().ConvertToUniqueDisabilityIdOrFetch(networkId);
 
     PERMISSION_LOG_INFO(LABEL,
-        "networkId: %{public}s, deviceName: %{public}s,  uuid: %{public}s, udid: %{public}s",
+        "networkId: %{public}s,  uuid: %{public}s, udid: %{public}s",
         networkId.c_str(),
-        info.deviceName.c_str(),
         uuid.c_str(),
         udid.c_str());
 
@@ -84,19 +82,13 @@ void SoftBusDeviceConnectionListener::OnDeviceOffline(const DmDeviceInfo &info)
 void SoftBusDeviceConnectionListener::OnDeviceReady(const DmDeviceInfo &info)
 {
     std::string networkId = info.deviceId;
-    PERMISSION_LOG_INFO(LABEL,
-        "networkId: %{public}s, deviceName: %{public}s",
-        networkId.c_str(),
-        info.deviceName.c_str());
+    PERMISSION_LOG_INFO(LABEL, "networkId: %{public}s", networkId.c_str());
 }
 
 void SoftBusDeviceConnectionListener::OnDeviceChanged(const DmDeviceInfo &info)
 {
     std::string networkId = info.deviceId;
-    PERMISSION_LOG_INFO(LABEL,
-        "networkId: %{public}s, deviceName: %{public}s",
-        networkId.c_str(),
-        info.deviceName.c_str());
+    PERMISSION_LOG_INFO(LABEL, "networkId: %{public}s", networkId.c_str());
 }
 }  // namespace Permission
 }  // namespace Security

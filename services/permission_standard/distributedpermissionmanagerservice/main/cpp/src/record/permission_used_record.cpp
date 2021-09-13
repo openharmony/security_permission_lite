@@ -20,48 +20,103 @@ using namespace std;
 namespace OHOS {
 namespace Security {
 namespace Permission {
-#define RETURN_IF_FALSE(expr) \
-    if (!(expr)) {            \
-        return false;         \
-    }
-
-#define RELEASE_IF_FALSE(expr, obj) \
-    if (!(expr)) {                  \
-        delete obj;                 \
-        obj = nullptr;              \
-        return obj;                 \
-    }
 bool PermissionUsedRecord::Marshalling(Parcel &out) const
 {
-    RETURN_IF_FALSE(out.WriteString(this->permissionName));
-    RETURN_IF_FALSE(out.WriteInt32(this->accessCountFg));
-    RETURN_IF_FALSE(out.WriteInt32(this->rejectCountFg));
-    RETURN_IF_FALSE(out.WriteInt32(this->accessCountBg));
-    RETURN_IF_FALSE(out.WriteInt32(this->rejectCountBg));
-    RETURN_IF_FALSE(out.WriteInt64(this->lastAccessTime));
-    RETURN_IF_FALSE(out.WriteInt64(this->lastRejectTime));
-    RETURN_IF_FALSE(out.WriteInt64Vector(this->accessRecordFg));
-    RETURN_IF_FALSE(out.WriteInt64Vector(this->rejectRecordFg));
-    RETURN_IF_FALSE(out.WriteInt64Vector(this->accessRecordBg));
-    RETURN_IF_FALSE(out.WriteInt64Vector(this->rejectRecordBg));
+    if (!out.WriteString(this->permissionName)) {
+        return false;
+    }
+    if (!out.WriteInt32(this->accessCountFg)) {
+        return false;
+    }
+    if (!out.WriteInt32(this->rejectCountFg)) {
+        return false;
+    }
+    if (!out.WriteInt32(this->accessCountBg)) {
+        return false;
+    }
+    if (!out.WriteInt32(this->rejectCountBg)) {
+        return false;
+    }
+    if (!out.WriteInt64(this->lastAccessTime)) {
+        return false;
+    }
+    if (!out.WriteInt64(this->lastRejectTime)) {
+        return false;
+    }
+    if (!out.WriteInt64Vector(this->accessRecordFg)) {
+        return false;
+    }
+    if (!out.WriteInt64Vector(this->rejectRecordFg)) {
+        return false;
+    }
+    if (!out.WriteInt64Vector(this->accessRecordBg)) {
+        return false;
+    }
+    if (!out.WriteInt64Vector(this->rejectRecordBg)) {
+        return false;
+    }
     return true;
 }
 
 PermissionUsedRecord *PermissionUsedRecord::Unmarshalling(Parcel &in)
 {
     auto *record = new (nothrow) PermissionUsedRecord();
-    RELEASE_IF_FALSE(record != nullptr, record);
+    if (record == nullptr) {
+        delete record;
+        record = nullptr;
+        return record;
+    }
     record->permissionName = in.ReadString();
-    RELEASE_IF_FALSE(in.ReadInt32(record->accessCountFg), record);
-    RELEASE_IF_FALSE(in.ReadInt32(record->rejectCountFg), record);
-    RELEASE_IF_FALSE(in.ReadInt32(record->accessCountBg), record);
-    RELEASE_IF_FALSE(in.ReadInt32(record->rejectCountBg), record);
-    RELEASE_IF_FALSE(in.ReadInt64(record->lastAccessTime), record);
-    RELEASE_IF_FALSE(in.ReadInt64(record->lastRejectTime), record);
-    RELEASE_IF_FALSE(in.ReadInt64Vector(&record->accessRecordFg), record);
-    RELEASE_IF_FALSE(in.ReadInt64Vector(&record->rejectRecordFg), record);
-    RELEASE_IF_FALSE(in.ReadInt64Vector(&record->accessRecordBg), record);
-    RELEASE_IF_FALSE(in.ReadInt64Vector(&record->rejectRecordBg), record);
+    if (!in.ReadInt32(record->accessCountFg)) {
+        delete record;
+        record = nullptr;
+        return record;
+    }
+    if (!in.ReadInt32(record->rejectCountFg)) {
+        delete record;
+        record = nullptr;
+        return record;
+    }
+    if (!in.ReadInt32(record->accessCountBg)) {
+        delete record;
+        record = nullptr;
+        return record;
+    }
+    if (!in.ReadInt32(record->rejectCountBg)) {
+        delete record;
+        record = nullptr;
+        return record;
+    }
+    if (!in.ReadInt64(record->lastAccessTime)) {
+        delete record;
+        record = nullptr;
+        return record;
+    }
+    if (!in.ReadInt64(record->lastRejectTime)) {
+        delete record;
+        record = nullptr;
+        return record;
+    }
+    if (!in.ReadInt64Vector(&record->accessRecordFg)) {
+        delete record;
+        record = nullptr;
+        return record;
+    }
+    if (!in.ReadInt64Vector(&record->rejectRecordFg)) {
+        delete record;
+        record = nullptr;
+        return record;
+    }
+    if (!in.ReadInt64Vector(&record->accessRecordBg)) {
+        delete record;
+        record = nullptr;
+        return record;
+    }
+    if (!in.ReadInt64Vector(&record->rejectRecordBg)) {
+        delete record;
+        record = nullptr;
+        return record;
+    }
     return record;
 }
 
@@ -161,7 +216,6 @@ void PermissionUsedRecord::updateRecordWithTime(const PermissionUsedRecord &reco
         }
     }
 }
-
 }  // namespace Permission
 }  // namespace Security
 }  // namespace OHOS

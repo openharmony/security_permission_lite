@@ -18,8 +18,7 @@
 #include <chrono>
 #include <gtest/gtest.h>
 #include <mutex>
-#include <stdio.h>
-#include <string.h>
+#include <cstring>
 #include <iostream>
 #include <thread>
 #include "permission_log.h"
@@ -43,8 +42,6 @@
 #include "common_event_manager.h"
 #include "ability_lifecycle_executor.h"
 
-#define CMD_RESULT_BUF_SIZE 1024
-#define DEVICE_UUID_LENGTH 65
 using namespace testing::ext;
 using namespace OHOS;
 using namespace OHOS::Security::Permission;
@@ -57,15 +54,6 @@ using namespace OHOS::STABUtil;
 using std::string;
 
 namespace {
-
-const double RunTime_DeviceInfoManager = 1;
-const double RunTime_BundleManager = 1;
-const double RunTime_Permissionmanager = 1;
-const double RunTime_AbilityManager = 1;
-const double RunTime_AnsManager = 1;
-const double RunTime_IPCSkeleton = 5;
-double RunTime_All = 0;
-
 std::recursive_mutex statckLock_;
 string deviceId_;
 int32_t pid_ = 0;
@@ -73,12 +61,18 @@ int32_t uid_ = 0;
 int32_t hapRet = 0;
 string permName_ = "DistributedPermissionName";
 OHOS::AppExecFwk::BundleInfo bundleInfo_;
-static constexpr OHOS::HiviewDFX::HiLogLabel LABEL = {
-    LOG_CORE, SECURITY_DOMAIN_PERMISSION, "DistributedPermissionRemindTest"};
+static constexpr OHOS::HiviewDFX::HiLogLabel LABEL = {LOG_CORE, SECURITY_DOMAIN_PERMISSION,
+    "DistributedPermissionRemindTest"};
+static const int32_t permission_labelId = 9527;
+static const int32_t permission_descriptionId = 9528;
+static const int32_t sleep_time_3000_ms = 3000;
+static const int32_t sleep_time_5000_ms = 5000;
+static const int32_t cmd_result_buf_size = 1024;
+static const int32_t device_uuid_length = 65;
 
-static const std::string SYSTEM_TEST_HAP_NAME_DPMS = "dpmsSystemBundleOnlySystemGrant";                             //系统包 不带授限权限
-static const std::string SYSTEM_TEST_HAP_NAME_DPMS_S = "dpmsSystemBundle";  // 系统包，带有受限权限
-static const std::string THIRD_TEST_HAP_NAME = "dpmsThirdBundle";  //第三方包 ，权限受限、敏感、非敏感权限都有
+static const std::string SYSTEM_TEST_HAP_NAME_DPMS = "dpmsSystemBundleOnlySystemGrant";
+static const std::string SYSTEM_TEST_HAP_NAME_DPMS_S = "dpmsSystemBundle";
+static const std::string THIRD_TEST_HAP_NAME = "dpmsThirdBundle";
 
 static const std::string SYSTEM_TEST_BUNDLE_NAME_DPMS = "com.system.hiworld.dpms_system_grant";
 static const std::string SYSTEM_TEST_BUNDLE_NAME_DPMS_S = "com.system.hiworld.dpms_system_bundle";
@@ -94,8 +88,13 @@ static const std::string PERMISSION_ACTIVITY_MOTION = "ohos.permission.ACTIVITY_
 static const std::string PERMISSION_DISTRIBUTED_DATASYNC = "ohos.permission.DISTRIBUTED_DATASYNC";
 static const std::string PERMISSION_TEST = "ohos.permission.TEST";
 
-}  // namespace
+static std::vector<std::string> eventList_ = {"resp_com_ohos_dpmsst_service_app_a1",
+    "req_com_ohos_dpmsst_service_app_a1"};
+static STtools::Event event_ = STtools::Event();
+static sptr<OHOS::AppExecFwk::IAppMgr> appMs_ = nullptr;
+static sptr<OHOS::AAFwk::IAbilityManager> abilityMs_ = nullptr;
 
+} // namespace
 
 class DistributedPermissionRemindTest : public testing::Test {
 public:
@@ -105,47 +104,29 @@ public:
     void TearDown();
     static void RemoveStorage();
     void GetIPCSkeleton();
-    string GetAppIdInfo(string &deviceId_);
-    void FindStorageByDeviceId(string &deviceId_, std::vector<GenericValues> &results);
-    void FindDataStorageAll(DataStorage::DataType dataType, std::vector<GenericValues> result);
+    string GetAppIdInfo(string& deviceId_);
+    void FindStorageByDeviceId(string& deviceId_, std::vector<GenericValues>& results);
+    static void FindDataStorageAll(DataStorage::DataType dataType, std::vector<GenericValues> result);
     int32_t CheckDpsServiceAndStart();
     void DeleteAllRemind();
-    int32_t ExecuteCMD(const char *cmd, char *result);
+    int32_t ExecuteCMD(const char* cmd, char* result);
     void InstallBundel();
     void UnInstallBundel();
+    void InitPermissionList();
     static bool SubscribeEvent();
 
     class AppEventSubscriber : public OHOS::EventFwk::CommonEventSubscriber {
     public:
-        explicit AppEventSubscriber(const OHOS::EventFwk::CommonEventSubscribeInfo &sp) : CommonEventSubscriber(sp){};
+        explicit AppEventSubscriber(const OHOS::EventFwk::CommonEventSubscribeInfo& sp) : CommonEventSubscriber(sp) {};
         ~AppEventSubscriber() = default;
-        virtual void OnReceiveEvent(const OHOS::EventFwk::CommonEventData &data) override;
+        virtual void OnReceiveEvent(const OHOS::EventFwk::CommonEventData& data) override;
     };
-
-    static std::vector<std::string> eventList_;
-
-    static STtools::Event event_;
-
-    static sptr<OHOS::AppExecFwk::IAppMgr> appMs_;
-
-    static sptr<OHOS::AAFwk::IAbilityManager> abilityMs_;
-
-    static std::shared_ptr<AppEventSubscriber> subscriber_;
 };
-
-std::vector<std::string> DistributedPermissionRemindTest::eventList_ = {
-    "resp_com_ohos_dpmsst_service_app_a1",
-    "req_com_ohos_dpmsst_service_app_a1"
-};
-STtools::Event DistributedPermissionRemindTest::event_ = STtools::Event();
-sptr<OHOS::AppExecFwk::IAppMgr> DistributedPermissionRemindTest::appMs_ = nullptr;
-sptr<OHOS::AAFwk::IAbilityManager> DistributedPermissionRemindTest::abilityMs_ = nullptr;
-std::shared_ptr<DistributedPermissionRemindTest::AppEventSubscriber> DistributedPermissionRemindTest::subscriber_ = nullptr;
-
+static std::shared_ptr<DistributedPermissionRemindTest::AppEventSubscriber> subscriber_ = nullptr;
 bool DistributedPermissionRemindTest::SubscribeEvent()
 {
     MatchingSkills matchingSkills;
-    for (const auto &e : DistributedPermissionRemindTest::eventList_) {
+    for (const auto& e : eventList_) {
         matchingSkills.AddEvent(e);
     }
     CommonEventSubscribeInfo subscribeInfo(matchingSkills);
@@ -154,7 +135,7 @@ bool DistributedPermissionRemindTest::SubscribeEvent()
     return CommonEventManager::SubscribeCommonEvent(subscriber_);
 }
 
-void DistributedPermissionRemindTest::AppEventSubscriber::OnReceiveEvent(const CommonEventData &data)
+void DistributedPermissionRemindTest::AppEventSubscriber::OnReceiveEvent(const CommonEventData& data)
 {
     GTEST_LOG_(INFO) << "OnReceiveEvent: event=" << data.GetWant().GetAction();
     GTEST_LOG_(INFO) << "OnReceiveEvent: data=" << data.GetData();
@@ -163,15 +144,14 @@ void DistributedPermissionRemindTest::AppEventSubscriber::OnReceiveEvent(const C
     GTEST_LOG_(INFO) << "OnReceiveEvent: hapRet=" << hapRet;
 
     auto eventName = data.GetWant().GetAction();
-    auto iter = std::find(DistributedPermissionRemindTest::eventList_.begin(), DistributedPermissionRemindTest::eventList_.end(), eventName);
-    if (iter != DistributedPermissionRemindTest::eventList_.end()) {
+    auto iter = std::find(eventList_.begin(), eventList_.end(), eventName);
+    if (iter != eventList_.end()) {
         STAbilityUtil::Completed(event_, data.GetData(), data.GetCode());
     }
 }
 
 class TestCallback : public IRemoteStub<OnUsingPermissionReminder> {
 public:
-
     TestCallback() = default;
     virtual ~TestCallback() = default;
 
@@ -192,10 +172,11 @@ void DistributedPermissionRemindTest::SetUpTestCase(void)
     RemoveStorage();
 
     SubscribeEvent();
+    int AppFreezingTime = 60;
     appMs_ = STAbilityUtil::GetAppMgrService();
     abilityMs_ = STAbilityUtil::GetAbilityManagerService();
     if (appMs_) {
-        appMs_->SetAppFreezingTime(60);
+        appMs_->SetAppFreezingTime(AppFreezingTime);
         int time = 0;
         appMs_->GetAppFreezingTime(time);
         std::cout << "appMs_->GetAppFreezingTime();" << time << std::endl;
@@ -208,70 +189,64 @@ void DistributedPermissionRemindTest::TearDownTestCase(void)
 void DistributedPermissionRemindTest::SetUp(void)
 {
     InstallBundel();
-
-    std::vector<OHOS::Security::Permission::PermissionDef> permDefList;
-    OHOS::Security::Permission::PermissionDef permissionDef_Camera = {
-        .permissionName = PERMISSION_CAMERA,
-        .bundleName = THIRD_TEST_BUNDLE_NAME,
-        .grantMode = 0,
-        .availableScope = 1 << 0,
-        .label = "test label",
-        .labelId = 9527,
-        .description = "test description",
-        .descriptionId = 9528
-    };
-    OHOS::Security::Permission::PermissionDef permissionDef_Location = {
-        .permissionName = PERMISSION_LOCATION,
-        .bundleName = THIRD_TEST_BUNDLE_NAME,
-        .grantMode = 0,
-        .availableScope = 1 << 0,
-        .label = "test label",
-        .labelId = 9527,
-        .description = "test description",
-        .descriptionId = 9528
-    };
-    OHOS::Security::Permission::PermissionDef permissionDef_Microphone = {
-        .permissionName = PERMISSION_MICROPHONE,
-        .bundleName = THIRD_TEST_BUNDLE_NAME,
-        .grantMode = 0,
-        .availableScope = 1 << 0,
-        .label = "test label",
-        .labelId = 9527,
-        .description = "test description",
-        .descriptionId = 9528
-    };
-    OHOS::Security::Permission::PermissionDef permissionDef_Activity = {
-        .permissionName = PERMISSION_ACTIVITY_MOTION,
-        .bundleName = SYSTEM_TEST_BUNDLE_NAME_DPMS_S,
-        .grantMode = 1,
-        .availableScope = 1 << 0,
-        .label = "test label",
-        .labelId = 9527,
-        .description = "test description",
-        .descriptionId = 9528
-    };
-
-    permDefList.emplace_back(permissionDef_Camera);
-    permDefList.emplace_back(permissionDef_Location);
-    permDefList.emplace_back(permissionDef_Microphone);
-    permDefList.emplace_back(permissionDef_Activity);
-    PermissionKit::AddDefPermissions(permDefList);
-
-
+    InitPermissionList();
     std::vector<std::string> permList_user;
     permList_user.push_back(PERMISSION_CAMERA);
     permList_user.push_back(PERMISSION_LOCATION);
     permList_user.push_back(PERMISSION_MICROPHONE);
-    
-    PermissionKit::AddUserGrantedReqPermissions(THIRD_TEST_BUNDLE_NAME, permList_user, 0);    
+
+    PermissionKit::AddUserGrantedReqPermissions(THIRD_TEST_BUNDLE_NAME, permList_user, 0);
     PermissionKit::GrantUserGrantedPermission(THIRD_TEST_BUNDLE_NAME, PERMISSION_CAMERA, 0);
     PermissionKit::GrantUserGrantedPermission(THIRD_TEST_BUNDLE_NAME, PERMISSION_LOCATION, 0);
     PermissionKit::GrantUserGrantedPermission(THIRD_TEST_BUNDLE_NAME, PERMISSION_MICROPHONE, 0);
 
     std::vector<std::string> permList_sytem;
     permList_sytem.push_back(PERMISSION_ACTIVITY_MOTION);
-    PermissionKit::AddSystemGrantedReqPermissions(SYSTEM_TEST_BUNDLE_NAME_DPMS_S, permList_sytem);    
+    PermissionKit::AddSystemGrantedReqPermissions(SYSTEM_TEST_BUNDLE_NAME_DPMS_S, permList_sytem);
     PermissionKit::GrantSystemGrantedPermission(SYSTEM_TEST_BUNDLE_NAME_DPMS_S, PERMISSION_ACTIVITY_MOTION);
+}
+
+void DistributedPermissionRemindTest::InitPermissionList()
+{
+    std::vector<OHOS::Security::Permission::PermissionDef> permDefList;
+    OHOS::Security::Permission::PermissionDef permissionDef_Camera = {.permissionName = PERMISSION_CAMERA,
+        .bundleName = THIRD_TEST_BUNDLE_NAME,
+        .grantMode = 0,
+        .availableScope = 1 << 0,
+        .label = "test label",
+        .labelId = permission_labelId,
+        .description = "test description",
+        .descriptionId = permission_descriptionId};
+    OHOS::Security::Permission::PermissionDef permissionDef_Location = {.permissionName = PERMISSION_LOCATION,
+        .bundleName = THIRD_TEST_BUNDLE_NAME,
+        .grantMode = 0,
+        .availableScope = 1 << 0,
+        .label = "test label",
+        .labelId = permission_labelId,
+        .description = "test description",
+        .descriptionId = permission_descriptionId};
+    OHOS::Security::Permission::PermissionDef permissionDef_Microphone = {.permissionName = PERMISSION_MICROPHONE,
+        .bundleName = THIRD_TEST_BUNDLE_NAME,
+        .grantMode = 0,
+        .availableScope = 1 << 0,
+        .label = "test label",
+        .labelId = permission_labelId,
+        .description = "test description",
+        .descriptionId = permission_descriptionId};
+    OHOS::Security::Permission::PermissionDef permissionDef_Activity = {.permissionName = PERMISSION_ACTIVITY_MOTION,
+        .bundleName = SYSTEM_TEST_BUNDLE_NAME_DPMS_S,
+        .grantMode = 1,
+        .availableScope = 1 << 0,
+        .label = "test label",
+        .labelId = permission_labelId,
+        .description = "test description",
+        .descriptionId = permission_descriptionId};
+
+    permDefList.emplace_back(permissionDef_Camera);
+    permDefList.emplace_back(permissionDef_Location);
+    permDefList.emplace_back(permissionDef_Microphone);
+    permDefList.emplace_back(permissionDef_Activity);
+    PermissionKit::AddDefPermissions(permDefList);
 }
 
 void DistributedPermissionRemindTest::TearDown(void)
@@ -280,7 +255,7 @@ void DistributedPermissionRemindTest::TearDown(void)
     PermissionKit::RemoveDefPermissions(SYSTEM_TEST_BUNDLE_NAME_DPMS_S);
     PermissionKit::RemoveDefPermissions(THIRD_TEST_BUNDLE_NAME);
     PermissionKit::RemoveDefPermissions("com.ohos.dpmsst.service.appA");
-    
+
     UnInstallBundel();
 }
 
@@ -292,15 +267,12 @@ void DistributedPermissionRemindTest::InstallBundel()
         "com.ohos.dpmsst.service.appA",
     };
 
-    //安装测试所需hap包
     {
         STDistibutePermissionUtil::Install(THIRD_TEST_HAP_NAME);
         STDistibutePermissionUtil::Install("dpmsDataSystemTestA");
-        
-        //STAbilityUtil::InstallHaps(hapNameList);
         abilityMs_ = STAbilityUtil::GetAbilityManagerService();
         appMs_ = STAbilityUtil::GetAppMgrService();
-        usleep(5000);
+        usleep(sleep_time_5000_ms);
     }
 }
 
@@ -311,29 +283,29 @@ void DistributedPermissionRemindTest::UnInstallBundel()
         STDistibutePermissionUtil::Uninstall("com.ohos.amsst.appA");
     }
 
-    STAbilityUtil::RemoveStack(1, abilityMs_, 3000, 5000);
+    STAbilityUtil::RemoveStack(1, abilityMs_, sleep_time_3000_ms, sleep_time_5000_ms);
     std::vector<std::string> vecBundleName;
     vecBundleName.push_back("com.ohos.amsst.appA");
-    
+
     STAbilityUtil::KillBundleProcess(vecBundleName);
 
     STAbilityUtil::CleanMsg(event_);
 }
 
-void DistributedPermissionRemindTest::FindStorageByDeviceId(string &deviceId_, std::vector<GenericValues> &results)
+void DistributedPermissionRemindTest::FindStorageByDeviceId(string& deviceId_, std::vector<GenericValues>& results)
 {
     GenericValues andConditions;
     andConditions.Put(FIELD_DEVICE_ID, deviceId_);
     GenericValues orConditions;
-    SqliteStorage::GetRealDataStorage().FindByConditions(
-        DataStorage::DataType::PERMISSION_VISITOR, andConditions, orConditions, results);
+    SqliteStorage::GetRealDataStorage().FindByConditions(DataStorage::DataType::PERMISSION_VISITOR, andConditions,
+        orConditions, results);
 }
 
 void DistributedPermissionRemindTest::RemoveStorage()
 {
     std::vector<GenericValues> visitorResults;
-    DataStorage::DataType dataTypes[] = {
-        DataStorage::DataType::PERMISSION_VISITOR, DataStorage::DataType::PERMISSION_RECORD};
+    DataStorage::DataType dataTypes[] = {DataStorage::DataType::PERMISSION_VISITOR,
+        DataStorage::DataType::PERMISSION_RECORD};
     for (auto dataType : dataTypes) {
         SqliteStorage::GetRealDataStorage().Find(dataType, visitorResults);
         if (visitorResults.size() == 0) {
@@ -350,56 +322,49 @@ void DistributedPermissionRemindTest::RemoveStorage()
 
 void DistributedPermissionRemindTest::GetIPCSkeleton()
 {
-    //pid_ = IPCSkeleton::GetCallingPid();
     pid_ = 0;
     uid_ = IPCSkeleton::GetCallingUid();
     deviceId_ = IPCSkeleton::GetLocalDeviceID();
 }
 
-string DistributedPermissionRemindTest::GetAppIdInfo(string &deviceId_)
+string DistributedPermissionRemindTest::GetAppIdInfo(string& deviceId_)
 {
     return DistributedPermissionKit::AppIdInfoHelper::CreateAppIdInfo(pid_, uid_, deviceId_);
 }
 
-//获取权限数据库数据
-void DistributedPermissionRemindTest::FindDataStorageAll(
-    DataStorage::DataType dataType, std::vector<GenericValues> result)
+void DistributedPermissionRemindTest::FindDataStorageAll(DataStorage::DataType dataType,
+    std::vector<GenericValues> result)
 {
     SqliteStorage::GetRealDataStorage().Find(dataType, result);
 }
 
 /*
- * cmd：待执行命令
- * result：命令输出结果
- * 函数返回：0 成功；-1 失败；
+ * cmd：Pending command
+ * result：Command output results
+ * return：0 successed；-1 failed；
  */
-int DistributedPermissionRemindTest::ExecuteCMD(const char *cmd, char *result)
+int DistributedPermissionRemindTest::ExecuteCMD(const char* cmd, char* result)
 {
     int iRet = -1;
-    char buf_ps[CMD_RESULT_BUF_SIZE];
-    char ps[CMD_RESULT_BUF_SIZE] = {0};
-    FILE *ptr;
+    char buf_ps[cmd_result_buf_size];
+    char ps[cmd_result_buf_size] = {0};
+    FILE* ptr;
 
-    strcpy(ps, cmd);
+    strncpy(ps, cmd, sizeof(ps));
 
-    if((ptr = popen(ps, "r")) != NULL)
-    {
-        while(fgets(buf_ps, sizeof(buf_ps), ptr) != NULL)
-        {
-           strcat(result, buf_ps);
-           if(strlen(result) > CMD_RESULT_BUF_SIZE)
-           {
-               break;
-           }
+    if ((ptr = popen(ps, "r")) != NULL) {
+        while (fgets(buf_ps, sizeof(buf_ps), ptr) != NULL) {
+            strncat(result, buf_ps, sizeof(ps));
+            if (strlen(result) > cmd_result_buf_size) {
+                break;
+            }
         }
         pclose(ptr);
         ptr = NULL;
-        iRet = 0;  // 处理成功
-    }
-    else
-    {
+        iRet = 0; // successed
+    } else {
         printf("popen %s error\n", ps);
-        iRet = -1; // 处理失败
+        iRet = -1; // failed
     }
 
     return iRet;
@@ -407,41 +372,30 @@ int DistributedPermissionRemindTest::ExecuteCMD(const char *cmd, char *result)
 
 int32_t DistributedPermissionRemindTest::CheckDpsServiceAndStart()
 {
-    char result[CMD_RESULT_BUF_SIZE]={0};
+    char result[cmd_result_buf_size] = {0};
     ExecuteCMD("ps -ef | grep -w dps_service | grep -v grep | wc -l", result);
     string sCmdResult;
     sCmdResult = string(result);
     GTEST_LOG_(INFO) << "result : " << sCmdResult.c_str();
-    // if(strncmp(result, "0", 1) == 0)
-    // {
-    //     ExecuteCMD("cd //", result);
-    //     GTEST_LOG_(INFO) << "result : " << sCmdResult.c_str();
-    //     ExecuteCMD("/system/bin/sa_main /system/profile/dps_service.xml &", result);
-    //     GTEST_LOG_(INFO) << "result : " << sCmdResult.c_str();
-    // }
-
-    if(strncmp(result, "0", 1) == 0)
-    {
+    if (strncmp(result, "0", 1) == 0) {
         return -1;
     }
-
     return 0;
 }
 
 void DistributedPermissionRemindTest::DeleteAllRemind()
 {
+    const std::string SYSTEM_TEST_BUNDLE_NAME_DPMS = "com.system.hiworld.dpms_system_grant";
+    const std::string SYSTEM_TEST_BUNDLE_NAME_DPMS_S = "com.system.hiworld.dpms_system_bundle";
+    const std::string THIRD_TEST_BUNDLE_NAME = "com.third.hiworld.dpmsExample";
 
-const std::string SYSTEM_TEST_BUNDLE_NAME_DPMS = "com.system.hiworld.dpms_system_grant";
-const std::string SYSTEM_TEST_BUNDLE_NAME_DPMS_S = "com.system.hiworld.dpms_system_bundle";
-const std::string THIRD_TEST_BUNDLE_NAME = "com.third.hiworld.dpmsExample";
-
-const std::string SYSTEM_TEST_BUNDLE_NAME_SETTINGS = "com.ohos.settings";
-const std::string SYSTEM_TEST_BUNDLE_NAME_LAUNCHER = "com.ohos.launcher";
+    const std::string SYSTEM_TEST_BUNDLE_NAME_SETTINGS = "com.ohos.settings";
+    const std::string SYSTEM_TEST_BUNDLE_NAME_LAUNCHER = "com.ohos.launcher";
 
     string permName = "";
     string appInfo = "";
-    char deviceId[DEVICE_UUID_LENGTH] = {0};
-    GetDevUdid(deviceId, DEVICE_UUID_LENGTH);
+    char deviceId[device_uuid_length] = {0};
+    GetDevUdid(deviceId, device_uuid_length);
     deviceId_ = deviceId;
 
     // SYSTEM_TEST_BUNDLE_NAME_DPMS
@@ -507,11 +461,11 @@ const std::string SYSTEM_TEST_BUNDLE_NAME_LAUNCHER = "com.ohos.launcher";
  */
 HWTEST_F(DistributedPermissionRemindTest, DPMS_RegisterUsingPermissionReminder_0100, TestSize.Level1)
 {
-    GTEST_LOG_(INFO) << "DistributedPermissionRemindTest DPMS_RegisterUsingPermissionReminder_0100 start";    
+    GTEST_LOG_(INFO) << "DistributedPermissionRemindTest DPMS_RegisterUsingPermissionReminder_0100 start";
     OHOS::sptr<TestCallback> callback(new TestCallback());
     callback->permName = "DPMS_RegisterUsingPermissionReminder_0100";
     int32_t ret = -1;
-    
+
     ret = DistributedPermissionKit::RegisterUsingPermissionReminder(callback);
     EXPECT_EQ(CheckDpsServiceAndStart(), ret);
 
@@ -531,10 +485,10 @@ HWTEST_F(DistributedPermissionRemindTest, DPMS_RegisterUsingPermissionReminder_0
 
     OHOS::sptr<TestCallback> callback = nullptr;
     int32_t ret = -1;
-    
+
     ret = DistributedPermissionKit::RegisterUsingPermissionReminder(callback);
     EXPECT_EQ(-1, ret);
-    
+
     GTEST_LOG_(INFO) << "DistributedPermissionRecordsTest DPMS_RegisterUsingPermissionReminder_0200 end";
 }
 
@@ -546,7 +500,7 @@ HWTEST_F(DistributedPermissionRemindTest, DPMS_RegisterUsingPermissionReminder_0
 HWTEST_F(DistributedPermissionRemindTest, DPMS_RegisterUsingPermissionReminder_0300, TestSize.Level1)
 {
     GTEST_LOG_(INFO) << "DistributedPermissionRemindTest DPMS_RegisterUsingPermissionReminder_0300 start";
-    
+
     OHOS::sptr<TestCallback> callback(new TestCallback());
     callback->permName = "DPMS_RegisterUsingPermissionReminder_0300";
     int32_t ret = -1;
@@ -558,30 +512,10 @@ HWTEST_F(DistributedPermissionRemindTest, DPMS_RegisterUsingPermissionReminder_0
     EXPECT_EQ(0, ret);
 
     std::chrono::duration<double, std::milli> fp_ms = endTime - startTime;
-    RunTime_All = 0;
-    RunTime_All += RunTime_DeviceInfoManager;
-    RunTime_All += RunTime_BundleManager;
-    RunTime_All += RunTime_Permissionmanager;
-    RunTime_All += RunTime_AbilityManager;
-
-    EXPECT_LT(fp_ms.count() - RunTime_All, STDistibutePermissionUtil::MAX_ELAPSED);
-
+    GTEST_LOG_(INFO) << fp_ms.count();
+    EXPECT_LT(fp_ms.count(), STDistibutePermissionUtil::MAX_ELAPSED);
     GTEST_LOG_(INFO) << "DistributedPermissionRecordsTest DPMS_RegisterUsingPermissionReminder_0300 end";
-
-    //ret = DistributedPermissionKit::UnregisterUsingPermissionReminder(callback);
 }
-
-/**
- * @tc.number    : DPMS_RegisterUsingPermissionReminder_0400
- * @tc.name      : RegisterUsingPermissionReminder
- * @tc.desc      : Stability test
- */
-
-/**
- * @tc.number    : DPMS_RegisterUsingPermissionReminder_0500
- * @tc.name      : RegisterUsingPermissionReminder
- * @tc.desc      : Fuzz test
- */
 
 /**
  * @tc.number    : DPMS_UnregisterUsingPermissionReminder_0100
@@ -591,11 +525,11 @@ HWTEST_F(DistributedPermissionRemindTest, DPMS_RegisterUsingPermissionReminder_0
 HWTEST_F(DistributedPermissionRemindTest, DPMS_UnregisterUsingPermissionReminder_0100, TestSize.Level1)
 {
     GTEST_LOG_(INFO) << "DistributedPermissionRemindTest DPMS_UnregisterUsingPermissionReminder_0100 start";
-    
+
     OHOS::sptr<TestCallback> callback(new TestCallback());
     callback->permName = "DPMS_UnregisterUsingPermissionReminder_0100";
     int32_t ret = -1;
-    
+
     ret = DistributedPermissionKit::UnregisterUsingPermissionReminder(callback);
     EXPECT_EQ(CheckDpsServiceAndStart(), ret);
 
@@ -610,13 +544,13 @@ HWTEST_F(DistributedPermissionRemindTest, DPMS_UnregisterUsingPermissionReminder
 HWTEST_F(DistributedPermissionRemindTest, DPMS_UnregisterUsingPermissionReminder_0200, TestSize.Level1)
 {
     GTEST_LOG_(INFO) << "DistributedPermissionRemindTest DPMS_UnregisterUsingPermissionReminder_0200 start";
-    
+
     OHOS::sptr<TestCallback> callback;
     int32_t ret = -1;
-    
+
     ret = DistributedPermissionKit::UnregisterUsingPermissionReminder(callback);
     EXPECT_EQ(-1, ret);
-    
+
     GTEST_LOG_(INFO) << "DistributedPermissionRecordsTest DPMS_UnregisterUsingPermissionReminder_0200 end";
 }
 
@@ -629,7 +563,7 @@ HWTEST_F(DistributedPermissionRemindTest, DPMS_UnregisterUsingPermissionReminder
 {
     GTEST_LOG_(INFO) << "DistributedPermissionRemindTest DPMS_UnregisterUsingPermissionReminder_0300 start";
     int32_t ret = -1;
-    
+
     OHOS::sptr<TestCallback> callback(new TestCallback());
     callback->permName = "DPMS_UnregisterUsingPermissionReminder_0300";
 
@@ -638,30 +572,12 @@ HWTEST_F(DistributedPermissionRemindTest, DPMS_UnregisterUsingPermissionReminder
     auto endTime = std::chrono::high_resolution_clock::now();
 
     std::chrono::duration<double, std::milli> fp_ms = endTime - startTime;
-
-    RunTime_All = 0;
-    RunTime_All += RunTime_DeviceInfoManager;
-    RunTime_All += RunTime_BundleManager;
-    RunTime_All += RunTime_Permissionmanager;
-    RunTime_All += RunTime_AbilityManager;
-
-    EXPECT_LT(fp_ms.count() - RunTime_All, STDistibutePermissionUtil::MAX_ELAPSED);
+    GTEST_LOG_(INFO) << fp_ms.count();
+    EXPECT_LT(fp_ms.count(), STDistibutePermissionUtil::MAX_ELAPSED);
     EXPECT_EQ(0, ret);
 
     GTEST_LOG_(INFO) << "DistributedPermissionRecordsTest DPMS_UnregisterUsingPermissionReminder_0300 end";
 }
-
-/**
- * @tc.number    : DPMS_UnregisterUsingPermissionReminder_0400
- * @tc.name      : UnregisterUsingPermissionReminder
- * @tc.desc      : Stability test 
- */
-
-/**
- * @tc.number    : DPMS_UnregisterUsingPermissionReminder_0500
- * @tc.name      : UnregisterUsingPermissionReminder
-* @tc.name       : Fuzz test
- */
 
 /**
  * @tc.number    : DPMS_CheckPermissionAndStartUsing_0100
@@ -675,10 +591,10 @@ HWTEST_F(DistributedPermissionRemindTest, DPMS_CheckPermissionAndStartUsing_0100
 
     string appInfo = GetAppIdInfo(deviceId_);
     string permName = "";
-    
+
     ret = DistributedPermissionKit::CheckPermissionAndStartUsing(permName, appInfo);
     EXPECT_EQ(-1, ret);
-    
+
     GTEST_LOG_(INFO) << "DistributedPermissionRecordsTest DPMS_CheckPermissionAndStartUsing_0100 end";
 }
 
@@ -694,7 +610,7 @@ HWTEST_F(DistributedPermissionRemindTest, DPMS_CheckPermissionAndStartUsing_0200
 
     string appInfo = "";
     string permName = "DPMS_CheckPermissionAndStartUsing_0200";
-    
+
     ret = DistributedPermissionKit::CheckPermissionAndStartUsing(permName, appInfo);
     EXPECT_EQ(-1, ret);
 
@@ -711,8 +627,8 @@ HWTEST_F(DistributedPermissionRemindTest, DPMS_CheckPermissionAndStartUsing_0300
     GTEST_LOG_(INFO) << "DistributedPermissionRemindTest DPMS_CheckPermissionAndStartUsing_0300 start";
     DeleteAllRemind();
     string appInfo = "";
-    char deviceId[DEVICE_UUID_LENGTH] = {0};
-    GetDevUdid(deviceId, DEVICE_UUID_LENGTH);
+    char deviceId[device_uuid_length] = {0};
+    GetDevUdid(deviceId, device_uuid_length);
     string permName = PERMISSION_CAMERA;
     uid_ = STDistibutePermissionUtil::GetUidByBundleName(THIRD_TEST_BUNDLE_NAME);
     deviceId_ = deviceId;
@@ -720,7 +636,7 @@ HWTEST_F(DistributedPermissionRemindTest, DPMS_CheckPermissionAndStartUsing_0300
 
     int ret = DistributedPermissionKit::CheckPermissionAndStartUsing(permName, appInfo);
     EXPECT_EQ(CheckDpsServiceAndStart(), ret);
-    
+
     GTEST_LOG_(INFO) << "DistributedPermissionRecordsTest DPMS_CheckPermissionAndStartUsing_0300 end";
 }
 
@@ -734,8 +650,8 @@ HWTEST_F(DistributedPermissionRemindTest, DPMS_CheckPermissionAndStartUsing_0400
     GTEST_LOG_(INFO) << "DistributedPermissionRemindTest DPMS_CheckPermissionAndStartUsing_0400 start";
     DeleteAllRemind();
     string appInfo = "";
-    char deviceId[DEVICE_UUID_LENGTH] = {0};
-    GetDevUdid(deviceId, DEVICE_UUID_LENGTH);
+    char deviceId[device_uuid_length] = {0};
+    GetDevUdid(deviceId, device_uuid_length);
     string permName = PERMISSION_ACTIVITY_MOTION;
     uid_ = STDistibutePermissionUtil::GetUidByBundleName(SYSTEM_TEST_BUNDLE_NAME_DPMS_S);
     deviceId_ = deviceId;
@@ -756,8 +672,8 @@ HWTEST_F(DistributedPermissionRemindTest, DPMS_CheckPermissionAndStartUsing_0500
     GTEST_LOG_(INFO) << "DistributedPermissionRemindTest DPMS_CheckPermissionAndStartUsing_0500 start";
     DeleteAllRemind();
     string appInfo = "";
-    char deviceId[DEVICE_UUID_LENGTH] = {0};
-    GetDevUdid(deviceId, DEVICE_UUID_LENGTH);
+    char deviceId[device_uuid_length] = {0};
+    GetDevUdid(deviceId, device_uuid_length);
     string permName = PERMISSION_ACTIVITY_MOTION;
     uid_ = STDistibutePermissionUtil::GetUidByBundleName(SYSTEM_TEST_BUNDLE_NAME_DPMS_S);
     deviceId_ = deviceId;
@@ -780,8 +696,8 @@ HWTEST_F(DistributedPermissionRemindTest, DPMS_CheckPermissionAndStartUsing_0600
 
     DeleteAllRemind();
     string appInfo = "";
-    char deviceId[DEVICE_UUID_LENGTH] = {0};
-    GetDevUdid(deviceId, DEVICE_UUID_LENGTH);
+    char deviceId[device_uuid_length] = {0};
+    GetDevUdid(deviceId, device_uuid_length);
     string permName = PERMISSION_CAMERA;
     uid_ = STDistibutePermissionUtil::GetUidByBundleName(THIRD_TEST_BUNDLE_NAME);
     deviceId_ = deviceId;
@@ -804,8 +720,8 @@ HWTEST_F(DistributedPermissionRemindTest, DPMS_CheckPermissionAndStartUsing_0700
 
     DeleteAllRemind();
     string appInfo = "";
-    char deviceId[DEVICE_UUID_LENGTH] = {0};
-    GetDevUdid(deviceId, DEVICE_UUID_LENGTH);
+    char deviceId[device_uuid_length] = {0};
+    GetDevUdid(deviceId, device_uuid_length);
     string permName = PERMISSION_DISTRIBUTED_DATASYNC;
     uid_ = STDistibutePermissionUtil::GetUidByBundleName(THIRD_TEST_BUNDLE_NAME);
     deviceId_ = deviceId;
@@ -828,8 +744,8 @@ HWTEST_F(DistributedPermissionRemindTest, DPMS_CheckPermissionAndStartUsing_0800
 
     DeleteAllRemind();
     string appInfo = "";
-    char deviceId[DEVICE_UUID_LENGTH] = {0};
-    GetDevUdid(deviceId, DEVICE_UUID_LENGTH);
+    char deviceId[device_uuid_length] = {0};
+    GetDevUdid(deviceId, device_uuid_length);
     string permName = PERMISSION_TEST;
     uid_ = STDistibutePermissionUtil::GetUidByBundleName(THIRD_TEST_BUNDLE_NAME);
     deviceId_ = deviceId;
@@ -839,7 +755,6 @@ HWTEST_F(DistributedPermissionRemindTest, DPMS_CheckPermissionAndStartUsing_0800
     EXPECT_EQ(-1, ret);
 
     GTEST_LOG_(INFO) << "DistributedPermissionRecordsTest DPMS_CheckPermissionAndStartUsing_0800 end";
-
 }
 
 /**
@@ -853,8 +768,8 @@ HWTEST_F(DistributedPermissionRemindTest, DPMS_CheckPermissionAndStartUsing_0900
 
     DeleteAllRemind();
     string appInfo = "";
-    char deviceId[DEVICE_UUID_LENGTH] = {0};
-    GetDevUdid(deviceId, DEVICE_UUID_LENGTH);
+    char deviceId[device_uuid_length] = {0};
+    GetDevUdid(deviceId, device_uuid_length);
     string permName = PERMISSION_CAMERA;
     uid_ = STDistibutePermissionUtil::GetUidByBundleName(THIRD_TEST_BUNDLE_NAME);
     deviceId_ = deviceId;
@@ -865,30 +780,11 @@ HWTEST_F(DistributedPermissionRemindTest, DPMS_CheckPermissionAndStartUsing_0900
     auto endTime = std::chrono::high_resolution_clock::now();
 
     std::chrono::duration<double, std::milli> fp_ms = endTime - startTime;
-    RunTime_All = 0;
-    RunTime_All += RunTime_DeviceInfoManager;
-    RunTime_All += RunTime_BundleManager;
-    RunTime_All += RunTime_Permissionmanager;
-    RunTime_All += RunTime_AbilityManager;
-    RunTime_All += RunTime_AnsManager;
-    RunTime_All += RunTime_IPCSkeleton;
-    EXPECT_LT(fp_ms.count() - RunTime_All, STDistibutePermissionUtil::MAX_ELAPSED);
+    GTEST_LOG_(INFO) << fp_ms.count();
 
+    EXPECT_LT(fp_ms.count(), STDistibutePermissionUtil::MAX_ELAPSED);
     GTEST_LOG_(INFO) << "DistributedPermissionRecordsTest DPMS_CheckPermissionAndStartUsing_0900 end";
 }
-
-// /**
-//  * @tc.number    : DPMS_CheckPermissionAndStartUsing_1000
-//  * @tc.name      : CheckPermissionAndStartUsing
-//  * @tc.desc      : Stability test 
-//  */
-
-// /**
-//  * @tc.number    : DPMS_CheckPermissionAndStartUsing_1100
-//  * @tc.name      : CheckPermissionAndStartUsing
-//  * @tc.name       : Fuzz test
-//  */
-
 
 /**
  * @tc.number    : DPMS_CheckCallerPermissionAndStartUsing_0100
@@ -898,7 +794,7 @@ HWTEST_F(DistributedPermissionRemindTest, DPMS_CheckPermissionAndStartUsing_0900
 HWTEST_F(DistributedPermissionRemindTest, DPMS_CheckCallerPermissionAndStartUsing_0100, TestSize.Level1)
 {
     GTEST_LOG_(INFO) << "DistributedPermissionRemindTest DPMS_CheckCallerPermissionAndStartUsing_0100 start";
-    
+
     DeleteAllRemind();
     // usd the THIRD_TEST_HAP_NAME
     string permName = "";
@@ -920,25 +816,22 @@ HWTEST_F(DistributedPermissionRemindTest, DPMS_CheckCallerPermissionAndStartUsin
     std::string abilityName = "DpmsStServiceAbilityA1";
 
     std::vector<OHOS::Security::Permission::PermissionDef> permHap;
-    OHOS::Security::Permission::PermissionDef permissionHap_Camera = {
-        .permissionName = PERMISSION_CAMERA,
+    OHOS::Security::Permission::PermissionDef permissionHap_Camera = {.permissionName = PERMISSION_CAMERA,
         .bundleName = bundleName,
         .grantMode = 0,
         .availableScope = 1 << 0,
         .label = "test label",
-        .labelId = 9527,
+        .labelId = permission_labelId,
         .description = "test description",
-        .descriptionId = 9528
-    };
+        .descriptionId = permission_descriptionId};
 
     permHap.emplace_back(permissionHap_Camera);
     PermissionKit::AddDefPermissions(permHap);
 
-
     std::vector<std::string> permHap_user;
     permHap_user.push_back(PERMISSION_CAMERA);
-    
-    PermissionKit::AddUserGrantedReqPermissions(bundleName, permHap_user, 0);    
+
+    PermissionKit::AddUserGrantedReqPermissions(bundleName, permHap_user, 0);
     PermissionKit::GrantUserGrantedPermission(bundleName, PERMISSION_CAMERA, 0);
 
     MAP_STR_STR params;
@@ -946,9 +839,9 @@ HWTEST_F(DistributedPermissionRemindTest, DPMS_CheckCallerPermissionAndStartUsin
     Want want = STAbilityUtil::MakeWant("device", abilityName, bundleName, params);
     STAbilityUtil::StartAbility(want, abilityMs_);
 
-    STAbilityUtil::WaitCompleted(
-        event_, "OnStart", OHOS::AppExecFwk::AbilityLifecycleExecutor::LifecycleState::INACTIVE, 110);
-    std::this_thread::sleep_for(std::chrono::milliseconds(3000));
+    STAbilityUtil::WaitCompleted(event_, "OnStart",
+        OHOS::AppExecFwk::AbilityLifecycleExecutor::LifecycleState::INACTIVE, 110);
+    std::this_thread::sleep_for(std::chrono::milliseconds(sleep_time_3000_ms));
 
     OHOS::AppExecFwk::RunningProcessInfo pInfo = STAbilityUtil::GetAppProcessInfoByName(bundleName, appMs_);
     EXPECT_TRUE(pInfo.pid_ > 0);
@@ -958,36 +851,12 @@ HWTEST_F(DistributedPermissionRemindTest, DPMS_CheckCallerPermissionAndStartUsin
     // stop ability
     STAbilityUtil::StopAbility("req_com_ohos_dpmsst_service_app_a1", 0, "StopSelfAbility");
 
-    STAbilityUtil::WaitCompleted(
-        event_, "OnStop", OHOS::AppExecFwk::AbilityLifecycleExecutor::LifecycleState::INITIAL, 110);
-    std::this_thread::sleep_for(std::chrono::milliseconds(3000));
+    STAbilityUtil::WaitCompleted(event_, "OnStop", OHOS::AppExecFwk::AbilityLifecycleExecutor::LifecycleState::INITIAL,
+        110);
+    std::this_thread::sleep_for(std::chrono::milliseconds(sleep_time_3000_ms));
 
     GTEST_LOG_(INFO) << "DistributedPermissionRecordsTest DPMS_CheckCallerPermissionAndStartUsing_0200 end";
 }
-
-// /**
-//  * @tc.number    : DPMS_CheckCallerPermissionAndStartUsing_0300
-//  * @tc.name      : CheckCallerPermissionAndStartUsing
-//  * @tc.desc      : Performance test
-//  */
-// HWTEST_F(DistributedPermissionRemindTest, DPMS_CheckCallerPermissionAndStartUsing_0300, TestSize.Level1)
-// {
-//     GTEST_LOG_(INFO) << "DistributedPermissionRemindTest DPMS_CheckCallerPermissionAndStartUsing_0300 start";
-//
-//     GTEST_LOG_(INFO) << "DistributedPermissionRecordsTest DPMS_CheckCallerPermissionAndStartUsing_0300 end";
-// }
-
-// /**
-//  * @tc.number    : DPMS_CheckCallerPermissionAndStartUsing_0400
-//  * @tc.name      : CheckCallerPermissionAndStartUsing
-//  * @tc.desc      : Stability test
-//  */
-
-// /**
-//  * @tc.number    : DPMS_CheckCallerPermissionAndStartUsing_0500
-//  * @tc.name      : CheckCallerPermissionAndStartUsing
-//  * @tc.desc      : Fuzz test
-//  */
 
 /**
  * @tc.number    : DPMS_StartUsingPermission_0100
@@ -999,8 +868,8 @@ HWTEST_F(DistributedPermissionRemindTest, DPMS_StartUsingPermission_0100, TestSi
     GTEST_LOG_(INFO) << "DistributedPermissionRemindTest DPMS_StartUsingPermission_0100 start";
     DeleteAllRemind();
     string appInfo = "";
-    char deviceId[DEVICE_UUID_LENGTH] = {0};
-    GetDevUdid(deviceId, DEVICE_UUID_LENGTH);
+    char deviceId[device_uuid_length] = {0};
+    GetDevUdid(deviceId, device_uuid_length);
 
     // usd the THIRD_TEST_HAP_NAME
     string permName = "";
@@ -1039,8 +908,8 @@ HWTEST_F(DistributedPermissionRemindTest, DPMS_StartUsingPermission_0300, TestSi
     GTEST_LOG_(INFO) << "DistributedPermissionRemindTest DPMS_StartUsingPermission_0300 start";
     DeleteAllRemind();
     string appInfo = "";
-    char deviceId[DEVICE_UUID_LENGTH] = {0};
-    GetDevUdid(deviceId, DEVICE_UUID_LENGTH);
+    char deviceId[device_uuid_length] = {0};
+    GetDevUdid(deviceId, device_uuid_length);
     string permName = PERMISSION_CAMERA;
     uid_ = STDistibutePermissionUtil::GetUidByBundleName(SYSTEM_TEST_BUNDLE_NAME_SETTINGS);
     deviceId_ = deviceId;
@@ -1059,8 +928,8 @@ HWTEST_F(DistributedPermissionRemindTest, DPMS_StartUsingPermission_0400, TestSi
     GTEST_LOG_(INFO) << "DistributedPermissionRemindTest DPMS_StartUsingPermission_0400 start";
     DeleteAllRemind();
     string appInfo = "";
-    char deviceId[DEVICE_UUID_LENGTH] = {0};
-    GetDevUdid(deviceId, DEVICE_UUID_LENGTH);
+    char deviceId[device_uuid_length] = {0};
+    GetDevUdid(deviceId, device_uuid_length);
     string permName = PERMISSION_CAMERA;
     uid_ = STDistibutePermissionUtil::GetUidByBundleName(SYSTEM_TEST_BUNDLE_NAME_SETTINGS);
     deviceId_ = deviceId;
@@ -1068,7 +937,6 @@ HWTEST_F(DistributedPermissionRemindTest, DPMS_StartUsingPermission_0400, TestSi
 
     DistributedPermissionKit::StartUsingPermission(permName, appInfo);
     GTEST_LOG_(INFO) << "DistributedPermissionRecordsTest DPMS_StartUsingPermission_0400 end";
-
 }
 
 /**
@@ -1080,8 +948,8 @@ HWTEST_F(DistributedPermissionRemindTest, DPMS_StartUsingPermission_0500, TestSi
     GTEST_LOG_(INFO) << "DistributedPermissionRemindTest DPMS_StartUsingPermission_0500 start";
     DeleteAllRemind();
     string appInfo = "";
-    char deviceId[DEVICE_UUID_LENGTH] = {0};
-    GetDevUdid(deviceId, DEVICE_UUID_LENGTH);
+    char deviceId[device_uuid_length] = {0};
+    GetDevUdid(deviceId, device_uuid_length);
     uid_ = STDistibutePermissionUtil::GetUidByBundleName(SYSTEM_TEST_BUNDLE_NAME_SETTINGS);
     deviceId_ = deviceId;
     appInfo = GetAppIdInfo(deviceId_);
@@ -1105,8 +973,8 @@ HWTEST_F(DistributedPermissionRemindTest, DPMS_StartUsingPermission_0600, TestSi
     GTEST_LOG_(INFO) << "DistributedPermissionRemindTest DPMS_StartUsingPermission_0600 start";
     DeleteAllRemind();
     string appInfo = "";
-    char deviceId[DEVICE_UUID_LENGTH] = {0};
-    GetDevUdid(deviceId, DEVICE_UUID_LENGTH);
+    char deviceId[device_uuid_length] = {0};
+    GetDevUdid(deviceId, device_uuid_length);
     uid_ = STDistibutePermissionUtil::GetUidByBundleName(SYSTEM_TEST_BUNDLE_NAME_SETTINGS);
     deviceId_ = deviceId;
     appInfo = GetAppIdInfo(deviceId_);
@@ -1137,8 +1005,8 @@ HWTEST_F(DistributedPermissionRemindTest, DPMS_StartUsingPermission_0700, TestSi
 
     DeleteAllRemind();
     string appInfo = "";
-    char deviceId[DEVICE_UUID_LENGTH] = {0};
-    GetDevUdid(deviceId, DEVICE_UUID_LENGTH);
+    char deviceId[device_uuid_length] = {0};
+    GetDevUdid(deviceId, device_uuid_length);
     string permName = PERMISSION_CAMERA;
     uid_ = STDistibutePermissionUtil::GetUidByBundleName(SYSTEM_TEST_BUNDLE_NAME_SETTINGS);
     deviceId_ = deviceId;
@@ -1151,8 +1019,7 @@ HWTEST_F(DistributedPermissionRemindTest, DPMS_StartUsingPermission_0700, TestSi
     std::string str = "com.ohos.distributedmusicplayer";
     STDistibutePermissionUtil::GetTrustedDeviceList(str, deviceList);
 
-    for(auto deviceinfo : deviceList)
-    {
+    for (auto deviceinfo : deviceList) {
         deviceId_ = deviceinfo.deviceId;
         appInfo = GetAppIdInfo(deviceId_);
         permName = PERMISSION_CAMERA;
@@ -1172,8 +1039,8 @@ HWTEST_F(DistributedPermissionRemindTest, DPMS_StartUsingPermission_0800, TestSi
 
     DeleteAllRemind();
     string appInfo = "";
-    char deviceId[DEVICE_UUID_LENGTH] = {0};
-    GetDevUdid(deviceId, DEVICE_UUID_LENGTH);
+    char deviceId[device_uuid_length] = {0};
+    GetDevUdid(deviceId, device_uuid_length);
     string permName = PERMISSION_CAMERA;
     uid_ = STDistibutePermissionUtil::GetUidByBundleName(SYSTEM_TEST_BUNDLE_NAME_SETTINGS);
     deviceId_ = deviceId;
@@ -1189,8 +1056,7 @@ HWTEST_F(DistributedPermissionRemindTest, DPMS_StartUsingPermission_0800, TestSi
     std::string str = "com.ohos.distributedmusicplayer";
     STDistibutePermissionUtil::GetTrustedDeviceList(str, deviceList);
 
-    for(auto deviceinfo : deviceList)
-    {
+    for (auto deviceinfo : deviceList) {
         deviceId_ = deviceinfo.deviceId;
         appInfo = GetAppIdInfo(deviceId_);
         permName = PERMISSION_CAMERA;
@@ -1211,11 +1077,11 @@ HWTEST_F(DistributedPermissionRemindTest, DPMS_StartUsingPermission_0800, TestSi
 HWTEST_F(DistributedPermissionRemindTest, DPMS_StartUsingPermission_0900, TestSize.Level1)
 {
     GTEST_LOG_(INFO) << "DistributedPermissionRemindTest DPMS_StartUsingPermission_0900 start";
-    
+
     DeleteAllRemind();
     string appInfo = "";
-    char deviceId[DEVICE_UUID_LENGTH] = {0};
-    GetDevUdid(deviceId, DEVICE_UUID_LENGTH);
+    char deviceId[device_uuid_length] = {0};
+    GetDevUdid(deviceId, device_uuid_length);
     string permName = PERMISSION_CAMERA;
     uid_ = STDistibutePermissionUtil::GetUidByBundleName(SYSTEM_TEST_BUNDLE_NAME_SETTINGS);
     deviceId_ = deviceId;
@@ -1226,31 +1092,11 @@ HWTEST_F(DistributedPermissionRemindTest, DPMS_StartUsingPermission_0900, TestSi
     auto endTime = std::chrono::high_resolution_clock::now();
 
     std::chrono::duration<double, std::milli> fp_ms = endTime - startTime;
+    GTEST_LOG_(INFO) << fp_ms.count();
 
-    RunTime_All = 0;
-    RunTime_All += RunTime_DeviceInfoManager;
-    RunTime_All += RunTime_BundleManager;
-    RunTime_All += RunTime_Permissionmanager;
-    RunTime_All += RunTime_AbilityManager;
-    RunTime_All += RunTime_AnsManager;
-    RunTime_All += RunTime_IPCSkeleton;
-
-    EXPECT_LT(fp_ms.count() - RunTime_All, STDistibutePermissionUtil::MAX_ELAPSED);
-
+    EXPECT_LT(fp_ms.count(), STDistibutePermissionUtil::MAX_ELAPSED);
     GTEST_LOG_(INFO) << "DistributedPermissionRecordsTest DPMS_StartUsingPermission_0900 end";
 }
-
-// /**
-//  * @tc.number    : DPMS_StartUsingPermission_1000
-//  * @tc.name      : StartUsingPermission
-//  * @tc.desc      : Stability test
-//  */
-
-// /**
-//  * @tc.number    : DPMS_StartUsingPermission_1100
-//  * @tc.name      : StartUsingPermission
-//  * @tc.desc      : Fuzz test
-//  */
 
 /**
  * @tc.number    : DPMS_StopUsingPermission_0100
@@ -1260,20 +1106,18 @@ HWTEST_F(DistributedPermissionRemindTest, DPMS_StartUsingPermission_0900, TestSi
 HWTEST_F(DistributedPermissionRemindTest, DPMS_StopUsingPermission_0100, TestSize.Level1)
 {
     GTEST_LOG_(INFO) << "DistributedPermissionRemindTest DPMS_StopUsingPermission_0100 start";
-    
+
     DeleteAllRemind();
     string appInfo = "";
-    char deviceId[DEVICE_UUID_LENGTH] = {0};
-    GetDevUdid(deviceId, DEVICE_UUID_LENGTH);
+    char deviceId[device_uuid_length] = {0};
+    GetDevUdid(deviceId, device_uuid_length);
     uid_ = STDistibutePermissionUtil::GetUidByBundleName(SYSTEM_TEST_BUNDLE_NAME_SETTINGS);
     deviceId_ = deviceId;
     appInfo = GetAppIdInfo(deviceId_);
     string permName = "";
 
     DistributedPermissionKit::StartUsingPermission(permName, appInfo);
-
     DistributedPermissionKit::StopUsingPermission(permName, appInfo);
-
     GTEST_LOG_(INFO) << "DistributedPermissionRecordsTest DPMS_StopUsingPermission_0100 end";
 }
 
@@ -1285,16 +1129,14 @@ HWTEST_F(DistributedPermissionRemindTest, DPMS_StopUsingPermission_0100, TestSiz
 HWTEST_F(DistributedPermissionRemindTest, DPMS_StopUsingPermission_0200, TestSize.Level1)
 {
     GTEST_LOG_(INFO) << "DistributedPermissionRemindTest DPMS_StopUsingPermission_0200 start";
-    
+
     DeleteAllRemind();
     string appInfo = "";
     string permName = "";
 
     permName = PERMISSION_CAMERA;
     DistributedPermissionKit::StartUsingPermission(permName, appInfo);
-
     DistributedPermissionKit::StopUsingPermission(permName, appInfo);
-
     GTEST_LOG_(INFO) << "DistributedPermissionRecordsTest DPMS_StopUsingPermission_0200 end";
 }
 
@@ -1306,11 +1148,11 @@ HWTEST_F(DistributedPermissionRemindTest, DPMS_StopUsingPermission_0200, TestSiz
 HWTEST_F(DistributedPermissionRemindTest, DPMS_StopUsingPermission_0300, TestSize.Level1)
 {
     GTEST_LOG_(INFO) << "DistributedPermissionRemindTest DPMS_StopUsingPermission_0300 start";
-    
+
     DeleteAllRemind();
     string appInfo = "";
-    char deviceId[DEVICE_UUID_LENGTH] = {0};
-    GetDevUdid(deviceId, DEVICE_UUID_LENGTH);
+    char deviceId[device_uuid_length] = {0};
+    GetDevUdid(deviceId, device_uuid_length);
     uid_ = STDistibutePermissionUtil::GetUidByBundleName(SYSTEM_TEST_BUNDLE_NAME_SETTINGS);
     deviceId_ = deviceId;
     appInfo = GetAppIdInfo(deviceId_);
@@ -1318,9 +1160,7 @@ HWTEST_F(DistributedPermissionRemindTest, DPMS_StopUsingPermission_0300, TestSiz
 
     permName = PERMISSION_CAMERA;
     DistributedPermissionKit::StartUsingPermission(permName, appInfo);
-
     DistributedPermissionKit::StopUsingPermission(permName, appInfo);
-
     GTEST_LOG_(INFO) << "DistributedPermissionRecordsTest DPMS_StopUsingPermission_0300 end";
 }
 
@@ -1333,8 +1173,8 @@ HWTEST_F(DistributedPermissionRemindTest, DPMS_StopUsingPermission_0400, TestSiz
     GTEST_LOG_(INFO) << "DistributedPermissionRemindTest DPMS_StopUsingPermission_0400 start";
     DeleteAllRemind();
     string appInfo = "";
-    char deviceId[DEVICE_UUID_LENGTH] = {0};
-    GetDevUdid(deviceId, DEVICE_UUID_LENGTH);
+    char deviceId[device_uuid_length] = {0};
+    GetDevUdid(deviceId, device_uuid_length);
     string permName = PERMISSION_CAMERA;
     uid_ = STDistibutePermissionUtil::GetUidByBundleName(SYSTEM_TEST_BUNDLE_NAME_SETTINGS);
     deviceId_ = deviceId;
@@ -1347,8 +1187,7 @@ HWTEST_F(DistributedPermissionRemindTest, DPMS_StopUsingPermission_0400, TestSiz
     std::string str = "com.ohos.distributedmusicplayer";
     STDistibutePermissionUtil::GetTrustedDeviceList(str, deviceList);
 
-    for(auto deviceinfo : deviceList)
-    {
+    for (auto deviceinfo : deviceList) {
         deviceId_ = deviceinfo.deviceId;
         appInfo = GetAppIdInfo(deviceId_);
 
@@ -1367,8 +1206,8 @@ HWTEST_F(DistributedPermissionRemindTest, DPMS_StopUsingPermission_0500, TestSiz
     GTEST_LOG_(INFO) << "DistributedPermissionRemindTest DPMS_StopUsingPermission_0500 start";
     DeleteAllRemind();
     string appInfo = "";
-    char deviceId[DEVICE_UUID_LENGTH] = {0};
-    GetDevUdid(deviceId, DEVICE_UUID_LENGTH);
+    char deviceId[device_uuid_length] = {0};
+    GetDevUdid(deviceId, device_uuid_length);
     uid_ = STDistibutePermissionUtil::GetUidByBundleName(SYSTEM_TEST_BUNDLE_NAME_SETTINGS);
     deviceId_ = deviceId;
     appInfo = GetAppIdInfo(deviceId_);
@@ -1391,8 +1230,8 @@ HWTEST_F(DistributedPermissionRemindTest, DPMS_StopUsingPermission_0600, TestSiz
     GTEST_LOG_(INFO) << "DistributedPermissionRemindTest DPMS_StopUsingPermission_0600 start";
     DeleteAllRemind();
     string appInfo = "";
-    char deviceId[DEVICE_UUID_LENGTH] = {0};
-    GetDevUdid(deviceId, DEVICE_UUID_LENGTH);
+    char deviceId[device_uuid_length] = {0};
+    GetDevUdid(deviceId, device_uuid_length);
     uid_ = STDistibutePermissionUtil::GetUidByBundleName(SYSTEM_TEST_BUNDLE_NAME_SETTINGS);
     deviceId_ = deviceId;
     appInfo = GetAppIdInfo(deviceId_);
@@ -1417,11 +1256,11 @@ HWTEST_F(DistributedPermissionRemindTest, DPMS_StopUsingPermission_0600, TestSiz
 HWTEST_F(DistributedPermissionRemindTest, DPMS_StopUsingPermission_0700, TestSize.Level1)
 {
     GTEST_LOG_(INFO) << "DistributedPermissionRemindTest DPMS_StopUsingPermission_0700 start";
- 
+
     DeleteAllRemind();
     string appInfo = "";
-    char deviceId[DEVICE_UUID_LENGTH] = {0};
-    GetDevUdid(deviceId, DEVICE_UUID_LENGTH);
+    char deviceId[device_uuid_length] = {0};
+    GetDevUdid(deviceId, device_uuid_length);
     uid_ = STDistibutePermissionUtil::GetUidByBundleName(SYSTEM_TEST_BUNDLE_NAME_SETTINGS);
     deviceId_ = deviceId;
     appInfo = GetAppIdInfo(deviceId_);
@@ -1433,14 +1272,12 @@ HWTEST_F(DistributedPermissionRemindTest, DPMS_StopUsingPermission_0700, TestSiz
     permName = PERMISSION_LOCATION;
     DistributedPermissionKit::StartUsingPermission(permName, appInfo);
 
-
     uid_ = STDistibutePermissionUtil::GetUidByBundleName(SYSTEM_TEST_BUNDLE_NAME_LAUNCHER);
     appInfo = GetAppIdInfo(deviceId_);
 
     permName = PERMISSION_MICROPHONE;
     DistributedPermissionKit::StartUsingPermission(permName, appInfo);
     DistributedPermissionKit::StopUsingPermission(permName, appInfo);
-
 
     GTEST_LOG_(INFO) << "DistributedPermissionRecordsTest DPMS_StopUsingPermission_0700 end";
 }
@@ -1455,8 +1292,8 @@ HWTEST_F(DistributedPermissionRemindTest, DPMS_StopUsingPermission_0800, TestSiz
 
     DeleteAllRemind();
     string appInfo = "";
-    char deviceId[DEVICE_UUID_LENGTH] = {0};
-    GetDevUdid(deviceId, DEVICE_UUID_LENGTH);
+    char deviceId[device_uuid_length] = {0};
+    GetDevUdid(deviceId, device_uuid_length);
     string permName = PERMISSION_CAMERA;
     uid_ = STDistibutePermissionUtil::GetUidByBundleName(SYSTEM_TEST_BUNDLE_NAME_SETTINGS);
     deviceId_ = deviceId;
@@ -1469,8 +1306,7 @@ HWTEST_F(DistributedPermissionRemindTest, DPMS_StopUsingPermission_0800, TestSiz
     std::string str = "com.ohos.distributedmusicplayer";
     STDistibutePermissionUtil::GetTrustedDeviceList(str, deviceList);
 
-    for(auto deviceinfo : deviceList)
-    {
+    for (auto deviceinfo : deviceList) {
         deviceId_ = deviceinfo.deviceId;
         appInfo = GetAppIdInfo(deviceId_);
         permName = PERMISSION_CAMERA;
@@ -1482,14 +1318,12 @@ HWTEST_F(DistributedPermissionRemindTest, DPMS_StopUsingPermission_0800, TestSiz
     permName = PERMISSION_CAMERA;
     DistributedPermissionKit::StopUsingPermission(permName, appInfo);
 
-    for(auto deviceinfo : deviceList)
-    {
+    for (auto deviceinfo : deviceList) {
         deviceId_ = deviceinfo.deviceId;
         appInfo = GetAppIdInfo(deviceId_);
         permName = PERMISSION_CAMERA;
         DistributedPermissionKit::StopUsingPermission(permName, appInfo);
     }
-
 
     GTEST_LOG_(INFO) << "DistributedPermissionRecordsTest DPMS_StopUsingPermission_0800 end";
 }
@@ -1504,8 +1338,8 @@ HWTEST_F(DistributedPermissionRemindTest, DPMS_StopUsingPermission_0900, TestSiz
 
     DeleteAllRemind();
     string appInfo = "";
-    char deviceId[DEVICE_UUID_LENGTH] = {0};
-    GetDevUdid(deviceId, DEVICE_UUID_LENGTH);
+    char deviceId[device_uuid_length] = {0};
+    GetDevUdid(deviceId, device_uuid_length);
     string permName = PERMISSION_CAMERA;
     uid_ = STDistibutePermissionUtil::GetUidByBundleName(SYSTEM_TEST_BUNDLE_NAME_SETTINGS);
     deviceId_ = deviceId;
@@ -1521,8 +1355,7 @@ HWTEST_F(DistributedPermissionRemindTest, DPMS_StopUsingPermission_0900, TestSiz
     std::string str = "com.ohos.distributedmusicplayer";
     STDistibutePermissionUtil::GetTrustedDeviceList(str, deviceList);
 
-    for(auto deviceinfo : deviceList)
-    {
+    for (auto deviceinfo : deviceList) {
         deviceId_ = deviceinfo.deviceId;
         appInfo = GetAppIdInfo(deviceId_);
         permName = PERMISSION_CAMERA;
@@ -1541,8 +1374,7 @@ HWTEST_F(DistributedPermissionRemindTest, DPMS_StopUsingPermission_0900, TestSiz
     str = "com.ohos.distributedmusicplayer";
     STDistibutePermissionUtil::GetTrustedDeviceList(str, deviceList);
 
-    for(auto deviceinfo : deviceList)
-    {
+    for (auto deviceinfo : deviceList) {
         deviceId_ = deviceinfo.deviceId;
         appInfo = GetAppIdInfo(deviceId_);
         permName = PERMISSION_LOCATION;
@@ -1561,8 +1393,8 @@ HWTEST_F(DistributedPermissionRemindTest, DPMS_StopUsingPermission_1000, TestSiz
 
     DeleteAllRemind();
     string appInfo = "";
-    char deviceId[DEVICE_UUID_LENGTH] = {0};
-    GetDevUdid(deviceId, DEVICE_UUID_LENGTH);
+    char deviceId[device_uuid_length] = {0};
+    GetDevUdid(deviceId, device_uuid_length);
     uid_ = STDistibutePermissionUtil::GetUidByBundleName(SYSTEM_TEST_BUNDLE_NAME_SETTINGS);
     deviceId_ = deviceId;
     appInfo = GetAppIdInfo(deviceId_);
@@ -1576,39 +1408,11 @@ HWTEST_F(DistributedPermissionRemindTest, DPMS_StopUsingPermission_1000, TestSiz
     auto endTime = std::chrono::high_resolution_clock::now();
 
     std::chrono::duration<double, std::milli> fp_ms = endTime - startTime;
-    RunTime_All = 0;
-    RunTime_All += RunTime_DeviceInfoManager;
-    RunTime_All += RunTime_BundleManager;
-    RunTime_All += RunTime_Permissionmanager;
-    RunTime_All += RunTime_AbilityManager;
-    RunTime_All += RunTime_AnsManager;
-    RunTime_All += RunTime_IPCSkeleton;
-    EXPECT_LT(fp_ms.count() - RunTime_All, STDistibutePermissionUtil::MAX_ELAPSED);
+    GTEST_LOG_(INFO) << fp_ms.count();
 
+    EXPECT_LT(fp_ms.count(), STDistibutePermissionUtil::MAX_ELAPSED);
     GTEST_LOG_(INFO) << "DistributedPermissionRecordsTest DPMS_StopUsingPermission_1000 end";
 }
-
-// /**
-//  * @tc.number    : DPMS_StopUsingPermission_1100
-//  * @tc.name      : StartUsingPermission
-//  */
-// HWTEST_F(DistributedPermissionRemindTest, DPMS_StopUsingPermission_1100, TestSize.Level1)
-// {
-//     GTEST_LOG_(INFO) << "DistributedPermissionRemindTest DPMS_StopUsingPermission_1100 start";
-
-//     GTEST_LOG_(INFO) << "DistributedPermissionRecordsTest DPMS_StopUsingPermission_1100 end";
-// }
-
-// /**
-//  * @tc.number    : DPMS_StopUsingPermission_1200
-//  * @tc.name      : StartUsingPermission
-//  */
-// HWTEST_F(DistributedPermissionRemindTest, DPMS_StopUsingPermission_1200, TestSize.Level1)
-// {
-//     GTEST_LOG_(INFO) << "DistributedPermissionRemindTest DPMS_StopUsingPermission_1200 start";
-
-//     GTEST_LOG_(INFO) << "DistributedPermissionRecordsTest DPMS_StopUsingPermission_1200 end";
-// }
 
 /**
  * @tc.number    : DPMS_StopUsingPermission_1300
@@ -1628,8 +1432,8 @@ HWTEST_F(DistributedPermissionRemindTest, DPMS_StopUsingPermission_1300, TestSiz
     DeleteAllRemind();
     string appInfo = "";
     string permName = "";
-    char deviceId[DEVICE_UUID_LENGTH] = {0};
-    GetDevUdid(deviceId, DEVICE_UUID_LENGTH);
+    char deviceId[device_uuid_length] = {0};
+    GetDevUdid(deviceId, device_uuid_length);
     permName = PERMISSION_CAMERA;
     uid_ = STDistibutePermissionUtil::GetUidByBundleName(THIRD_TEST_BUNDLE_NAME);
     deviceId_ = deviceId;
@@ -1641,24 +1445,12 @@ HWTEST_F(DistributedPermissionRemindTest, DPMS_StopUsingPermission_1300, TestSiz
 
     permName = PERMISSION_LOCATION;
     DistributedPermissionKit::StopUsingPermission(permName, appInfo);
-    
+
     ret = DistributedPermissionKit::UnregisterUsingPermissionReminder(callback);
     EXPECT_EQ(0, ret);
 
     GTEST_LOG_(INFO) << "DistributedPermissionRecordsTest DPMS_StopUsingPermission_1300 end";
 }
-
-// /**
-//  * @tc.number    : DPMS_StopUsingPermission_1400
-//  * @tc.name      : StartUsingPermission
-//  */
-// HWTEST_F(DistributedPermissionRemindTest, DPMS_StopUsingPermission_1400, TestSize.Level1)
-// {
-//     GTEST_LOG_(INFO) << "DistributedPermissionRemindTest DPMS_StopUsingPermission_1400 start";
-
-//     GTEST_LOG_(INFO) << "DistributedPermissionRecordsTest DPMS_StopUsingPermission_1400 end";
-// }
-
 
 /**
  * @tc.number    : DPMS_StopUsingPermission_1500
@@ -1669,8 +1461,8 @@ HWTEST_F(DistributedPermissionRemindTest, DPMS_StopUsingPermission_1500, TestSiz
     GTEST_LOG_(INFO) << "DistributedPermissionRemindTest DPMS_StopUsingPermission_1500 start";
     DeleteAllRemind();
     string appInfo = "";
-    char deviceId[DEVICE_UUID_LENGTH] = {0};
-    GetDevUdid(deviceId, DEVICE_UUID_LENGTH);
+    char deviceId[device_uuid_length] = {0};
+    GetDevUdid(deviceId, device_uuid_length);
     uid_ = STDistibutePermissionUtil::GetUidByBundleName(SYSTEM_TEST_BUNDLE_NAME_SETTINGS);
     deviceId_ = deviceId;
     appInfo = GetAppIdInfo(deviceId_);
@@ -1694,8 +1486,8 @@ HWTEST_F(DistributedPermissionRemindTest, DPMS_StopUsingPermission_1600, TestSiz
     GTEST_LOG_(INFO) << "DistributedPermissionRemindTest DPMS_StopUsingPermission_1600 start";
     DeleteAllRemind();
     string appInfo = "";
-    char deviceId[DEVICE_UUID_LENGTH] = {0};
-    GetDevUdid(deviceId, DEVICE_UUID_LENGTH);
+    char deviceId[device_uuid_length] = {0};
+    GetDevUdid(deviceId, device_uuid_length);
     uid_ = STDistibutePermissionUtil::GetUidByBundleName(SYSTEM_TEST_BUNDLE_NAME_SETTINGS);
     deviceId_ = deviceId;
     appInfo = GetAppIdInfo(deviceId_);
@@ -1724,8 +1516,8 @@ HWTEST_F(DistributedPermissionRemindTest, DPMS_StopUsingPermission_1700, TestSiz
     GTEST_LOG_(INFO) << "DistributedPermissionRemindTest DPMS_StopUsingPermission_1700 start";
     DeleteAllRemind();
     string appInfo = "";
-    char deviceId[DEVICE_UUID_LENGTH] = {0};
-    GetDevUdid(deviceId, DEVICE_UUID_LENGTH);
+    char deviceId[device_uuid_length] = {0};
+    GetDevUdid(deviceId, device_uuid_length);
     string permName = PERMISSION_CAMERA;
     uid_ = STDistibutePermissionUtil::GetUidByBundleName(SYSTEM_TEST_BUNDLE_NAME_SETTINGS);
     deviceId_ = deviceId;
@@ -1738,8 +1530,7 @@ HWTEST_F(DistributedPermissionRemindTest, DPMS_StopUsingPermission_1700, TestSiz
     std::string str = "com.ohos.distributedmusicplayer";
     STDistibutePermissionUtil::GetTrustedDeviceList(str, deviceList);
 
-    for(auto deviceinfo : deviceList)
-    {
+    for (auto deviceinfo : deviceList) {
         deviceId_ = deviceinfo.deviceId;
         appInfo = GetAppIdInfo(deviceId_);
 
@@ -1748,4 +1539,3 @@ HWTEST_F(DistributedPermissionRemindTest, DPMS_StopUsingPermission_1700, TestSiz
     }
     GTEST_LOG_(INFO) << "DistributedPermissionRecordsTest DPMS_StopUsingPermission_1700 end";
 }
-

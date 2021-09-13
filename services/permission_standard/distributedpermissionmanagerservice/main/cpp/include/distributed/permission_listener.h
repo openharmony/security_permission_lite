@@ -25,7 +25,7 @@ class PermissionListener final {
 public:
     static void Init();
 };
-}  // namespace Permission
-}  // namespace Security
-}  // namespace OHOS
-#endif  // PERMISSION_LISTENER_H
+} // namespace Permission
+} // namespace Security
+} // namespace OHOS
+#endif // PERMISSION_LISTENER_H

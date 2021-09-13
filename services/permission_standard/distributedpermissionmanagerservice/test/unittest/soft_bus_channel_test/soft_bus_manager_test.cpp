@@ -171,8 +171,7 @@ HWTEST_F(SoftBusManagerTest, SoftBusManager_FulfillLocalDeviceInfo_001, TestSize
 
         // will not work
         int code = instance->FulfillLocalDeviceInfo();
-        // link error: OHOS::Security::Permission:Constant::FAILURE not found 
-        // EXPECT_EQ(code, Constant::FAILURE);
+        // link error: OHOS::Security::Permission:Constant::FAILURE not found
         PERMISSION_LOG_DEBUG(LABEL, "SoftBusManager_FulfillLocalDeviceInfo_001-1: code is %{public}d", code);
         EXPECT_EQ(code, -1);
     }
@@ -195,7 +194,6 @@ HWTEST_F(SoftBusManagerTest, SoftBusManager_FulfillLocalDeviceInfo_001, TestSize
 
         // will work
         int code = instance->FulfillLocalDeviceInfo();
-        // EXPECT_EQ(code, Constant::SUCCESS);
         EXPECT_EQ(code, 0);
         // simulator a unregister operator.
         UnregNodeDeviceStateCb(nullptr);
@@ -427,7 +425,6 @@ HWTEST_F(SoftBusManagerTest, SoftBusManager_OpenSession_001, TestSize.Level1)
 
         // will not work
         int code = instance->OpenSession(UDID_);
-        // EXPECT_EQ(code, Constant::INVALID_SESSION);
         EXPECT_EQ(code, -1);
 
         instance->CloseSession(code);
@@ -451,19 +448,19 @@ HWTEST_F(SoftBusManagerTest, SoftBusManager_OpenSession_001, TestSize.Level1)
         PERMISSION_LOG_DEBUG(LABEL, "SoftBusManager_OpenSession_001-2: open1");
         // will work
         int code = instance->OpenSession(UDID_);
-        // EXPECT_GT(code, Constant::INVALID_SESSION);
         EXPECT_GT(code, -1);
 
         // failure test: mock: index > 20 will be error
+        int sessionLimit = 20;
         PERMISSION_LOG_DEBUG(LABEL, "SoftBusManager_OpenSession_001-2: open-many");
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < sessionLimit; i++) {
             instance->OpenSession(UDID_);
         }
         code = instance->OpenSession(UDID_);
         EXPECT_EQ(code, -1);
 
         // index --
-        for (int i = 0; i < 20 + 1; i++) {
+        for (int i = 0; i < sessionLimit + 1; i++) {
             // 1: mock session id
             instance->CloseSession(1);
         }
@@ -481,7 +478,6 @@ HWTEST_F(SoftBusManagerTest, SoftBusManager_OpenSession_001, TestSize.Level1)
     instance->Destroy();
     PERMISSION_LOG_DEBUG(LABEL, "SoftBusManager_OpenSession_001-end");
 }
-
 }  // namespace Permission
 }  // namespace Security
 }  // namespace OHOS
