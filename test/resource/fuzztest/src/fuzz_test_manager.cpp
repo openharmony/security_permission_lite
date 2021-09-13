@@ -223,7 +223,6 @@ void FuzzTestManager::StartFuzzTest()
     }
     std::cout << remainderMap_.size() << "--------fuzz test end--------" << std::endl;
 }
-
 }  // namespace Permission
 }  // namespace Security
 }  // namespace OHOS

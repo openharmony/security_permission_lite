@@ -40,10 +40,8 @@ public:
             std::cout << "json file can not open!" << std::endl;
             return;
         }
-
         nlohmann::json jsonObj;
         jf >> jsonObj;
-
         const auto &jsonObjEnd = jsonObj.end();
         if (jsonObj.find(STRESS_TEST_DPMS_KEY) != jsonObjEnd) {
             jsonObj.at(STRESS_TEST_DPMS_KEY).get_to(stlevel.DPMSLevel);

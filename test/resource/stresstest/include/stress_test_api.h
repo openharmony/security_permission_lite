@@ -90,9 +90,6 @@ public:
     static bool GetPermissionUsedRecordTest_13();
     static bool GetPermissionUsedRecordTest_14();
     static bool GetPermissionUsedRecordAsyncTest();
-    // static bool DeletePermissionUsedRecordTest_01();
-    // static bool DeletePermissionUsedRecordTest_02();
-
     static void GetTestFunction(std::vector<FnPtr> &vector);
     static std::vector<std::string> eventList_;
     static STtools::Event event_;

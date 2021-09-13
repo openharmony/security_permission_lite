@@ -60,7 +60,8 @@ void RandomStressTest::TestFountion(int i)
     PERMISSION_LOG_INFO(LABEL, "%{public}s", str.c_str());
     while (true) {
         RandomExeAPI();
-        sleep(2);
+        int sleepNum = 2;
+        sleep(sleepNum);
     }
 }
 

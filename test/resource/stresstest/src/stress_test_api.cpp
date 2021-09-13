@@ -218,7 +218,8 @@ bool DistibutePermissionStressTest::AddPermissionUsedRecordTest_04()
     string deviceId_ = "device_0";
     string appInfo = DistributedPermissionKit::AppIdInfoHelper::CreateAppIdInfo(0, uid_, deviceId_);
     DistributedPermissionKit::AddPermissionUsedRecord(permName_, appInfo, 1, 0);
-    sleep(61);
+    int timeSleep = 61;
+    sleep(timeSleep);
     DistributedPermissionKit::AddPermissionUsedRecord(permName_, appInfo, 1, 0);
 
     std::vector<GenericValues> visitorAfter;
@@ -232,7 +233,6 @@ bool DistibutePermissionStressTest::AddPermissionUsedRecordTest_05()
 {
     SetUid();
     RemoveStorage();
-    // AddData(TimeUtil::GetTimestamp() - 2592000);
 
     std::vector<GenericValues> visitorBefore;
     std::vector<GenericValues> recordBefore;

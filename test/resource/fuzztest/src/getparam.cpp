@@ -23,18 +23,11 @@ using namespace std;
 namespace OHOS {
 namespace Security {
 namespace Permission {
-
-namespace{
-static const int STR_NUM = 255;
-static const int HALF_NUM = 2;
-static const int INT_RAN_1 = -128;
-static const int INT_RAN_2 = 127;
-} // namespace
-
 bool GetBoolParam()
 {
     bool param;
-    if (GetIntParam() % HALF_NUM == 0) {
+    int halfNum = 2;
+    if (GetIntParam() % halfNum == 0) {
         param = true;
     } else {
         param = false;
@@ -196,7 +189,9 @@ float GetFloatParam()
 char GetCharParam()
 {
     std::random_device rd;
-    static uniform_int_distribution<> u(INT_RAN_1, INT_RAN_2);
+    int num1 = -128;
+    int num2 = 127;
+    static uniform_int_distribution<> u(num1, num2);
     static default_random_engine e(rd());
     char param = u(e);
     return param;
@@ -214,8 +209,8 @@ char32_t GetChar32Param()
 
 char *GetCharArryParam()
 {
-    static char param[256];
-    strcpy(param, GetStringParam().c_str());
+    char param[256];
+    strcpy_s(param, GetStringParam().c_str());
     return param;
 }
 
@@ -223,7 +218,8 @@ string GetStringParam()
 {
     string param = "";
     char ch = GetCharParam();
-    size_t len = GenRandom(0, STR_NUM);
+    int strNum= 255;
+    size_t len = GenRandom(0, strNum);
     while (len--) {
         ch = GetCharParam();
         param += ch;
@@ -237,7 +233,8 @@ template <class T>
 vector<T> GetUnsignVectorParam()
 {
     vector<T> param;
-    size_t len = GenRandom(0, STR_NUM);
+    int strNum= 255;
+    size_t len = GenRandom(0, strNum);
     while (len--) {
         T t = GetUnsignParam<T>();
         param.push_back(t);
@@ -256,7 +253,8 @@ T GetClassParam()
 std::vector<bool> GetBoolVectorParam()
 {
     vector<bool> param;
-    size_t len = GenRandom(0, STR_NUM);
+    int strNum= 255;
+    size_t len = GenRandom(0, strNum);
     while (len--) {
         int t = GetBoolParam();
         param.push_back(t);
@@ -268,7 +266,8 @@ std::vector<bool> GetBoolVectorParam()
 std::vector<short> GetShortVectorParam()
 {
     vector<short> param;
-    size_t len = GenRandom(0, STR_NUM);
+    int strNum= 255;
+    size_t len = GenRandom(0, strNum);
     while (len--) {
         short t = GetShortParam();
         param.push_back(t);
@@ -280,7 +279,8 @@ std::vector<short> GetShortVectorParam()
 std::vector<long> GetLongVectorParam()
 {
     vector<long> param;
-    size_t len = GenRandom(0, STR_NUM);
+    int strNum= 255;
+    size_t len = GenRandom(0, strNum);
     while (len--) {
         long t = GetLongParam();
         param.push_back(t);
@@ -292,7 +292,8 @@ std::vector<long> GetLongVectorParam()
 vector<int> GetIntVectorParam()
 {
     vector<int> param;
-    size_t len = GenRandom(0, STR_NUM);
+    int strNum= 255;
+    size_t len = GenRandom(0, strNum);
     while (len--) {
         int t = GetIntParam();
         param.push_back(t);
@@ -304,7 +305,8 @@ vector<int> GetIntVectorParam()
 std::vector<float> GetFloatVectorParam()
 {
     vector<float> param;
-    size_t len = GenRandom(0, STR_NUM);
+    int strNum= 255;
+    size_t len = GenRandom(0, strNum);
     while (len--) {
         float t = GetIntParam();
         param.push_back(t);
@@ -316,7 +318,8 @@ std::vector<float> GetFloatVectorParam()
 std::vector<double> GetDoubleVectorParam()
 {
     vector<double> param;
-    size_t len = GenRandom(0, STR_NUM);
+    int strNum= 255;
+    size_t len = GenRandom(0, strNum);
     while (len--) {
         double t = GetIntParam();
         param.push_back(t);
@@ -328,7 +331,8 @@ std::vector<double> GetDoubleVectorParam()
 vector<char> GetCharVectorParam()
 {
     vector<char> param;
-    size_t len = GenRandom(0, STR_NUM);
+    int strNum= 255;
+    size_t len = GenRandom(0, strNum);
     while (len--) {
         char t = GetCharParam();
         param.push_back(t);
@@ -340,7 +344,8 @@ vector<char> GetCharVectorParam()
 vector<char32_t> GetChar32VectorParam()
 {
     vector<char32_t> param;
-    size_t len = GenRandom(0, STR_NUM);
+    int strNum= 255;
+    size_t len = GenRandom(0, strNum);
     while (len--) {
         char32_t t = GetChar32Param();
         param.push_back(t);
@@ -352,7 +357,8 @@ vector<char32_t> GetChar32VectorParam()
 vector<string> GetStringVectorParam()
 {
     vector<string> param;
-    size_t len = GenRandom(0, STR_NUM);
+    int strNum= 255;
+    size_t len = GenRandom(0, strNum);
     while (len--) {
         string t = GetStringParam();
         param.push_back(t);
@@ -364,7 +370,8 @@ vector<string> GetStringVectorParam()
 vector<int8_t> GetS8VectorParam()
 {
     vector<int8_t> param;
-    size_t len = GenRandom(0, STR_NUM);
+    int strNum= 255;
+    size_t len = GenRandom(0, strNum);
     while (len--) {
         int8_t temp = GetS8Param();
         param.push_back(temp);
@@ -376,7 +383,8 @@ vector<int8_t> GetS8VectorParam()
 vector<int16_t> GetS16VectorParam()
 {
     vector<int16_t> param;
-    size_t len = GenRandom(0, STR_NUM);
+    int strNum= 255;
+    size_t len = GenRandom(0, strNum);
     while (len--) {
         int16_t temp = GetS16Param();
         param.push_back(temp);
@@ -388,7 +396,8 @@ vector<int16_t> GetS16VectorParam()
 vector<int32_t> GetS32VectorParam()
 {
     vector<int32_t> param;
-    size_t len = GenRandom(0, STR_NUM);
+    int strNum= 255;
+    size_t len = GenRandom(0, strNum);
     while (len--) {
         int32_t temp = GetS32Param();
         param.push_back(temp);
@@ -400,7 +409,8 @@ vector<int32_t> GetS32VectorParam()
 vector<int64_t> GetS64VectorParam()
 {
     vector<int64_t> param;
-    size_t len = GenRandom(0, STR_NUM);
+    int strNum= 255;
+    size_t len = GenRandom(0, strNum);
     while (len--) {
         int64_t temp = GetS64Param();
         param.push_back(temp);

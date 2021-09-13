@@ -50,17 +50,14 @@ public:
                 ftd.mainLoopFlag = it.value();
                 continue;
             }
-
             auto className = it.key();
             if (it->is_structured()) {
                 for (auto itm = it->begin(); itm != it->end(); ++itm) {
                     auto methodName = itm.key();
-
                     if (!(it->is_structured() && (it->size() != 0))) {
                         ftd.methodVec.push_back(className + methodName);
                         continue;
                     }
-
                     std::string param{};
                     for (auto itp = itm->begin(); itp != itm->end(); ++itp) {
                         auto tp = itp.value();
@@ -72,7 +69,5 @@ public:
         }
     }
 };
-
 }  // namespace OHOS
-
 #endif  // FUZZ_CONFIG_PARSER_H

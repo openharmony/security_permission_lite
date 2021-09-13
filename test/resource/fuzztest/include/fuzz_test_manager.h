@@ -36,7 +36,6 @@ public:
         }
         return instance_;
     }
-
     void StartFuzzTest();
 
 private:
@@ -56,5 +55,4 @@ private:
 }  // namespace Permission
 }  // namespace Security
 }  // namespace OHOS
-
 #endif
