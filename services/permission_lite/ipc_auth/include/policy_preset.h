@@ -305,6 +305,19 @@ FeaturePolicy devAuthFeature[] = {
     },
 };
 
+FeaturePolicy deviceManagerFeature[] = {
+    {
+        NULL,
+        {
+            {
+                .type=RANGE,
+                .uidMin=0,
+                .uidMax=__INT_MAX__,
+            },
+        },
+    },
+};
+
 FeaturePolicy batteryFeature[] = {
     {
         "battery_feature",
@@ -337,6 +350,7 @@ static PolicySetting g_presetPolicies[] = {
     {"CameraServer", cameraFeature, 1},
     {"RecorderServer", recorderFeature, 1},
     {"devauth_svc", devAuthFeature, 1},
+	{"dev_mgr_svc", deviceManagerFeature, 1},
     {"battery_service", batteryFeature, 1}
 };
 
