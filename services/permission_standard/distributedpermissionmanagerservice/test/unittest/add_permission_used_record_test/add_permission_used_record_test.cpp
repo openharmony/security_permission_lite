@@ -46,7 +46,7 @@ public:
             "device_0", "device_0", "device_0", "device_name_0", "device_type");
         cout << "SetUpTestCase()" << endl;
 
-        OHOS::sptr<OHOS::IRemoteObject> bundleObject = new OHOS::AppExecFwk::BundleMgrService();
+        OHOS::sptr<OHOS::IRemoteObject> bundleObject = NULL;
         OHOS::sptr<OHOS::IRemoteObject> permissionObject = new PermissionManagerService();
         auto sysMgr = OHOS::SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
         if (sysMgr == NULL) {

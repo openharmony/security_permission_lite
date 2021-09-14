@@ -46,7 +46,7 @@ public:
     static void SetUpTestCase()
     {
         cout << "SetUpTestCase()" << endl;
-        OHOS::sptr<OHOS::IRemoteObject> bundleObject = new OHOS::AppExecFwk::BundleMgrService();
+        OHOS::sptr<OHOS::IRemoteObject> bundleObject = NULL;
         OHOS::sptr<OHOS::IRemoteObject> permissionObject = new PermissionManagerService();
         auto sysMgr = OHOS::SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
         if (sysMgr == NULL) {

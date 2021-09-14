@@ -45,7 +45,7 @@ public:
         pid_t IPCSkeleton::uid_ = 1;
         std::string IPCSkeleton::localDeviceId_ = "1004";
         std::string IPCSkeleton::deviceId_ = "";
-        OHOS::sptr<OHOS::IRemoteObject> bundleObject = new OHOS::AppExecFwk::BundleMgrService();
+        OHOS::sptr<OHOS::IRemoteObject> bundleObject = NULL;
         OHOS::sptr<OHOS::IRemoteObject> permissionObject = new PermissionManagerService();
         auto sysMgr = OHOS::SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
         if (sysMgr == NULL) {
