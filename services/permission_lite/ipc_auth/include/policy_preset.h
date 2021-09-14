@@ -305,9 +305,9 @@ FeaturePolicy devAuthFeature[] = {
     },
 };
 
-FeaturePolicy deviceManagerFeature[] = {
+FeaturePolicy batteryFeature[] = {
     {
-        NULL,
+        "battery_feature",
         {
             {
                 .type=RANGE,
@@ -318,9 +318,9 @@ FeaturePolicy deviceManagerFeature[] = {
     },
 };
 
-FeaturePolicy batteryFeature[] = {
+FeaturePolicy deviceManagerFeature[] = {
     {
-        "battery_feature",
+        NULL,
         {
             {
                 .type=RANGE,
@@ -350,8 +350,8 @@ static PolicySetting g_presetPolicies[] = {
     {"CameraServer", cameraFeature, 1},
     {"RecorderServer", recorderFeature, 1},
     {"devauth_svc", devAuthFeature, 1},
-	{"dev_mgr_svc", deviceManagerFeature, 1},
-    {"battery_service", batteryFeature, 1}
+    {"battery_service", batteryFeature, 1},
+    {"dev_mgr_svc", deviceManagerFeature, 1}
 };
 
 static int g_presetPolicySize = sizeof(g_presetPolicies) / sizeof(PolicySetting);
