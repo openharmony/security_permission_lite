@@ -1,0 +1,32 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    width: 100%;
+    left: 0px;
+    top: 0px;
+}
+.tabs {
+    width: 100%;
+}
+
+.tab-bar {
+    margin: 0 60px;
+}
+
+.tab-text {
+    line-height: 0px;
+    text-align: center;
+    font-size: 20px;
+    opacity: 0.75;
+}
+
+.tabContent {
+    width: 100%;
+}
+
+.list-item-group {
+    margin: 0% 5% 2.5%;
+    border: 1px solid gainsboro;
+}

@@ -1,0 +1,67 @@
+{
+  "app": {
+    "bundleName": "com.example.myapplication2",
+    "vendor": "example",
+    "version": {
+      "code": 1000000,
+      "name": "1.0.0"
+    }
+  },
+  "deviceConfig": {},
+  "module": {
+    "package": "com.example.myapplication2",
+    "name": ".MyApplication",
+    "mainAbility": "com.example.myapplication2.MainAbility",
+    "deviceType": [
+      "phone"
+    ],
+    "distro": {
+      "deliveryWithInstall": true,
+      "moduleName": "entry",
+      "moduleType": "entry",
+      "installationFree": true
+    },
+    "abilities": [
+      {
+        "skills": [
+          {
+            "entities": [
+              "entity.system.home"
+            ],
+            "actions": [
+              "action.system.home"
+            ]
+          }
+        ],
+        "name": "com.example.myapplication2.MainAbility",
+        "icon": "$media:icon",
+        "description": "$string:mainability_description",
+        "label": "$string:entry_MainAbility",
+        "type": "page",
+        "launchType": "standard"
+      }
+    ],
+    "js": [
+      {
+        "name": "default",
+        "window": {
+          "designWidth": 720,
+          "autoDesignWidth": true
+        },
+        "pages": [
+          "pages/index/index",
+          "pages/distributedPermissionRecords/distributedPermissionRecords",
+          "pages/permissionRecords/permissionRecords",
+          "pages/appPermissionList/appPermissionList",
+          "pages/appPermissionDef/appPermissionDef",
+          "pages/appGrant/appGrant",
+          "pages/permissionGrant/permissionGrant",
+          "pages/appPermissionListAll/appPermissionListAll",
+          "pages/permissionManager/permissionManager",
+          "pages/permissionManager/permissionManager_Permission/permission_group/permission_group",
+          "pages/blankPage/blankPage"
+        ]
+      }
+    ]
+  }
+}

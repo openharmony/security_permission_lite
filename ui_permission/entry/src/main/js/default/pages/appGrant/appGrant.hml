@@ -1,0 +1,49 @@
+<!--/*
+* Copyright (c) 2021 Huawei Device Co., Ltd.
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/-->
+<element name='head-component' src='../component/headComponent/headComponent.hml'></element>
+<element name='radio-component' src ='../component/radioComponent/radioComponent.hml'></element>
+<div class="container">
+    <head-component title-name="{{title}}权限" ></head-component>
+    <div class="head-image">
+        <image class="head-image-pin" src="{{icon}}"></image>
+        <div class="item">
+            <div  class="preference-title">
+                <div class="title-text-style">
+                    <text class="title-style">{{appName}}</text>
+                </div>
+                <text class="text-style-summary">版本 {{versionName}}
+                </text>
+            </div>
+        </div>
+    </div>
+    <div class="text">
+        <div class="item">
+            <div  class="preference-title">
+                <div class="title-text-style">
+                    <text class="title-style"> {{reason}}
+                    </text>
+                </div>
+                <text class="text-style-summary">{{title}}访问权限
+                </text>
+            </div>
+        </div>
+    </div>
+    <list scrollpage="true">
+        <list-item id="item" for="{{ radioList }}" ontouchstart="clickRadio({{$idx}})">
+            <radio-component radio-title="{{$item.title}}" is-checked="{{$item.isChecked}}"
+                             radio-value="{{$idx}}" show-divider="{{$item.showDivider}}"></radio-component>
+        </list-item>
+    </list>
+</div>
