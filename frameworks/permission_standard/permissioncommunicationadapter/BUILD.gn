@@ -18,7 +18,10 @@ import("//build/ohos.gni")
 ################################################################
 config("permission_standard_communication_adapter_cxx_public_config") {
   visibility = [ ":*" ]
-  include_dirs = [ "main/cpp/include" ]
+  include_dirs = [
+    "main/cpp/include",
+    "//base/security/permission/interfaces/innerkits/permission_standard/permissionsdk/main/cpp/include",
+  ]
 }
 
 ohos_shared_library("permission_standard_communication_adapter_cxx") {
@@ -32,7 +35,6 @@ ohos_shared_library("permission_standard_communication_adapter_cxx") {
     "main/cpp/include",
     "main/cpp/src",
     "//utils/native/base/include",
-    "//base/security/permission/interfaces/innerkits/permission_standard/permissionsdk/main/cpp/include/permission",
   ]
 
   sources = [ "main/cpp/src/permission_def_parcel.cpp" ]
