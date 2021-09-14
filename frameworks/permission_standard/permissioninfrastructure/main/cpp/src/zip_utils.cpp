@@ -16,6 +16,7 @@
 #include "zip_utils.h"
 
 #include <zlib.h>
+#include "securec.h"
 #include "permission_log.h"
 
 namespace OHOS {
@@ -28,19 +29,17 @@ using namespace std;
 int32_t ZipUtils::CompressString(const string& inputStr, string& outputStr)
 {
     z_stream zs;
-    memset(&zs, 0, sizeof zs);
+    memset_s(&zs, sizeof zs, 0, sizeof zs);
     if (deflateInit(&zs, Z_BEST_COMPRESSION) != Z_OK) {
         PERMISSION_LOG_ERROR(LABEL, "%{public}s: deflateInit failed while compressing!", __func__);
         return ERROR;
     }
-
-    zs.next_in = (Bytef*) inputStr.data();
+    zs.next_in = const_cast<Bytef*>(reinterpret_cast<const Bytef*>(inputStr.data()));
     zs.avail_in = inputStr.size();
 
     int ret;
-    char outBuffer[32768];
+    char outBuffer[BUFFER_SIZE];
     string compressedStr;
-
     do {
         zs.next_out = reinterpret_cast<Bytef*>(outBuffer);
         zs.avail_out = sizeof(outBuffer);
@@ -51,7 +50,6 @@ int32_t ZipUtils::CompressString(const string& inputStr, string& outputStr)
     } while (ret == Z_OK);
 
     deflateEnd(&zs);
-
     if (ret != Z_STREAM_END) {
         PERMISSION_LOG_ERROR(LABEL,
             "%{public}s: Exception during zlib compression! ret: %{public}d, message: %{public}s!", __func__, ret,
@@ -65,33 +63,27 @@ int32_t ZipUtils::CompressString(const string& inputStr, string& outputStr)
 int32_t ZipUtils::DecompressString(const string& inputStr, string& outputStr)
 {
     z_stream zs;
-    memset(&zs, 0, sizeof(zs));
-
+    memset_s(&zs, sizeof zs, 0, sizeof zs);
     if (inflateInit(&zs) != Z_OK) {
         PERMISSION_LOG_ERROR(LABEL, "%{public}s: inflateInit failed while compressing!", __func__);
         return ERROR;
     }
-
-    zs.next_in = (Bytef*) inputStr.data();
+    zs.next_in = const_cast<Bytef*>(reinterpret_cast<const Bytef*>(inputStr.data()));
     zs.avail_in = inputStr.size();
 
     int ret;
-    char outBuffer[32768];
+    char outBuffer[BUFFER_SIZE];
     string decompressedStr;
-
     do {
         zs.next_out = reinterpret_cast<Bytef*>(outBuffer);
         zs.avail_out = sizeof(outBuffer);
-
         ret = inflate(&zs, 0);
-
         if (decompressedStr.size() < zs.total_out) {
             decompressedStr.append(outBuffer, zs.total_out - decompressedStr.size());
         }
     } while (ret == Z_OK);
 
     inflateEnd(&zs);
-
     if (ret != Z_STREAM_END) {
         PERMISSION_LOG_ERROR(LABEL,
             "%{public}s: Exception during zlib decompression! ret: %{public}d, message: %{public}s!", __func__, ret,

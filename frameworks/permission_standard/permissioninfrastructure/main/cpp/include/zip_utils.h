@@ -30,8 +30,11 @@ public:
     static int32_t CompressString(const std::string& inputStr, std::string& outputStr);
 
     static int32_t DecompressString(const std::string& inputStr, std::string& outputStr);
+
+private:
+    static constexpr int32_t BUFFER_SIZE = 8192;
 };
-} // namespace Infrastructure
+} // namespace Permission
 } // namespace Security
 } // namespace OHOS
 #endif // ZIP_UTILS_H

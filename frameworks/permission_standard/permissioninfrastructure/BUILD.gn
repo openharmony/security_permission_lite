@@ -27,7 +27,10 @@ ohos_shared_library("permission_standard_infrastructure_cxx") {
 
   public_configs = [ ":permission_standard_infrastructure_cxx_public_config" ]
 
-  include_dirs = [ "main/cpp/src" ]
+  include_dirs = [
+    "main/cpp/src",
+    "//utils/native/base/include",
+  ]
 
   sources = [
     "main/cpp/src/data_validator.cpp",
