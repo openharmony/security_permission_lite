@@ -1,0 +1,40 @@
+.all {
+    flex-direction: column;
+    background-color: #ffffff;
+/*    background-color: #f1f3f5;*/
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+
+.tabs {
+    width: 100%;
+    height: 100%;
+
+}
+
+.tab-bar {
+    margin: 10px;
+    height: 60px;
+    width: 200px;
+/*    background-color: #f1f3f5;*/
+    background-color: #ffffff;
+}
+
+
+.tabcontent {
+    width: 100%;
+    height: 80%;
+    justify-content: center;
+}
+
+.item-content {
+    height: 100%;
+    justify-content: center;
+}
+
+
+.tab-text {
+    text-align: center;
+    font-size: 18px;
+}

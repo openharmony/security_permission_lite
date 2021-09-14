@@ -1,0 +1,40 @@
+{
+    "app":{
+        "bundleName": "com.third.checkSelfPermission",
+        "vendor": "ohos",
+        "version": {
+            "code": 1,
+            "name": "1.0"
+        },
+       "apiVersion": {
+          "compatible": 3,
+          "target": 3
+       }
+    },
+    "deviceConfig": {
+        "default": {
+        }
+    },
+    "module": {
+        "package":"com.ohos.CheckSelfPermissionSystemTestA.src",
+        "name":"CheckSelfPermissionSystemTestA",
+        "deviceType": [
+            "tv",
+            "car"
+        ],
+        "distro": {
+            "deliveryWithInstall": true,
+            "moduleName": "testability",
+            "moduleType": "entry"
+        },
+        "abilities": [{
+            "name": "CheckSelfPermissionAbilityA1",
+            "icon": "$media:snowball",
+            "label": "CheckSelfPermissionAbilityA1 Ability",
+            "launchType": "standard",
+            "orientation": "unspecified",
+            "type": "service",
+            "visible": true
+            }]
+    }
+}
