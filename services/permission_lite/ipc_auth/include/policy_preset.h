@@ -318,7 +318,7 @@ FeaturePolicy batteryFeature[] = {
     },
 };
 
-FeaturePolicy deviceManagerFeature[] = {
+const FeaturePolicy deviceManagerFeature[] = {
     {
         NULL,
         {
