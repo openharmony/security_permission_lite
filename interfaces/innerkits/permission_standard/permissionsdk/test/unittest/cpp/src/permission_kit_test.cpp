@@ -70,7 +70,7 @@ void PermissionKitTest::TearDown()
  * @tc.type: FUNC
  * @tc.require:
  */
-HWTEST_F(PermissionKitTest, AddDefPermissions001, TestSize.Level1)
+HWTEST_F(PermissionKitTest, AddDefPermissions001, TestSize.Level0)
 {
     PermissionDef permissionDefResultAlpha;
     int ret = PermissionKit::GetDefPermission(TEST_PERMISSION_NAME_ALPHA, permissionDefResultAlpha);
