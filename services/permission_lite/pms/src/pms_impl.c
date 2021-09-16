@@ -221,12 +221,12 @@ static int WritePermissions(const char *identifier, const cJSON *root)
     }
     const char *jsonStr = cJSON_PrintUnformatted(root);
     if (jsonStr == NULL) {
-        HalFree(path);
+        HalFree((void *)path);
         return PERM_ERRORCODE_MALLOC_FAIL;
     }
     int ret = WriteString(path, jsonStr);
-    HalFree(path);
-    free(jsonStr);
+    HalFree((void *)path);
+    free((void *)jsonStr);
     return ret;
 }
 
@@ -323,7 +323,7 @@ int QueryPermission(const char *identifier, PermissionSaved **permissions, int *
     }
 
     int ret = ParsePermissions(jsonStr, permissions, permNum);
-    HalFree(jsonStr);
+    HalFree((void *)jsonStr);
     return ret;
 }
 
