@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+#include <securec.h>
 #include "soft_bus_manager.h"
 #include "parameter.h"
 #include "device_info_manager.h"
@@ -191,8 +191,11 @@ int32_t SoftBusManager::OpenSession(const std::string &deviceId)
     }
     int64_t state = SoftBusSessionListener::GetSessionState(sessionId);
     if (state < 0) {
+        PERMISSION_LOG_ERROR(LABEL, "openSession, timeout, session:  %{public}" PRId64, state);
         return Constant::FAILURE;
     }
+
+    PERMISSION_LOG_DEBUG(LABEL, "openSession, succeed, session:  %{public}" PRId64, state);
     return sessionId;
 }
 
@@ -265,7 +268,7 @@ std::string SoftBusManager::GetUuidByNodeId(const std::string &nodeId) const
     // udid/uuid max length
     int len = 128;
     uint8_t *info = (uint8_t *)malloc(len + 1);
-    memset(info, 0, len + 1);
+    memset_s(info, len + 1, 0, len + 1);
     if (info == nullptr) {
         PERMISSION_LOG_ERROR(LABEL, "no enough memory: %{public}d", len);
         return "";
@@ -288,7 +291,7 @@ std::string SoftBusManager::GetUdidByNodeId(const std::string &nodeId) const
 {
     int len = 128;
     uint8_t *info = (uint8_t *)malloc(len + 1);
-    memset(info, 0, len + 1);
+    memset_s(info, len + 1, 0, len + 1);
     if (info == nullptr) {
         PERMISSION_LOG_ERROR(LABEL, "no enough memory: %{public}d", len);
         return "";
