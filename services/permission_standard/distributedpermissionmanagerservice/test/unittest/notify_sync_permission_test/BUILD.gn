@@ -129,6 +129,7 @@ ohos_unittest("notify_sync_permission_test") {
     "//base/global/resmgr_standard/frameworks/resmgr:global_resmgr",
     "//base/notification/ans_standard/frameworks/ans/core:ans_core",
     "//base/notification/ans_standard/frameworks/wantagent:wantagent_innerkits",
+    "//base/startup/init_lite/services/log:init_log",
     "//base/startup/syspara_lite/interfaces/innerkits/native/syspara:syspara",
     "//base/startup/syspara_lite/interfaces/innerkits/native/syspara:syspara",
     "//foundation/aafwk/standard/interfaces/innerkits/base:base",

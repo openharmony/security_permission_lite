@@ -278,6 +278,11 @@ private:
     void RemovePermissionReminderInfo(const std::string& permName, int32_t pid, int32_t uid,
         const std::string& deviceId, PermissionReminderInfo& permReminderInfo);
     int32_t CheckLocalPermission(int32_t uid, const std::string& permissionName);
+    void CreateNewPermissionReminderInfo(const std::string& permName, int32_t pid, int32_t uid,
+        const std::string& deviceId, PermissionReminderInfo& permReminderInfo);
+    bool CheckPermissionExist(const std::vector<PermissionRemindInfo>::iterator item, const std::string permissionName);
+    void ErasePermission(std::vector<PermissionRemindInfo>::iterator& item, const std::string permissionName);
+    bool GetBundleInfo(AppExecFwk::BundleInfo& bundleInfo, int32_t uid);
     void CreatAns();
     void CloseAns();
     int32_t convert(int32_t duid);
