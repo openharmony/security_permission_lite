@@ -44,8 +44,6 @@ config("distributed_permission_services_public_config") {
     "//third_party/node/src",
     "//utils/native/base/include",
     "//utils/system/safwk/native/include",
-
-    ##########原有的头文件集合
     "${distributed_permission_record_database_path}/main/cpp/include",
     "${distributed_permission_services_path}/main/cpp/include/command",
     "${distributed_permission_services_path}/main/cpp/include/common",
@@ -59,8 +57,6 @@ config("distributed_permission_services_public_config") {
     "${distributed_permission_services_path}/main/cpp/include/remote",
     "${distributed_permission_services_path}/main/cpp/include/service",
     "${distributed_permission_services_path}/main/cpp/include/sensitive",
-
-    #"${distributed_permission_services_path}/main/cpp/include/sqllite",
     "//foundation/communication/dsoftbus/interfaces/kits/transport",
     "//foundation/communication/dsoftbus/interfaces/kits/common",
     "//foundation/communication/dsoftbus/interfaces/kits/bus_center",
@@ -71,6 +67,8 @@ config("distributed_permission_services_public_config") {
     "//base/security/permission/interfaces/innerkits/permission_standard/permissionsdk/main/cpp/include",
     "//base/security/permission/interfaces/innerkits/permission_standard/permissionsdk/main/cpp/include/permission",
     "//foundation/aafwk/standard/interfaces/innerkits/ability_manager/include",
+    "//base/startup/init_lite/services/log",
+    "//foundation/distributedhardware/devicemanager/interfaces/inner_kits/native_cpp:devicemanagersdk",
   ]
 }
 
@@ -87,7 +85,9 @@ ohos_prebuilt_etc("distributedpermission_service.rc") {
 
 ohos_shared_library("distributed_permission_services") {
   sources = [
-    # record_database
+    "${distributed_permission_innerkits_sdk_path}/main/cpp/src/permission_using_remind/on_using_permission_reminder_proxy.cpp",
+    "${distributed_permission_innerkits_sdk_path}/main/cpp/src/permission_using_remind/on_using_permission_reminder_stub.cpp",
+    "${distributed_permission_innerkits_sdk_path}/main/cpp/src/permission_using_remind/permission_reminder_info.cpp",
     "${distributed_permission_record_database_path}/main/cpp/src/data_storage.cpp",
     "${distributed_permission_record_database_path}/main/cpp/src/data_translator.cpp",
     "${distributed_permission_record_database_path}/main/cpp/src/generic_values.cpp",
@@ -119,14 +119,10 @@ ohos_shared_library("distributed_permission_services") {
     "${distributed_permission_services_path}/main/cpp/src/distributed/on_request_permissions_result_proxy.cpp",
     "${distributed_permission_services_path}/main/cpp/src/distributed/on_request_permissions_result_stub.cpp",
     "${distributed_permission_services_path}/main/cpp/src/distributed/permission_bms_manager.cpp",
+    "${distributed_permission_services_path}/main/cpp/src/distributed/permission_callback.cpp",
     "${distributed_permission_services_path}/main/cpp/src/distributed/permission_change_receiver.cpp",
     "${distributed_permission_services_path}/main/cpp/src/distributed/permission_definition.cpp",
     "${distributed_permission_services_path}/main/cpp/src/distributed/permission_fetcher.cpp",
-
-    #permission_listener
-    "${distributed_permission_innerkits_sdk_path}/main/cpp/src/permission_using_remind/on_using_permission_reminder_proxy.cpp",
-    "${distributed_permission_innerkits_sdk_path}/main/cpp/src/permission_using_remind/on_using_permission_reminder_stub.cpp",
-    "${distributed_permission_innerkits_sdk_path}/main/cpp/src/permission_using_remind/permission_reminder_info.cpp",
     "${distributed_permission_services_path}/main/cpp/src/distributed/permission_listener.cpp",
     "${distributed_permission_services_path}/main/cpp/src/distributed/permission_re_granter.cpp",
     "${distributed_permission_services_path}/main/cpp/src/distributed/request_permissions_info.cpp",
@@ -144,11 +140,6 @@ ohos_shared_library("distributed_permission_services") {
     "${distributed_permission_services_path}/main/cpp/src/record/query_permission_used_result.cpp",
     "${distributed_permission_services_path}/main/cpp/src/remind/remind_info.cpp",
     "${distributed_permission_services_path}/main/cpp/src/remote/remote_command_executor.cpp",
-    "${distributed_permission_services_path}/main/cpp/src/service/distributed_permission_event_handler.cpp",
-    "${distributed_permission_services_path}/main/cpp/src/service/distributed_permission_manager_service.cpp",
-
-    # dependency: softbus
-    "${distributed_permission_services_path}/main/cpp/src/distributed/permission_callback.cpp",
     "${distributed_permission_services_path}/main/cpp/src/remote/remote_command_factory.cpp",
     "${distributed_permission_services_path}/main/cpp/src/remote/remote_command_manager.cpp",
     "${distributed_permission_services_path}/main/cpp/src/remote/soft_bus_channel.cpp",
@@ -161,6 +152,8 @@ ohos_shared_library("distributed_permission_services") {
     "${distributed_permission_services_path}/main/cpp/src/sensitive/resource_switch_local.cpp",
     "${distributed_permission_services_path}/main/cpp/src/sensitive/resource_switch_remote.cpp",
     "${distributed_permission_services_path}/main/cpp/src/sensitive/sensitive_resource_switch_setting.cpp",
+    "${distributed_permission_services_path}/main/cpp/src/service/distributed_permission_event_handler.cpp",
+    "${distributed_permission_services_path}/main/cpp/src/service/distributed_permission_manager_service.cpp",
   ]
 
   configs = [ ":distributed_permission_services_config" ]
@@ -172,13 +165,12 @@ ohos_shared_library("distributed_permission_services") {
     "${distributed_permission_innerkits_distributed_path}:distributed_permission_innerkits",
     "${distributed_permission_innerkits_sdk_path}:libpermissionsdk_standard",
     "${distributed_permission_services_path}:distributedpermission_service.rc",
-
-    #新加部分
     "${permission_path}/frameworks/permission_standard/permissioncommunicationadapter:permission_standard_communication_adapter_cxx",
     "//base/global/resmgr_standard/frameworks/resmgr:global_resmgr",
     "//base/notification/ans_standard/frameworks/ans/core:ans_core",
     "//base/notification/ans_standard/frameworks/wantagent:wantagent_innerkits",
     "//base/notification/ces_standard/interfaces/kits/napi:napi_packages",
+    "//base/startup/init_lite/services/log:init_log",
     "//base/startup/syspara_lite/interfaces/innerkits/native/syspara:syspara",
     "//foundation/aafwk/standard/interfaces/innerkits/base:base",
     "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_base:appexecfwk_base",
@@ -199,8 +191,6 @@ ohos_shared_library("distributed_permission_services") {
     "ces_standard:cesfwk_innerkits",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
-
-    #新加部分
     "safwk:system_ability_fwk",
     "samgr_L2:samgr_proxy",
   ]

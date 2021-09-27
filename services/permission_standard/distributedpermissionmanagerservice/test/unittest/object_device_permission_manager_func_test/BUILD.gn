@@ -127,6 +127,7 @@ ohos_unittest("object_device_permission_manager_func_test") {
     "${distributed_permission_innerkits_distributed_path}:distributed_permission_innerkits",
     "${distributed_permission_innerkits_sdk_path}:libpermissionsdk_standard",
     "${permission_path}/frameworks/permission_standard/permissioncommunicationadapter:permission_standard_communication_adapter_cxx",
+    "//base/startup/init_lite/services/log:init_log",
     "//foundation/aafwk/standard/interfaces/innerkits/base:base",
     "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_base:appexecfwk_base",
     "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_core:appexecfwk_core",

@@ -38,27 +38,14 @@ ohos_unittest("soft_bus_channel_test") {
     "${distributed_permission_services_path}/main/cpp/src/command/delete_uid_permission_command.cpp",
     "${distributed_permission_services_path}/main/cpp/src/command/request_remote_permission_callback_command.cpp",
     "${distributed_permission_services_path}/main/cpp/src/command/request_remote_permission_command.cpp",
-    "${distributed_permission_services_path}/main/cpp/src/distributed/permission_callback.cpp",
-    "${distributed_permission_services_path}/main/cpp/src/remind/remind_info.cpp",
-
-    # get_uid_permission_command_mock begin
-    #  "${distributed_permission_services_path}/main/cpp/src/command/get_uid_permission_command.cpp",
-    # get_uid_permission_command_mock end
     "${distributed_permission_services_path}/main/cpp/src/command/sync_uid_permission_command.cpp",
     "${distributed_permission_services_path}/main/cpp/src/command/sync_uid_state_command.cpp",
     "${distributed_permission_services_path}/main/cpp/src/common/base64_util.cpp",
     "${distributed_permission_services_path}/main/cpp/src/common/constant.cpp",
-
-    # external_deps mock begin
-    #"${distributed_permission_services_path}/main/cpp/src/common/external_deps.cpp",
-    # external_deps mock end
     "${distributed_permission_services_path}/main/cpp/src/common/time_util.cpp",
     "${distributed_permission_services_path}/main/cpp/src/common/zip_util.cpp",
     "${distributed_permission_services_path}/main/cpp/src/device/device_info_manager.cpp",
     "${distributed_permission_services_path}/main/cpp/src/device/device_info_repository.cpp",
-
-    # "${distributed_permission_services_path}/main/cpp/src/distributed/app_id_info.cpp",
-    # "${distributed_permission_services_path}/main/cpp/src/distributed/app_id_info_helper.cpp",
     "${distributed_permission_services_path}/main/cpp/src/distributed/app_info_fetcher.cpp",
     "${distributed_permission_services_path}/main/cpp/src/distributed/distributed_data_validator.cpp",
     "${distributed_permission_services_path}/main/cpp/src/distributed/distributed_uid_allocator.cpp",
@@ -67,6 +54,7 @@ ohos_unittest("soft_bus_channel_test") {
     "${distributed_permission_services_path}/main/cpp/src/distributed/object_device_permission_manager.cpp",
     "${distributed_permission_services_path}/main/cpp/src/distributed/object_device_permission_repository.cpp",
     "${distributed_permission_services_path}/main/cpp/src/distributed/permission_bms_manager.cpp",
+    "${distributed_permission_services_path}/main/cpp/src/distributed/permission_callback.cpp",
     "${distributed_permission_services_path}/main/cpp/src/distributed/permission_change_receiver.cpp",
     "${distributed_permission_services_path}/main/cpp/src/distributed/permission_definition.cpp",
     "${distributed_permission_services_path}/main/cpp/src/distributed/permission_fetcher.cpp",
@@ -85,49 +73,27 @@ ohos_unittest("soft_bus_channel_test") {
     "${distributed_permission_services_path}/main/cpp/src/record/permission_visitor.cpp",
     "${distributed_permission_services_path}/main/cpp/src/record/query_permission_used_request.cpp",
     "${distributed_permission_services_path}/main/cpp/src/record/query_permission_used_result.cpp",
-    "${distributed_permission_services_path}/main/cpp/src/sensitive/resource_switch.cpp",
-    "${distributed_permission_services_path}/main/cpp/src/sensitive/resource_switch_cache.cpp",
-    "${distributed_permission_services_path}/main/cpp/src/sensitive/resource_switch_local.cpp",
-    "${distributed_permission_services_path}/main/cpp/src/sensitive/resource_switch_remote.cpp",
-    "${distributed_permission_services_path}/main/cpp/src/sensitive/sensitive_resource_switch_setting.cpp",
-    "${distributed_permission_services_path}/main/cpp/src/service/distributed_permission_manager_service.cpp",
-
-    # event_handler_mock begin
-    ##  "${distributed_permission_services_path}/main/cpp/src/service/distributed_permission_event_handler.cpp",
-    # event_handler_mock end
-
-    # dependency: softbus
-    "${distributed_permission_services_path}/main/cpp/src/remote/remote_command_factory.cpp",
+    "${distributed_permission_services_path}/main/cpp/src/remind/remind_info.cpp",
     "${distributed_permission_services_path}/main/cpp/src/remote/remote_command_executor.cpp",
+    "${distributed_permission_services_path}/main/cpp/src/remote/remote_command_factory.cpp",
     "${distributed_permission_services_path}/main/cpp/src/remote/remote_command_manager.cpp",
     "${distributed_permission_services_path}/main/cpp/src/remote/soft_bus_channel.cpp",
     "${distributed_permission_services_path}/main/cpp/src/remote/soft_bus_device_connection_listener.cpp",
     "${distributed_permission_services_path}/main/cpp/src/remote/soft_bus_manager.cpp",
     "${distributed_permission_services_path}/main/cpp/src/remote/soft_bus_service_connection_listener.cpp",
     "${distributed_permission_services_path}/main/cpp/src/remote/soft_bus_session_listener.cpp",
-    "../../mock/src/ipc_skeleton_mock.cpp",
-
-    # event_handler_mock begin
+    "${distributed_permission_services_path}/main/cpp/src/sensitive/resource_switch.cpp",
+    "${distributed_permission_services_path}/main/cpp/src/sensitive/resource_switch_cache.cpp",
+    "${distributed_permission_services_path}/main/cpp/src/sensitive/resource_switch_local.cpp",
+    "${distributed_permission_services_path}/main/cpp/src/sensitive/resource_switch_remote.cpp",
+    "${distributed_permission_services_path}/main/cpp/src/sensitive/sensitive_resource_switch_setting.cpp",
+    "${distributed_permission_services_path}/main/cpp/src/service/distributed_permission_manager_service.cpp",
     "../../mock/src/event_handler_mock.cpp",
-
-    # event_handler_mock end
-
-    # get_uid_permission_command_mock begin
-    "../../mock/src/get_uid_permission_command_mock.cpp",
-
-    # get_uid_permission_command_mock end
-
-    # external_deps mock begin
     "../../mock/src/external_deps_mock.cpp",
-
-    # external_deps mock end
-
-    # softbus mock begin
+    "../../mock/src/get_uid_permission_command_mock.cpp",
+    "../../mock/src/ipc_skeleton_mock.cpp",
     "../../mock/src/soft_bus_center_mock.cpp",
     "../../mock/src/soft_bus_session_mock.cpp",
-
-    # softbus mock end
-
     "monitor_manager_test.cpp",
     "permission_bms_manager_test.cpp",
     "permission_change_receiver_test.cpp",
@@ -149,7 +115,6 @@ ohos_unittest("soft_bus_channel_test") {
     cflags += [ "-DBINDER_IPC_32BIT" ]
   }
 
-  # for ut test
   cflags_cc = [ "-DUT" ]
 
   deps = [
@@ -157,19 +122,15 @@ ohos_unittest("soft_bus_channel_test") {
     "${distributed_permission_innerkits_distributed_path}:distributed_permission_innerkits",
     "${distributed_permission_innerkits_sdk_path}:libpermissionsdk_standard",
     "${permission_path}/frameworks/permission_standard/permissioncommunicationadapter:permission_standard_communication_adapter_cxx",
+    "//base/global/resmgr_standard/frameworks/resmgr:global_resmgr",
+    "//base/notification/ans_standard/frameworks/ans/core:ans_core",
+    "//base/notification/ans_standard/frameworks/wantagent:wantagent_innerkits",
+    "//base/startup/init_lite/services/log:init_log",
+    "//base/startup/syspara_lite/interfaces/innerkits/native/syspara:syspara",
     "//foundation/aafwk/standard/interfaces/innerkits/base:base",
     "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_base:appexecfwk_base",
     "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_core:appexecfwk_core",
     "//foundation/appexecfwk/standard/interfaces/innerkits/libeventhandler:libeventhandler",
-
-    # softbus mock begin
-    #  "//foundation/communication/dsoftbus/core/frame/standard/client:softbus_client",
-    # softbus mock end
-
-    "//base/global/resmgr_standard/frameworks/resmgr:global_resmgr",
-    "//base/notification/ans_standard/frameworks/ans/core:ans_core",
-    "//base/notification/ans_standard/frameworks/wantagent:wantagent_innerkits",
-    "//base/startup/syspara_lite/interfaces/innerkits/native/syspara:syspara",
     "//foundation/distributedhardware/devicemanager/interfaces/inner_kits/native_cpp:devicemanagersdk",
     "//foundation/distributedschedule/safwk/interfaces/innerkits/safwk:system_ability_fwk",
     "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
