@@ -16,6 +16,7 @@
 #ifndef SOFT_BUS_MANAGER_H
 #define SOFT_BUS_MANAGER_H
 
+#include <inttypes.h>
 #include <string>
 #include <functional>
 #include <memory>

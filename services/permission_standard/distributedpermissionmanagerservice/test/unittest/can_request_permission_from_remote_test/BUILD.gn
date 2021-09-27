@@ -137,6 +137,7 @@ ohos_unittest("can_request_permission_from_remote_test") {
     "//base/global/resmgr_standard/frameworks/resmgr:global_resmgr",
     "//base/notification/ans_standard/frameworks/ans/core:ans_core",
     "//base/notification/ans_standard/frameworks/wantagent:wantagent_innerkits",
+    "//base/startup/init_lite/services/log:init_log",
     "//base/startup/syspara_lite/interfaces/innerkits/native/syspara:syspara",
     "//foundation/distributedhardware/devicemanager/interfaces/inner_kits/native_cpp:devicemanagersdk",
     "//foundation/distributedschedule/safwk/interfaces/innerkits/safwk:system_ability_fwk",
