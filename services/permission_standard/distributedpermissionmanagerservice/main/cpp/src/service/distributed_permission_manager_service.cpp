@@ -311,7 +311,7 @@ int32_t DistributedPermissionManagerService::CheckCallingPermission(const std::s
     std::string deviceId = IPCSkeleton::GetCallingDeviceID();
     char localDeviceId[Constant::DEVICE_UUID_LENGTH] = {0};
     GetDevUdid(localDeviceId, Constant::DEVICE_UUID_LENGTH);
-    if ((pid == getpid()) && (uid == (pid_t) getuid()) && (deviceId == localDeviceId)) {
+    if ((pid == getpid()) && (uid == (pid_t)getuid()) && (deviceId == localDeviceId)) {
         return Constant::PERMISSION_DENIED;
     }
     return CheckPermission(permissionName, deviceId, pid, uid);

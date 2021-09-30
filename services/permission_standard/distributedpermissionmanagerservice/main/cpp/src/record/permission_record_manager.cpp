@@ -328,7 +328,7 @@ bool PermissionRecordManager::GetRecordFromDB(const int32_t allFlag, const std::
             queryResult.endTimeMillis = record.GetInt64(FIELD_TIMESTAMP);
         }
         if ((queryResult.beginTimeMillis == 0) ? true
-                                               : record.GetInt64(FIELD_TIMESTAMP) < queryResult.beginTimeMillis) {
+            : record.GetInt64(FIELD_TIMESTAMP) < queryResult.beginTimeMillis) {
             queryResult.beginTimeMillis = record.GetInt64(FIELD_TIMESTAMP);
         }
         record.Put(FIELD_FLAG, allFlag);
