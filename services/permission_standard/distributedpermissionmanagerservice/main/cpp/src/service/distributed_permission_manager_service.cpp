@@ -78,7 +78,7 @@ void DistributedPermissionManagerService::OnStart()
     int32_t sleepTime = 50;
     while (true) {
         int32_t flag = 0;
-        std::shared_ptr<ExternalDeps> externalDeps = std::make_shared<ExternalDeps>();
+        std::unique_ptr<ExternalDeps> externalDeps = std::make_unique<ExternalDeps>();
         if (externalDeps != nullptr) {
             sptr<AppExecFwk::IBundleMgr> iBundleManager;
             iBundleManager = externalDeps->GetBundleManager(iBundleManager);
@@ -225,7 +225,7 @@ int32_t DistributedPermissionManagerService::CheckDPermission(int dUid, const st
 }
 int32_t DistributedPermissionManagerService::CheckLocalPermission(int32_t uid, const std::string &permissionName)
 {
-    std::shared_ptr<ExternalDeps> externalDeps = std::make_shared<ExternalDeps>();
+    std::unique_ptr<ExternalDeps> externalDeps = std::make_unique<ExternalDeps>();
     iBundleManager_ = externalDeps->GetBundleManager(iBundleManager_);
     if (iBundleManager_ == nullptr) {
         PERMISSION_LOG_INFO(LABEL, "%{public}s: iBundleManager_ is nullptr.", __func__);
@@ -311,7 +311,7 @@ int32_t DistributedPermissionManagerService::CheckCallingPermission(const std::s
     std::string deviceId = IPCSkeleton::GetCallingDeviceID();
     char localDeviceId[Constant::DEVICE_UUID_LENGTH] = {0};
     GetDevUdid(localDeviceId, Constant::DEVICE_UUID_LENGTH);
-    if (pid == getpid() && uid == (pid_t)getuid() && deviceId == localDeviceId) {
+    if ((pid == getpid()) && (uid == (pid_t) getuid()) && (deviceId == localDeviceId)) {
         return Constant::PERMISSION_DENIED;
     }
     return CheckPermission(permissionName, deviceId, pid, uid);
@@ -523,7 +523,7 @@ int32_t DistributedPermissionManagerService::CheckPermissionAndStartUsing(
     GetDevUdid(localDeviceId, Constant::DEVICE_UUID_LENGTH);
 
     if (deviceId == localDeviceId) {
-        std::shared_ptr<ExternalDeps> externalDeps = std::make_shared<ExternalDeps>();
+        std::unique_ptr<ExternalDeps> externalDeps = std::make_unique<ExternalDeps>();
         if (externalDeps == nullptr) {
             PERMISSION_LOG_INFO(LABEL, "%{public}s: The permissionName is not sevsitive.", __func__);
             return Constant::FAILURE;
@@ -674,7 +674,7 @@ void DistributedPermissionManagerService::GetPermissionReminderInfo(const std::s
     permReminderInfo.SetPermName(permName);
 
     // set appName
-    std::shared_ptr<Global::Resource::ResourceManager> resourceManager(Global::Resource::CreateResourceManager());
+    std::unique_ptr<Global::Resource::ResourceManager> resourceManager(Global::Resource::CreateResourceManager());
     if (resourceManager == nullptr) {
         PERMISSION_LOG_INFO(LABEL, "%{public}s: create resourceManager failed!", __func__);
         return;
@@ -915,8 +915,7 @@ void DistributedPermissionManagerService::ErasePermission(
 void DistributedPermissionManagerService::CreatAns()
 {
     PERMISSION_LOG_INFO(LABEL, "%{public}s: called!", __func__);
-
-    std::shared_ptr<Global::Resource::ResourceManager> resourceManager(Global::Resource::CreateResourceManager());
+    std::unique_ptr<Global::Resource::ResourceManager> resourceManager(Global::Resource::CreateResourceManager());
     if (resourceManager == nullptr) {
         PERMISSION_LOG_INFO(LABEL, "%{public}s: create resourceManager failed!", __func__);
         return;
@@ -1113,7 +1112,7 @@ int32_t DistributedPermissionManagerService::GetPermissionRecords(const std::str
  */
 int32_t DistributedPermissionManagerService::convert(int32_t duid)
 {
-    return duid > Constant::SUCCESS ? duid : Constant::FAILURE_DPMS;
+    return (duid > Constant::SUCCESS) ? duid : Constant::FAILURE_DPMS;
 }
 
 /**

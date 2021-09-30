@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+#include <securec.h>
 #include <gtest/gtest.h>
 #include "constant.h"
 
@@ -639,7 +639,7 @@ HWTEST_F(SoftBusChannelTest, SoftBusChannel_HandleDataReceived_001, TestSize.Lev
     std::string json = "abcdefg-0123456789";
     int len = 100;
     char unsigned buf[len];
-    memset(buf, 0, len);
+    memset_s(buf, len + 1, 0, len + 1);
     channel->Compress(json, buf, len);
     {
         PERMISSION_LOG_DEBUG(LABEL, "SoftBusChannel_HandleDataReceived_001-1");

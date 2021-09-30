@@ -191,11 +191,11 @@ int32_t SoftBusManager::OpenSession(const std::string &deviceId)
     }
     int64_t state = SoftBusSessionListener::GetSessionState(sessionId);
     if (state < 0) {
-        PERMISSION_LOG_ERROR(LABEL, "openSession, timeout, session:  %{public}" PRId64, state);
+        PERMISSION_LOG_ERROR(LABEL, "openSession, timeout, session: %{public}" PRId64, state);
         return Constant::FAILURE;
     }
 
-    PERMISSION_LOG_DEBUG(LABEL, "openSession, succeed, session:  %{public}" PRId64, state);
+    PERMISSION_LOG_DEBUG(LABEL, "openSession, succeed, session: %{public}" PRId64, state);
     return sessionId;
 }
 

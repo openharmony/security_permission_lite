@@ -72,9 +72,9 @@ HWTEST_F(SoftBusManagerTest, SoftBusManager_Construct_001, TestSize.Level1)
  * EnvConditions: NA
  * CaseDescription: verify init and destroy
  */
-HWTEST_F(SoftBusManagerTest, SoftBusManager_Initialize, TestSize.Level1)
+HWTEST_F(SoftBusManagerTest, SoftBusManager_Initialize001, TestSize.Level1)
 {
-    PERMISSION_LOG_DEBUG(LABEL, "SoftBusManager_Initialize");
+    PERMISSION_LOG_DEBUG(LABEL, "SoftBusManager_Initialize001");
 
     PERMISSION_LOG_DEBUG(LABEL, "SoftBusManager_Initialize: create new instance");
     {  // factory create
@@ -123,6 +123,45 @@ HWTEST_F(SoftBusManagerTest, SoftBusManager_Initialize, TestSize.Level1)
         EXPECT_EQ(instance->inited_.load(), true);
     }
 
+    // clear
+    SoftBusManager *instance = &SoftBusManager::GetInstance();
+    instance->Destroy();
+}
+
+/*
+ * Feature: DPMS
+ * Function: SoftBusManager
+ * SubFunction: Initialize
+ * FunctionPoints: Initialize
+ * EnvConditions: NA
+ * CaseDescription: verify init and destroy
+ */
+HWTEST_F(SoftBusManagerTest, SoftBusManager_Initialize002, TestSize.Level1)
+{
+    PERMISSION_LOG_DEBUG(LABEL, "SoftBusManager_Initialize002");
+
+    {  // factory create
+        SoftBusManager *instance = &SoftBusManager::GetInstance();
+        // ensure destroied for the other test maybe construct SoftBusManager
+        instance->Destroy();
+
+        EXPECT_EQ(instance->isSoftBusServiceBindSuccess_, false);
+        EXPECT_EQ(instance->inited_.load(), false);
+        // simulator a register operator. should be register by device manager.
+        ::RegNodeDeviceStateCb("", nullptr);
+        instance->Initialize();
+        int count = 1;
+        while (instance->isSoftBusServiceBindSuccess_ == false && count++ < RETRY_TIMES) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        }
+
+        // should be inited.
+        EXPECT_EQ(instance->isSoftBusServiceBindSuccess_, true);
+        EXPECT_EQ(instance->inited_.load(), true);
+
+        // simulator a unregister operator.
+        UnregNodeDeviceStateCb(nullptr);
+    }
     PERMISSION_LOG_DEBUG(LABEL, "SoftBusManager_Initialize: recreate new instance");
     {
         // factory get

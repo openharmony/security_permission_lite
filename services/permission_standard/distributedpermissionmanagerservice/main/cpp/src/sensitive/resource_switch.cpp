@@ -27,7 +27,7 @@ using namespace OHOS::HiviewDFX;
 namespace OHOS {
 namespace Security {
 namespace Permission {
-static const HiLogLabel LABEL = {LOG_CORE, SECURITY_DOMAIN_PERMISSION, "ResourceSwitch"};
+static constexpr HiLogLabel LABEL = {LOG_CORE, SECURITY_DOMAIN_PERMISSION, "ResourceSwitch"};
 ResourceSwitch &ResourceSwitch::GetInstance()
 {
     static ResourceSwitch m_instance;
@@ -65,8 +65,9 @@ void ResourceSwitch::OnLocalChange(std::initializer_list<std::string> sensitiveR
 
     std::string resourceInfoString;
     for (auto iter = sensitiveResources.begin(); iter != sensitiveResources.end(); iter++) {
-        if (iter == nullptr)
+        if (iter == nullptr) {
             continue;
+        }
         bool isSwitchAllow = ResourceSwitchLocal::GetInstance().GetSwitchStatus(*iter);
         ResourceSwitchCache::GetInstance().SetSwitchStatus(*iter, isSwitchAllow);
         resourceInfoString += *iter;
