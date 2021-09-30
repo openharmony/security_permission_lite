@@ -20,6 +20,9 @@
 
 int GetDevUdid(char *udid, int size)
 {
-    strcpy(udid, "ohos.deviceId.test");
-    return 1;
+    if (strcpy_s(udid, size, "ohos.deviceId.test") != EOK) {
+        return 1;
+    } else {
+        return 0;
+    }
 }

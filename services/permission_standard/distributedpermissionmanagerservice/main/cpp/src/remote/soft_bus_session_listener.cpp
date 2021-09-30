@@ -37,7 +37,7 @@ std::map<int32_t, int64_t> SoftBusSessionListener::g_SessionOpenedMap_;
 int32_t SoftBusSessionListener::OnSessionOpened(int32_t session, int32_t result)
 {
     if (result != Constant::SUCCESS) {
-        PERMISSION_LOG_ERROR(LABEL, "OnSessionOpened, result: %{public}d, session: %{public}d", result, session);
+        PERMISSION_LOG_ERROR(LABEL, "OnSessionOpened, result: %{public}d", result);
         return SESSION_REFUSED;
     }
 
@@ -70,7 +70,7 @@ int32_t SoftBusSessionListener::OnSessionOpened(int32_t session, int32_t result)
 
 void SoftBusSessionListener::OnSessionClosed(int32_t session)
 {
-    PERMISSION_LOG_DEBUG(LABEL, "OnSessionClosed, session: %{public}d", session);
+    PERMISSION_LOG_DEBUG(LABEL, "OnSessionClosed");
 
     // clear session state
     std::lock_guard<std::mutex> guard(g_SessionMutex_);
@@ -82,13 +82,13 @@ void SoftBusSessionListener::OnSessionClosed(int32_t session)
 
 void SoftBusSessionListener::OnMessageReceived(int32_t sessionId, const void *data, uint32_t dataLen)
 {
-    PERMISSION_LOG_DEBUG(LABEL, "OnMessageReceived: session: %{public}d, data length = %{public}u", sessionId, dataLen);
+    PERMISSION_LOG_DEBUG(LABEL, "OnMessageReceived: data length = %{public}u", dataLen);
 }
 
 void SoftBusSessionListener::OnBytesReceived(int32_t sessionId, const void *data, uint32_t dataLen)
 {
     if (sessionId == Constant::INVALID_SESSION || dataLen == 0) {
-        PERMISSION_LOG_ERROR(LABEL, "params invalid, session: %{public}d, data length: %{public}d", sessionId, dataLen);
+        PERMISSION_LOG_ERROR(LABEL, "params invalid, data length: %{public}d", dataLen);
         return;
     }
 
