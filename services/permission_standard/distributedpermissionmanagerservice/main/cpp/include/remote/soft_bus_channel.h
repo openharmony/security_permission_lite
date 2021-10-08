@@ -21,6 +21,7 @@
 #include <mutex>
 #include <memory>
 #include <map>
+#include <securec.h>
 #include <string>
 #include <zlib.h>
 #include "nlohmann/json.hpp"
@@ -206,10 +207,11 @@ private:
      * @brief temp function to generate uuid.
      *
      * @param buf uuid string
+     * @param bufSize uuid string size
      * @since 1.0
      * @version 1.0
      */
-    void random_uuid(char buf[37])
+    void random_uuid(char buf[37], int bufSize)
     {
         const int xbase = 15;
         const int bbase = 255;
@@ -219,8 +221,8 @@ private:
         const int index5 = 5;
         const int index7 = 7;
         const int index9 = 9;
-        const int uuidlen = 16;
         const int blen = 2;
+        const int uuidlen = 16;
         const char *c = "89ab";
         char *p = buf;
         int n;
@@ -229,13 +231,19 @@ private:
             int b = rand() % bbase;
             switch (n) {
                 case index6:
-                    sprintf(p, "4%x", b % xbase);
+                    if (sprintf_s(p, bufSize, "4%x", b % xbase) < 0) {
+                        return;
+                    }
                     break;
                 case index8:
-                    sprintf(p, "%c%x", c[rand() % strlen(c)], b % xbase);
+                    if (sprintf_s(p, bufSize, "%c%x", c[rand() % strlen(c)], b % xbase) < 0) {
+                        return;
+                    }
                     break;
                 default:
-                    sprintf(p, "%02x", b);
+                    if (sprintf_s(p, bufSize, "%02x", b) < 0) {
+                        return;
+                    }
                     break;
             }
             p += blen;
@@ -245,6 +253,11 @@ private:
             }
         }
         *p = 0;
+        // prevent array length warning
+        if (p - buf == bufSize) {
+            return;
+        }
+        n = 0;
     }
 
     // bind device id for this channel

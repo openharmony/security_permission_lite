@@ -35,6 +35,7 @@ SyncUidStateCommand::SyncUidStateCommand(
     remoteProtocol_.dstDeviceId = dstDeviceId;
     remoteProtocol_.responseVersion = Constant::DISTRIBUTED_PERMISSION_SERVICE_VERSION;
     remoteProtocol_.requestVersion = Constant::DISTRIBUTED_PERMISSION_SERVICE_VERSION;
+    uidState_ = 1; // initialized uidState_
 }
 
 SyncUidStateCommand::SyncUidStateCommand(const std::string &json)

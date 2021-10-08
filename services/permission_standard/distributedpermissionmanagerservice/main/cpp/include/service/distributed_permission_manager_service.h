@@ -113,8 +113,8 @@ public:
      * @param uid, The application uid of caller device.
      * @return Permission checked result, 0: GRANTED, -1: DENIED.
      */
-    virtual int32_t CheckPermission(const std::string& permissionName, const std::string& nodeId, int32_t pid,
-        int32_t uid) override;
+    virtual int32_t CheckPermission(
+        const std::string &permissionName, const std::string &nodeId, int32_t pid, int32_t uid) override;
 
     /**
      * Check self permission.
@@ -164,8 +164,8 @@ public:
      * @param appIdInfo The appliaction information to be verified, include ruid, nodeId, pid and bundlename.
      * @return 0 Granted, -1 denied.
      */
-    virtual int32_t VerifyPermissionFromRemote(const std::string& permission, const std::string& nodeId, int32_t pid,
-        int32_t uid) override;
+    virtual int32_t VerifyPermissionFromRemote(
+        const std::string &permission, const std::string &nodeId, int32_t pid, int32_t uid) override;
 
     /**
      * Verify self whether has been granted permission with the given name to access the remote device.
@@ -174,8 +174,8 @@ public:
      * @param nodeId Remote device networkId, not null.
      * @return 0 Granted, -1 denied.
      */
-    virtual int32_t VerifySelfPermissionFromRemote(const std::string& permissionName,
-        const std::string& nodeId) override;
+    virtual int32_t VerifySelfPermissionFromRemote(
+        const std::string &permissionName, const std::string &nodeId) override;
 
     /**
      * Check whether this app allows you to dynamically apply for specified permissions from a specified device.
@@ -193,21 +193,21 @@ public:
      * @param nodeId The remote device networkId, not null.
      * @param ruid The remote app uid.
      */
-    virtual void GrantSensitivePermissionToRemoteApp(const std::string& permissionName, const std::string& nodeId,
-        int32_t ruid) override;
+    virtual void GrantSensitivePermissionToRemoteApp(
+        const std::string &permissionName, const std::string &nodeId, int32_t ruid) override;
 
     virtual int32_t RegisterUsingPermissionReminder(const sptr<OnUsingPermissionReminder>& callback) override;
 
     virtual int32_t UnregisterUsingPermissionReminder(const sptr<OnUsingPermissionReminder>& callback) override;
 
-    virtual int32_t CheckPermissionAndStartUsing(const std::string& permissionName, int32_t pid, int32_t uid,
-        const std::string& deviceId) override;
+    virtual int32_t CheckPermissionAndStartUsing(
+        const std::string &permissionName, int32_t pid, int32_t uid, const std::string &deviceId) override;
 
-    virtual void StartUsingPermission(const std::string& permName, int32_t pid, int32_t uid,
-        const std::string& deviceId) override;
+    virtual void StartUsingPermission(
+        const std::string &permName, int32_t pid, int32_t uid, const std::string &deviceId) override;
 
-    virtual void StopUsingPermission(const std::string& permName, int32_t pid, int32_t uid,
-        const std::string& deviceId) override;
+    virtual void StopUsingPermission(
+        const std::string &permName, int32_t pid, int32_t uid, const std::string &deviceId) override;
 
     /**
      * Add one permission used/access record.

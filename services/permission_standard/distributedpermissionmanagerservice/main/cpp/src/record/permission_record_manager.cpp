@@ -164,6 +164,10 @@ int32_t PermissionRecordManager::GetPermissionRecordsBase(
         return Constant::FAILURE;
     }
     unsigned char *pOut = (unsigned char *)malloc(codeLen + 1);
+    if (pOut == NULL) {
+        PERMISSION_LOG_ERROR(LABEL, "%{public}s: malloc fail!", __func__);
+        return Constant::FAILURE;
+    }
     Base64Util::Decode(queryGzipStr, pOut, codeLen);
     std::string queryJsonStr;
     if (!ZipUtil::ZipUnCompress(pOut, codeLen, queryJsonStr, zipLen)) {
@@ -183,6 +187,10 @@ int32_t PermissionRecordManager::GetPermissionRecordsBase(
         return Constant::FAILURE;
     }
     unsigned char *buf = (unsigned char *)malloc(codeLen + 1);
+    if (buf == NULL) {
+        PERMISSION_LOG_ERROR(LABEL, "%{public}s: malloc fail!", __func__);
+        return Constant::FAILURE;
+    }
     if (!ZipUtil::ZipCompress(result, zipLen, buf, codeLen)) {
         return Constant::FAILURE;
     }
@@ -202,6 +210,10 @@ int32_t PermissionRecordManager::GetPermissionRecordsAsync(const std::string &qu
         return Constant::FAILURE;
     }
     unsigned char *pOut = (unsigned char *)malloc(codeLen + 1);
+    if (pOut == NULL) {
+        PERMISSION_LOG_ERROR(LABEL, "%{public}s: malloc fail!", __func__);
+        return Constant::FAILURE;
+    }
     Base64Util::Decode(queryGzipStr, pOut, codeLen);
     std::string queryJsonStr;
     ZipUtil::ZipUnCompress(pOut, codeLen, queryJsonStr, zipLen);
@@ -315,7 +327,8 @@ bool PermissionRecordManager::GetRecordFromDB(const int32_t allFlag, const std::
         if (record.GetInt64(FIELD_TIMESTAMP) > queryResult.endTimeMillis) {
             queryResult.endTimeMillis = record.GetInt64(FIELD_TIMESTAMP);
         }
-        if (queryResult.beginTimeMillis == 0 ? true : record.GetInt64(FIELD_TIMESTAMP) < queryResult.beginTimeMillis) {
+        if ((queryResult.beginTimeMillis == 0) ? true
+            : record.GetInt64(FIELD_TIMESTAMP) < queryResult.beginTimeMillis) {
             queryResult.beginTimeMillis = record.GetInt64(FIELD_TIMESTAMP);
         }
         record.Put(FIELD_FLAG, allFlag);
@@ -346,7 +359,7 @@ bool PermissionRecordManager::GetRecordFromDB(const int32_t allFlag, const std::
 void PermissionRecordManager::DeletePermissionUsedRecords(const int32_t uid)
 {
     PERMISSION_LOG_INFO(LABEL, "%{public}s ------------- begin BMS------------", __func__);
-    std::shared_ptr<ExternalDeps> externalDeps = std::make_shared<ExternalDeps>();
+    std::unique_ptr<ExternalDeps> externalDeps = std::make_unique<ExternalDeps>();
     sptr<AppExecFwk::IBundleMgr> iBundleMgr;
     iBundleMgr = externalDeps->GetBundleManager(iBundleMgr);
 
@@ -405,7 +418,7 @@ bool PermissionRecordManager::GetPermissionVisitor(
         return false;
     }
     PERMISSION_LOG_INFO(LABEL, "%{public}s ------------- begin BMS------------", __func__);
-    std::shared_ptr<ExternalDeps> externalDeps = std::make_shared<ExternalDeps>();
+    std::unique_ptr<ExternalDeps> externalDeps = std::make_unique<ExternalDeps>();
     iBundleManager_ = externalDeps->GetBundleManager(iBundleManager_);
 
     std::string bundleName;

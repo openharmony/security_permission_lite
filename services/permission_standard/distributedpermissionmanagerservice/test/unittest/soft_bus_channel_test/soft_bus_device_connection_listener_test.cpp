@@ -106,8 +106,8 @@ HWTEST_F(SoftBusDeviceConnectionListenerTest, SoftBusDeviceConnectionListener_On
 
         // cannot get uuid/udid: invalid networkId
         DmDeviceInfo info;
-        std::strcpy(info.deviceId, "");
-        std::strcpy(info.deviceName, "test-device-id-001");
+        strcpy_s(info.deviceId, DM_MAX_DEVICE_ID_LEN, "");
+        strcpy_s(info.deviceName, DM_MAX_DEVICE_NAME_LEN, "test-device-id-001");
         info.deviceTypeId = DistributedHardware::DMDeviceType::DEVICE_TYPE_PHONE;
         instance.OnDeviceOnline(info);
         {
@@ -120,8 +120,22 @@ HWTEST_F(SoftBusDeviceConnectionListenerTest, SoftBusDeviceConnectionListener_On
             EXPECT_EQ(size, 0);
         }
     }
+}
+
+/*
+ * Feature: DPMS
+ * Function: SoftBusDeviceConnectionListener
+ * SubFunction: OnDeviceOnline
+ * FunctionPoints: NA
+ * EnvConditions: NA
+ * CaseDescription: verify device online callback
+ */
+HWTEST_F(SoftBusDeviceConnectionListenerTest, SoftBusDeviceConnectionListener_OnDeviceOnline_002, TestSize.Level1)
+{
+    PERMISSION_LOG_DEBUG(LABEL, "SoftBusDeviceConnectionListener_OnDeviceOnline_002");
+    SoftBusDeviceConnectionListener instance;
     {
-        PERMISSION_LOG_DEBUG(LABEL, "SoftBusDeviceConnectionListener_OnDeviceOnline_001-3");
+        PERMISSION_LOG_DEBUG(LABEL, "SoftBusDeviceConnectionListener_OnDeviceOnline_002-1");
 
         {
             DeviceInfoRepository::GetInstance().Clear();
@@ -145,8 +159,8 @@ HWTEST_F(SoftBusDeviceConnectionListenerTest, SoftBusDeviceConnectionListener_On
         }
 
         DmDeviceInfo info;
-        std::strcpy(info.deviceId, "test-device-id-001:network-id-001");  // old : networkId
-        std::strcpy(info.deviceName, "test-device-id-001");
+        strcpy_s(info.deviceId, DM_MAX_DEVICE_ID_LEN, "test-device-id-001:network-id-001");  // old : networkId
+        strcpy_s(info.deviceName, DM_MAX_DEVICE_NAME_LEN, "test-device-id-001");
         info.deviceTypeId = DistributedHardware::DMDeviceType::DEVICE_TYPE_PHONE;
         instance.OnDeviceOnline(info);
         // wait notify callback to action
@@ -187,8 +201,8 @@ HWTEST_F(SoftBusDeviceConnectionListenerTest, SoftBusDeviceConnectionListener_On
 
         // cannot get uuid/udid
         DmDeviceInfo info;
-        std::strcpy(info.deviceId, "test-device-id-001:network-id-001");
-        std::strcpy(info.deviceName, "test-device-id-001");
+        strcpy_s(info.deviceId, DM_MAX_DEVICE_ID_LEN, "test-device-id-001:network-id-001");
+        strcpy_s(info.deviceName, DM_MAX_DEVICE_NAME_LEN, "test-device-id-001");
         info.deviceTypeId = DistributedHardware::DMDeviceType::DEVICE_TYPE_PHONE;
         instance.OnDeviceOffline(info);
 
@@ -200,8 +214,21 @@ HWTEST_F(SoftBusDeviceConnectionListenerTest, SoftBusDeviceConnectionListener_On
         int size = list.size();
         EXPECT_EQ(size, 0);
     }
+}
+
+/*
+ * Feature: DPMS
+ * Function: SoftBusDeviceConnectionListener
+ * SubFunction: OnDeviceOffline
+ * FunctionPoints: NA
+ * EnvConditions: NA
+ * CaseDescription: verify device offline callback
+ */
+HWTEST_F(SoftBusDeviceConnectionListenerTest, SoftBusDeviceConnectionListener_OnDeviceOffline_002, TestSize.Level1)
+{
+    PERMISSION_LOG_DEBUG(LABEL, "SoftBusDeviceConnectionListener_OnDeviceOffline_002");
+    SoftBusDeviceConnectionListener instance;
     {
-        PERMISSION_LOG_DEBUG(LABEL, "SoftBusDeviceConnectionListener_OnDeviceOffline_001-3");
         {
             DeviceInfoRepository::GetInstance().Clear();
 
@@ -220,8 +247,8 @@ HWTEST_F(SoftBusDeviceConnectionListenerTest, SoftBusDeviceConnectionListener_On
 
         // success: cache device
         DmDeviceInfo info;
-        std::strcpy(info.deviceId, "test-device-id-001:network-id-001");
-        std::strcpy(info.deviceName, "test-device-id-001");
+        strcpy_s(info.deviceId, DM_MAX_DEVICE_ID_LEN, "test-device-id-001:network-id-001");
+        strcpy_s(info.deviceName, DM_MAX_DEVICE_NAME_LEN, "test-device-id-001");
         info.deviceTypeId = DistributedHardware::DMDeviceType::DEVICE_TYPE_PHONE;
         {
             // online
@@ -268,8 +295,8 @@ HWTEST_F(SoftBusDeviceConnectionListenerTest, SoftBusDeviceConnectionListener_On
         PERMISSION_LOG_DEBUG(LABEL, "SoftBusDeviceConnectionListener_OnDeviceOnline_001-2");
         // cannot get uuid/udid
         DmDeviceInfo info;
-        std::strcpy(info.deviceId, "test-device-id-001:network-id-001");
-        std::strcpy(info.deviceName, "test-device-id-001");
+        strcpy_s(info.deviceId, DM_MAX_DEVICE_ID_LEN, "test-device-id-001:network-id-001");
+        strcpy_s(info.deviceName, DM_MAX_DEVICE_NAME_LEN, "test-device-id-001");
         info.deviceTypeId = DistributedHardware::DMDeviceType::DEVICE_TYPE_PHONE;
 
         // check log

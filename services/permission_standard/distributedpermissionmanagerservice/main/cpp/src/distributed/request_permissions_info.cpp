@@ -34,8 +34,12 @@ RequestPermissionsInfo::RequestPermissionsInfo(const std::vector<std::string> pe
     uid_ = IPCSkeleton::GetCallingUid();
     // deviceId is unique
     std::string deviceId = DeviceInfoManager::GetInstance().ConvertToUniqueDisabilityIdOrFetch(nodeId);
-    requestId_ = deviceId;
     deviceId_ = deviceId;
+    auto nowTime = std::chrono::system_clock::now();
+    auto time = std::chrono::system_clock::to_time_t(nowTime);
+    std::stringstream timeStringStream;
+    timeStringStream << std::put_time(std::localtime(&time), "%H%M%S");
+    requestId_ = deviceId + timeStringStream.str();
 }
 bool RequestPermissionsInfo::NeedStopProcess()
 {

@@ -34,6 +34,7 @@ class RequestPermissionsInfo {
 public:
     RequestPermissionsInfo(const std::vector<std::string> permissions, const sptr<OnRequestPermissionsResult> &callback,
         const std::string &nodeId, const std::string &bundleName, int32_t reasonResId);
+    virtual ~RequestPermissionsInfo() = default;
     /**
      * Check if the process on service will stopped and return
      *

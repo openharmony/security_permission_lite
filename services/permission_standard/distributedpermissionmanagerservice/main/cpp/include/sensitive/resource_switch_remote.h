@@ -25,7 +25,7 @@ namespace Permission {
 class ResourceSwitchRemote {
 public:
     static ResourceSwitchRemote &GetInstance();
-
+    virtual ~ResourceSwitchRemote() = default;
     /**
      * Register remote switch change observer.
      */

@@ -84,10 +84,8 @@ int32_t SubjectDevicePermissionManager::AllocateDistributedUid(const std::string
         }
     }
     // Synchronous blocked wait for getUidPermissionCommand, until other process finished addSubjectPermission.
-    char deviceIdCharArray[Constant::DEVICE_UUID_LENGTH] = {0};
-    GetDevUdid(deviceIdCharArray, Constant::DEVICE_UUID_LENGTH);
     const std::shared_ptr<GetUidPermissionCommand> getUidPermissionCommand =
-        RemoteCommandFactory::GetInstance().NewGetUidPermissionCommand(uid, deviceIdCharArray, deviceId);
+        RemoteCommandFactory::GetInstance().NewGetUidPermissionCommand(uid, Constant::GetLocalDeviceId(), deviceId);
 
     const int32_t resultCode = RemoteCommandManager::GetInstance().ExecuteCommand(deviceId, getUidPermissionCommand);
     if (resultCode != Constant::SUCCESS) {

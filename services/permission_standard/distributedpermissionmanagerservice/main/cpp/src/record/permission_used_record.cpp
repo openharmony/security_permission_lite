@@ -195,8 +195,10 @@ void PermissionUsedRecord::updateRecord(const PermissionUsedRecord &record)
     this->rejectCountFg += record.rejectCountFg;
     this->accessCountBg += record.accessCountBg;
     this->rejectCountBg += record.rejectCountBg;
-    this->lastAccessTime = this->lastAccessTime > record.lastAccessTime ? this->lastAccessTime : record.lastAccessTime;
-    this->lastRejectTime = this->lastRejectTime > record.lastRejectTime ? this->lastRejectTime : record.lastRejectTime;
+    this->lastAccessTime =
+        (this->lastAccessTime > record.lastAccessTime) ? this->lastAccessTime : record.lastAccessTime;
+    this->lastRejectTime =
+        (this->lastRejectTime > record.lastRejectTime) ? this->lastRejectTime : record.lastRejectTime;
 }
 
 void PermissionUsedRecord::updateRecordWithTime(const PermissionUsedRecord &record)

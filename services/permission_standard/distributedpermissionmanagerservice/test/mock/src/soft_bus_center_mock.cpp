@@ -16,6 +16,7 @@
 #include "softbus_bus_center.h"
 #include <string>
 #include <cstring>
+#include <securec.h>
 #include "constant.h"
 #include "permission_log.h"
 
@@ -67,8 +68,8 @@ int32_t UnregNodeDeviceStateCb(INodeStateCb *callback)
 int32_t GetLocalNodeDeviceInfo(const char *pkgName, NodeBasicInfo *info)
 {
     if (IsRegCountOK()) {
-        strcpy(info->deviceName, "test-device-id-001");
-        strcpy(info->networkId, "test-device-id-001:network-id-001");
+        strcpy_s(info->deviceName, sizeof(info->deviceName), "test-device-id-001");
+        strcpy_s(info->deviceName, sizeof(info->deviceName), "test-device-id-001:network-id-001");
         info->deviceTypeId = 1;
         PERMISSION_LOG_DEBUG(LABEL, "success, count: %{public}d", regCount_);
         return Constant::SUCCESS;

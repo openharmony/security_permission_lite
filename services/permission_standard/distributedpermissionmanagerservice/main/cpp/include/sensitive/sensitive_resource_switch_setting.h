@@ -30,7 +30,7 @@ public:
     SensitiveResourceSwitchSetting(Builder &builder);
     SensitiveResourceSwitchSetting()
     {}
-
+    virtual ~SensitiveResourceSwitchSetting() = default;
     static std::shared_ptr<SensitiveResourceSwitchSetting> Copy(SensitiveResourceSwitchSetting &another);
 
     static std::shared_ptr<Builder> CreateBuilder();

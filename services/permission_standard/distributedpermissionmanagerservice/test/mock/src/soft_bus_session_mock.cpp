@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+#include <securec.h>
 #include "session.h"
 #include "constant.h"
 #include "soft_bus_manager.h"
@@ -37,6 +37,7 @@ static ISessionListener *listener_ = nullptr;
 int CreateSessionServer(const char *pkgName, const char *sessionName, const ISessionListener *listener)
 {
     PERMISSION_LOG_DEBUG(LABEL, "pkg name: %{public}s", pkgName);
+    PERMISSION_LOG_DEBUG(LABEL, "sessionName: %{public}s", sessionName);
     serverCount_++;
     if (IsServerCountOK()) {
         listener_ = const_cast<ISessionListener *>(listener);
@@ -50,6 +51,7 @@ int CreateSessionServer(const char *pkgName, const char *sessionName, const ISes
 int RemoveSessionServer(const char *pkgName, const char *sessionName)
 {
     PERMISSION_LOG_DEBUG(LABEL, "pkg name: %{public}s", pkgName);
+    PERMISSION_LOG_DEBUG(LABEL, "sessionName: %{public}s", sessionName);
     if (IsServerCountOK()) {
         serverCount_--;
         listener_ = nullptr;
@@ -68,6 +70,7 @@ static int sessionCount_ = -1;
 bool IsSessionCountOK()
 {
     return sessionCount_ >= 0 && sessionCount_ < SESSION_COUNT_LIMIT;
+    PERMISSION_LOG_DEBUG(LABEL, "SESSION_COUNT_LIMIT: %{public}d", SESSION_COUNT_LIMIT);
 }
 
 int OpenSession(const char *mySessionName, const char *peerSessionName, const char *peerDeviceId, const char *groupId,
@@ -110,14 +113,13 @@ int SendBytes(int sessionId, const void *data, unsigned int len)
     std::string s((char *)data);
     printf("%s", s.c_str());
     printf("\n\n");
-    PERMISSION_LOG_DEBUG(LABEL, "success, session id: %{public}d", sessionId);
+    PERMISSION_LOG_DEBUG(LABEL, "data: %{public}s", data);
     return Constant::SUCCESS;
 }
 
 int GetPeerSessionName(int sessionId, char *sessionName, unsigned int len)
 {
     if (sessionId == Constant::INVALID_SESSION) {
-        PERMISSION_LOG_DEBUG(LABEL, "failure, session id: %{public}d", sessionId);
         return Constant::FAILURE;
     }
     std::string x;
@@ -127,10 +129,11 @@ int GetPeerSessionName(int sessionId, char *sessionName, unsigned int len)
         x = "sessionid-" + std::to_string(sessionId);
     }
     if (len < x.length()) {
-        // PERMISSION_LOG_DEBUG(LABEL, "failure, buffer size too small, need: %{public}d", x.length());
         return Constant::FAILURE;
     }
-    memcpy(sessionName, x.c_str(), x.length());
+    if (memcpy_s(sessionName, x.length(), x.c_str(), x.length()) != EOK) {
+        return Constant::FAILURE;
+    }
     sessionName[x.length()] = '\0';
     PERMISSION_LOG_DEBUG(LABEL, "success, session name: %{public}s", sessionName);
 
@@ -140,17 +143,17 @@ int GetPeerSessionName(int sessionId, char *sessionName, unsigned int len)
 int GetPeerDeviceId(int sessionId, char *devId, unsigned int len)
 {
     if (sessionId == Constant::INVALID_SESSION) {
-        PERMISSION_LOG_DEBUG(LABEL, "failure, session id: %{public}d", sessionId);
         return Constant::FAILURE;
     }
 
     std::string x = "deviceid-" + std::to_string(sessionId);
     if (len < x.length()) {
-        // PERMISSION_LOG_DEBUG(LABEL, "failure, buffer size too small, need: %{public}d", x.length());
         return Constant::FAILURE;
     }
-    memcpy(devId, x.c_str(), x.length());
+
+    if (memcpy_s(devId, x.length(), x.c_str(), x.length()) != EOK) {
+        return Constant::FAILURE;
+    }
     devId[x.length()] = '\0';
-    PERMISSION_LOG_DEBUG(LABEL, "success, device id: %{public}s", devId);
     return 0;
 }

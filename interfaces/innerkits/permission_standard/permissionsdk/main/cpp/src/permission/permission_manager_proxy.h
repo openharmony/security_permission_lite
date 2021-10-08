@@ -28,7 +28,7 @@ public:
     explicit PermissionManagerProxy(const sptr<IRemoteObject>& impl);
     virtual ~PermissionManagerProxy() override;
 
-    int VerifyPermission(const std::string& packageName, const std::string& permissionName, int userId) override;
+    int VerifyPermission(const std::string& bundleName, const std::string& permissionName, int userId) override;
 
     bool CanRequestPermission(const std::string& bundleName, const std::string& permissionName, int userId) override;
 

@@ -109,7 +109,7 @@ int32_t ObjectDevicePermissionManager::NotifyPermissionChanged(const int32_t uid
 
 int32_t ObjectDevicePermissionManager::RemoveNotifyPermissionMonitorUid(const int32_t uid)
 {
-    PERMISSION_LOG_INFO(LABEL, "rremoveNotifyPermissionMonitorUid: operation start with uid: %{public}d", uid);
+    PERMISSION_LOG_INFO(LABEL, "removeNotifyPermissionMonitorUid: operation start with uid: %{public}d", uid);
 
     // For special uid, do not need to notify.
     if (DistributedDataValidator::IsSpecRuid(uid)) {
@@ -262,7 +262,7 @@ int32_t ObjectDevicePermissionManager::VerifyPermissionFromRemoteInner(
     }
     if (PermissionBmsManager::GetInstance().IsSystemSignatureUid(uid)) {
         // For system program,check if self have the permissin ,the permission will sync to object
-        std::shared_ptr<ExternalDeps> externalDeps = std::make_shared<ExternalDeps>();
+        std::unique_ptr<ExternalDeps> externalDeps = std::make_unique<ExternalDeps>();
         iBundleManager_ = externalDeps->GetBundleManager(iBundleManager_);
         iPermissionManager_ = externalDeps->GetPermissionManager(iPermissionManager_);
 

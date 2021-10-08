@@ -19,6 +19,7 @@
 #include <thread>
 
 #include "base_remote_command.h"
+#include "request_remote_permission_command.h"
 #include "remote_command_factory.h"
 #include "remote_command_manager.h"
 #include "permission_log.h"
@@ -45,6 +46,7 @@ RequestRemotePermissionCommand::RequestRemotePermissionCommand(
     remoteProtocol_.dstDeviceId = dstDeviceId;
     remoteProtocol_.responseVersion = Constant::DISTRIBUTED_PERMISSION_SERVICE_VERSION;
     remoteProtocol_.requestVersion = Constant::DISTRIBUTED_PERMISSION_SERVICE_VERSION;
+    uid_ = 0;  // INITIALIZER uid
 }
 
 RequestRemotePermissionCommand::RequestRemotePermissionCommand(const std::string &json)
