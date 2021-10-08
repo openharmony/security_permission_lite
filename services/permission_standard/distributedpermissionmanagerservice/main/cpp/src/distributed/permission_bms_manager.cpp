@@ -133,7 +133,7 @@ bool PermissionBmsManager::IsSystemSignatureUid(const int32_t &uid)
         }
         int32_t key = static_cast<int32_t>(AppAttribute::APP_ATTRIBUTE_SIGNED_WITH_PLATFORM_KEY);
 
-        if ((attribute & key) != 0) {
+        if (((uint32_t)attribute & (uint32_t)key) != 0) {
             return false;
         }
     }

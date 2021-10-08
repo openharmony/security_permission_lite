@@ -35,7 +35,7 @@ public:
     std::string type;
     int32_t defInfo;
     int32_t level = 0;
-    int32_t status;
+    u_int32_t status;
     int32_t grantMode;
 };
 
