@@ -22,7 +22,7 @@ using namespace OHOS::HiviewDFX;
 namespace OHOS {
 namespace Security {
 namespace Permission {
-static const HiLogLabel LABEL = {LOG_CORE, SECURITY_DOMAIN_PERMISSION, "ResourceSwitchRemote"};
+static constexpr HiLogLabel LABEL = {LOG_CORE, SECURITY_DOMAIN_PERMISSION, "ResourceSwitchRemote"};
 ResourceSwitchRemote &ResourceSwitchRemote::GetInstance()
 {
     static ResourceSwitchRemote m_instance;

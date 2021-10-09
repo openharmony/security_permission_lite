@@ -27,11 +27,20 @@ ohos_shared_library("permission_standard_infrastructure_cxx") {
 
   public_configs = [ ":permission_standard_infrastructure_cxx_public_config" ]
 
-  include_dirs = []
+  include_dirs = [
+    "main/cpp/src",
+    "//utils/native/base/include",
+  ]
 
-  sources = [ "main/cpp/src/data_validator.cpp" ]
+  sources = [
+    "main/cpp/src/data_validator.cpp",
+    "main/cpp/src/zip_utils.cpp",
+  ]
 
-  deps = [ "//utils/native/base:utils" ]
+  deps = [
+    "//third_party/zlib:libz",
+    "//utils/native/base:utils",
+  ]
   external_deps = [ "hiviewdfx_hilog_native:libhilog" ]
 
   cflags_cc = [ "-DHILOG_ENABLE" ]

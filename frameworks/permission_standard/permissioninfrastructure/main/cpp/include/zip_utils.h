@@ -13,15 +13,28 @@
  * limitations under the License.
  */
 
-#include "mock_parameter.h"
+#ifndef ZIP_UTILS_H
+#define ZIP_UTILS_H
 
-#include <securec.h>
+#include <string>
 
-int GetDevUdid(char *udid, int size)
-{
-    if (strcpy_s(udid, size, "ohos.deviceId.test") != EOK) {
-        return 1;
-    } else {
-        return 0;
-    }
-}
+namespace OHOS {
+namespace Security {
+namespace Permission {
+class ZipUtils {
+public:
+    static constexpr int32_t OK = 0;
+
+    static constexpr int32_t ERROR = 1;
+
+    static int32_t CompressString(const std::string& inputStr, std::string& outputStr);
+
+    static int32_t DecompressString(const std::string& inputStr, std::string& outputStr);
+
+private:
+    static constexpr int32_t BUFFER_SIZE = 8192;
+};
+} // namespace Permission
+} // namespace Security
+} // namespace OHOS
+#endif // ZIP_UTILS_H

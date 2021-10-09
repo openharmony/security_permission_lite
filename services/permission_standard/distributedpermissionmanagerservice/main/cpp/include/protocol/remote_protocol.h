@@ -13,6 +13,8 @@
  * limitations under the License.
  */
 
+#ifndef REMOTE_PROTOCOL_H
+#define REMOTE_PROTOCOL_H
 namespace OHOS {
 namespace Security {
 namespace Permission {
@@ -34,3 +36,4 @@ struct RemoteProtocol {
 }  // namespace Permission
 }  // namespace Security
 }  // namespace OHOS
+#endif

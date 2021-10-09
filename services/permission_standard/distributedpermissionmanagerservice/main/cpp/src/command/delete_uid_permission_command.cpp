@@ -37,6 +37,7 @@ DeleteUidPermissionCommand::DeleteUidPermissionCommand(
     remoteProtocol_.dstDeviceId = dstDeviceId;
     remoteProtocol_.responseVersion = Constant::DISTRIBUTED_PERMISSION_SERVICE_VERSION;
     remoteProtocol_.requestVersion = Constant::DISTRIBUTED_PERMISSION_SERVICE_VERSION;
+    uid_ = 0;
 }
 
 DeleteUidPermissionCommand::DeleteUidPermissionCommand(const std::string &json)
@@ -90,6 +91,7 @@ void DeleteUidPermissionCommand::Finish()
 {
     remoteProtocol_.statusCode = Constant::SUCCESS;
     PERMISSION_LOG_DEBUG(LABEL, "clientProcessResult: start as: DeleteUidPermissionCommand{uid = %{public}d }", uid_);
+    PERMISSION_LOG_INFO(LABEL, "Finish: end as: DeleteUidPermissionCommand");
 }
 }  // namespace Permission
 }  // namespace Security

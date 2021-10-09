@@ -35,6 +35,7 @@ class ObjectUid {
 public:
     ObjectUid(int32_t uid) : uid_(uid)
     {}
+    virtual ~ObjectUid() = default;
     int32_t GetUid();
     std::set<std::string> GetGrabtedPermission();
     void ResetGrantSensitivePermission(std::set<std::string> permissions);
@@ -51,6 +52,7 @@ public:
     ObjectDevice(const std::string &deviceId) : deviceId_(deviceId)
     {}
     ObjectDevice(const std::string &deviceId, std::map<int32_t, std::shared_ptr<ObjectUid>> uniPermissions);
+    virtual ~ObjectDevice() = default;
     std::string GetDeviceId();
     bool ContainUid(int32_t uid);
     std::map<int32_t, std::shared_ptr<ObjectUid>> GetUidPermissions();

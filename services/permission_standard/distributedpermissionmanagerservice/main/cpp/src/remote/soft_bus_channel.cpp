@@ -12,14 +12,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-#include "soft_bus_channel.h"
-#include "soft_bus_manager.h"
+ 
+#include <securec.h>
 #include "device_info_manager.h"
-
+#include "soft_bus_manager.h"
 #include "distributed_permission_event_handler.h"
 #include "distributed_permission_manager_service.h"
 #include "singleton.h"
+#include "soft_bus_channel.h"
 
 namespace OHOS {
 namespace Security {
@@ -128,14 +128,15 @@ std::string SoftBusChannel::ExecuteCommand(const std::string &commandName, const
     }
 
     // to use a lib like libuuid
-    char uuidbuf[37];  // 32+4+1
-    random_uuid(uuidbuf);
+    int uuidStrLen = 37;  // 32+4+1
+    char uuidbuf[uuidStrLen];
+    random_uuid(uuidbuf, uuidStrLen);
     std::string uuid(uuidbuf);
     PERMISSION_LOG_DEBUG(LABEL, "generated message uuid: %{public}s", uuid.c_str());
 
     int len = RPC_TRANSFER_HEAD_BYTES_LENGTH + jsonPayload.length();
     unsigned char *buf = (unsigned char *)malloc(len + 1);
-    memset(buf, 0, len + 1);
+    memset_s(buf, len + 1, 0, len + 1);
     if (buf == nullptr) {
         PERMISSION_LOG_ERROR(LABEL, "no enough memory: %{public}d", len);
         return "";
@@ -158,9 +159,7 @@ std::string SoftBusChannel::ExecuteCommand(const std::string &commandName, const
     isSessionUsing_ = true;
     lock.unlock();
 
-    PERMISSION_LOG_DEBUG(LABEL, "send command begin, len: %{public}d", len);
     int retCode = SendRequestBytes(buf, len);
-    PERMISSION_LOG_DEBUG(LABEL, "send command end, len: %{public}d", len);
     free(buf);
 
     std::unique_lock<std::mutex> lock2(sessionMutex_);
@@ -183,7 +182,7 @@ std::string SoftBusChannel::ExecuteCommand(const std::string &commandName, const
     return responseResult_;
 }
 
-void SoftBusChannel::HandleDataReceived(int session, const char unsigned *bytes, const int length)
+void SoftBusChannel::HandleDataReceived(int session, const unsigned char *bytes, const int length)
 {
     PERMISSION_LOG_DEBUG(LABEL, "HandleDataReceived");
 
@@ -253,7 +252,7 @@ std::string SoftBusChannel::Decompress(const unsigned char *bytes, const int len
     PERMISSION_LOG_DEBUG(LABEL, "input length: %{public}d", length);
     uLong len = RPC_TRANSFER_BYTES_MAX_LENGTH;
     unsigned char *buf = (unsigned char *)malloc(len + 1);
-    memset(buf, 0, len + 1);
+    memset_s(buf, len + 1, 0, len + 1);
     if (buf == nullptr) {
         PERMISSION_LOG_ERROR(LABEL, "no enough memory!");
         return "";
@@ -343,7 +342,7 @@ void SoftBusChannel::HandleRequest(
 
         int sendlen = RPC_TRANSFER_HEAD_BYTES_LENGTH + jsonPayload.length();
         unsigned char *sendbuf = (unsigned char *)malloc(sendlen + 1);
-        memset(sendbuf, 0, sendlen + 1);
+        memset_s(sendbuf, sendlen + 1, 0, sendlen + 1);
         if (sendbuf == nullptr) {
             PERMISSION_LOG_ERROR(LABEL, "no enough memory: %{public}d", sendlen);
             return;
@@ -371,7 +370,7 @@ void SoftBusChannel::HandleRequest(
     std::string resultJsonPayload = command->ToJsonPayload();
     int len = RPC_TRANSFER_HEAD_BYTES_LENGTH + resultJsonPayload.length();
     unsigned char *buf = (unsigned char *)malloc(len + 1);
-    memset(buf, 0, len + 1);
+    memset_s(buf, len + 1, 0, len + 1);
     if (buf == nullptr) {
         PERMISSION_LOG_ERROR(LABEL, "no enough memory: %{public}d", len);
         return;
@@ -388,11 +387,6 @@ void SoftBusChannel::HandleRequest(
 
 void SoftBusChannel::HandleResponse(const std::string &id, const std::string &jsonPayload)
 {
-    // PERMISSION_LOG_DEBUG(LABEL,
-    //     "notify response data back for message id: %{public}s, callback size: %{public}d",
-    //     id.c_str(),
-    //     callbacks_.size());
-
     std::unique_lock<std::mutex> lock(sessionMutex_);
     auto callback = callbacks_.find(id);
     if (callback != callbacks_.end()) {

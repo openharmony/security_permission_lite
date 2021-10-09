@@ -20,7 +20,6 @@ using namespace std;
 namespace OHOS {
 namespace Security {
 namespace Permission {
-
 bool BundlePermissionUsedRecord::Marshalling(Parcel &out) const
 {
     if (!out.WriteString(this->deviceId)) {

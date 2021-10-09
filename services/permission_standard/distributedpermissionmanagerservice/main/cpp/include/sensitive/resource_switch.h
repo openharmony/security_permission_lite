@@ -71,6 +71,7 @@ public:
 private:
     ResourceSwitch()
     {}
+    virtual ~ResourceSwitch() = default;
 };
 }  // namespace Permission
 }  // namespace Security
