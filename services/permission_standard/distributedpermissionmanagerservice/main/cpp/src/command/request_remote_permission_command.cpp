@@ -19,7 +19,6 @@
 #include <thread>
 
 #include "base_remote_command.h"
-#include "request_remote_permission_command.h"
 #include "remote_command_factory.h"
 #include "remote_command_manager.h"
 #include "permission_log.h"
@@ -28,6 +27,7 @@
 #include "external_deps.h"
 #include "ipc_skeleton.h"
 #include "distributed_permission_manager_service.h"
+#include "request_remote_permission_command.h"
 
 namespace OHOS {
 namespace Security {
