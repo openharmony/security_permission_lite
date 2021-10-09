@@ -379,7 +379,7 @@ static bool InnerGetPermissionRecords(napi_env env, int32_t &flag, std::string &
         request.beginTimeMillis = (beginTime < 0) ? 0 : beginTime;
         request.endTimeMillis = TimeUtil::GetTimestamp();
     }
-    int ret = DistributedPermissionKit::GetPermissionUsedRecords(request, queryResult);
+    int ret = DistributedPermissionManagerClient::GetInstance().GetPermissionUsedRecords(request, queryResult);
     return (ret == Constant::SUCCESS) ? true : false;
 }
 
