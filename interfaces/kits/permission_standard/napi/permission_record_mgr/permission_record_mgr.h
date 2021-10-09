@@ -15,6 +15,7 @@
 
 #ifndef PERMISSION_RECORD_MGR_H_
 #define PERMISSION_RECORD_MGR_H_
+#include <cinttypes>
 #include <vector>
 
 #include "constant.h"
