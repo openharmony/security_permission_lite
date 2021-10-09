@@ -67,84 +67,83 @@ int DataTranslator::TranslationIntoGenericValues(
     return Constant::SUCCESS;
 }
 
-int DataTranslator::TranslationIntoGenericValues(const QueryPermissionUsedRequest &inQueryPermissionUsedRequest,
-    GenericValues &outVisitorGenericValues, GenericValues &outRecordAndGenericValues,
-    GenericValues &outRecordOrGenericValues)
+int DataTranslator::TranslationIntoGenericValues(const QueryPermissionUsedRequest &inQueryRequest,
+    GenericValues &outVisitorValues, GenericValues &outRecordAndValues, GenericValues &outRecordOrValues)
 {
-    if (!inQueryPermissionUsedRequest.deviceLabel.empty()) {
-        outVisitorGenericValues.Put(FIELD_DEVICE_NAME, inQueryPermissionUsedRequest.deviceLabel);
+    if (!inQueryRequest.deviceLabel.empty()) {
+        outVisitorValues.Put(FIELD_DEVICE_NAME, inQueryRequest.deviceLabel);
     }
-    if (!inQueryPermissionUsedRequest.bundleName.empty()) {
-        outVisitorGenericValues.Put(FIELD_BUNDLE_NAME, inQueryPermissionUsedRequest.bundleName);
+    if (!inQueryRequest.bundleName.empty()) {
+        outVisitorValues.Put(FIELD_BUNDLE_NAME, inQueryRequest.bundleName);
     }
     std::string permissionNames;
-    for (unsigned int i = 0; i < inQueryPermissionUsedRequest.permissionNames.size(); i++) {
+    for (unsigned int i = 0; i < inQueryRequest.permissionNames.size(); i++) {
         int32_t code = 0;
-        std::string perName = inQueryPermissionUsedRequest.permissionNames[i];
+        std::string perName = inQueryRequest.permissionNames[i];
         if (Constant::PermissionNameToOrFromOpCode(perName, code)) {
-            outRecordOrGenericValues.Put(FIELD_OP_CODE + ToString(i), code);
+            outRecordOrValues.Put(FIELD_OP_CODE + ToString(i), code);
         }
     }
-    int64_t begin = inQueryPermissionUsedRequest.beginTimeMillis;
-    int64_t end = inQueryPermissionUsedRequest.endTimeMillis;
+    int64_t begin = inQueryRequest.beginTimeMillis;
+    int64_t end = inQueryRequest.endTimeMillis;
     if (begin < 0 || end < 0 || (begin > end && end > 0)) {
         return Constant::FAILURE;
     }
     if (begin != 0) {
-        outRecordAndGenericValues.Put(FIELD_TIMESTAMP_BEGIN, begin);
+        outRecordAndValues.Put(FIELD_TIMESTAMP_BEGIN, begin);
     }
     if (end != 0) {
-        outRecordAndGenericValues.Put(FIELD_TIMESTAMP_END, end);
+        outRecordAndValues.Put(FIELD_TIMESTAMP_END, end);
     }
     return Constant::SUCCESS;
 }
 
 int DataTranslator::TranslationIntoBundlePermissionUsedRecord(
-    const GenericValues &inGenericValues, BundlePermissionUsedRecord &outBundlePermissionUsedRecord)
+    const GenericValues &inGenericValues, BundlePermissionUsedRecord &outBundleRecord)
 {
-    outBundlePermissionUsedRecord.deviceId = inGenericValues.GetString(FIELD_DEVICE_ID);
-    outBundlePermissionUsedRecord.deviceLabel = inGenericValues.GetString(FIELD_DEVICE_NAME);
-    outBundlePermissionUsedRecord.bundleName = inGenericValues.GetString(FIELD_BUNDLE_NAME);
-    outBundlePermissionUsedRecord.bundleLabel = inGenericValues.GetString(FIELD_BUNDLE_LABEL);
+    outBundleRecord.deviceId = inGenericValues.GetString(FIELD_DEVICE_ID);
+    outBundleRecord.deviceLabel = inGenericValues.GetString(FIELD_DEVICE_NAME);
+    outBundleRecord.bundleName = inGenericValues.GetString(FIELD_BUNDLE_NAME);
+    outBundleRecord.bundleLabel = inGenericValues.GetString(FIELD_BUNDLE_LABEL);
     return Constant::SUCCESS;
 }
 
 int DataTranslator::TranslationIntoPermissionUsedRecord(
-    const GenericValues &inGenericValues, PermissionUsedRecord &outPermissionUsedRecord)
+    const GenericValues &inGenericValues, PermissionUsedRecord &outPermRecord)
 {
     std::string perName;
     int32_t code = inGenericValues.GetInt(FIELD_OP_CODE);
     if (!Constant::PermissionNameToOrFromOpCode(perName, code)) {
         return Constant::FAILURE;
     }
-    outPermissionUsedRecord.permissionName = perName;
+    outPermRecord.permissionName = perName;
     if (inGenericValues.GetInt(FIELD_IS_FOREGROUND) == 1) {
-        outPermissionUsedRecord.accessCountFg = inGenericValues.GetInt(FIELD_ACCESS_COUNT);
-        outPermissionUsedRecord.rejectCountFg = inGenericValues.GetInt(FIELD_REJECT_COUNT);
+        outPermRecord.accessCountFg = inGenericValues.GetInt(FIELD_ACCESS_COUNT);
+        outPermRecord.rejectCountFg = inGenericValues.GetInt(FIELD_REJECT_COUNT);
     } else {
-        outPermissionUsedRecord.accessCountBg = inGenericValues.GetInt(FIELD_ACCESS_COUNT);
-        outPermissionUsedRecord.rejectCountBg = inGenericValues.GetInt(FIELD_REJECT_COUNT);
+        outPermRecord.accessCountBg = inGenericValues.GetInt(FIELD_ACCESS_COUNT);
+        outPermRecord.rejectCountBg = inGenericValues.GetInt(FIELD_REJECT_COUNT);
     }
     if (inGenericValues.GetInt(FIELD_ACCESS_COUNT) > inGenericValues.GetInt(FIELD_REJECT_COUNT)) {
         if (inGenericValues.GetInt(FIELD_REJECT_COUNT) != 0) {
-            outPermissionUsedRecord.lastRejectTime = inGenericValues.GetInt64(FIELD_TIMESTAMP);
+            outPermRecord.lastRejectTime = inGenericValues.GetInt64(FIELD_TIMESTAMP);
         }
-        outPermissionUsedRecord.lastAccessTime = inGenericValues.GetInt64(FIELD_TIMESTAMP);
+        outPermRecord.lastAccessTime = inGenericValues.GetInt64(FIELD_TIMESTAMP);
     } else {
         if (inGenericValues.GetInt(FIELD_ACCESS_COUNT) != 0) {
-            outPermissionUsedRecord.lastAccessTime = inGenericValues.GetInt64(FIELD_TIMESTAMP);
+            outPermRecord.lastAccessTime = inGenericValues.GetInt64(FIELD_TIMESTAMP);
         }
-        outPermissionUsedRecord.lastRejectTime = inGenericValues.GetInt64(FIELD_TIMESTAMP);
+        outPermRecord.lastRejectTime = inGenericValues.GetInt64(FIELD_TIMESTAMP);
     }
     if (inGenericValues.GetInt(FIELD_FLAG) == 1) {
-        if (outPermissionUsedRecord.accessCountFg > 0 || outPermissionUsedRecord.rejectCountFg > 0) {
-            outPermissionUsedRecord.lastAccessTime > 0
-                ? outPermissionUsedRecord.accessRecordFg.emplace_back(outPermissionUsedRecord.lastAccessTime)
-                : outPermissionUsedRecord.rejectRecordFg.emplace_back(outPermissionUsedRecord.lastRejectTime);
+        if (outPermRecord.accessCountFg > 0 || outPermRecord.rejectCountFg > 0) {
+            (outPermRecord.lastAccessTime > 0)
+                ? outPermRecord.accessRecordFg.emplace_back(outPermRecord.lastAccessTime)
+                : outPermRecord.rejectRecordFg.emplace_back(outPermRecord.lastRejectTime);
         } else {
-            outPermissionUsedRecord.lastAccessTime > 0
-                ? outPermissionUsedRecord.accessRecordBg.emplace_back(outPermissionUsedRecord.lastAccessTime)
-                : outPermissionUsedRecord.rejectRecordBg.emplace_back(outPermissionUsedRecord.lastRejectTime);
+            (outPermRecord.lastAccessTime > 0)
+                ? outPermRecord.accessRecordBg.emplace_back(outPermRecord.lastAccessTime)
+                : outPermRecord.rejectRecordBg.emplace_back(outPermRecord.lastRejectTime);
         }
     }
 

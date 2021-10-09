@@ -200,6 +200,9 @@ void DistributedPermissionManagerClient::RequestPermissionsFromRemote(const std:
     const sptr<OnRequestPermissionsResult> &callback, const std::string &nodeId, const std::string &bundleName,
     int32_t reasonResId)
 {
+    if (callback == nullptr) {
+        return;
+    }
     PERMISSION_LOG_INFO(LABEL,
         "bundleName = %{public}s, nodeId = %{public}s",
         bundleName.c_str(),
@@ -316,6 +319,7 @@ void DistributedPermissionManagerClient::StartUsingPermission(const std::string 
     PERMISSION_LOG_INFO(LABEL, "%{public}s: called!", __func__);
 
     if (permName.empty() || appIdInfo.empty()) {
+        PERMISSION_LOG_INFO(LABEL, "checkresult : Param Empty");
         return;
     }
 
@@ -338,6 +342,7 @@ void DistributedPermissionManagerClient::StopUsingPermission(const std::string &
     PERMISSION_LOG_INFO(LABEL, "%{public}s: called!", __func__);
 
     if (permName.empty() || appIdInfo.empty()) {
+        PERMISSION_LOG_INFO(LABEL, "checkresult : Param Empty");
         return;
     }
 
@@ -414,7 +419,10 @@ int32_t DistributedPermissionManagerClient::GetPermissionUsedRecords(
         return Constant::FAILURE;
     }
     unsigned char *buf = (unsigned char *)malloc(len + 1);
-
+    if (buf == NULL) {
+        PERMISSION_LOG_ERROR(LABEL, "%{public}s: malloc fail!", __func__);
+        return Constant::FAILURE;
+    }
     if (!ZipUtil::ZipCompress(queryJsonStr, zipLen, buf, len)) {
         return Constant::FAILURE;
     }
@@ -432,6 +440,10 @@ int32_t DistributedPermissionManagerClient::GetPermissionUsedRecords(
         return Constant::FAILURE;
     }
     unsigned char *pOut = (unsigned char *)malloc(len + 1);
+    if (pOut == NULL) {
+        PERMISSION_LOG_ERROR(LABEL, "%{public}s: malloc fail!", __func__);
+        return Constant::FAILURE;
+    }
     Base64Util::Decode(resultGzipStr, pOut, len);
     std::string resultJsonStr;
     if (!ZipUtil::ZipUnCompress(pOut, len, resultJsonStr, zipLen)) {
@@ -462,6 +474,10 @@ int32_t DistributedPermissionManagerClient::GetPermissionUsedRecords(
         return Constant::FAILURE;
     }
     unsigned char *buf = (unsigned char *)malloc(len + 1);
+    if (buf == NULL) {
+        PERMISSION_LOG_ERROR(LABEL, "%{public}s: malloc fail!", __func__);
+        return Constant::FAILURE;
+    }
     if (!ZipUtil::ZipCompress(queryJsonStr, zipLen, buf, len)) {
         return Constant::FAILURE;
     }

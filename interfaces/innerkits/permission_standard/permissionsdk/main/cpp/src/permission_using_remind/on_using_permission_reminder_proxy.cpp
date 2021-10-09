@@ -22,10 +22,10 @@ namespace OHOS {
 namespace Security {
 namespace Permission {
 namespace {
-static constexpr OHOS::HiviewDFX::HiLogLabel LABEL = {LOG_CORE, SECURITY_DOMAIN_PERMISSION,
-    "OnUsingPermissionReminderProxy"};
+static constexpr OHOS::HiviewDFX::HiLogLabel LABEL = {
+    LOG_CORE, SECURITY_DOMAIN_PERMISSION, "OnUsingPermissionReminderProxy"};
 }
-OnUsingPermissionReminderProxy::OnUsingPermissionReminderProxy(const sptr<IRemoteObject>& object)
+OnUsingPermissionReminderProxy::OnUsingPermissionReminderProxy(const sptr<IRemoteObject> &object)
     : IRemoteProxy<OnUsingPermissionReminder>(object)
 {
     PERMISSION_LOG_INFO(LABEL, "create proxy instance (%{public}p)", this);
@@ -36,7 +36,7 @@ OnUsingPermissionReminderProxy::~OnUsingPermissionReminderProxy()
     PERMISSION_LOG_INFO(LABEL, "destroy proxy instance (%{public}p)", this);
 }
 
-void OnUsingPermissionReminderProxy::StartUsingPermission(const PermissionReminderInfo& permReminderInfo)
+void OnUsingPermissionReminderProxy::StartUsingPermission(const PermissionReminderInfo &permReminderInfo)
 {
     sptr<IRemoteObject> remote = Remote();
     if (remote == nullptr) {
@@ -54,8 +54,8 @@ void OnUsingPermissionReminderProxy::StartUsingPermission(const PermissionRemind
     }
 
     PERMISSION_LOG_INFO(LABEL, "StartUsingPermission::Begin SendRequest");
-    int32_t ret = remote->SendRequest(static_cast<int32_t>(OnUsingPermissionReminder::Message::START_USING_PERMISSION),
-        data, reply, option);
+    int32_t ret = remote->SendRequest(
+        static_cast<int32_t>(OnUsingPermissionReminder::Message::START_USING_PERMISSION), data, reply, option);
     if (ret != 0) {
         PERMISSION_LOG_INFO(LABEL, "StartUsingPermission SendRequest fail, error: %{public}d", ret);
         return;
@@ -63,7 +63,7 @@ void OnUsingPermissionReminderProxy::StartUsingPermission(const PermissionRemind
     PERMISSION_LOG_INFO(LABEL, "StartUsingPermission::SendRequest success");
 }
 
-void OnUsingPermissionReminderProxy::StopUsingPermission(const PermissionReminderInfo& permReminderInfo)
+void OnUsingPermissionReminderProxy::StopUsingPermission(const PermissionReminderInfo &permReminderInfo)
 {
     sptr<IRemoteObject> remote = Remote();
     if (remote == nullptr) {
@@ -81,14 +81,14 @@ void OnUsingPermissionReminderProxy::StopUsingPermission(const PermissionReminde
     }
 
     PERMISSION_LOG_INFO(LABEL, "StopUsingPermission::Begin SendRequest");
-    int32_t ret = remote->SendRequest(static_cast<int32_t>(OnUsingPermissionReminder::Message::STOP_USING_PERMISSION),
-        data, reply, option);
+    int32_t ret = remote->SendRequest(
+        static_cast<int32_t>(OnUsingPermissionReminder::Message::STOP_USING_PERMISSION), data, reply, option);
     if (ret != 0) {
         PERMISSION_LOG_INFO(LABEL, "StopUsingPermission SendRequest fail, error: %{public}d", ret);
         return;
     }
     PERMISSION_LOG_INFO(LABEL, "StopUsingPermission::SendRequest success");
 }
-} // namespace Permission
-} // namespace Security
-} // namespace OHOS
+}  // namespace Permission
+}  // namespace Security
+}  // namespace OHOS
