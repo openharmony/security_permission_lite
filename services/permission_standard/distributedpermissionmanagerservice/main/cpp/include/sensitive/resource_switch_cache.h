@@ -43,6 +43,7 @@ public:
 private:
     ResourceSwitchCache()
     {}
+    virtual ~ResourceSwitchCache() = default;
 
 private:
     /**

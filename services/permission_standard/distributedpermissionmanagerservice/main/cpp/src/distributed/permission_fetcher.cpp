@@ -73,7 +73,7 @@ int32_t PermissionFetcher::GetPermissions(int32_t uid, UidBundleBo &info)
         BundlePermissionsDto bundle = CreateBundlePermissionsInfo(uid, bundleInfo_, bundleName_);
         info.uid = uid;
         info.appAttribute = appAttribute_;
-        info.DEFAULT_SIZE = 10;
+        info.DEFAULT_SIZE = Constant::MAX_DETAIL_RECORDS;
         info.MIN_UID_PACKAGES_NUM = 1;
         info.bundles.push_back(bundle);
     }
@@ -104,9 +104,10 @@ BundlePermissionsDto PermissionFetcher::CreateBundlePermissionsInfo(
         PermissionDto permission;
 
         PermissionDefParcel permissionDefParcel;
-        PermissionDef permissionDefResult = permissionDefParcel.permissionDef;
+        PermissionDef permissionDefResult;
 
-        if (Permission::PermissionKit::GetDefPermission(reqPermission, permissionDefResult) == 0) {
+        if (iPermissionManager_->GetDefPermission(reqPermission, permissionDefParcel) == 0) {
+            permissionDefResult = permissionDefParcel.permissionDef;
             permission.name = permissionDefResult.permissionName;
             permission.grantMode = permissionDefResult.grantMode;
             permission.status = 1;
@@ -168,7 +169,7 @@ int32_t PermissionFetcher::GetRegrantedPermissions(UidBundleBo &pInfo, UidBundle
 
     rInfo.uid = pInfo.uid;
     rInfo.appAttribute = pInfo.appAttribute;
-    rInfo.DEFAULT_SIZE = 10;
+    rInfo.DEFAULT_SIZE = Constant::MAX_DETAIL_RECORDS;
     rInfo.MIN_UID_PACKAGES_NUM = 1;
 
     for (auto bundle : pInfo.bundles) {

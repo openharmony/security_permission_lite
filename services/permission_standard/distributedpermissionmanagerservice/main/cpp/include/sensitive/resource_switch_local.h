@@ -52,7 +52,7 @@ public:
 private:
     ResourceSwitchLocal() : hasRegistered_(false)
     {}
-
+    virtual ~ResourceSwitchLocal() = default;
     static bool HasDeviceProvisioned();
 
 private:

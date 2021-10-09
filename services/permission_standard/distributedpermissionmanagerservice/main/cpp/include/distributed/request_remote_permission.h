@@ -88,6 +88,7 @@ public:
 private:
     RequestRemotePermission()
     {}
+    virtual ~RequestRemotePermission() = default;
     bool CheckRequestResultForResult(std::shared_ptr<RequestPermissionsInfo> request);
     // bool CheckThirdAppMore(const std::string &permission, const std::string &deviceId, const int32_t uid);
     /**

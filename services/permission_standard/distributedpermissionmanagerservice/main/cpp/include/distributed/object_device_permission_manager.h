@@ -165,6 +165,7 @@ class CountDownLatch {
 public:
     CountDownLatch(uint32_t count) : count_(count)
     {}
+    virtual ~CountDownLatch() = default;
     uint32_t GetCount()
     {
         std::lock_guard<std::mutex> guard(mutex_);
