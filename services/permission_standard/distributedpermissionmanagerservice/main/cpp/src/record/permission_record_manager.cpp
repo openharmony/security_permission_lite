@@ -171,11 +171,15 @@ int32_t PermissionRecordManager::GetPermissionRecordsBase(
     Base64Util::Decode(queryGzipStr, pOut, codeLen);
     std::string queryJsonStr;
     if (!ZipUtil::ZipUnCompress(pOut, codeLen, queryJsonStr, zipLen)) {
+        if (pOut != NULL) {
+            free(pOut);
+            pOut = NULL;
+        }
         return Constant::FAILURE;
     }
-    if (pOut) {
+    if (pOut != NULL) {
         free(pOut);
-        pOut = nullptr;
+        pOut = NULL;
     }
     int32_t flag = GetPermissionRecords(queryJsonStr, queryResult);
     nlohmann::json jsonObj = queryResult.to_json(queryResult);
@@ -192,12 +196,16 @@ int32_t PermissionRecordManager::GetPermissionRecordsBase(
         return Constant::FAILURE;
     }
     if (!ZipUtil::ZipCompress(result, zipLen, buf, codeLen)) {
+        if (buf != NULL) {
+            free(buf);
+            buf = NULL;
+        }
         return Constant::FAILURE;
     }
     Base64Util::Encode(buf, codeLen, resultStr);
-    if (buf) {
+    if (buf != NULL) {
         free(buf);
-        buf = nullptr;
+        buf = NULL;
     }
     return flag;
 }
@@ -216,11 +224,17 @@ int32_t PermissionRecordManager::GetPermissionRecordsAsync(const std::string &qu
     }
     Base64Util::Decode(queryGzipStr, pOut, codeLen);
     std::string queryJsonStr;
-    ZipUtil::ZipUnCompress(pOut, codeLen, queryJsonStr, zipLen);
+    if (!ZipUtil::ZipUnCompress(pOut, codeLen, queryJsonStr, zipLen)) {
+        if (pOut != NULL) {
+            free(pOut);
+            pOut = NULL;
+        }
+        return Constant::FAILURE;
+    }
 
-    if (pOut) {
+    if (pOut != NULL) {
         free(pOut);
-        pOut = nullptr;
+        pOut = NULL;
     }
     auto task = [queryJsonStr, callback]() {
         PERMISSION_LOG_INFO(LABEL, "---GetPermissionRecords task called");
@@ -328,7 +342,7 @@ bool PermissionRecordManager::GetRecordFromDB(const int32_t allFlag, const std::
             queryResult.endTimeMillis = record.GetInt64(FIELD_TIMESTAMP);
         }
         if ((queryResult.beginTimeMillis == 0) ? true
-            : record.GetInt64(FIELD_TIMESTAMP) < queryResult.beginTimeMillis) {
+                                               : record.GetInt64(FIELD_TIMESTAMP) < queryResult.beginTimeMillis) {
             queryResult.beginTimeMillis = record.GetInt64(FIELD_TIMESTAMP);
         }
         record.Put(FIELD_FLAG, allFlag);
