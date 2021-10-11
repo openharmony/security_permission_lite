@@ -424,12 +424,16 @@ int32_t DistributedPermissionManagerClient::GetPermissionUsedRecords(
         return Constant::FAILURE;
     }
     if (!ZipUtil::ZipCompress(queryJsonStr, zipLen, buf, len)) {
+        if (buf != NULL) {
+            free(buf);
+            buf = NULL;
+        }
         return Constant::FAILURE;
     }
     std::string queryGzipStr;
     Base64Util::Encode(buf, len, queryGzipStr);
 
-    if (buf) {
+    if (buf != NULL) {
         free(buf);
         buf = NULL;
     }
@@ -447,9 +451,13 @@ int32_t DistributedPermissionManagerClient::GetPermissionUsedRecords(
     Base64Util::Decode(resultGzipStr, pOut, len);
     std::string resultJsonStr;
     if (!ZipUtil::ZipUnCompress(pOut, len, resultJsonStr, zipLen)) {
+        if (pOut != NULL) {
+            free(pOut);
+            pOut = NULL;
+        }
         return Constant::FAILURE;
     }
-    if (pOut) {
+    if (pOut != NULL) {
         free(pOut);
         pOut = NULL;
     }
@@ -479,12 +487,16 @@ int32_t DistributedPermissionManagerClient::GetPermissionUsedRecords(
         return Constant::FAILURE;
     }
     if (!ZipUtil::ZipCompress(queryJsonStr, zipLen, buf, len)) {
+        if (buf != NULL) {
+            free(buf);
+            buf = NULL;
+        }
         return Constant::FAILURE;
     }
     std::string queryGzipStr;
     Base64Util::Encode(buf, len, queryGzipStr);
 
-    if (buf) {
+    if (buf != NULL) {
         free(buf);
         buf = NULL;
     }
