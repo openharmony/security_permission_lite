@@ -424,19 +424,14 @@ int32_t DistributedPermissionManagerClient::GetPermissionUsedRecords(
         return Constant::FAILURE;
     }
     if (!ZipUtil::ZipCompress(queryJsonStr, zipLen, buf, len)) {
-        if (buf != NULL) {
-            free(buf);
-            buf = NULL;
-        }
+        PERMISSION_LOG_ERROR(LABEL, "%{public}s: compress fail!", __func__);
+        free(buf);
         return Constant::FAILURE;
     }
     std::string queryGzipStr;
     Base64Util::Encode(buf, len, queryGzipStr);
-
-    if (buf != NULL) {
-        free(buf);
-        buf = NULL;
-    }
+    free(buf);
+    buf = NULL;
     std::string resultGzipStr;
     int32_t ret = distributedPermissionProxy_->GetPermissionRecords(queryGzipStr, len, zipLen, resultGzipStr);
     if (len <= 0) {
@@ -450,17 +445,14 @@ int32_t DistributedPermissionManagerClient::GetPermissionUsedRecords(
     }
     Base64Util::Decode(resultGzipStr, pOut, len);
     std::string resultJsonStr;
-    if (!ZipUtil::ZipUnCompress(pOut, len, resultJsonStr, zipLen)) {
-        if (pOut != NULL) {
-            free(pOut);
-            pOut = NULL;
-        }
+    bool opResult = ZipUtil::ZipUnCompress(pOut, len, resultJsonStr, zipLen);
+    free(pOut);
+    pOut = NULL;
+    if (opResult == false) {
+        PERMISSION_LOG_ERROR(LABEL, "%{public}s: uncompress fail!", __func__);
         return Constant::FAILURE;
     }
-    if (pOut != NULL) {
-        free(pOut);
-        pOut = NULL;
-    }
+    
     nlohmann::json jsonRes = nlohmann::json::parse(resultJsonStr, nullptr, false);
     result.from_json(jsonRes, result);
     return ret;
@@ -487,19 +479,14 @@ int32_t DistributedPermissionManagerClient::GetPermissionUsedRecords(
         return Constant::FAILURE;
     }
     if (!ZipUtil::ZipCompress(queryJsonStr, zipLen, buf, len)) {
-        if (buf != NULL) {
-            free(buf);
-            buf = NULL;
-        }
+        PERMISSION_LOG_ERROR(LABEL, "%{public}s: compress fail!", __func__);
+        free(buf);
         return Constant::FAILURE;
     }
     std::string queryGzipStr;
     Base64Util::Encode(buf, len, queryGzipStr);
-
-    if (buf != NULL) {
-        free(buf);
-        buf = NULL;
-    }
+    free(buf);
+    buf = NULL;
     int32_t ret = distributedPermissionProxy_->GetPermissionRecords(queryGzipStr, len, zipLen, callback);
     return ret;
 }
