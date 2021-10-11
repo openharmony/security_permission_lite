@@ -16,10 +16,6 @@ import("//build/test.gni")
 
 module_output_path = "permission_standard/permissiontest"
 
-config("private_config") {
-  cflags_cc = [ "-fexceptions" ]
-}
-
 ohos_unittest("check_d_permission_test") {
   module_out_path = module_output_path
 
@@ -113,10 +109,8 @@ ohos_unittest("check_d_permission_test") {
     "check_d_permission_test.cpp",
   ]
 
-  configs = [
-    ":private_config",
-    "${distributed_permission_services_path}/test:permission_test_config",
-  ]
+  configs =
+      [ "${distributed_permission_services_path}/test:permission_test_config" ]
   cflags = []
   if (target_cpu == "arm") {
     cflags += [ "-DBINDER_IPC_32BIT" ]
