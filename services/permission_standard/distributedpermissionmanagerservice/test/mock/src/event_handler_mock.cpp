@@ -74,13 +74,9 @@ void Run__()
             PERMISSION_LOG_DEBUG(LABEL, "null task ");
             continue;
         }
-        try {
-            PERMISSION_LOG_DEBUG(LABEL, "run task, name: %{public}s", task->name.c_str());
-            (task->callback)();
-            PERMISSION_LOG_DEBUG(LABEL, "run task, name: %{public}s end", task->name.c_str());
-        } catch (...) {
-            PERMISSION_LOG_DEBUG(LABEL, "unknown error");
-        }
+        PERMISSION_LOG_DEBUG(LABEL, "run task, name: %{public}s", task->name.c_str());
+        (task->callback)();
+        PERMISSION_LOG_DEBUG(LABEL, "run task, name: %{public}s end", task->name.c_str());
         delete task;
 
         PERMISSION_LOG_DEBUG(LABEL, "run task %{public}s next", task->name.c_str());
