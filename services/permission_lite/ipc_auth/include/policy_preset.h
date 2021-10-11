@@ -216,7 +216,7 @@ FeaturePolicy powermgrFeature[] = {
         },
     },
     {
-        "runninglock",
+        "powermanage",
         {
             {
                 .type=RANGE,
