@@ -200,6 +200,9 @@ void DistributedPermissionManagerClient::RequestPermissionsFromRemote(const std:
     const sptr<OnRequestPermissionsResult> &callback, const std::string &nodeId, const std::string &bundleName,
     int32_t reasonResId)
 {
+    if (callback == nullptr) {
+        return;
+    }
     PERMISSION_LOG_INFO(LABEL,
         "bundleName = %{public}s, nodeId = %{public}s",
         bundleName.c_str(),
@@ -316,6 +319,7 @@ void DistributedPermissionManagerClient::StartUsingPermission(const std::string 
     PERMISSION_LOG_INFO(LABEL, "%{public}s: called!", __func__);
 
     if (permName.empty() || appIdInfo.empty()) {
+        PERMISSION_LOG_INFO(LABEL, "checkresult : Param Empty");
         return;
     }
 
@@ -338,6 +342,7 @@ void DistributedPermissionManagerClient::StopUsingPermission(const std::string &
     PERMISSION_LOG_INFO(LABEL, "%{public}s: called!", __func__);
 
     if (permName.empty() || appIdInfo.empty()) {
+        PERMISSION_LOG_INFO(LABEL, "checkresult : Param Empty");
         return;
     }
 
@@ -414,17 +419,19 @@ int32_t DistributedPermissionManagerClient::GetPermissionUsedRecords(
         return Constant::FAILURE;
     }
     unsigned char *buf = (unsigned char *)malloc(len + 1);
-
+    if (buf == NULL) {
+        PERMISSION_LOG_ERROR(LABEL, "%{public}s: malloc fail!", __func__);
+        return Constant::FAILURE;
+    }
     if (!ZipUtil::ZipCompress(queryJsonStr, zipLen, buf, len)) {
+        PERMISSION_LOG_ERROR(LABEL, "%{public}s: compress fail!", __func__);
+        free(buf);
         return Constant::FAILURE;
     }
     std::string queryGzipStr;
     Base64Util::Encode(buf, len, queryGzipStr);
-
-    if (buf) {
-        free(buf);
-        buf = NULL;
-    }
+    free(buf);
+    buf = NULL;
     std::string resultGzipStr;
     int32_t ret = distributedPermissionProxy_->GetPermissionRecords(queryGzipStr, len, zipLen, resultGzipStr);
     if (len <= 0) {
@@ -432,15 +439,20 @@ int32_t DistributedPermissionManagerClient::GetPermissionUsedRecords(
         return Constant::FAILURE;
     }
     unsigned char *pOut = (unsigned char *)malloc(len + 1);
-    Base64Util::Decode(resultGzipStr, pOut, len);
-    std::string resultJsonStr;
-    if (!ZipUtil::ZipUnCompress(pOut, len, resultJsonStr, zipLen)) {
+    if (pOut == NULL) {
+        PERMISSION_LOG_ERROR(LABEL, "%{public}s: malloc fail!", __func__);
         return Constant::FAILURE;
     }
-    if (pOut) {
-        free(pOut);
-        pOut = NULL;
+    Base64Util::Decode(resultGzipStr, pOut, len);
+    std::string resultJsonStr;
+    bool opResult = ZipUtil::ZipUnCompress(pOut, len, resultJsonStr, zipLen);
+    free(pOut);
+    pOut = NULL;
+    if (opResult == false) {
+        PERMISSION_LOG_ERROR(LABEL, "%{public}s: uncompress fail!", __func__);
+        return Constant::FAILURE;
     }
+    
     nlohmann::json jsonRes = nlohmann::json::parse(resultJsonStr, nullptr, false);
     result.from_json(jsonRes, result);
     return ret;
@@ -462,16 +474,19 @@ int32_t DistributedPermissionManagerClient::GetPermissionUsedRecords(
         return Constant::FAILURE;
     }
     unsigned char *buf = (unsigned char *)malloc(len + 1);
+    if (buf == NULL) {
+        PERMISSION_LOG_ERROR(LABEL, "%{public}s: malloc fail!", __func__);
+        return Constant::FAILURE;
+    }
     if (!ZipUtil::ZipCompress(queryJsonStr, zipLen, buf, len)) {
+        PERMISSION_LOG_ERROR(LABEL, "%{public}s: compress fail!", __func__);
+        free(buf);
         return Constant::FAILURE;
     }
     std::string queryGzipStr;
     Base64Util::Encode(buf, len, queryGzipStr);
-
-    if (buf) {
-        free(buf);
-        buf = NULL;
-    }
+    free(buf);
+    buf = NULL;
     int32_t ret = distributedPermissionProxy_->GetPermissionRecords(queryGzipStr, len, zipLen, callback);
     return ret;
 }

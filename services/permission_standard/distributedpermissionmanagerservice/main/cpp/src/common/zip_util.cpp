@@ -26,7 +26,7 @@ bool ZipUtil::ZipCompress(const std::string &input, const unsigned long tlen, un
 {
     PERMISSION_LOG_INFO(LABEL, "%{public}s called, input: %{public}s", __func__, input.c_str());
 
-    if (!output) {
+    if (output == NULL) {
         PERMISSION_LOG_ERROR(LABEL, "%{public}s: no enough memory!", __func__);
         return false;
     }
@@ -48,12 +48,13 @@ bool ZipUtil::ZipUnCompress(
         return false;
     }
     unsigned char *buf = (unsigned char *)malloc(len + 1);
-    if (!buf) {
+    if (buf == NULL) {
         PERMISSION_LOG_ERROR(LABEL, "%{public}s: no enough memory!", __func__);
         return false;
     }
     if (uncompress(buf, &len, input, tlen) != Z_OK) {
         PERMISSION_LOG_ERROR(LABEL, "%{public}s: uncompress failed!", __func__);
+        free(buf);
         return false;
     }
     buf[len] = '\0';

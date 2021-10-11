@@ -82,9 +82,9 @@ void MonitorManager::OnPermissionChange(const int uid, const std::string &packag
     for (auto it = permissionChangedListeners_.begin(); it != permissionChangedListeners_.end(); it++) {
         OnPermissionChangedCallback callback = *(it->second);
         PERMISSION_LOG_DEBUG(LABEL,
-            "execute permission changed callback on name: %{public}s, function: %{public}lX",
-            it->first.c_str(),
-            (unsigned long)(it->second.get()));
+            "execute permission changed callback on name: %{public}s, function: %{public}p",
+            (it->first).c_str(),
+            (it->second).get());
         handler->ProxyPostTask(std::bind(callback, uid, packageName), "MonitorManager::OnPermissionChange");
     }
 }

@@ -69,7 +69,7 @@ public:
      * @since 1.0
      * @version 1.0
      */
-    void HandleDataReceived(int session, const unsigned char *bytes, const int length) override;
+    void HandleDataReceived(int session, const unsigned char *bytes, int length) override;
 
     /**
      * @brief Close rpc connection when no data is being transmitted. it will run in a delayed task.

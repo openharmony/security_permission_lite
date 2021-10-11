@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
+
 #include <securec.h>
 #include "device_info_manager.h"
 #include "soft_bus_manager.h"
@@ -182,7 +182,7 @@ std::string SoftBusChannel::ExecuteCommand(const std::string &commandName, const
     return responseResult_;
 }
 
-void SoftBusChannel::HandleDataReceived(int session, const unsigned char *bytes, const int length)
+void SoftBusChannel::HandleDataReceived(int session, const unsigned char *bytes, int length)
 {
     PERMISSION_LOG_DEBUG(LABEL, "HandleDataReceived");
 
@@ -264,6 +264,7 @@ std::string SoftBusChannel::Decompress(const unsigned char *bytes, const int len
             result,
             (int)len,
             length);
+        free(buf);
         return "";
     }
     buf[len] = '\0';

@@ -43,7 +43,7 @@ const unsigned char decodeTable[] = {
 void Base64Util::Encode(const unsigned char *input, unsigned long inLen, std::string &output)
 {
     unsigned long i;
-    int six = 6;
+    uint32_t six = 6;
     int four = 4;
     int three = 3;
     int two = 2;
