@@ -29,9 +29,9 @@ struct PermissionReminderInfo : public Parcelable {
 
     ~PermissionReminderInfo() override = default;
 
-    bool Marshalling(Parcel& out) const override;
+    bool Marshalling(Parcel &out) const override;
 
-    static PermissionReminderInfo* Unmarshalling(Parcel& in);
+    static OHOS::sptr<PermissionReminderInfo> Unmarshalling(Parcel &in);
 
     std::string ToString() const;
 
@@ -49,8 +49,8 @@ struct PermissionReminderInfo : public Parcelable {
     void SetBundleLabel(std::string strParam);
     void SetPermName(std::string strParam);
 };
-} // namespace Permission
-} // namespace Security
-} // namespace OHOS
+}  // namespace Permission
+}  // namespace Security
+}  // namespace OHOS
 
-#endif // PERMISSION_REMINDER_INFO_H
+#endif  // PERMISSION_REMINDER_INFO_H

@@ -335,6 +335,10 @@ void DistributedPermissionProxy::RequestPermissionsFromRemote(const std::vector<
         PERMISSION_LOG_ERROR(LABEL, "failed to WriteStringVector(permissions).");
         return;
     }
+    if (callback == nullptr) {
+        PERMISSION_LOG_ERROR(LABEL, "callback is null");
+        return;
+    }
     if (!data.WriteRemoteObject(callback->AsObject())) {
         PERMISSION_LOG_ERROR(LABEL, "failed to WirteRomoteObject(callback->AsObject()).");
         return;

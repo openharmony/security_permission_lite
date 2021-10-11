@@ -13,12 +13,12 @@
  * limitations under the License.
  */
 
-#include "softbus_bus_center.h"
 #include <string>
 #include <cstring>
 #include <securec.h>
 #include "constant.h"
 #include "permission_log.h"
+#include "softbus_bus_center.h"
 
 using namespace OHOS::Security::Permission;
 namespace {

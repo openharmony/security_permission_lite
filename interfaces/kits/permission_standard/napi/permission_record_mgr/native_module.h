@@ -12,16 +12,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#ifndef NATIVE_MODULE_H_
+#define NATIVE_MODULE_H_
+#include <pthread.h>
+#include <cstdio>
+#include <cstring>
+#include <unistd.h>
+#include "napi/native_api.h"
+#include "napi/native_node_api.h"
+#include "permission_record_mgr.h"
 
-#include "mock_parameter.h"
+namespace OHOS {
+namespace Security {
+namespace Permission {
+/*
+ * function for module exports
+ */
+static napi_value Init(napi_env env, napi_value exports);
+}  // namespace Permission
+}  // namespace Security
+}  // namespace OHOS
 
-#include <securec.h>
-
-int GetDevUdid(char *udid, int size)
-{
-    if (strcpy_s(udid, size, "ohos.deviceId.test") != EOK) {
-        return 1;
-    } else {
-        return 0;
-    }
-}
+#endif /* NATIVE_MODULE_H_ */
