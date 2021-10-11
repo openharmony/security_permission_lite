@@ -38,13 +38,12 @@ public:
         const GenericValues &inGenericValues, PermissionVisitor &outPermissionVisitor);
     static int TranslationIntoGenericValues(
         const PermissionVisitor &inPermissionVisitor, GenericValues &outGenericValues);
-    static int TranslationIntoGenericValues(const QueryPermissionUsedRequest &inQueryPermissionUsedRequest,
-        GenericValues &outVisitorGenericValues, GenericValues &outRecordAndGenericValues,
-        GenericValues &outRecordOrGenericValues);
+    static int TranslationIntoGenericValues(const QueryPermissionUsedRequest &inQueryRequest,
+        GenericValues &outVisitorValues, GenericValues &outRecordAndValues, GenericValues &outRecordOrValues);
     static int TranslationIntoBundlePermissionUsedRecord(
-        const GenericValues &inGenericValues, BundlePermissionUsedRecord &outBundlePermissionUsedRecord);
+        const GenericValues &inGenericValues, BundlePermissionUsedRecord &outBundleRecord);
     static int TranslationIntoPermissionUsedRecord(
-        const GenericValues &inGenericValues, PermissionUsedRecord &outPermissionUsedRecord);
+        const GenericValues &inGenericValues, PermissionUsedRecord &outPermRecord);
 };
 }  // namespace Permission
 }  // namespace Security
