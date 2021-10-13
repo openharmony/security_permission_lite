@@ -54,6 +54,7 @@ int GrantRuntimePermission(int uid, const char *permissionName);
 
 int RevokeRuntimePermission(int uid, const char *permissionName);
 
+
 #ifdef __cplusplus
 #if __cplusplus
 }
