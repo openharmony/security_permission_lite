@@ -61,17 +61,17 @@ RequestRemotePermissionCommand::RequestRemotePermissionCommand(const std::string
     if (jsonObject.find("requestId") != jsonObject.end() && jsonObject.at("requestId").is_string()) {
         jsonObject.at("requestId").get_to<std::string>(requestId_);
     } else {
-        requestId_ = NULL;
+        requestId_ = "";
     }
     if (jsonObject.find("bundleName") != jsonObject.end() && jsonObject.at("bundleName").is_string()) {
         jsonObject.at("bundleName").get_to<std::string>(bundleName_);
     } else {
-        bundleName_ = NULL;
+        bundleName_ = "";
     }
     if (jsonObject.find("reason") != jsonObject.end() && jsonObject.at("reason").is_string()) {
         jsonObject.at("reason").get_to<std::string>(reason_);
     } else {
-        reason_ = NULL;
+        reason_ = "";
     }
     jsonObject.at("permissions").get_to<std::vector<std::string>>(permissions_);
 }

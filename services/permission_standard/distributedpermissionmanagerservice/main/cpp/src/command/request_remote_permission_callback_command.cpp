@@ -63,8 +63,6 @@ RequestRemotePermissionCallbackCommand::RequestRemotePermissionCallbackCommand(c
     }
     if (jsonObject.find("objectGrantedResult") != jsonObject.end() && jsonObject.at("objectGrantedResult") != nullptr) {
         jsonObject.at("objectGrantedResult").get_to<std::set<std::string>>(objectGrantedResult_);
-    } else {
-        objectGrantedResult_ = NULL;
     }
     PERMISSION_LOG_INFO(LABEL, "Create RequestRemotePermissionCallbackCommand  end");
 }
