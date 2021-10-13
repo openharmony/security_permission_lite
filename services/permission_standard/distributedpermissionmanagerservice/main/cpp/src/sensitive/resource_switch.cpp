@@ -65,7 +65,7 @@ void ResourceSwitch::OnLocalChange(std::initializer_list<std::string> sensitiveR
 
     std::string resourceInfoString;
     for (auto iter = sensitiveResources.begin(); iter != sensitiveResources.end(); iter++) {
-        if (iter == nullptr) {
+        if (iter->empty()) {
             continue;
         }
         bool isSwitchAllow = ResourceSwitchLocal::GetInstance().GetSwitchStatus(*iter);
