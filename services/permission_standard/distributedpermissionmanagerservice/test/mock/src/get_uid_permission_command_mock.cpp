@@ -92,13 +92,6 @@ GetUidPermissionCommand::GetUidPermissionCommand(
 
 GetUidPermissionCommand::GetUidPermissionCommand(const std::string &json)
 {
-    // nlohmann::json jsonObject = nlohmann::json::parse(json, nullptr, false);
-    // BaseRemoteCommand::FromRemoteProtocolJson(jsonObject);
-    // if (jsonObject.find("uid") != jsonObject.end() && jsonObject.at("uid").is_number()) {
-    //     uid_ = jsonObject.at("uid").get<int32_t>();
-    // }
-    // BaseRemoteCommand::FromUidBundlePermissionsJson(jsonObject, uidPermission_);
-
     PERMISSION_LOG_DEBUG(LABEL, "mock GetUidPermissionCommand2");
     if (json == "{[100]}") {
         uid_ = 100;
@@ -144,64 +137,20 @@ void GetUidPermissionCommand::Execute()
 {
     PERMISSION_LOG_DEBUG(LABEL, "mock Execute");
     PERMISSION_LOG_INFO(LABEL, "execute start as: GetUidPermissionCommand{uid = %{public}d }", uid_);
-
-    // std::unique_ptr<ExternalDeps> externalDeps = std::make_unique<ExternalDeps>();
-    // if (externalDeps == nullptr) {
-    //     return;
-    // }
-    // iBundleManager_ = externalDeps->GetBundleManager(iBundleManager_);
-    // iPermissionManager_ = externalDeps->GetPermissionManager(iPermissionManager_);
-    // permissionFetcher_ = std::make_shared<PermissionFetcher>(iBundleManager_, iPermissionManager_);
-
-    // DeviceIdUtil::getDeviceId();
-    // IPCSkeleton::GetLocalDeviceID()
     remoteProtocol_.responseDeviceId = 1;
     remoteProtocol_.responseVersion = Constant::DISTRIBUTED_PERMISSION_SERVICE_VERSION;
-
-    // if (permissionFetcher_->GetPermissions(uid_, uidPermission_) <= 0) {
-    //     PERMISSION_LOG_DEBUG(LABEL,"%{public}s: resultWrapper code is not SUCCESS.", __func__);
-    //     remoteProtocol_.statusCode = Constant::FAILURE_BUT_CAN_RETRY;
-    //     remoteProtocol_.message = Constant::COMMAND_GET_PERMISSIONS_FAILED;
-    //     return;
-    // }
     if (uid_ == UID_GetPermissions_FAILED) {
         PERMISSION_LOG_DEBUG(LABEL, "%{public}s: resultWrapper code is not SUCCESS.", __func__);
         remoteProtocol_.statusCode = Constant::FAILURE_BUT_CAN_RETRY;
         remoteProtocol_.message = Constant::COMMAND_GET_PERMISSIONS_FAILED;
         return;
     }
-
-    // int32_t count = uidPermission_.bundles.permissions.size();
-
-    // if (count > Constant::MAX_UID_PERMISSIONS_COUNT) {
-    //     PERMISSION_LOG_ERROR(LABEL,"%{public}s: permissions exceed MAX_UID_PERMISSIONS_COUNT.", __func__);
-    //     remoteProtocol_.statusCode = Constant::FAILURE_BUT_CAN_RETRY;
-    //     remoteProtocol_.message = Constant::COMMAND_PERMISSIONS_COUNT_FAILED;
-    //     return;
-    // }
     if (uid_ == UID_MAX_UID_PERMISSIONS_COUNT_OVER) {
         PERMISSION_LOG_ERROR(LABEL, "%{public}s: permissions exceed MAX_UID_PERMISSIONS_COUNT.", __func__);
         remoteProtocol_.statusCode = Constant::FAILURE_BUT_CAN_RETRY;
         remoteProtocol_.message = Constant::COMMAND_PERMISSIONS_COUNT_FAILED;
         return;
     }
-
-    // Save the query deviceId and uid.
-    // int32_t addResult =
-    //     ObjectDevicePermissionManager::GetInstance().AddNotifyPermissionMonitorUid(remoteProtocol_.srcDeviceId,
-    //     uid_);
-
-    // PERMISSION_LOG_DEBUG(LABEL,
-    //     "GetUidPermissionCommand: ObjectDevicePermissionManager AddNotifyPermissionMonitorUid result:  %{public}d }",
-    //     addResult);
-
-    // if (addResult == Constant::SUCCESS) {
-    //     remoteProtocol_.statusCode = Constant::SUCCESS;
-    //     remoteProtocol_.message = Constant::COMMAND_RESULT_SUCCESS;
-    // } else {
-    //     remoteProtocol_.statusCode = Constant::FAILURE_BUT_CAN_RETRY;
-    //     remoteProtocol_.message = Constant::COMMAND_RESULT_FAILED;
-    // }
     if (uid_ >= UID_Execute_SUCCESS_INDEX) {
         remoteProtocol_.statusCode = Constant::SUCCESS;
         remoteProtocol_.message = Constant::COMMAND_RESULT_SUCCESS;
@@ -217,41 +166,12 @@ void GetUidPermissionCommand::Finish()
 {
     PERMISSION_LOG_DEBUG(LABEL, "mock Finish");
     PERMISSION_LOG_INFO(LABEL, "finish: start as: GetUidPermissionCommand{uid = %{public}d }", uid_);
-
-    // std::unique_ptr<ExternalDeps> externalDeps = std::make_unique<ExternalDeps>();
-    // if (externalDeps == nullptr) {
-    //     return;
-    // }
-    // iBundleManager_ = externalDeps->GetBundleManager(iBundleManager_);
-    // iPermissionManager_ = externalDeps->GetPermissionManager(iPermissionManager_);
-    // permissionFetcher_ = std::make_shared<PermissionFetcher>(iBundleManager_, iPermissionManager_);
-
-    // UidBundleBo rUidPermission;
-    // if (permissionFetcher_->GetRegrantedPermissions(uidPermission_, rUidPermission) <= 0) {
-    //     PERMISSION_LOG_ERROR(LABEL,"%{public}s: failed to get regranted permissions.", __func__);
-    //     remoteProtocol_.statusCode = Constant::FAILURE_BUT_CAN_RETRY;
-    //     remoteProtocol_.message = Constant::COMMAND_GET_REGRANTED_PERMISSIONS_FAILED;
-    //     return;
-    // }
     if (uid_ == UID_GetRegrantedPermissions_FAILED) {
         PERMISSION_LOG_ERROR(LABEL, "%{public}s: failed to get regranted permissions.", __func__);
         remoteProtocol_.statusCode = Constant::FAILURE_BUT_CAN_RETRY;
         remoteProtocol_.message = Constant::COMMAND_GET_REGRANTED_PERMISSIONS_FAILED;
         return;
     }
-
-    // int32_t addResult = SubjectDevicePermissionManager::GetInstance().AddDistributedPermission(
-    //     remoteProtocol_.srcDeviceId, rUidPermission);
-    // PERMISSION_LOG_DEBUG(LABEL,
-    //     "finish: SubjectDevicePermissionManager addSubjectPermission result: %{public}d }", addResult);
-
-    // if (addResult == Constant::SUCCESS) {
-    //     remoteProtocol_.statusCode = Constant::SUCCESS;
-    //     remoteProtocol_.message = Constant::COMMAND_RESULT_SUCCESS;
-    // } else {
-    //     remoteProtocol_.statusCode = Constant::FAILURE_BUT_CAN_RETRY;
-    //     remoteProtocol_.message = Constant::COMMAND_RESULT_FAILED;
-    // }
     if (uid_ >= UID_FINISH_SUCCESS_INDEX) {
         remoteProtocol_.statusCode = Constant::SUCCESS;
         remoteProtocol_.message = Constant::COMMAND_RESULT_SUCCESS;
