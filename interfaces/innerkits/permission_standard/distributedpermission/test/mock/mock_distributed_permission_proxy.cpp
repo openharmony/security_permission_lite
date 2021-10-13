@@ -629,10 +629,6 @@ int32_t DistributedPermissionProxy::GetPermissionRecords(
     MessageParcel reply;
     bool ret = SendRequest(IDistributedPermission::MessageCode::GET_PERMISSION_RECORDS, data, reply);
     if (ret) {
-        // PERMISSION_LOG_INFO(LABEL, "result = %{public}s", result.c_str());
-        // result = reply.ReadString();
-        // codeLen = reply.ReadUint64();
-        // zipLen = reply.ReadUint64();
         QueryPermissionUsedRequest query;
         unsigned char *pOut = (unsigned char *)malloc(codeLen);
         Base64Util::Decode(request, pOut, codeLen);

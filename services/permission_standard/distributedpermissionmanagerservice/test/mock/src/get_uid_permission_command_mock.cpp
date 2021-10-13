@@ -59,31 +59,18 @@ void setDefaultCommandProps(const int uid, RemoteProtocol &remoteProtocol_, UidB
         {
             PermissionDto detail;
             detail.name = "permissionName1";
-            // detail.bundleName = "bundleName1";
             detail.grantMode = 1;
-            // detail.availableScope = 1;
-            // detail.label = "label1";
-            // detail.labelId = 1;
-            // detail.description = "description1";
-            // detail.descriptionId = 1;
             detail.status = 1;
             bundles.permissions.push_back(detail);
         }
         {
             PermissionDto detail;
             detail.name = "permissionName2";
-            // detail.bundleName = "bundleName2";
             detail.grantMode = 2;
-            // detail.availableScope = 2;
-            // detail.label = "label2";
-            // detail.labelId = 2;
-            // detail.description = "description2";
-            // detail.descriptionId = 2;
             detail.status = 2;
             bundles.permissions.push_back(detail);
         }
         uidPermission_.bundles.push_back(bundles);
-        // uidPermission_.remoteSensitivePermission
     }
 }
 }  // namespace
