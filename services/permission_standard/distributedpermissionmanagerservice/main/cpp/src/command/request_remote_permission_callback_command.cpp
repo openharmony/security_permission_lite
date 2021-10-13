@@ -39,7 +39,6 @@ RequestRemotePermissionCallbackCommand::RequestRemotePermissionCallbackCommand(c
     remoteProtocol_.dstDeviceId = dstDeviceId;
     remoteProtocol_.responseVersion = Constant::DISTRIBUTED_PERMISSION_SERVICE_VERSION;
     remoteProtocol_.requestVersion = Constant::DISTRIBUTED_PERMISSION_SERVICE_VERSION;
-    uid_ = 0;  // INITIALIZER uid
 }
 
 RequestRemotePermissionCallbackCommand::RequestRemotePermissionCallbackCommand(const std::string &json)
@@ -49,12 +48,18 @@ RequestRemotePermissionCallbackCommand::RequestRemotePermissionCallbackCommand(c
     BaseRemoteCommand::FromRemoteProtocolJson(jsonObject);
     if (jsonObject.find("uid") != jsonObject.end() && jsonObject.at("uid").is_number()) {
         jsonObject.at("uid").get_to<int32_t>(uid_);
+    } else {
+        uid_ = 0;
     }
     if (jsonObject.find("requestId") != jsonObject.end() && jsonObject.at("requestId").is_string()) {
         jsonObject.at("requestId").get_to<std::string>(requestId_);
+    } else {
+        requestId_ = "";
     }
     if (jsonObject.find("bundleName") != jsonObject.end() && jsonObject.at("bundleName").is_string()) {
         jsonObject.at("bundleName").get_to<std::string>(bundleName_);
+    } else {
+        bundleName_ = "";
     }
     if (jsonObject.find("objectGrantedResult") != jsonObject.end() && jsonObject.at("objectGrantedResult") != nullptr) {
         jsonObject.at("objectGrantedResult").get_to<std::set<std::string>>(objectGrantedResult_);

@@ -44,7 +44,10 @@ SyncUidStateCommand::SyncUidStateCommand(const std::string &json)
     BaseRemoteCommand::FromRemoteProtocolJson(jsonObject);
     if (jsonObject.find("uid") != jsonObject.end() && jsonObject.at("uid").is_number()) {
         uid_ = jsonObject.at("uid").get<int32_t>();
+    } else {
+        uid_ = 0;
     }
+    uidState_ = 1;
 }
 
 std::string SyncUidStateCommand::ToJsonPayload()

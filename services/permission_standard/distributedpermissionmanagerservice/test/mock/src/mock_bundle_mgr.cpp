@@ -307,22 +307,5 @@ bool BundleMgrService::GetShortcutInfos(const std::string &bundleName, std::vect
 {
     return true;
 }
-
-// bool BundleMgrService::GetModuleUsageRecords(const int32_t number, std::vector<ModuleUsageRecord>
-// &moduleUsageRecords)
-// {
-//     return true;
-// }
-
-// bool BundleMgrService::NotifyActivityLifeStatus(
-//     const std::string &bundleName, const std::string &abilityName, const int64_t launchTime)
-// {
-//     return true;
-// }
-// bool BundleMgrService::QueryAbilityInfos(const Want &want, std::vector<AbilityInfo> &abilityInfos)
-// {
-//     return true;
-// }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
