@@ -55,6 +55,8 @@ RequestRemotePermissionCommand::RequestRemotePermissionCommand(const std::string
     BaseRemoteCommand::FromRemoteProtocolJson(jsonObject);
     if (jsonObject.find("uid") != jsonObject.end() && jsonObject.at("uid").is_number()) {
         uid_ = jsonObject.at("uid").get<int32_t>();
+    } else {
+        uid_ = 0;
     }
     if (jsonObject.find("requestId") != jsonObject.end() && jsonObject.at("requestId").is_string()) {
         jsonObject.at("requestId").get_to<std::string>(requestId_);

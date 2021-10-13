@@ -20,8 +20,6 @@ namespace OHOS {
 namespace Security {
 namespace Permission {
 namespace {
-// static constexpr OHOS::HiviewDFX::HiLogLabel LABEL = {LOG_CORE, SECURITY_DOMAIN_PERMISSION, "Base64Util"};
-// }
 const char *encodeTable = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
 
 const unsigned char decodeTable[] = {
@@ -44,9 +42,9 @@ void Base64Util::Encode(const unsigned char *input, unsigned long inLen, std::st
 {
     unsigned long i;
     uint32_t six = 6;
-    int four = 4;
-    int three = 3;
-    int two = 2;
+    uint32_t four = 4;
+    uint32_t three = 3;
+    uint32_t two = 2;
     std::unique_ptr<char[]> result = std::make_unique<char[]>((inLen + 1) * four / three + 1);
     char *dstData = result.get();
     int j = 0;
@@ -75,12 +73,12 @@ void Base64Util::Decode(const std::string &input, unsigned char *output, unsigne
 {
     unsigned char *Data = (unsigned char *)input.c_str();
     int DataByte = input.length();
-    int eighteen = 18;
-    int sixteen = 16;
-    int twelve = 12;
-    int eight = 8;
-    int six = 6;
-    int four = 4;
+    uint32_t eighteen = 18;
+    uint32_t sixteen = 16;
+    uint32_t twelve = 12;
+    uint32_t eight = 8;
+    uint32_t six = 6;
+    uint32_t four = 4;
 
     unsigned int nValue;
     int i = 0;

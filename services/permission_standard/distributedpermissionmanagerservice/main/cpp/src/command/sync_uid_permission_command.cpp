@@ -44,6 +44,8 @@ SyncUidPermissionCommand::SyncUidPermissionCommand(const std::string &json)
     BaseRemoteCommand::FromRemoteProtocolJson(jsonObject);
     if (jsonObject.find("uid") != jsonObject.end() && jsonObject.at("uid").is_number()) {
         uid_ = jsonObject.at("uid").get<int32_t>();
+    } else {
+        uid_ = 0;
     }
     nlohmann::json bundlePermissionsJson = jsonObject.at("uidPermission").get<nlohmann::json>();
     BaseRemoteCommand::FromUidBundlePermissionsJson(bundlePermissionsJson, uidPermission_);
