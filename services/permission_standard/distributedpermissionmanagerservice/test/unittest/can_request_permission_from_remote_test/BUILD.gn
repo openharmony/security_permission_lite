@@ -148,7 +148,7 @@ ohos_unittest("can_request_permission_from_remote_test") {
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
     "safwk:system_ability_fwk",
-    "samgr_L2:samgr_proxy",
+    "samgr_standard:samgr_proxy",
   ]
 }
 
