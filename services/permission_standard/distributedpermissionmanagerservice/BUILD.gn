@@ -192,7 +192,7 @@ ohos_shared_library("distributed_permission_services") {
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
     "safwk:system_ability_fwk",
-    "samgr_L2:samgr_proxy",
+    "samgr_standard:samgr_proxy",
   ]
   cflags_cc = [ "-DHILOG_ENABLE" ]
   subsystem_name = "security"

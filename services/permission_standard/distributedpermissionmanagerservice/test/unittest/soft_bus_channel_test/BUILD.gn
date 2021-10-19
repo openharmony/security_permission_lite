@@ -141,7 +141,7 @@ ohos_unittest("soft_bus_channel_test") {
     "ipc:ipc_core",
     "permission_standard:libpermissionsdk_standard",
     "safwk:system_ability_fwk",
-    "samgr_L2:samgr_proxy",
+    "samgr_standard:samgr_proxy",
   ]
 }
 
