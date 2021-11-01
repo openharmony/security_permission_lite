@@ -123,11 +123,6 @@ ohos_unittest("can_request_permission_from_remote_test") {
     "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_base:appexecfwk_base",
     "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_core:appexecfwk_core",
     "//foundation/appexecfwk/standard/interfaces/innerkits/libeventhandler:libeventhandler",
-
-    # softbus mock begin
-    #  "//foundation/communication/dsoftbus/core/frame/standard/client:softbus_client",
-    # softbus mock end
-
     "//base/global/resmgr_standard/frameworks/resmgr:global_resmgr",
     "//base/notification/ans_standard/frameworks/ans/core:ans_core",
     "//base/notification/ans_standard/frameworks/wantagent:wantagent_innerkits",

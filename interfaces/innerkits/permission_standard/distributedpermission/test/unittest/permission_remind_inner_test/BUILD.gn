@@ -68,7 +68,6 @@ ohos_unittest("PermissionRemindInnerTest") {
     "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_base:appexecfwk_base",
     "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_core:appexecfwk_core",
     "//foundation/appexecfwk/standard/interfaces/innerkits/libeventhandler:libeventhandler",
-    "//foundation/communication/dsoftbus/core/frame/standard/client:softbus_client",
     "//foundation/distributedschedule/safwk/interfaces/innerkits/safwk:system_ability_fwk",
     "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
     "//third_party/sqlite:sqlite",
@@ -77,6 +76,7 @@ ohos_unittest("PermissionRemindInnerTest") {
   ]
 
   external_deps = [
+    "dsoftbus_standard:softbus_client",
     "aafwk_standard:want",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
