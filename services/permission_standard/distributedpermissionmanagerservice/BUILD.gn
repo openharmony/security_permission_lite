@@ -185,10 +185,10 @@ ohos_shared_library("distributed_permission_services") {
   ]
 
   external_deps = [
-    "dsoftbus_standard:softbus_client",
     "aafwk_standard:want",
     "ces_standard:cesfwk_core",
     "ces_standard:cesfwk_innerkits",
+    "dsoftbus_standard:softbus_client",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
     "safwk:system_ability_fwk",
