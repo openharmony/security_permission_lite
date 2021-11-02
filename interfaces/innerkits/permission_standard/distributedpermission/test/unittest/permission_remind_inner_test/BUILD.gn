@@ -76,8 +76,8 @@ ohos_unittest("PermissionRemindInnerTest") {
   ]
 
   external_deps = [
-    "dsoftbus_standard:softbus_client",
     "aafwk_standard:want",
+    "dsoftbus_standard:softbus_client",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
     "safwk:system_ability_fwk",
