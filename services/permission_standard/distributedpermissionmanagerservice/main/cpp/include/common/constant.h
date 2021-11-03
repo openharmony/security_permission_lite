@@ -21,8 +21,6 @@
 #include <map>
 #include <vector>
 
-#include "parameter.h"
-
 namespace OHOS {
 namespace Security {
 namespace Permission {
