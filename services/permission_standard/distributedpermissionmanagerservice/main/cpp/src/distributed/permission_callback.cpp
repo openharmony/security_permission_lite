@@ -19,7 +19,6 @@
 namespace OHOS {
 namespace Security {
 namespace Permission {
-
 namespace {
 static constexpr OHOS::HiviewDFX::HiLogLabel LABEL = {LOG_CORE, SECURITY_DOMAIN_PERMISSION, "PermissionCallback"};
 }  // namespace
@@ -27,12 +26,10 @@ static constexpr OHOS::HiviewDFX::HiLogLabel LABEL = {LOG_CORE, SECURITY_DOMAIN_
 void PermissionCallback::OnChanged(const int32_t uid)
 {
     int result = ObjectDevicePermissionManager::GetInstance().NotifyPermissionChanged(uid);
-
     if (result != Constant::SUCCESS) {
         PERMISSION_LOG_WARN(LABEL, "PermissionCallback is not SUCCESS:  %{public}d", uid);
     }
 }
-
 }  // namespace Permission
 }  // namespace Security
 }  // namespace OHOS

@@ -12,14 +12,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+#include "soft_bus_channel.h"
 #include <securec.h>
-#include "device_info_manager.h"
 #include "soft_bus_manager.h"
+#include "device_info_manager.h"
 #include "distributed_permission_event_handler.h"
 #include "distributed_permission_manager_service.h"
 #include "singleton.h"
-#include "soft_bus_channel.h"
 
 namespace OHOS {
 namespace Security {

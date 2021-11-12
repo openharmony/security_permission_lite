@@ -174,31 +174,8 @@ std::shared_ptr<RpcChannel> RemoteCommandManager::GetExecutorChannel(const std::
 {
     return nullptr;
 }
-
-// ExternalDeps
 void RemoteCommandManager::RemoveCommand(const std::string &deviceId)
 {}
-
-// sptr<AppExecFwk::IBundleMgr> ExternalDeps::GetBundleManager(sptr<AppExecFwk::IBundleMgr> iBundleManager_)
-// {
-//     return nullptr;
-// }
-
-// sptr<Permission::IPermissionManager> ExternalDeps::GetPermissionManager(
-//     sptr<Permission::IPermissionManager> iPermissionManager_)
-// {
-//     return nullptr;
-// }
-
-// sptr<AAFwk::IAbilityManager> ExternalDeps::GetAbilityManager(sptr<AAFwk::IAbilityManager> iAbilityManager_)
-// {
-//     return nullptr;
-// }
-
-// sptr<IRemoteObject> ExternalDeps::GetSystemAbility(const int32_t systemAbilityId)
-// {
-//     return nullptr;
-// }
 
 // PermissionBmsManager
 PermissionBmsManager::PermissionBmsManager()
@@ -276,22 +253,6 @@ bool RequestRemotePermission::HaveSensitivePermissionToRequest(
 {
     return true;
 }
-
-// IPermissionManager
-// int IPermissionManager::GetDefPermission(const std::string &permissionName, PermissionDefParcel &permissionDefResult)
-// {
-
-//     permissionDefResult.permissionDef.permissionName = permissionName;
-//     permissionDefResult.permissionDef.bundleName = permissionName + "bundleName";
-//     permissionDefResult.permissionDef.grantMode = 0;
-//     permissionDefResult.permissionDef.availableScope = 0;
-//     permissionDefResult.permissionDef.label = permissionName + "label";
-//     permissionDefResult.permissionDef.labelId = 0;
-//     permissionDefResult.permissionDef.description = permissionName + "description";
-//     permissionDefResult.permissionDef.descriptionId = 0;
-
-//     return 0;
-// }
 }  // namespace Permission
 }  // namespace Security
 }  // namespace OHOS

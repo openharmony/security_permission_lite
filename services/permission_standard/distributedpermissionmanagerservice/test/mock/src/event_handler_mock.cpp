@@ -77,9 +77,8 @@ void Run__()
         PERMISSION_LOG_DEBUG(LABEL, "run task, name: %{public}s", task->name.c_str());
         (task->callback)();
         PERMISSION_LOG_DEBUG(LABEL, "run task, name: %{public}s end", task->name.c_str());
-        delete task;
-
         PERMISSION_LOG_DEBUG(LABEL, "run task %{public}s next", task->name.c_str());
+        delete task;
     }
 }
 
@@ -191,8 +190,6 @@ bool DistributedPermissionEventHandler::ProxyPostTask(
         tasks__.push_back(task);
         empty__.notify_all();
         lock.unlock();
-        PERMISSION_LOG_DEBUG(
-            LABEL, "task attached. task name: %{public}s, task: %{public}lu", task->name.c_str(), (unsigned long)task);
         return true;
     }
 

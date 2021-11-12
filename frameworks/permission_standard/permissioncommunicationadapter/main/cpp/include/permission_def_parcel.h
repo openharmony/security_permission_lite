@@ -34,7 +34,7 @@ struct PermissionDefParcel final : public Parcelable {
 
     PermissionDef permissionDef;
 };
-}  // namespace Permission
-}  // namespace Security
-}  // namespace OHOS
-#endif  // PERMISSION_DEF_PARCEL_H
+} // namespace Permission
+} // namespace Security
+} // namespace OHOS
+#endif // PERMISSION_DEF_PARCEL_H

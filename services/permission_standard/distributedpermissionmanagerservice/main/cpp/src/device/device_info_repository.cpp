@@ -186,6 +186,6 @@ void DeviceInfoRepository::Clear()
     deviceIdMapByUniqueDisabilityId_.clear();
     deviceInfoMap_.clear();
 }
-}  // namespace Permission
-}  // namespace Security
-}  // namespace OHOS
+} // namespace Permission
+} // namespace Security
+} // namespace OHOS

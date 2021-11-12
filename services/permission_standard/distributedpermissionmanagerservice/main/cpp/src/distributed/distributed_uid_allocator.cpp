@@ -145,6 +145,6 @@ std::string DistributedUidAllocator::Hash(const std::string &deviceId, const int
     std::hash<std::string> hashStr;
     return std::to_string(hashStr(deviceId)) + "_" + std::to_string(uid);
 }
-}  // namespace Permission
-}  // namespace Security
-}  // namespace OHOS
+} // namespace Permission
+} // namespace Security
+} // namespace OHOS

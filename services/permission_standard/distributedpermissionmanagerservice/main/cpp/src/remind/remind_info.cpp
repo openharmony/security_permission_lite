@@ -36,25 +36,20 @@ RemindInfo &RemindInfo::GetInstance()
 void RemindInfo::DeviceDisConnection(const std::string &deviceId)
 {
     PERMISSION_LOG_INFO(LABEL, "%{public}s: called!", __func__);
-
     std::vector<PermissionRemindInfo>::iterator item;
     for (item = permRemindInfos_.begin(); item != permRemindInfos_.end(); item++) {
         if (item->deviceId == deviceId) {
-
             PERMISSION_LOG_INFO(LABEL, "The Stopping NotificationInfo :");
-            PERMISSION_LOG_INFO(LABEL, "deviceId        : %{public}s" , deviceId.c_str());
-            PERMISSION_LOG_INFO(LABEL, "notificationId  : %{public}d" , item->notificationId);
-
+            PERMISSION_LOG_INFO(LABEL, "deviceId        : %{public}s", deviceId.c_str());
+            PERMISSION_LOG_INFO(LABEL, "notificationId  : %{public}d", item->notificationId);
             for (auto perm = item->permissions.begin(); perm != item->permissions.end(); perm++) {
-                PERMISSION_LOG_INFO(LABEL, "permissionName  : %{public}s" , perm->c_str());
+                PERMISSION_LOG_INFO(LABEL, "permissionName  : %{public}s", perm->c_str());
             }
-
             Notification::NotificationHelper::CancelNotification(item->label, item->notificationId);
             permRemindInfos_.erase(item);
         }
     }
 }
-
 }  // namespace Permission
 }  // namespace Security
 }  // namespace OHOS

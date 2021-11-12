@@ -14,7 +14,6 @@
  */
 
 #include "mock_parameter.h"
-
 #include <securec.h>
 
 int GetDevUdid(char *udid, int size)

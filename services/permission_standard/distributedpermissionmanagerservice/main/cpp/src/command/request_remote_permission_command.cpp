@@ -46,7 +46,6 @@ RequestRemotePermissionCommand::RequestRemotePermissionCommand(
     remoteProtocol_.dstDeviceId = dstDeviceId;
     remoteProtocol_.responseVersion = Constant::DISTRIBUTED_PERMISSION_SERVICE_VERSION;
     remoteProtocol_.requestVersion = Constant::DISTRIBUTED_PERMISSION_SERVICE_VERSION;
-    uid_ = 0;  // INITIALIZER uid
 }
 
 RequestRemotePermissionCommand::RequestRemotePermissionCommand(const std::string &json)

@@ -18,7 +18,6 @@
 namespace OHOS {
 namespace Security {
 namespace Permission {
-
 const std::string Constant::SYSTEM_PERMISSION_TYPE = "system";
 const std::string Constant::APP_PERMISSION_TYPE = "app";
 

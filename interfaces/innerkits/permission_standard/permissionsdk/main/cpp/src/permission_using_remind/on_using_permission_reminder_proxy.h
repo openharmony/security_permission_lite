@@ -24,19 +24,19 @@ namespace Security {
 namespace Permission {
 class OnUsingPermissionReminderProxy : public IRemoteProxy<OnUsingPermissionReminder> {
 public:
-    explicit OnUsingPermissionReminderProxy(const sptr<IRemoteObject>& object);
+    explicit OnUsingPermissionReminderProxy(const sptr<IRemoteObject> &object);
 
     virtual ~OnUsingPermissionReminderProxy() override;
 
-    virtual void StartUsingPermission(const PermissionReminderInfo& permReminderInfo) override;
+    virtual void StartUsingPermission(const PermissionReminderInfo &permReminderInfo) override;
 
-    virtual void StopUsingPermission(const PermissionReminderInfo& permReminderInfo) override;
+    virtual void StopUsingPermission(const PermissionReminderInfo &permReminderInfo) override;
 
 private:
     static inline BrokerDelegator<OnUsingPermissionReminderProxy> delegator_;
 };
-} // namespace Permission
-} // namespace Security
-} // namespace OHOS
+}  // namespace Permission
+}  // namespace Security
+}  // namespace OHOS
 
-#endif // ON_USING_PERMISSION_REMINDER_PROXY_H
+#endif  // ON_USING_PERMISSION_REMINDER_PROXY_H

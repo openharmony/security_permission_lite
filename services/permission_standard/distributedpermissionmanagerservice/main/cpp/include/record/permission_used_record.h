@@ -52,8 +52,14 @@ struct PermissionUsedRecord : public Parcelable {
     std::vector<int64_t> accessRecordBg;
     std::vector<int64_t> rejectRecordBg;
 
+    /**
+     * Special function name: cxx serialization require.
+     */
     nlohmann::json to_json(const PermissionUsedRecord &result);
 
+    /**
+     * Special function name: cxx serialization require.
+     */
     void from_json(const nlohmann::json &jsonObj, PermissionUsedRecord &result);
 
     void updateRecord(const PermissionUsedRecord &record);

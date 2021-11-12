@@ -15,10 +15,10 @@
 
 #ifndef REMOTE_PROTOCOL_H
 #define REMOTE_PROTOCOL_H
+
 namespace OHOS {
 namespace Security {
 namespace Permission {
-
 struct RemoteProtocol {
     std::string commandName;
     std::string uniqueId;
@@ -32,7 +32,6 @@ struct RemoteProtocol {
     int32_t responseVersion;
     std::string responseDeviceId;
 };
-
 }  // namespace Permission
 }  // namespace Security
 }  // namespace OHOS
