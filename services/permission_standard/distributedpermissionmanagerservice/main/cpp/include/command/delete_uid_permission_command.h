@@ -41,7 +41,7 @@ private:
      * The command name. Should be equal to class name.
      */
     const std::string COMMAND_NAME = "DeleteUidPermissionCommand";
-    int32_t uid_;
+    int32_t uid_ = 0;
 };
 }  // namespace Permission
 }  // namespace Security

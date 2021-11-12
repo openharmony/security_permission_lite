@@ -36,7 +36,6 @@ class BundleMgrStub : public IRemoteStub<IBundleMgr> {
 public:
     DECLARE_INTERFACE_DESCRIPTOR(u"IBundleMgr");
 };
-
 class BundleMgrService : public BundleMgrStub {
 public:
     bool GetApplicationInfo(
@@ -91,30 +90,11 @@ public:
         const std::vector<int> &uids, const sptr<OnPermissionChangedCallback> &callback) override;
     bool UnregisterPermissionsChanged(const sptr<OnPermissionChangedCallback> &callback) override;
     sptr<IBundleInstaller> GetBundleInstaller() override;
-
     bool GetAllFormsInfo(std::vector<FormInfo> &formInfos) override;
     bool GetFormsInfoByApp(const std::string &bundleName, std::vector<FormInfo> &formInfos) override;
     bool GetFormsInfoByModule(
         const std::string &bundleName, const std::string &moduleName, std::vector<FormInfo> &formInfos) override;
     bool GetShortcutInfos(const std::string &bundleName, std::vector<ShortcutInfo> &shortcutInfos) override;
-
-    // /**
-    //  * @brief Get module usage record list in descending order of lastLaunchTime.
-    //  * @param maxNum the return size of the records, must be in range of 1 to 1000.
-    //  * @param moduleUsageRecords List of ModuleUsageRecord objects if obtained.
-    //  * @return Returns true if this function is successfully called; returns false otherwise.
-    //  */
-    // bool GetModuleUsageRecords(const int32_t number, std::vector<ModuleUsageRecord> &moduleUsageRecords) override;
-    // /**
-    //  * @brief Notify a specified ability for activity.
-    //  * @param bundleName Indicates the bundle name of the ability to activity.
-    //  * @param abilityName Indicates the name of the ability to activity.
-    //  * @param launchTime Indicates the ability launchTime.
-    //  * @return Returns true if this function is successfully called; returns false otherwise.
-    //  */
-    // bool NotifyActivityLifeStatus(
-    //     const std::string &bundleName, const std::string &abilityName, const int64_t launchTime) override;
-    // bool QueryAbilityInfos(const Want &want, std::vector<AbilityInfo> &abilityInfos) override;
     BundleMgrService()
     {}
     ~BundleMgrService()

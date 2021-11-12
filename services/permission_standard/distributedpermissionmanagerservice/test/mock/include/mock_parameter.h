@@ -22,7 +22,7 @@ extern "C" {
 #endif
 #endif /* __cplusplus */
 
-int GetDevUdid(char* udid, int size);
+int GetDevUdid(char *udid, int size);
 
 #ifdef __cplusplus
 #if __cplusplus
@@ -30,4 +30,4 @@ int GetDevUdid(char* udid, int size);
 #endif
 #endif /* __cplusplus */
 
-#endif // STARTUP_SYSPARAM_PARAMETER_API_H
+#endif  // STARTUP_SYSPARAM_PARAMETER_API_H

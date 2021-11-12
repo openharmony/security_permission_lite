@@ -23,7 +23,6 @@
 namespace OHOS {
 namespace Security {
 namespace Permission {
-
 namespace {
 static constexpr OHOS::HiviewDFX::HiLogLabel LABEL = {LOG_CORE, SECURITY_DOMAIN_PERMISSION, "PermissionChangeReceiver"};
 }  // namespace
@@ -74,8 +73,6 @@ void PermissionChangeReceiver::AppEventSubscriber::OnReceiveEvent(const EventFwk
     OnReceive(data);
 }
 
-/////////////// private methods
-
 void PermissionChangeReceiver::PackageAdded(int32_t uid)
 {
     PERMISSION_LOG_DEBUG(LABEL, "package added event, uid: %{public}d", uid);
@@ -103,7 +100,6 @@ void PermissionChangeReceiver::UserRemoved(int32_t userId)
     PERMISSION_LOG_DEBUG(LABEL, "user removed, userId: %{public}d", userId);
     ObjectDevicePermissionManager::GetInstance().RemoveNotifyPermissionMonitorUserId(userId);
 }
-
 }  // namespace Permission
 }  // namespace Security
 }  // namespace OHOS

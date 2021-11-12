@@ -193,21 +193,10 @@ ErrCode NotificationHelper::RemoveNotification(const std::string &key)
     return 0;
 }
 
-// ErrCode NotificationHelper::RemoveNotifications(const std::string &bundleName)
-// {
-//     return 0;
-// }
-
 ErrCode NotificationHelper::RemoveNotifications()
 {
     return 0;
 }
-
-// ErrCode NotificationHelper::GetNotificationSlotsForBundle(
-//     const std::string &bundleName, std::vector<sptr<NotificationSlot>> &slots)
-// {
-//     return 0;
-// }
 
 ErrCode NotificationHelper::GetAllActiveNotifications(std::vector<sptr<Notification>> &notification)
 {
@@ -220,11 +209,6 @@ ErrCode NotificationHelper::GetAllActiveNotifications(
     return 0;
 }
 
-// ErrCode NotificationHelper::IsAllowedNotify(const NotificationBundleOption &bundleOption, bool &allowed)
-// {
-//     return 0;
-// }
-
 ErrCode NotificationHelper::SetNotificationsEnabledForAllBundles(const std::string &deviceId, bool enabled)
 {
     return 0;
@@ -234,12 +218,6 @@ ErrCode NotificationHelper::SetNotificationsEnabledForDefaultBundle(const std::s
 {
     return 0;
 }
-
-// ErrCode NotificationHelper::SetNotificationsEnabledForSpecifiedBundle(
-//     const NotificationBundleOption &bundleOption, std::string &deviceId, bool enabled)
-// {
-//     return 0;
-// }
 
 ErrCode NotificationHelper::SetDisturbMode(NotificationConstant::DisturbMode mode)
 {

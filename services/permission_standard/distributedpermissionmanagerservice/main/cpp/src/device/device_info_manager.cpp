@@ -162,6 +162,6 @@ bool DeviceInfoManager::IsDeviceUniversallyUniqueId(const std::string &nodeId) c
     }
     return false;
 }
-}  // namespace Permission
-}  // namespace Security
-}  // namespace OHOS
+} // namespace Permission
+} // namespace Security
+} // namespace OHOS

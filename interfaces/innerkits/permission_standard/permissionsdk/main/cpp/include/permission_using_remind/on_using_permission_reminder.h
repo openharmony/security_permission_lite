@@ -25,9 +25,9 @@ namespace Security {
 namespace Permission {
 class OnUsingPermissionReminder : public IRemoteBroker {
 public:
-    virtual void StartUsingPermission(const PermissionReminderInfo& permReminderInfo) = 0;
+    virtual void StartUsingPermission(const PermissionReminderInfo &permReminderInfo) = 0;
 
-    virtual void StopUsingPermission(const PermissionReminderInfo& permReminderInfo) = 0;
+    virtual void StopUsingPermission(const PermissionReminderInfo &permReminderInfo) = 0;
 
     enum class Message {
         START_USING_PERMISSION,
@@ -37,8 +37,8 @@ public:
 public:
     DECLARE_INTERFACE_DESCRIPTOR(u"ohos.security.permission.OnUsingPermissionReminder");
 };
-} // namespace Permission
-} // namespace Security
-} // namespace OHOS
+}  // namespace Permission
+}  // namespace Security
+}  // namespace OHOS
 
-#endif // ON_USING_PERMISSION_REMINDER_H
+#endif  // ON_USING_PERMISSION_REMINDER_H

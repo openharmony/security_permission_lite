@@ -20,16 +20,15 @@ namespace OHOS {
 namespace Security {
 namespace Permission {
 namespace {
-// static constexpr OHOS::HiviewDFX::HiLogLabel LABEL = {LOG_CORE, SECURITY_DOMAIN_PERMISSION, "Base64Util"};
-// }
+
 const char *encodeTable = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
 
 const unsigned char decodeTable[] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    62,  // '+'
+    62, // '+'
     0, 0, 0,
-    63,  // '/'
+    63,                                     // '/'
     52, 53, 54, 55, 56, 57, 58, 59, 60, 61, // '0'-'9'
     0, 0, 0, 0, 0, 0, 0,
     0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
@@ -47,6 +46,7 @@ void Base64Util::Encode(const unsigned char *input, unsigned long inLen, std::st
     int four = 4;
     int three = 3;
     int two = 2;
+
     std::unique_ptr<char[]> result = std::make_unique<char[]>((inLen + 1) * four / three + 1);
     char *dstData = result.get();
     int j = 0;
@@ -106,7 +106,7 @@ void Base64Util::Decode(const std::string &input, unsigned char *output, unsigne
     }
     output[outLen] = '\0';
 }
-
 }  // namespace Permission
 }  // namespace Security
 }  // namespace OHOS
+

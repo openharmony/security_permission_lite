@@ -36,7 +36,7 @@
 #define PERMISSION_LOG_ERROR(label, fmt, ...) OHOS::HiviewDFX::HiLog::Error(label, fmt, ##__VA_ARGS__)
 #define PERMISSION_LOG_FATAL(label, fmt, ...) OHOS::HiviewDFX::HiLog::Fatal(label, fmt, ##__VA_ARGS__)
 
-#endif // __cplusplus
+#endif  // __cplusplus
 
 /* define LOG_TAG as "security_*" at your submodule, * means your submodule name such as "security_dac" */
 #undef LOG_TAG
@@ -58,6 +58,6 @@ static constexpr unsigned int SECURITY_DOMAIN_PERMISSION = 0xD002F01;
 #define PERMISSION_LOG_ERROR(fmt, ...) printf("[%s] error: %s: " fmt "\n", LOG_TAG, __func__, ##__VA_ARGS__)
 #define PERMISSION_LOG_FATAL(fmt, ...) printf("[%s] fatal: %s: " fmt "\n", LOG_TAG, __func__, ##__VA_ARGS__)
 
-#endif // HILOG_ENABLE
+#endif  // HILOG_ENABLE
 
-#endif // PERMISSION_LOG_H
+#endif  // PERMISSION_LOG_H

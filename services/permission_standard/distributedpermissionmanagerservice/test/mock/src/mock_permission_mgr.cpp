@@ -79,7 +79,7 @@ int PermissionManagerService::GetDefPermission(
     if (permissionName == "") {
         return -1;
     }
-    int APP_ATTRIBUTE_SIGNED_WITH_PLATFORM_KEY = 1 << 2;
+    int APP_ATTRIBUTE_SIGNED_WITH_PLATFORM_KEY = 4;
     if (permissionName == "ohos.permission.READ_CONTACTS" || permissionName == "ohos.permission.WRITE_CONTACTS") {
         permissionDefResult.permissionDef.permissionName = permissionName;
         permissionDefResult.permissionDef.bundleName = permissionName + "bundleName";
