@@ -17,10 +17,13 @@
 #define DISRIBUTED_PERMISSION_KIT_H
 
 #include <iostream>
-#include "distributed_permission_manager_client.h"
 #include "app_id_info.h"
 #include "constant.h"
 #include "nlohmann/json.hpp"
+#include "on_using_permission_reminder.h"
+#include "on_permission_used_record.h"
+#include "on_request_permissions_result.h"
+#include "query_permission_used_request.h"
 
 namespace OHOS {
 namespace Security {

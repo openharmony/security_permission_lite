@@ -81,19 +81,22 @@ bool BundleMgrService::GetBundleInfo(const std::string &bundleName, const Bundle
     bundleInfo.applicationInfo = applicationInfo;
     std::vector<std::string> reqPermissions;
     if (bundleName == "bundleName1024") {
-        for (int i = 1; i <= 1025; i++) {
-            reqPermissions.push_back("reqPermissions" + std::to_string(i));
+        int max_count_1025 = 1025;
+        for (int num1 = 1; num1 <= max_count_1025; num1++) {
+            reqPermissions.push_back("reqPermissions" + std::to_string(num1));
         }
     } else {
-        for (int i = 1; i <= 5; i++) {
-            reqPermissions.push_back("reqPermissions" + std::to_string(i));
+        int max_count = 5;
+        for (int num2 = 1; num2 <= max_count; num2++) {
+            reqPermissions.push_back("reqPermissions" + std::to_string(num2));
         }
     }
 
     bundleInfo.reqPermissions = reqPermissions;
     std::vector<std::string> defPermissions;
-    for (int i = 1; i <= 5; i++) {
-        defPermissions.push_back("defPermissions" + std::to_string(i));
+    int def_max_count = 5;
+    for (int num3 = 1; num3 <= def_max_count; num3++) {
+        defPermissions.push_back("defPermissions" + std::to_string(num3));
     }
     bundleInfo.defPermissions = defPermissions;
     return true;
@@ -193,7 +196,7 @@ int BundleMgrService::CheckPermission(const std::string &bundleName, const std::
 }
 bool BundleMgrService::GetPermissionDef(const std::string &permissionName, PermissionDef &permissionDef)
 {
-    return true;
+    return false;
 }
 bool BundleMgrService::GetAllPermissionGroupDefs(std::vector<PermissionDef> &permissionDefs)
 {
@@ -237,7 +240,7 @@ bool BundleMgrService::UnregisterBundleStatusCallback()
 {
     return true;
 }
-bool BundleMgrService::DumpInfos(const DumpFlag flag, const std::string &bundleName, std::string &result)
+bool BundleMgrService::DumpInfos(const MockDumpFlag flag, const std::string &bundleName, std::string &result)
 {
     return true;
 }

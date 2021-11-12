@@ -37,7 +37,7 @@ public:
     static void SetUpTestCase()
     {
         cout << "SetUpTestCase()" << endl;
-        OHOS::sptr<OHOS::IRemoteObject> bundleObject = NULL;
+        OHOS::sptr<OHOS::IRemoteObject> bundleObject = new OHOS::AppExecFwk::BundleMgrService();
         OHOS::sptr<OHOS::IRemoteObject> permissionObject = new PermissionManagerService();
         auto sysMgr = OHOS::SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
         if (sysMgr == NULL) {
@@ -61,19 +61,19 @@ public:
         DistributedUidAllocator::GetInstance().Clear();
         DeviceInfoRepository::GetInstance().Clear();
     }
-    std::shared_ptr<DistributedPermissionManagerService> GetInstance();
+    std::unique_ptr<DistributedPermissionManagerService> GetInstance();
 };
-std::shared_ptr<DistributedPermissionManagerService> NotifySyncPermissionTest::GetInstance()
+std::unique_ptr<DistributedPermissionManagerService> NotifySyncPermissionTest::GetInstance()
 {
-    return std::make_shared<DistributedPermissionManagerService>();
+    return std::make_unique<DistributedPermissionManagerService>();
 }
 HWTEST_F(NotifySyncPermissionTest, NotifySyncPermission_0001, Function | MediumTest | Level1)
 {
     DeviceInfoRepository::GetInstance().SaveDeviceInfo(
         "networkId", "universallyUniqueId", "uniqueDisabilityIdSuccess", "deviceName", "deviceType");
 
-    std::shared_ptr<DistributedPermissionManagerService> class_ =
-        std::make_shared<DistributedPermissionManagerService>();
+    std::unique_ptr<DistributedPermissionManagerService> class_ =
+        std::make_unique<DistributedPermissionManagerService>();
 
     std::string nodeId = "networkId";
     int uid = 1;

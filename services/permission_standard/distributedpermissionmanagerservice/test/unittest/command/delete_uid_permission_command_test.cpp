@@ -26,25 +26,11 @@
 #define private public
 #include "distributed_uid_allocator.h"
 #include "delete_uid_permission_command.h"
+#include "delete_uid_permission_command_test.h"
 
 using namespace std;
 using namespace OHOS::Security::Permission;
 using namespace testing::ext;
-
-namespace {}  // namespace
-
-class DeleteUidPermissionCommandTest : public testing::Test {
-public:
-    DeleteUidPermissionCommandTest();
-    ~DeleteUidPermissionCommandTest();
-    static void SetUpTestCase();
-    static void TearDownTestCase();
-    void SetUp();
-    void TearDown();
-    const std::shared_ptr<DeleteUidPermissionCommand> GetClass() const;
-
-private:
-};
 
 DeleteUidPermissionCommandTest::DeleteUidPermissionCommandTest()
 {}
@@ -65,8 +51,8 @@ HWTEST_F(DeleteUidPermissionCommandTest, DeleteUidPermissionCommandTest_0001, Fu
     std::string srcDeviceId = "srcDeviceId";
     std::string dstDeviceId = "dstDeviceId";
 
-    std::shared_ptr<BaseRemoteCommand> class_ =
-        std::make_shared<DeleteUidPermissionCommand>(uid, srcDeviceId, dstDeviceId);
+    std::unique_ptr<BaseRemoteCommand> class_ =
+        std::make_unique<DeleteUidPermissionCommand>(uid, srcDeviceId, dstDeviceId);
 
     EXPECT_EQ(class_->remoteProtocol_.commandName, "DeleteUidPermissionCommand");
     EXPECT_EQ(class_->remoteProtocol_.uniqueId, "DeleteUidPermissionCommand-1");
@@ -81,8 +67,8 @@ HWTEST_F(DeleteUidPermissionCommandTest, DeleteUidPermissionCommandTest_0002, Fu
     std::string srcDeviceId = "srcDeviceId";
     std::string dstDeviceId = "dstDeviceId";
 
-    std::shared_ptr<BaseRemoteCommand> class_ =
-        std::make_shared<DeleteUidPermissionCommand>(uid, srcDeviceId, dstDeviceId);
+    std::unique_ptr<BaseRemoteCommand> class_ =
+        std::make_unique<DeleteUidPermissionCommand>(uid, srcDeviceId, dstDeviceId);
 
     class_->Prepare();
     EXPECT_EQ(class_->remoteProtocol_.statusCode, 0);
@@ -95,8 +81,8 @@ HWTEST_F(DeleteUidPermissionCommandTest, DeleteUidPermissionCommandTest_0003, Fu
     std::string srcDeviceId = "srcDeviceId";
     std::string dstDeviceId = "dstDeviceId";
 
-    std::shared_ptr<BaseRemoteCommand> class_ =
-        std::make_shared<DeleteUidPermissionCommand>(uid, srcDeviceId, dstDeviceId);
+    std::unique_ptr<BaseRemoteCommand> class_ =
+        std::make_unique<DeleteUidPermissionCommand>(uid, srcDeviceId, dstDeviceId);
 
     std::hash<std::string> hashStr;
     std::string key = std::to_string(hashStr(srcDeviceId)) + "_" + std::to_string(uid);
@@ -121,8 +107,8 @@ HWTEST_F(DeleteUidPermissionCommandTest, DeleteUidPermissionCommandTest_0004, Fu
     std::string srcDeviceId = "01234567890123456789012345678901234567890123456789012345678912345";
     std::string dstDeviceId = "dstDeviceId";
 
-    std::shared_ptr<BaseRemoteCommand> class_ =
-        std::make_shared<DeleteUidPermissionCommand>(uid, srcDeviceId, dstDeviceId);
+    std::unique_ptr<BaseRemoteCommand> class_ =
+        std::make_unique<DeleteUidPermissionCommand>(uid, srcDeviceId, dstDeviceId);
 
     class_->Execute();
 
@@ -136,8 +122,8 @@ HWTEST_F(DeleteUidPermissionCommandTest, DeleteUidPermissionCommandTest_0005, Fu
     std::string srcDeviceId = "srcDeviceId";
     std::string dstDeviceId = "dstDeviceId";
 
-    std::shared_ptr<BaseRemoteCommand> class_ =
-        std::make_shared<DeleteUidPermissionCommand>(uid, srcDeviceId, dstDeviceId);
+    std::unique_ptr<BaseRemoteCommand> class_ =
+        std::make_unique<DeleteUidPermissionCommand>(uid, srcDeviceId, dstDeviceId);
 
     class_->Finish();
 
@@ -150,8 +136,8 @@ HWTEST_F(DeleteUidPermissionCommandTest, DeleteUidPermissionCommandTest_0006, Fu
     std::string srcDeviceId = "srcDeviceId";
     std::string dstDeviceId = "dstDeviceId";
 
-    std::shared_ptr<DeleteUidPermissionCommand> class_ =
-        std::make_shared<DeleteUidPermissionCommand>(uid, srcDeviceId, dstDeviceId);
+    std::unique_ptr<DeleteUidPermissionCommand> class_ =
+        std::make_unique<DeleteUidPermissionCommand>(uid, srcDeviceId, dstDeviceId);
 
     class_->Prepare();
     std::string result = class_->ToJsonPayload();
@@ -171,7 +157,7 @@ HWTEST_F(DeleteUidPermissionCommandTest, DeleteUidPermissionCommandTest_0007, Fu
         "\"requestVersion\":0,\"responseDeviceId\":\"\",\"responseVersion\":1,\"srcDeviceId\":\"srcDeviceId\","
         "\"statusCode\":0,\"uid\":1,\"uniqueId\":\"DeleteUidPermissionCommand-1\"}";
 
-    std::shared_ptr<BaseRemoteCommand> class_ = std::make_shared<DeleteUidPermissionCommand>(json);
+    std::unique_ptr<BaseRemoteCommand> class_ = std::make_unique<DeleteUidPermissionCommand>(json);
 
     EXPECT_EQ(class_->remoteProtocol_.commandName, "DeleteUidPermissionCommand");
     EXPECT_EQ(class_->remoteProtocol_.dstDeviceId, "dstDeviceId");

@@ -29,12 +29,12 @@ ResourceSwitchCache &ResourceSwitchCache::GetInstance()
     return m_instance;
 }
 
-bool ResourceSwitchCache::GetSwitchStatus(std::string sensitiveResource)
+bool ResourceSwitchCache::GetSwitchStatus(std::string sensitiveResource) const
 {
     return GetSwitchStatus(IPCSkeleton::GetLocalDeviceID(), sensitiveResource);
 }
 
-bool ResourceSwitchCache::GetSwitchStatus(std::string deviceId, std::string sensitiveResource)
+bool ResourceSwitchCache::GetSwitchStatus(std::string deviceId, std::string sensitiveResource) const
 {
     bool isSwitchAllow = false;
     auto iter = cache_.find(deviceId);

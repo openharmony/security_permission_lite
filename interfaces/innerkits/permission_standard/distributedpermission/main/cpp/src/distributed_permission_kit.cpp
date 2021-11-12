@@ -12,9 +12,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#include "distributed_permission_kit.h"
 #include <sys/types.h>
 #include <unistd.h>
-#include "distributed_permission_kit.h"
+#include "distributed_permission_manager_client.h"
 
 namespace OHOS {
 namespace Security {

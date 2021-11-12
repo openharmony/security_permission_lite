@@ -23,7 +23,7 @@ namespace {
 static constexpr OHOS::HiviewDFX::HiLogLabel LABEL = {
     LOG_CORE, SECURITY_DOMAIN_PERMISSION, "DistributedPermissionProxy"};
 }
-const int32_t PERMISSION_NOT_GRANTED = -1;
+const int32_t PERMISSION_DENIED = -1;
 const int32_t ERROR = -1;
 
 DistributedPermissionProxy::DistributedPermissionProxy(const sptr<IRemoteObject> &object)
@@ -40,11 +40,11 @@ int32_t DistributedPermissionProxy::AllocateDuid(const std::string &nodeId, cons
     MessageParcel data;
     if (!data.WriteString(nodeId)) {
         PERMISSION_LOG_ERROR(LABEL, "failed to WriteString(nodeId).");
-        return PERMISSION_NOT_GRANTED;
+        return PERMISSION_DENIED;
     }
     if (!data.WriteInt32(rUid)) {
         PERMISSION_LOG_ERROR(LABEL, "failed to WriteInt32(rUid).");
-        return PERMISSION_NOT_GRANTED;
+        return PERMISSION_DENIED;
     }
     MessageParcel reply;
     int32_t result = ERROR;
@@ -64,11 +64,11 @@ int32_t DistributedPermissionProxy::QueryDuid(const std::string &deviceId, const
     MessageParcel data;
     if (!data.WriteString(deviceId)) {
         PERMISSION_LOG_ERROR(LABEL, "failed to WriteString(deviceId).");
-        return PERMISSION_NOT_GRANTED;
+        return PERMISSION_DENIED;
     }
     if (!data.WriteInt32(rUid)) {
         PERMISSION_LOG_ERROR(LABEL, "failed to WriteInt32(rUid).");
-        return PERMISSION_NOT_GRANTED;
+        return PERMISSION_DENIED;
     }
     MessageParcel reply;
     int32_t result = ERROR;
@@ -87,11 +87,11 @@ int32_t DistributedPermissionProxy::CheckDPermission(int32_t dUid, const std::st
     MessageParcel data;
     if (!data.WriteInt32(dUid)) {
         PERMISSION_LOG_ERROR(LABEL, "failed to WriteInt32(dUid).");
-        return PERMISSION_NOT_GRANTED;
+        return PERMISSION_DENIED;
     }
     if (!data.WriteString(permissionName)) {
         PERMISSION_LOG_ERROR(LABEL, "failed to WriteString(permissionName).");
-        return PERMISSION_NOT_GRANTED;
+        return PERMISSION_DENIED;
     }
     MessageParcel reply;
     int32_t result = ERROR;
@@ -102,32 +102,20 @@ int32_t DistributedPermissionProxy::CheckDPermission(int32_t dUid, const std::st
     }
     return result;
 }
-int32_t DistributedPermissionProxy::CheckPermission(
-    const std::string &permissionName, const std::string &nodeId, int32_t pid, int32_t uid)
+
+int32_t DistributedPermissionProxy::CheckPermission(const std::string &permissionName, const std::string &appIdInfo)
 {
     PERMISSION_LOG_INFO(LABEL, "enter");
-    PERMISSION_LOG_INFO(LABEL,
-        "permissionName = %{public}s, nodeId = %{public}s, pid = %{public}d, uid = %{public}d",
-        permissionName.c_str(),
-        Constant::EncryptDevId(nodeId).c_str(),
-        pid,
-        uid);
+    PERMISSION_LOG_INFO(LABEL, "permissionName = %{public}s, appIdInfo = %{public}s", permissionName.c_str(),
+        appIdInfo.c_str());
     MessageParcel data;
     if (!data.WriteString(permissionName)) {
         PERMISSION_LOG_ERROR(LABEL, "failed to WriteString(permissionName).");
-        return PERMISSION_NOT_GRANTED;
+        return PERMISSION_DENIED;
     }
-    if (!data.WriteString(nodeId)) {
-        PERMISSION_LOG_ERROR(LABEL, "failed to WriteString(nodeId).");
-        return PERMISSION_NOT_GRANTED;
-    }
-    if (!data.WriteInt32(pid)) {
-        PERMISSION_LOG_ERROR(LABEL, "failed to WriteInt32(pid).");
-        return PERMISSION_NOT_GRANTED;
-    }
-    if (!data.WriteInt32(uid)) {
-        PERMISSION_LOG_ERROR(LABEL, "failed to WriteInt32(uid).");
-        return PERMISSION_NOT_GRANTED;
+    if (!data.WriteString(appIdInfo)) {
+        PERMISSION_LOG_ERROR(LABEL, "failed to WriteString(appIdInfo).");
+        return PERMISSION_DENIED;
     }
     MessageParcel reply;
     int32_t result = ERROR;
@@ -146,7 +134,7 @@ int32_t DistributedPermissionProxy::CheckSelfPermission(const std::string &permi
     MessageParcel data;
     if (!data.WriteString(permissionName)) {
         PERMISSION_LOG_ERROR(LABEL, "failed to WriteString(permissionName).");
-        return PERMISSION_NOT_GRANTED;
+        return PERMISSION_DENIED;
     }
     MessageParcel reply;
     int32_t result = ERROR;
@@ -165,7 +153,7 @@ int32_t DistributedPermissionProxy::CheckCallingPermission(const std::string &pe
     MessageParcel data;
     if (!data.WriteString(permissionName)) {
         PERMISSION_LOG_ERROR(LABEL, "failed to WriteString(permissionName).");
-        return PERMISSION_NOT_GRANTED;
+        return PERMISSION_DENIED;
     }
     MessageParcel reply;
     int32_t result = ERROR;
@@ -184,7 +172,7 @@ int32_t DistributedPermissionProxy::CheckCallingOrSelfPermission(const std::stri
     MessageParcel data;
     if (!data.WriteString(permissionName)) {
         PERMISSION_LOG_ERROR(LABEL, "failed to WriteString(permissionName).");
-        return PERMISSION_NOT_GRANTED;
+        return PERMISSION_DENIED;
     }
     MessageParcel reply;
     int32_t result = ERROR;
@@ -203,7 +191,7 @@ int32_t DistributedPermissionProxy::CheckCallerPermission(const std::string &per
     MessageParcel data;
     if (!data.WriteString(permissionName)) {
         PERMISSION_LOG_ERROR(LABEL, "failed to WriteString(permissionName).");
-        return PERMISSION_NOT_GRANTED;
+        return PERMISSION_DENIED;
     }
     MessageParcel reply;
     int32_t result = ERROR;
@@ -233,32 +221,24 @@ bool DistributedPermissionProxy::IsRestrictedPermission(const std::string &permi
     }
     return result;
 }
-int32_t DistributedPermissionProxy::VerifyPermissionFromRemote(
-    const std::string &permission, const std::string &nodeId, int32_t pid, int32_t uid)
+int32_t DistributedPermissionProxy::VerifyPermissionFromRemote(const std::string &permission, const std::string &nodeId,
+    const std::string &appIdInfo)
 {
     PERMISSION_LOG_INFO(LABEL, "enter");
-    PERMISSION_LOG_INFO(LABEL,
-        "permission = %{public}s, nodeId = %{public}s, pid = %{public}d, uid = %{public}d",
-        permission.c_str(),
-        Constant::EncryptDevId(nodeId).c_str(),
-        pid,
-        uid);
+    PERMISSION_LOG_INFO(LABEL, "permission = %{public}s, nodeId = %{public}s, appIdInfo = %{public}s",
+        permission.c_str(), Constant::EncryptDevId(nodeId).c_str(), appIdInfo.c_str());
     MessageParcel data;
     if (!data.WriteString(permission)) {
         PERMISSION_LOG_ERROR(LABEL, "failed to WriteString(permissionName).");
-        return PERMISSION_NOT_GRANTED;
+        return PERMISSION_DENIED;
     }
     if (!data.WriteString(nodeId)) {
         PERMISSION_LOG_ERROR(LABEL, "failed to WriteString(nodeId).");
-        return PERMISSION_NOT_GRANTED;
+        return PERMISSION_DENIED;
     }
-    if (!data.WriteInt32(pid)) {
-        PERMISSION_LOG_ERROR(LABEL, "failed to WriteInt32(pid).");
-        return PERMISSION_NOT_GRANTED;
-    }
-    if (!data.WriteInt32(uid)) {
-        PERMISSION_LOG_ERROR(LABEL, "failed to WriteInt32(uid).");
-        return PERMISSION_NOT_GRANTED;
+    if (!data.WriteString(appIdInfo)) {
+        PERMISSION_LOG_ERROR(LABEL, "failed to WriteString(appIdInfo).");
+        return PERMISSION_DENIED;
     }
     MessageParcel reply;
     int32_t result = ERROR;
@@ -280,11 +260,11 @@ int32_t DistributedPermissionProxy::VerifySelfPermissionFromRemote(
     MessageParcel data;
     if (!data.WriteString(permissionName)) {
         PERMISSION_LOG_ERROR(LABEL, "failed to WriteString(permissionName).");
-        return PERMISSION_NOT_GRANTED;
+        return PERMISSION_DENIED;
     }
     if (!data.WriteString(nodeId)) {
         PERMISSION_LOG_ERROR(LABEL, "failed to WriteString(nodeId).");
-        return PERMISSION_NOT_GRANTED;
+        return PERMISSION_DENIED;
     }
     MessageParcel reply;
     int32_t result = ERROR;
@@ -404,15 +384,13 @@ void DistributedPermissionProxy::GrantSensitivePermissionToRemoteApp(
 int32_t DistributedPermissionProxy::RegisterUsingPermissionReminder(const sptr<OnUsingPermissionReminder> &callback)
 {
     PERMISSION_LOG_INFO(LABEL, "callback = OnUsingPermissionReminder");
-
+    int32_t result = ERROR;
     MessageParcel data;
+    MessageParcel reply;
     if (!data.WriteRemoteObject(callback->AsObject())) {
         PERMISSION_LOG_ERROR(LABEL, "failed to WirteRomoteObject(callback->AsObject()).");
-        return PERMISSION_NOT_GRANTED;
+        return result;
     }
-
-    MessageParcel reply;
-    int32_t result = ERROR;
 
     bool ret = SendRequest(IDistributedPermission::MessageCode::REGISTER_USINH_PERMISSION_REMINDER, data, reply);
     if (ret) {
@@ -432,12 +410,13 @@ int32_t DistributedPermissionProxy::UnregisterUsingPermissionReminder(const sptr
 {
     PERMISSION_LOG_INFO(LABEL, "callback = OnUsingPermissionReminder");
     MessageParcel data;
-    if (!data.WriteRemoteObject(callback->AsObject())) {
-        PERMISSION_LOG_ERROR(LABEL, "failed to WirteRomoteObject(callback->AsObject()).");
-        return PERMISSION_NOT_GRANTED;
-    }
     MessageParcel reply;
     int32_t result = ERROR;
+    if (!data.WriteRemoteObject(callback->AsObject())) {
+        PERMISSION_LOG_ERROR(LABEL, "failed to WirteRomoteObject(callback->AsObject()).");
+        return result;
+    }
+
     bool ret = SendRequest(IDistributedPermission::MessageCode::UNREGISTER_USINH_PERMISSION_REMINDER, data, reply);
     if (ret) {
         result = reply.ReadInt32();
@@ -450,39 +429,26 @@ int32_t DistributedPermissionProxy::UnregisterUsingPermissionReminder(const sptr
  * Check permission and start permission using reminder if permission granted.
  *
  * @param permissionName permission name.
- * @param pid the pid from pid json string indicates app information
- * @param uid the uid from pid json string indicates app information
- * @param deviceId thd deviceId from pid json string indicates app information
+ * @param appIdInfo the  json string indicates app information
  * @return Permission checked result, {@link #GRANTED} indicates permission granted, otherwise {@link #DENIED}.
  */
-int32_t DistributedPermissionProxy::CheckPermissionAndStartUsing(
-    const std::string &permissionName, int32_t pid, int32_t uid, const std::string &deviceId)
+int32_t DistributedPermissionProxy::CheckPermissionAndStartUsing(const std::string &permissionName,
+    const std::string &appIdInfo)
 {
-    PERMISSION_LOG_INFO(LABEL,
-        "permissionName = %{public}s, pid = %{public}d, uid = %{public}d, deviceId = %{public}s",
-        permissionName.c_str(),
-        pid,
-        uid,
-        Constant::EncryptDevId(deviceId).c_str());
+    PERMISSION_LOG_INFO(LABEL, "permission = %{public}s, appIdInfo = %{public}s", permissionName.c_str(),
+        appIdInfo.c_str());
     MessageParcel data;
-    if (!data.WriteString(permissionName)) {
-        PERMISSION_LOG_ERROR(LABEL, "failed to WriteString(permissionName).");
-        return PERMISSION_NOT_GRANTED;
-    }
-    if (!data.WriteInt32(pid)) {
-        PERMISSION_LOG_ERROR(LABEL, "failed to WriteInt32(pid).");
-        return PERMISSION_NOT_GRANTED;
-    }
-    if (!data.WriteInt32(uid)) {
-        PERMISSION_LOG_ERROR(LABEL, "failed to WriteInt32(uid).");
-        return PERMISSION_NOT_GRANTED;
-    }
-    if (!data.WriteString(deviceId)) {
-        PERMISSION_LOG_ERROR(LABEL, "failed to WriteString(deviceId).");
-        return PERMISSION_NOT_GRANTED;
-    }
     MessageParcel reply;
     int32_t result = ERROR;
+    if (!data.WriteString(permissionName)) {
+        PERMISSION_LOG_ERROR(LABEL, "failed to WriteString(permissionName).");
+        return result;
+    }
+    if (!data.WriteString(appIdInfo)) {
+        PERMISSION_LOG_ERROR(LABEL, "failed to WriteString(appIdInfo).");
+        return result;
+    }
+
     bool ret = SendRequest(IDistributedPermission::MessageCode::CHECK_PERMISSION_AND_START_USING, data, reply);
     if (ret) {
         result = reply.ReadInt32();
@@ -495,34 +461,18 @@ int32_t DistributedPermissionProxy::CheckPermissionAndStartUsing(
  * Used to permission using remind when app start using permission continuously.
  *
  * @param permName the permission name which app start using.
- * @param pid the pid from pid json string indicates app information
- * @param uid the uid from pid json string indicates app information
- * @param deviceId thd deviceId from pid json string indicates app information
+ * @param appIdInfo the pid from pid json string indicates app information
  */
-void DistributedPermissionProxy::StartUsingPermission(
-    const std::string &permName, int32_t pid, int32_t uid, const std::string &deviceId)
+void DistributedPermissionProxy::StartUsingPermission(const std::string &permName, const std::string &appIdInfo)
 {
-    PERMISSION_LOG_INFO(LABEL,
-        "permName = %{public}s, pid = %{public}d, uid = %{public}d, deviceId = %{public}s",
-        permName.c_str(),
-        pid,
-        uid,
-        Constant::EncryptDevId(deviceId).c_str());
+    PERMISSION_LOG_INFO(LABEL, "permission = %{public}s, appIdInfo = %{public}s", permName.c_str(), appIdInfo.c_str());
     MessageParcel data;
     if (!data.WriteString(permName)) {
         PERMISSION_LOG_ERROR(LABEL, "failed to WriteString(permName).");
         return;
     }
-    if (!data.WriteInt32(pid)) {
-        PERMISSION_LOG_ERROR(LABEL, "failed to WriteInt32(pid).");
-        return;
-    }
-    if (!data.WriteInt32(uid)) {
-        PERMISSION_LOG_ERROR(LABEL, "failed to WriteInt32(uid).");
-        return;
-    }
-    if (!data.WriteString(deviceId)) {
-        PERMISSION_LOG_ERROR(LABEL, "failed to WriteString(deviceId).");
+    if (!data.WriteString(appIdInfo)) {
+        PERMISSION_LOG_ERROR(LABEL, "failed to WriteString(appIdInfo).");
         return;
     }
     MessageParcel reply;
@@ -538,34 +488,18 @@ void DistributedPermissionProxy::StartUsingPermission(
  * Used to permission using remind when app stop using permission continuously.
  *
  * @param permName the permission name which app stop using.
- * @param pid the pid from pid json string indicates app information
- * @param uid the uid from pid json string indicates app information
- * @param deviceId thd deviceId from pid json string indicates app information
+ * @param appIdInfo the json string indicates app information
  */
-void DistributedPermissionProxy::StopUsingPermission(
-    const std::string &permName, int32_t pid, int32_t uid, const std::string &deviceId)
+void DistributedPermissionProxy::StopUsingPermission(const std::string &permName, const std::string &appIdInfo)
 {
-    PERMISSION_LOG_INFO(LABEL,
-        "permName = %{public}s, pid = %{public}d, uid = %{public}d, deviceId = %{public}s",
-        permName.c_str(),
-        pid,
-        uid,
-        Constant::EncryptDevId(deviceId).c_str());
+    PERMISSION_LOG_INFO(LABEL, "permission = %{public}s, appIdInfo = %{public}s", permName.c_str(), appIdInfo.c_str());
     MessageParcel data;
     if (!data.WriteString(permName)) {
         PERMISSION_LOG_ERROR(LABEL, "failed to WriteString(permName).");
         return;
     }
-    if (!data.WriteInt32(pid)) {
-        PERMISSION_LOG_ERROR(LABEL, "failed to WriteInt32(pid).");
-        return;
-    }
-    if (!data.WriteInt32(uid)) {
-        PERMISSION_LOG_ERROR(LABEL, "failed to WriteInt32(uid).");
-        return;
-    }
-    if (!data.WriteString(deviceId)) {
-        PERMISSION_LOG_ERROR(LABEL, "failed to WriteString(deviceId).");
+    if (!data.WriteString(appIdInfo)) {
+        PERMISSION_LOG_ERROR(LABEL, "failed to WriteString(appIdInfo).");
         return;
     }
     MessageParcel reply;
@@ -577,28 +511,20 @@ void DistributedPermissionProxy::StopUsingPermission(
     }
 }
 
-void DistributedPermissionProxy::AddPermissionsRecord(const std::string &permissionName, const std::string &deviceId,
-    const int32_t uid, const int32_t sucCount, const int32_t failCount)
+void DistributedPermissionProxy::AddPermissionsRecord(const std::string &permissionName, const std::string &appIdInfo,
+    int32_t sucCount, int32_t failCount)
 {
     PERMISSION_LOG_INFO(LABEL,
-        "permissionName = %{public}s, deviceId = %{public}s, uid = %{public}d, sucCount = "
+        "permissionName = %{public}s, appIdInfo = %{public}s, sucCount = "
         "%{public}d, failCount = %{public}d",
-        permissionName.c_str(),
-        Constant::EncryptDevId(deviceId).c_str(),
-        uid,
-        sucCount,
-        failCount);
+        permissionName.c_str(), appIdInfo.c_str(), sucCount, failCount);
     MessageParcel data;
     if (!data.WriteString(permissionName)) {
         PERMISSION_LOG_ERROR(LABEL, "failed to WriteString(permissionName).");
         return;
     }
-    if (!data.WriteString(deviceId)) {
-        PERMISSION_LOG_ERROR(LABEL, "failed to WriteString(deviceId).");
-        return;
-    }
-    if (!data.WriteInt32(uid)) {
-        PERMISSION_LOG_ERROR(LABEL, "failed to WriteInt32(uid).");
+    if (!data.WriteString(appIdInfo)) {
+        PERMISSION_LOG_ERROR(LABEL, "failed to WriteString(appIdInfo).");
         return;
     }
     if (!data.WriteInt32(sucCount)) {
@@ -618,21 +544,12 @@ void DistributedPermissionProxy::AddPermissionsRecord(const std::string &permiss
     }
 }
 
-int32_t DistributedPermissionProxy::GetPermissionRecords(
-    const std::string &request, unsigned long &codeLen, unsigned long &zipLen, std::string &resultStr)
+int32_t DistributedPermissionProxy::GetPermissionRecords(const std::string &request, std::string &resultStr)
 {
     PERMISSION_LOG_INFO(LABEL, "request = %{public}s, resultStr = %{public}s", request.c_str(), resultStr.c_str());
     MessageParcel data;
     if (!data.WriteString(request)) {
         PERMISSION_LOG_ERROR(LABEL, "failed to WriteString(request).");
-        return false;
-    }
-    if (!data.WriteUint64(codeLen)) {
-        PERMISSION_LOG_ERROR(LABEL, "failed to WriteUint64(codeLen).");
-        return false;
-    }
-    if (!data.WriteUint64(zipLen)) {
-        PERMISSION_LOG_ERROR(LABEL, "failed to WriteUint64(zipLen).");
         return false;
     }
     MessageParcel reply;
@@ -642,27 +559,17 @@ int32_t DistributedPermissionProxy::GetPermissionRecords(
         result = reply.ReadInt32();
         PERMISSION_LOG_INFO(LABEL, "result = %{public}d", result);
         resultStr = reply.ReadString();
-        codeLen = reply.ReadUint64();
-        zipLen = reply.ReadUint64();
     }
     return result;
 }
 
-int32_t DistributedPermissionProxy::GetPermissionRecords(const std::string &request, unsigned long &codeLen,
-    unsigned long &zipLen, const sptr<OnPermissionUsedRecord> &callback)
+int32_t DistributedPermissionProxy::GetPermissionRecords(const std::string &request,
+    const sptr<OnPermissionUsedRecord> &callback)
 {
     PERMISSION_LOG_INFO(LABEL, "queryGzipStr = %{public}s, callback = OnPermissionUsedRecord", request.c_str());
     MessageParcel data;
     if (!data.WriteString(request)) {
         PERMISSION_LOG_ERROR(LABEL, "failed to WriteString(request).");
-        return false;
-    }
-    if (!data.WriteUint64(codeLen)) {
-        PERMISSION_LOG_ERROR(LABEL, "failed to WriteUint64(codeLen).");
-        return false;
-    }
-    if (!data.WriteUint64(zipLen)) {
-        PERMISSION_LOG_ERROR(LABEL, "failed to WriteUint64(zipLen).");
         return false;
     }
     if (!data.WriteRemoteObject(callback->AsObject())) {
@@ -696,6 +603,6 @@ bool DistributedPermissionProxy::SendRequest(
     }
     return true;
 }
-}  // namespace Permission
-}  // namespace Security
-}  // namespace OHOS
+} // namespace Permission
+} // namespace Security
+} // namespace OHOS

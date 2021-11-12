@@ -13,38 +13,29 @@
  * limitations under the License.
  */
 
-#include <thread>
-#include <functional>
-
-#include "gtest/gtest.h"
-#include <iostream>
 #include "app_id_info.h"
+#include "app_id_info_test.h"
 
 using namespace testing::ext;
 using namespace OHOS::Security::Permission;
 using namespace std;
 
-class AppIdInfoTest : public testing::Test {
-public:
-    static void SetUpTestCase()
-    {
-        cout << "SetUpTestCase()" << endl;
-    }
-
-    static void TearDownTestCase()
-    {
-        cout << "TearDownTestCase()" << endl;
-    }
-    void SetUp()
-    {
-        cout << "SetUp() is running" << endl;
-    }
-    void TearDown()
-    {
-        cout << "TearDown()" << endl;
-    }
-};
-
+void AppIdInfoTest::SetUpTestCase()
+{
+    cout << "SetUpTestCase()" << endl;
+}
+void AppIdInfoTest::TearDownTestCase()
+{
+    cout << "TearDownTestCase()" << endl;
+}
+void AppIdInfoTest::SetUp()
+{
+    cout << "SetUp() is running" << endl;
+}
+void AppIdInfoTest::TearDown()
+{
+    cout << "TearDown()" << endl;
+}
 HWTEST_F(AppIdInfoTest, Test01, Function | MediumTest | Level1)
 {
     AppIdInfo pidInvalidAppIdInfo;

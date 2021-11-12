@@ -32,7 +32,6 @@
 #include "bundlemgr/bundle_mgr_interface.h"
 #include "permission_log.h"
 #include "refbase.h"
-#include "external_deps.h"
 
 namespace OHOS {
 namespace Security {
@@ -55,8 +54,8 @@ public:
      * @param uid The Caller Uid
      * @return true can request permission, false cannot request permission.
      */
-    bool CanRequestPermissionFromRemote(
-        const std::string &permission, const std::string &deviceId, const int32_t pid, const int32_t uid);
+    bool CanRequestPermissionFromRemote(const std::string &permission, const std::string &deviceId, const int32_t pid,
+        const int32_t uid) const;
 
     /**
      * Dynamically applies for permissions from a specified device (the application result is returned asynchronously).
@@ -123,7 +122,7 @@ private:
     bool HaveSensitivePermissionToRequest(
         const std::string deviceId, const int32_t pid, const int32_t uid, const std::vector<std::string> permissions);
 
-    bool CheckThirdAppMore(const std::string deviceId, const std::string permission);
+    bool CheckThirdAppMore(const std::string deviceId, const std::string permission) const;
 
 private:
     // static constexpr char *TAG = "RequestRemotePermission";

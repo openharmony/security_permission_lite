@@ -13,12 +13,13 @@
 
 permission_path = "//base/security/permission"
 
-distributed_permission_record_database_path =
-    "${permission_path}/frameworks/permission_standard/permissionrecorddatabase"
+distributed_permission_database_path =
+    "${permission_path}/frameworks/permission_standard/permissiondatabase"
 distributed_permission_frameworks_log_path =
     "${permission_path}/frameworks/permission_standard/permissioninfrastructure"
 distributed_permission_innerkits_distributed_path = "${permission_path}/interfaces/innerkits/permission_standard/distributedpermission"
-distributed_permission_kits_path = "${permission_path}/interfaces/kits/permission_standard/distributedpermission"
+distributed_permission_kits_path =
+    "${permission_path}/interfaces/kits/permission_standard"
 distributed_permission_services_path = "${permission_path}/services/permission_standard/distributedpermissionmanagerservice"
 distributed_permission_standard_path =
     "${permission_path}/services/permission_standard"

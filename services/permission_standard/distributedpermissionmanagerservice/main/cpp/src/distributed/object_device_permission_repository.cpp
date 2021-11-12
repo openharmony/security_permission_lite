@@ -89,9 +89,9 @@ void ObjectDevicePermissionRepository::PutDeviceIdUidPair(const std::string devi
     objectDevices_.insert(std::pair<std::string, std::shared_ptr<ObjectDevice>>(deviceId, device));
     device->AddObjectUid(uid);
 }
-std::vector<ObjectDeviceJson> ObjectDevicePermissionRepository::GetDevicesJsonVector()
+std::vector<ObjectDeviceJsonObject> ObjectDevicePermissionRepository::GetDevicesJsonVector()
 {
-    std::vector<ObjectDeviceJson> objectDeviceJson;
+    std::vector<ObjectDeviceJsonObject> objectDeviceJsonObject;
     std::map<std::string, std::shared_ptr<ObjectDevice>>::iterator iter;
     for (iter = objectDevices_.begin(); iter != objectDevices_.end(); iter++) {
         std::string deviceId = iter->first;
@@ -102,26 +102,26 @@ std::vector<ObjectDeviceJson> ObjectDevicePermissionRepository::GetDevicesJsonVe
         std::map<int32_t, std::shared_ptr<ObjectUid>>::iterator iterU;
         for (iterU = objectUids.begin(); iterU != objectUids.end(); iterU++) {
             std::string uid = std::to_string(iterU->second->GetUid());
-            std::set<std::string> grabtedPermissions = iterU->second->GetGrabtedPermission();
+            std::set<std::string> grabtedPermissions = iterU->second->GetGrantedPermission();
             if (grabtedPermissions.size() == 0) {
                 std::string noGrabtedPermission("");
-                ObjectDeviceJson odj = {deviceId, uid, noGrabtedPermission};
-                objectDeviceJson.push_back(odj);
+                ObjectDeviceJsonObject odj = {deviceId, uid, noGrabtedPermission};
+                objectDeviceJsonObject.push_back(odj);
             }
             std::set<std::string>::iterator iterSet;
             for (iterSet = grabtedPermissions.begin(); iterSet != grabtedPermissions.end(); iterSet++) {
                 std::string grabtedPermission = *iterSet;
-                ObjectDeviceJson odj = {deviceId, uid, grabtedPermission};
-                objectDeviceJson.push_back(odj);
+                ObjectDeviceJsonObject odj = {deviceId, uid, grabtedPermission};
+                objectDeviceJsonObject.push_back(odj);
             }
         }
     }
-    return objectDeviceJson;
+    return objectDeviceJsonObject;
 }
 void ObjectDevicePermissionRepository::SaveToFile()
 {
     std::lock_guard<std::recursive_mutex> guard(object_devices_locl_);
-    std::vector<ObjectDeviceJson> objectDeviceVector = GetDevicesJsonVector();
+    std::vector<ObjectDeviceJsonObject> objectDeviceVector = GetDevicesJsonVector();
     DevicesJsonVector devicesJsonVector = {objectDeviceVector};
     nlohmann::json j = devicesJsonVector;
     std::string devicesJsonVectorStr = j.dump();
@@ -139,12 +139,12 @@ bool ObjectDevicePermissionRepository::RecoverFromFile()
     nlohmann::json jsonResult;
     jsonStream >> jsonResult;
     DevicesJsonVector devicesJsonVector = jsonResult.get<DevicesJsonVector>();
-    std::vector<ObjectDeviceJson> devicesJson = devicesJsonVector.devicesJson_;
+    std::vector<ObjectDeviceJsonObject> devicesJson = devicesJsonVector.devicesJson_;
     std::string lastTimeDeviceId("");
     std::string lastTimeUid("");
     std::set<std::string> lastPermissionSet;
     std::map<int32_t, std::shared_ptr<ObjectUid>> lastUniPermissions;
-    for (std::vector<ObjectDeviceJson>::iterator it = devicesJson.begin(); it != devicesJson.end(); it++) {
+    for (std::vector<ObjectDeviceJsonObject>::iterator it = devicesJson.begin(); it != devicesJson.end(); it++) {
         std::string deviceId = it->deviceId_;
         std::string uid = it->uid_;
         std::string grabtedPermission = it->grantedPermission_;
@@ -230,9 +230,9 @@ void ObjectDevicePermissionRepository::Clear()
 void to_json(nlohmann::json &jsonObject, const DevicesJsonVector &devicesJsonVector)
 {
     std::vector<std::string> deviceStrings;
-    for (const ObjectDeviceJson &objectDeviceJson : devicesJsonVector.devicesJson_) {
+    for (const ObjectDeviceJsonObject &objectDeviceJsonObject : devicesJsonVector.devicesJson_) {
         std::string deviceStr;
-        objectDeviceJson.ToJsonString(deviceStr);
+        objectDeviceJsonObject.ToJsonString(deviceStr);
         deviceStrings.emplace_back(deviceStr);
     }
     jsonObject[JSON_KEY_DEVICE_JSON] = deviceStrings;
@@ -242,9 +242,9 @@ void from_json(const nlohmann::json &jsonObject, DevicesJsonVector &devicesJsonV
     if (jsonObject.find(JSON_KEY_DEVICE_JSON) != jsonObject.end()) {
         std::vector<std::string> deviceStrings = jsonObject.at(JSON_KEY_DEVICE_JSON).get<std::vector<std::string>>();
         for (std::string &deviceStr : deviceStrings) {
-            ObjectDeviceJson objectDeviceJson;
-            objectDeviceJson.FromJsonString(deviceStr);
-            devicesJsonVector.devicesJson_.emplace_back(objectDeviceJson);
+            ObjectDeviceJsonObject objectDeviceJsonObject;
+            objectDeviceJsonObject.FromJsonString(deviceStr);
+            devicesJsonVector.devicesJson_.emplace_back(objectDeviceJsonObject);
         }
     }
 }
@@ -255,11 +255,11 @@ ObjectDevice::ObjectDevice(const std::string &deviceId, std::map<int32_t, std::s
         uniPermissions_.insert(*it);
     }
 }
-std::string ObjectDevice::GetDeviceId()
+std::string ObjectDevice::GetDeviceId() const
 {
     return deviceId_;
 }
-bool ObjectDevice::ContainUid(int32_t uid)
+bool ObjectDevice::ContainUid(int32_t uid) const
 {
     return uniPermissions_.find(uid) != uniPermissions_.end();
 }
@@ -302,7 +302,7 @@ int32_t ObjectUid::GetUid()
 {
     return uid_;
 }
-std::set<std::string> ObjectUid::GetGrabtedPermission()
+std::set<std::string> ObjectUid::GetGrantedPermission() const
 {
     return grantedPermission_;
 }
@@ -321,7 +321,7 @@ void ObjectUid::ResetGrantSensitivePermission(std::set<std::string> permissions)
         }
     }
 }
-bool ObjectUid::IsGrantPermission(std::string permission)
+bool ObjectUid::IsGrantPermission(std::string permission) const
 {
     return grantedPermission_.count(permission) > 0;
 }

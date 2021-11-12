@@ -17,7 +17,6 @@
 
 #include "common_event.h"
 #include "common_event_manager.h"
-#include "external_deps.h"
 #include "permission_fetcher.h"
 #include "permission_record_manager.h"
 

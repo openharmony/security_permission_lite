@@ -14,12 +14,13 @@
  */
 
 #include "base_remote_command.h"
-#include "get_uid_permission_command.h"
 #include "permission_log.h"
 #include "subject_device_permission_manager.h"
 #include "object_device_permission_manager.h"
-#include "external_deps.h"
 #include "ipc_skeleton.h"
+#include "bms_adapter.h"
+#include "pms_adapter.h"
+#include "get_uid_permission_command.h"
 
 namespace OHOS {
 namespace Security {
@@ -68,12 +69,13 @@ void GetUidPermissionCommand::Execute()
 {
     PERMISSION_LOG_INFO(LABEL, "execute: start as: GetUidPermissionCommand{uid = %{public}d }", uid_);
 
-    std::unique_ptr<ExternalDeps> externalDeps = std::make_unique<ExternalDeps>();
-    if (externalDeps == nullptr) {
+    std::unique_ptr<BmsAdapter> bmsAdapter = std::make_unique<BmsAdapter>();
+    std::unique_ptr<PmsAdapter> pmsAdapter = std::make_unique<PmsAdapter>();
+    if (bmsAdapter == nullptr || pmsAdapter == nullptr) {
         return;
     }
-    iBundleManager_ = externalDeps->GetBundleManager(iBundleManager_);
-    iPermissionManager_ = externalDeps->GetPermissionManager(iPermissionManager_);
+    iBundleManager_ = bmsAdapter->GetBundleManager();
+    iPermissionManager_ = pmsAdapter->GetPermissionManager();
     permissionFetcher_ = std::make_shared<PermissionFetcher>(iBundleManager_, iPermissionManager_);
 
     remoteProtocol_.responseDeviceId = Constant::GetLocalDeviceId();
@@ -139,12 +141,13 @@ void GetUidPermissionCommand::Finish()
         return;
     }
 
-    std::unique_ptr<ExternalDeps> externalDeps = std::make_unique<ExternalDeps>();
-    if (externalDeps == nullptr) {
+    std::unique_ptr<BmsAdapter> bmsAdapter = std::make_unique<BmsAdapter>();
+    std::unique_ptr<PmsAdapter> pmsAdapter = std::make_unique<PmsAdapter>();
+    if (bmsAdapter == nullptr || pmsAdapter == nullptr) {
         return;
     }
-    iBundleManager_ = externalDeps->GetBundleManager(iBundleManager_);
-    iPermissionManager_ = externalDeps->GetPermissionManager(iPermissionManager_);
+    iBundleManager_ = bmsAdapter->GetBundleManager();
+    iPermissionManager_ = pmsAdapter->GetPermissionManager();
     permissionFetcher_ = std::make_shared<PermissionFetcher>(iBundleManager_, iPermissionManager_);
 
     // Query PMS to filter uidPermissions and get the granted ones.

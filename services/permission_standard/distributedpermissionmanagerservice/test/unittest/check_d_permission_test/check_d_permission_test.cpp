@@ -13,21 +13,7 @@
  * limitations under the License.
  */
 
-#include <thread>
-#include <functional>
-#include <map>
-#include <iostream>
-#include "gtest/gtest.h"
-#include "base_remote_command.h"
-#include "constant.h"
-#define private public
-#include "distributed_permission_manager_service.h"
-#include "subject_device_permission_manager.h"
-#include "mock_bundle_mgr.h"
-#include "mock_permission_mgr.h"
-#include "if_system_ability_manager.h"
-#include "iservice_registry.h"
-#include "ability_manager_interface.h"
+#include "check_d_permission_test.h"
 
 using namespace std;
 using namespace OHOS::Security::Permission;
@@ -41,36 +27,31 @@ std::string IPCSkeleton::deviceId_ = "";
 
 namespace Security {
 namespace Permission {
-class CheckDPermissionTest : public testing::Test {
-public:
-    static void SetUpTestCase()
-    {
-        cout << "SetUpTestCase()" << endl;
-        OHOS::sptr<OHOS::IRemoteObject> bundleObject = NULL;
-        OHOS::sptr<OHOS::IRemoteObject> permissionObject = new PermissionManagerService();
-        auto sysMgr = OHOS::SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
-        if (sysMgr == NULL) {
-            GTEST_LOG_(ERROR) << "fail to get ISystemAbilityManager";
-            return;
-        }
-        sysMgr->AddSystemAbility(Constant::ServiceId::BUNDLE_MGR_SERVICE_SYS_ABILITY_ID, bundleObject);
-        sysMgr->AddSystemAbility(Constant::ServiceId::SUBSYS_SECURITY_PERMISSION_SYS_SERVICE_ID, permissionObject);
+void CheckDPermissionTest::SetUpTestCase()
+{
+    cout << "SetUpTestCase()" << endl;
+    OHOS::sptr<OHOS::IRemoteObject> bundleObject = new OHOS::AppExecFwk::BundleMgrService();
+    OHOS::sptr<OHOS::IRemoteObject> permissionObject = new PermissionManagerService();
+    auto sysMgr = OHOS::SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
+    if (sysMgr == NULL) {
+        GTEST_LOG_(ERROR) << "fail to get ISystemAbilityManager";
+        return;
     }
-
-    static void TearDownTestCase()
-    {
-        cout << "TearDownTestCase()" << endl;
-    }
-    void SetUp()
-    {
-        cout << "SetUp() is running" << endl;
-    }
-    void TearDown()
-    {
-        cout << "TearDown()" << endl;
-    }
-};
-
+    sysMgr->AddSystemAbility(Constant::ServiceId::BUNDLE_MGR_SERVICE_SYS_ABILITY_ID, bundleObject);
+    sysMgr->AddSystemAbility(Constant::ServiceId::SUBSYS_SECURITY_PERMISSION_SYS_SERVICE_ID, permissionObject);
+}
+void CheckDPermissionTest::TearDownTestCase()
+{
+    cout << "TearDownTestCase()" << endl;
+}
+void CheckDPermissionTest::SetUp()
+{
+    cout << "SetUp() is running" << endl;
+}
+void CheckDPermissionTest::TearDown()
+{
+    cout << "TearDown()" << endl;
+}
 HWTEST_F(CheckDPermissionTest, CheckDPermission01, Function | MediumTest | Level1)
 {
     int duid = 1000;
@@ -118,7 +99,9 @@ int32_t AddDistributedPermissionTest(const std::string &deviceId, UidBundleBo &r
     ruidPackages.remoteSensitivePermission.insert(Constant::CAMERA);
     ruidPackages.remoteSensitivePermission.insert(Constant::READ_CALENDAR);
     ruidPackages.remoteSensitivePermission.insert(Constant::MICROPHONE);
-    std::vector<BundlePermissionsDto> bundleVector(2);
+    int vibrateStatus = 2;
+    int vectorCount = 2;
+    std::vector<BundlePermissionsDto> bundleVector(vectorCount);
     ruidPackages.bundles = bundleVector;
     bundleVector[0].name = "theme";
     bundleVector[0].bundleLabel = "beta";
@@ -127,22 +110,23 @@ int32_t AddDistributedPermissionTest(const std::string &deviceId, UidBundleBo &r
     bundleVector[0].sign.push_back(signDto);
     PermissionDto nfcTagPermission;
     nfcTagPermission.name = "ohos.permission.NFC_TAG";
-    nfcTagPermission.grantMode = 000;
+    nfcTagPermission.grantMode = 0;
     nfcTagPermission.status = 1;
     bundleVector[0].permissions.push_back(nfcTagPermission);
     PermissionDto vibratePermission;
     vibratePermission.name = "ohos.permission.VIBRATE";
-    vibratePermission.grantMode = 000;
-    vibratePermission.status = 2;
+    vibratePermission.grantMode = 0;
+    vibratePermission.status = vibrateStatus;
     bundleVector[0].permissions.push_back(vibratePermission);
     PermissionDto internetPermission;
     internetPermission.name = "ohos.permission.INTERNET";
-    internetPermission.grantMode = 000;
+    internetPermission.grantMode = 0;
     internetPermission.status = 1;
     bundleVector[0].permissions.push_back(internetPermission);
     ruidPackages.bundles = bundleVector;
     SubjectDevicePermissionManager::GetInstance().distributedPermissionMapping_.insert(
         std::pair<int32_t, UidBundleBo>(duid, ruidPackages));
+    GTEST_LOG_(INFO) << "deviceId :" << deviceId.c_str();
     return Constant::SUCCESS;
 }
 

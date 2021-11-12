@@ -19,22 +19,20 @@
 #include <vector>
 #include "ability_info.h"
 #include "application_info.h"
-#include "bundle_mgr_interface.h"
+#include "i_bundle_mgr_mock.h"
 #include "iremote_proxy.h"
 #include "iremote_stub.h"
 
 namespace OHOS {
 namespace AppExecFwk {
-
-class BundleMgrProxy : public IRemoteProxy<IBundleMgr> {
+class BundleMgrProxy : public IRemoteProxy<IBundleMgrMock> {
 public:
-    explicit BundleMgrProxy(const sptr<IRemoteObject> &impl) : IRemoteProxy<IBundleMgr>(impl)
+    explicit BundleMgrProxy(const sptr<IRemoteObject> &impl) : IRemoteProxy<IBundleMgrMock>(impl)
     {}
 };
-
-class BundleMgrStub : public IRemoteStub<IBundleMgr> {
+class BundleMgrStub : public IRemoteStub<IBundleMgrMock> {
 public:
-    DECLARE_INTERFACE_DESCRIPTOR(u"IBundleMgr");
+    DECLARE_INTERFACE_DESCRIPTOR(u"IBundleMgrMock");
 };
 class BundleMgrService : public BundleMgrStub {
 public:
@@ -75,7 +73,7 @@ public:
     bool RegisterBundleStatusCallback(const sptr<IBundleStatusCallback> &bundleStatusCallback) override;
     bool ClearBundleStatusCallback(const sptr<IBundleStatusCallback> &bundleStatusCallback) override;
     bool UnregisterBundleStatusCallback() override;
-    bool DumpInfos(const DumpFlag flag, const std::string &bundleName, std::string &result) override;
+    bool DumpInfos(const MockDumpFlag flag, const std::string &bundleName, std::string &result) override;
     bool IsApplicationEnabled(const std::string &bundleName) override;
     bool SetApplicationEnabled(const std::string &bundleName, bool isEnable) override;
     bool IsAbilityEnabled(const AbilityInfo &abilityInfo) override;

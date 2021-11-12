@@ -63,6 +63,61 @@ bool ZipUtil::ZipUnCompress(
     PERMISSION_LOG_INFO(LABEL, "%{public}s done, output: %{public}s", __func__, output.c_str());
     return true;
 }
+
+bool ZipUtil::CompressCode(const std::string &input, unsigned long &codeLen, unsigned long &zipLen, std::string &output)
+{
+    if (codeLen <= 0) {
+        PERMISSION_LOG_ERROR(LABEL, "%{public}s: compress length less than 0!", __func__);
+        return false;
+    }
+    unsigned char *buf = (unsigned char *)malloc(codeLen + 1);
+    if (buf == NULL) {
+        PERMISSION_LOG_ERROR(LABEL, "%{public}s: malloc fail!", __func__);
+        return false;
+    }
+    if (!ZipUtil::ZipCompress(input, zipLen, buf, codeLen)) {
+        if (buf != NULL) {
+            free(buf);
+            buf = NULL;
+        }
+        PERMISSION_LOG_ERROR(LABEL, "%{public}s: compress fail!", __func__);
+        return false;
+    }
+    Base64Util::Encode(buf, codeLen, output);
+    if (buf != NULL) {
+        free(buf);
+        buf = NULL;
+    }
+    return true;
+}
+
+bool ZipUtil::UnCompressDeCode(
+    const std::string &input, unsigned long &codeLen, unsigned long &zipLen, std::string &output)
+{
+    if (codeLen <= 0) {
+        PERMISSION_LOG_ERROR(LABEL, "%{public}s: compress length less than 0!", __func__);
+        return false;
+    }
+    unsigned char *pOut = (unsigned char *)malloc(codeLen + 1);
+    if (pOut == NULL) {
+        PERMISSION_LOG_ERROR(LABEL, "%{public}s: malloc fail!", __func__);
+        return false;
+    }
+    Base64Util::Decode(input, pOut, codeLen);
+    if (!ZipUtil::ZipUnCompress(pOut, codeLen, output, zipLen)) {
+        if (pOut != NULL) {
+            free(pOut);
+            pOut = NULL;
+        }
+        PERMISSION_LOG_ERROR(LABEL, "%{public}s: uncompress fail!", __func__);
+        return false;
+    }
+    if (pOut != NULL) {
+        free(pOut);
+        pOut = NULL;
+    }
+    return true;
+}
 }  // namespace Permission
 }  // namespace Security
 }  // namespace OHOS

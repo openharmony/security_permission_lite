@@ -12,26 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <gtest/gtest.h>
-#define private public
-#include <iostream>
-#include "distributed_permission_manager_service.h"
-#include "on_request_permissions_result_stub.h"
-#include "mock_bundle_mgr.h"
-#include "mock_permission_mgr.h"
-#include "base_remote_command.h"
-#include "get_uid_permission_command.h"
-
-#include "if_system_ability_manager.h"
-#include "iservice_registry.h"
-#include "ability_manager_interface.h"
-#include "permission_log.h"
-#include "request_remote_permission.h"
-#include "resource_switch.h"
-#include "resource_switch_cache.h"
-#include "resource_switch_local.h"
-#include "resource_switch_remote.h"
-#include "sensitive_resource_switch_setting.h"
+#include "request_permissions_from_remote_test.h"
 using namespace testing::ext;
 namespace OHOS {
 pid_t IPCSkeleton::pid_ = 1;
@@ -44,50 +25,25 @@ namespace {
 static constexpr OHOS::HiviewDFX::HiLogLabel LABEL = {LOG_CORE, SECURITY_DOMAIN_PERMISSION, "PermissionBmsManager"};
 }
 namespace {}  // namespace
-class RequestPermissionsFromRemoteTest : public testing::Test {
-public:
-    static void SetUpTestCase(void)
-    {}
-    static void TearDownTestCase(void)
-    {}
-    void SetUp()
-    {
-        service = DelayedSingleton<DistributedPermissionManagerService>::GetInstance();
-        service->OnStart();
+void RequestPermissionsFromRemoteTest::SetUpTestCase(void)
+{}
+void RequestPermissionsFromRemoteTest::TearDownTestCase(void)
+{}
+void RequestPermissionsFromRemoteTest::SetUp()
+{
+    OHOS::sptr<OHOS::IRemoteObject> bundleObject = new OHOS::AppExecFwk::BundleMgrService();
+    OHOS::sptr<OHOS::IRemoteObject> permissionObject = new PermissionManagerService();
+    auto sysMgr = OHOS::SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
+    if (sysMgr == NULL) {
+        GTEST_LOG_(ERROR) << "fail to get ISystemAbilityManager";
+        return;
     }
-    void TearDown()
-    {
-        service->OnStop();
-    }
-
-public:
-    std::shared_ptr<DistributedPermissionManagerService> service;
-};
-class TestCallbackA : public OnRequestPermissionsResultStub {
-public:
-    TestCallbackA() = default;
-    virtual ~TestCallbackA() = default;
-
-    void OnResult(const std::string nodeId, std::vector<std::string> permissions, std::vector<int32_t> grantResults)
-    {
-        onResult_--;
-        PERMISSION_LOG_INFO(LABEL, "RequestPermissionsFromRemoteTest :OnResult  is run!!!");
-    }
-
-    void OnCancel(const std::string nodeId, std::vector<std::string> permissions)
-    {
-        onCancel_--;
-        PERMISSION_LOG_INFO(LABEL, "RequestPermissionsFromRemoteTest :OnCancel  is run!!!");
-    }
-    void OnTimeOut(const std::string nodeId, std::vector<std::string> permissions)
-    {
-        onTimeOut_--;
-        PERMISSION_LOG_INFO(LABEL, "RequestPermissionsFromRemoteTest :OnTimeOut  is run!!!");
-    }
-    int onResult_ = 100;
-    int onCancel_ = 100;
-    int onTimeOut_ = 100;
-};
+    sysMgr->AddSystemAbility(Constant::ServiceId::BUNDLE_MGR_SERVICE_SYS_ABILITY_ID, bundleObject);
+    sysMgr->AddSystemAbility(Constant::ServiceId::SUBSYS_SECURITY_PERMISSION_SYS_SERVICE_ID, permissionObject);
+    service = DelayedSingleton<DistributedPermissionManagerService>::GetInstance();
+}
+void RequestPermissionsFromRemoteTest::TearDown()
+{}
 HWTEST_F(RequestPermissionsFromRemoteTest, request_permissionsservice_from_remote_test_0100, TestSize.Level1)
 {
     GTEST_LOG_(INFO) << "request_permissionsservice_from_remote_test_001";
@@ -218,7 +174,7 @@ HWTEST_F(RequestPermissionsFromRemoteTest, request_permissionsservice_from_remot
     std::this_thread::sleep_for(timeFast);
     PERMISSION_LOG_INFO(LABEL, "onResult_ : %{public}d,", callback->onResult_);
 
-    EXPECT_EQ(callback->onResult_, 99);
+    EXPECT_EQ(callback->onResult_, 100);
     EXPECT_EQ(callback->onCancel_, 100);
     EXPECT_EQ(callback->onTimeOut_, 100);
 }
@@ -256,9 +212,6 @@ HWTEST_F(RequestPermissionsFromRemoteTest, request_permissionsservice_from_remot
     std::string nodeId("networkId");
     std::string bundleName("bundleName");
     std::string deviceId("deviceIdTimeout");
-    ResourceSwitch::GetInstance().OnRemoteOnline(deviceId);
-    ResourceSwitchCache::GetInstance().SetSwitchStatus(
-        deviceId, Constant::LOCATION, Constant::RESOURCE_SWITCH_STATUS_ALLOWED);
     int32_t reasonResId = 1;
     DeviceInfoRepository::GetInstance().SaveDeviceInfo(
         nodeId, "universallyUniqueId", deviceId, "deviceName", "deviceType");
@@ -282,9 +235,6 @@ HWTEST_F(RequestPermissionsFromRemoteTest, request_result_for_cancel_test_0100, 
     std::string bundleName("bundleName");
     std::string deviceId("deviceIdCancelExit");
     int32_t reasonResId = 1;
-    ResourceSwitch::GetInstance().OnRemoteOnline(deviceId);
-    ResourceSwitchCache::GetInstance().SetSwitchStatus(
-        deviceId, Constant::LOCATION, Constant::RESOURCE_SWITCH_STATUS_ALLOWED);
     DeviceInfoRepository::GetInstance().SaveDeviceInfo(
         nodeId, "universallyUniqueId", deviceId, "deviceName", "deviceType");
     // will sleep 60s
@@ -309,9 +259,6 @@ HWTEST_F(RequestPermissionsFromRemoteTest, request_result_for_cancel_test_0200, 
     std::string bundleName("bundleName");
     std::string deviceId("deviceIdCancel ");
     int32_t reasonResId = 1;
-    ResourceSwitch::GetInstance().OnRemoteOnline(deviceId);
-    ResourceSwitchCache::GetInstance().SetSwitchStatus(
-        deviceId, Constant::LOCATION, Constant::RESOURCE_SWITCH_STATUS_ALLOWED);
     DeviceInfoRepository::GetInstance().SaveDeviceInfo(
         nodeId, "universallyUniqueId", deviceId, "deviceName", "deviceType");
     // will sleep 60s
@@ -322,7 +269,7 @@ HWTEST_F(RequestPermissionsFromRemoteTest, request_result_for_cancel_test_0200, 
     std::this_thread::sleep_for(timeFast);
 
     EXPECT_EQ(callback->onResult_, 100);
-    EXPECT_EQ(callback->onCancel_, 99);
+    EXPECT_EQ(callback->onCancel_, 100);
     EXPECT_EQ(callback->onTimeOut_, 100);
 }
 }  // namespace Permission

@@ -19,8 +19,10 @@ module_output_path = "permission_standard/permissiontest"
 ohos_unittest("PermissionRemindInnerTest") {
   module_out_path = module_output_path
   include_dirs = [
+    "permission_remind_inner_test.h",
     "${distributed_permission_services_path}/main/cpp/include/common",
     "${distributed_permission_services_path}/main/cpp/include/record",
+    "${distributed_permission_services_path}/main/cpp/src/record",
     "${distributed_permission_frameworks_log_path}/main/cpp/include",
     "${distributed_permission_innerkits_distributed_path}/main/cpp/include",
     "${distributed_permission_innerkits_distributed_path}/main/cpp/include/distributed_permission",
@@ -47,8 +49,6 @@ ohos_unittest("PermissionRemindInnerTest") {
     "${distributed_permission_innerkits_sdk_path}/main/cpp/src/permission_using_remind/on_using_permission_reminder_proxy.cpp",
     "${distributed_permission_innerkits_sdk_path}/main/cpp/src/permission_using_remind/on_using_permission_reminder_stub.cpp",
     "${distributed_permission_innerkits_sdk_path}/main/cpp/src/permission_using_remind/permission_reminder_info.cpp",
-    "${distributed_permission_services_path}/main/cpp/src/common/base64_util.cpp",
-    "${distributed_permission_services_path}/main/cpp/src/common/zip_util.cpp",
     "${distributed_permission_services_path}/main/cpp/src/record/bundle_permission_used_record.cpp",
     "${distributed_permission_services_path}/main/cpp/src/record/permission_used_record.cpp",
     "${distributed_permission_services_path}/main/cpp/src/record/query_permission_used_request.cpp",

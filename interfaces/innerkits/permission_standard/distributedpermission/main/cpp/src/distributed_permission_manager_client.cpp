@@ -68,37 +68,20 @@ int32_t DistributedPermissionManagerClient::CheckDPermission(int32_t dUid, const
     return distributedPermissionProxy_->CheckDPermission(dUid, permissionName);
 }
 
-int32_t DistributedPermissionManagerClient::CheckPermission(
-    const std::string &permissionName, const std::string &nodeId, int32_t pid, int32_t uid)
-{
-    PERMISSION_LOG_INFO(LABEL,
-        "permissionName = %{public}s, nodeId = %{public}s, nodeId = %{public}d, nodeId = %{public}d",
-        permissionName.c_str(),
-        Constant::EncryptDevId(nodeId).c_str(),
-        pid,
-        uid);
-    if (!GetDistributedPermissionProxy()) {
-        return ERROR;
-    }
-
-    return distributedPermissionProxy_->CheckPermission(permissionName, nodeId, pid, uid);
-}
-
-int32_t DistributedPermissionManagerClient::CheckPermission(
-    const std::string &permissionName, const std::string &appIdInfo)
+int32_t DistributedPermissionManagerClient::CheckPermission(const std::string &permissionName,
+    const std::string &appIdInfo)
 {
     PERMISSION_LOG_INFO(
         LABEL, "permissionName = %{public}s, appIdInfo = %{public}s", permissionName.c_str(), appIdInfo.c_str());
     if (!GetDistributedPermissionProxy()) {
         return ERROR;
     }
-    AppIdInfo appIdInfoObj;
-    if (!DistributedPermissionKit::AppIdInfoHelper::ParseAppIdInfo(appIdInfo, appIdInfoObj)) {
-        PERMISSION_LOG_INFO(LABEL, "appIdInfo data invalid");
-        return ERROR;
-    }
-    return distributedPermissionProxy_->CheckPermission(
-        permissionName, appIdInfoObj.deviceId, appIdInfoObj.pid, appIdInfoObj.uid);
+    return distributedPermissionProxy_->CheckPermission(permissionName, appIdInfo);
+}
+
+bool DistributedPermissionManagerClient::IsPermissionNameValid(const std::string &permissionName)
+{
+    return !permissionName.empty() && (permissionName.length() <= MAX_LENGTH);
 }
 
 int32_t DistributedPermissionManagerClient::CheckSelfPermission(const std::string &permissionName)
@@ -107,8 +90,19 @@ int32_t DistributedPermissionManagerClient::CheckSelfPermission(const std::strin
     if (!GetDistributedPermissionProxy()) {
         return ERROR;
     }
-
-    return distributedPermissionProxy_->CheckSelfPermission(permissionName);
+    if (!DistributedPermissionManagerClient::IsPermissionNameValid(permissionName)) {
+        PERMISSION_LOG_ERROR(LABEL, "CheckSelfPermission::permissionName is not valid");
+        return Constant::PERMISSION_DENIED;
+    }
+    // CheckSelfPermission is used by applications to check whether they have certain permissions,
+    // so the IPC package is used to get the process id and uid of the call source.
+    pid_t pid = IPCSkeleton::GetCallingPid();
+    pid_t uid = IPCSkeleton::GetCallingUid();
+    std::cout << "pid:"<<pid<<std::endl;
+    std::cout << "uid:"<<uid<<std::endl;
+    AppIdInfo appIdInfoObj;
+    std::string appIdInfo = DistributedPermissionKit::AppIdInfoHelper::CreateAppIdInfo(pid, uid, "");
+    return distributedPermissionProxy_->CheckPermission(permissionName, appIdInfo);
 }
 
 int32_t DistributedPermissionManagerClient::CheckCallingPermission(const std::string &permissionName)
@@ -141,31 +135,44 @@ int32_t DistributedPermissionManagerClient::CheckCallerPermission(const std::str
     return distributedPermissionProxy_->CheckCallerPermission(permissionName);
 }
 
+// bool DistributedPermissionManagerClient::IsRestrictedPermission(const std::string &permissionName)
+// {
+//     PERMISSION_LOG_INFO(LABEL, "permissionName = %{public}s", permissionName.c_str());
+//     // if (!GetDistributedPermissionProxy()) {
+//     //     return ERROR;
+//     // }
+//     // return distributedPermissionProxy_->IsRestrictedPermission(permissionName);
+// }
 bool DistributedPermissionManagerClient::IsRestrictedPermission(const std::string &permissionName)
 {
     PERMISSION_LOG_INFO(LABEL, "permissionName = %{public}s", permissionName.c_str());
-    if (!GetDistributedPermissionProxy()) {
-        return ERROR;
+    if (!DistributedPermissionManagerClient::IsPermissionNameValid(permissionName)) {
+        PERMISSION_LOG_ERROR(LABEL, "PermissionName data invalid");
+        return false;
     }
-
-    return distributedPermissionProxy_->IsRestrictedPermission(permissionName);
+    std::unique_ptr<PmsAdapter> pmsAdapter = std::make_unique<PmsAdapter>();
+    iPermissionManager_ = pmsAdapter->GetPermissionManager();
+    PermissionDefParcel permissionDefResult;
+    int ret = iPermissionManager_->GetDefPermission(permissionName, permissionDefResult);
+    if (ret != 0) {
+        PERMISSION_LOG_ERROR(LABEL, "get permission def failed");
+        return false;
+    }
+    if (permissionDefResult.permissionDef.availableScope == Permission::AvailableScope::AVAILABLE_SCOPE_RESTRICTED) {
+        return true;
+    }
+    return false;
 }
 
 int32_t DistributedPermissionManagerClient::VerifyPermissionFromRemote(
     const std::string &permission, const std::string &nodeId, const std::string &appIdInfo)
 {
-    PERMISSION_LOG_INFO(
-        LABEL, "permission = %{public}s, appIdInfo = %{public}s", permission.c_str(), appIdInfo.c_str());
+    PERMISSION_LOG_INFO(LABEL, "permission = %{public}s, nodeId = %{public}s, appIdInfo = %{public}s",
+        permission.c_str(), Constant::EncryptDevId(nodeId).c_str(), appIdInfo.c_str());
     if (!GetDistributedPermissionProxy()) {
         return ERROR;
     }
-    AppIdInfo appIdInfoObj;
-    if (!DistributedPermissionKit::AppIdInfoHelper::ParseAppIdInfo(appIdInfo, appIdInfoObj)) {
-        PERMISSION_LOG_INFO(LABEL, "appIdInfo data invalid");
-        return ERROR;
-    }
-    return distributedPermissionProxy_->VerifyPermissionFromRemote(
-        permission, nodeId, appIdInfoObj.pid, appIdInfoObj.uid);
+    return distributedPermissionProxy_->VerifyPermissionFromRemote(permission, nodeId, appIdInfo);
 }
 
 int32_t DistributedPermissionManagerClient::VerifySelfPermissionFromRemote(
@@ -201,6 +208,7 @@ void DistributedPermissionManagerClient::RequestPermissionsFromRemote(const std:
     int32_t reasonResId)
 {
     if (callback == nullptr) {
+        PERMISSION_LOG_INFO(LABEL, "RequestPermissionsFromRemote param callback is null!");
         return;
     }
     PERMISSION_LOG_INFO(LABEL,
@@ -274,15 +282,7 @@ int32_t DistributedPermissionManagerClient::CheckPermissionAndStartUsing(
     if (!GetDistributedPermissionProxy()) {
         return ERROR;
     }
-
-    AppIdInfo appIdInfoObj;
-    if (!DistributedPermissionKit::AppIdInfoHelper::ParseAppIdInfo(appIdInfo, appIdInfoObj)) {
-        PERMISSION_LOG_INFO(LABEL, "appIdInfo data invalid");
-        return ERROR;
-    }
-
-    return distributedPermissionProxy_->CheckPermissionAndStartUsing(
-        permissionName, appIdInfoObj.pid, appIdInfoObj.uid, appIdInfoObj.deviceId);
+    return distributedPermissionProxy_->CheckPermissionAndStartUsing(permissionName, appIdInfo);
 }
 
 int32_t DistributedPermissionManagerClient::CheckCallerPermissionAndStartUsing(const std::string &permissionName)
@@ -326,15 +326,7 @@ void DistributedPermissionManagerClient::StartUsingPermission(const std::string 
     if (!GetDistributedPermissionProxy()) {
         return;
     }
-
-    AppIdInfo appIdInfoObj;
-    if (!DistributedPermissionKit::AppIdInfoHelper::ParseAppIdInfo(appIdInfo, appIdInfoObj)) {
-        PERMISSION_LOG_INFO(LABEL, "appIdInfo data invalid");
-        return;
-    }
-
-    return distributedPermissionProxy_->StartUsingPermission(
-        permName, appIdInfoObj.pid, appIdInfoObj.uid, appIdInfoObj.deviceId);
+    return distributedPermissionProxy_->StartUsingPermission(permName, appIdInfo);
 }
 
 void DistributedPermissionManagerClient::StopUsingPermission(const std::string &permName, const std::string &appIdInfo)
@@ -345,19 +337,10 @@ void DistributedPermissionManagerClient::StopUsingPermission(const std::string &
         PERMISSION_LOG_INFO(LABEL, "checkresult : Param Empty");
         return;
     }
-
     if (!GetDistributedPermissionProxy()) {
         return;
     }
-
-    AppIdInfo appIdInfoObj;
-    if (!DistributedPermissionKit::AppIdInfoHelper::ParseAppIdInfo(appIdInfo, appIdInfoObj)) {
-        PERMISSION_LOG_INFO(LABEL, "appIdInfo data invalid");
-        return;
-    }
-
-    return distributedPermissionProxy_->StopUsingPermission(
-        permName, appIdInfoObj.pid, appIdInfoObj.uid, appIdInfoObj.deviceId);
+    return distributedPermissionProxy_->StopUsingPermission(permName, appIdInfo);
 }
 
 void DistributedPermissionManagerClient::ResetDistributedPermissionProxy()
@@ -385,109 +368,49 @@ void DistributedPermissionManagerClient::AddPermissionUsedRecord(
         PERMISSION_LOG_ERROR(LABEL, "%{public}s permissionName invalid", __func__);
         return;
     }
-    Permission::AppIdInfo appIdInfoObj;
-    if (!DistributedPermissionKit::AppIdInfoHelper::ParseAppIdInfo(appIdInfo, appIdInfoObj)) {
-        PERMISSION_LOG_ERROR(LABEL, "%{public}s appIdInfo data invalid", __func__);
-        return;
-    }
-
-    if (appIdInfoObj.deviceId.empty()) {
-        PERMISSION_LOG_ERROR(LABEL, "%{public}s deviceId invalid", __func__);
-        return;
-    }
 
     if (!GetDistributedPermissionProxy()) {
         return;
     }
-
-    distributedPermissionProxy_->AddPermissionsRecord(
-        permissionName, appIdInfoObj.deviceId, appIdInfoObj.uid, sucCount, failCount);
+    distributedPermissionProxy_->AddPermissionsRecord(permissionName, appIdInfo, sucCount, failCount);
 }
 
-int32_t DistributedPermissionManagerClient::GetPermissionUsedRecords(
-    const QueryPermissionUsedRequest &request, QueryPermissionUsedResult &result)
+int32_t DistributedPermissionManagerClient::GetPermissionUsedRecords(const QueryPermissionUsedRequest &request,
+    QueryPermissionUsedResult &result)
 {
     if (!GetDistributedPermissionProxy()) {
         return Constant::FAILURE_DPMS;
     }
     nlohmann::json jsonObj = request.to_json(request);
     std::string queryJsonStr = jsonObj.dump(-1, ' ', false, nlohmann::detail::error_handler_t::replace);
-    unsigned long zipLen = queryJsonStr.length();
-    unsigned long len = compressBound(zipLen);
-    if (len <= 0) {
-        PERMISSION_LOG_ERROR(LABEL, "%{public}s: compress length less than 0!", __func__);
-        return Constant::FAILURE;
-    }
-    unsigned char *buf = (unsigned char *)malloc(len + 1);
-    if (buf == NULL) {
-        PERMISSION_LOG_ERROR(LABEL, "%{public}s: malloc fail!", __func__);
-        return Constant::FAILURE;
-    }
-    if (!ZipUtil::ZipCompress(queryJsonStr, zipLen, buf, len)) {
-        PERMISSION_LOG_ERROR(LABEL, "%{public}s: compress fail!", __func__);
-        free(buf);
-        return Constant::FAILURE;
-    }
     std::string queryGzipStr;
-    Base64Util::Encode(buf, len, queryGzipStr);
-    free(buf);
-    buf = NULL;
+    if (ZipUtils::CompressString(queryJsonStr, queryGzipStr) != ZipUtils::OK) {
+        return Constant::FAILURE;
+    }
     std::string resultGzipStr;
-    int32_t ret = distributedPermissionProxy_->GetPermissionRecords(queryGzipStr, len, zipLen, resultGzipStr);
-    if (len <= 0) {
-        PERMISSION_LOG_ERROR(LABEL, "%{public}s: compress length less than 0!", __func__);
-        return Constant::FAILURE;
-    }
-    unsigned char *pOut = (unsigned char *)malloc(len + 1);
-    if (pOut == NULL) {
-        PERMISSION_LOG_ERROR(LABEL, "%{public}s: malloc fail!", __func__);
-        return Constant::FAILURE;
-    }
-    Base64Util::Decode(resultGzipStr, pOut, len);
+    int32_t ret = distributedPermissionProxy_->GetPermissionRecords(queryGzipStr, resultGzipStr);
     std::string resultJsonStr;
-    bool opResult = ZipUtil::ZipUnCompress(pOut, len, resultJsonStr, zipLen);
-    free(pOut);
-    pOut = NULL;
-    if (opResult == false) {
-        PERMISSION_LOG_ERROR(LABEL, "%{public}s: uncompress fail!", __func__);
+    if (ZipUtils::DecompressString(resultGzipStr, resultJsonStr) != ZipUtils::OK) {
         return Constant::FAILURE;
     }
-    
     nlohmann::json jsonRes = nlohmann::json::parse(resultJsonStr, nullptr, false);
     result.from_json(jsonRes, result);
     return ret;
 }
 
-int32_t DistributedPermissionManagerClient::GetPermissionUsedRecords(
-    const QueryPermissionUsedRequest &request, const sptr<OnPermissionUsedRecord> &callback)
+int32_t DistributedPermissionManagerClient::GetPermissionUsedRecords(const QueryPermissionUsedRequest &request,
+    const sptr<OnPermissionUsedRecord> &callback)
 {
     if (!GetDistributedPermissionProxy()) {
         return Constant::FAILURE_DPMS;
     }
     nlohmann::json jsonObj = request.to_json(request);
     std::string queryJsonStr = jsonObj.dump(-1, ' ', false, nlohmann::detail::error_handler_t::replace);
-
-    unsigned long zipLen = queryJsonStr.length();
-    unsigned long len = compressBound(zipLen);
-    if (len <= 0) {
-        PERMISSION_LOG_ERROR(LABEL, "%{public}s: compress length less than 0!", __func__);
-        return Constant::FAILURE;
-    }
-    unsigned char *buf = (unsigned char *)malloc(len + 1);
-    if (buf == NULL) {
-        PERMISSION_LOG_ERROR(LABEL, "%{public}s: malloc fail!", __func__);
-        return Constant::FAILURE;
-    }
-    if (!ZipUtil::ZipCompress(queryJsonStr, zipLen, buf, len)) {
-        PERMISSION_LOG_ERROR(LABEL, "%{public}s: compress fail!", __func__);
-        free(buf);
-        return Constant::FAILURE;
-    }
     std::string queryGzipStr;
-    Base64Util::Encode(buf, len, queryGzipStr);
-    free(buf);
-    buf = NULL;
-    int32_t ret = distributedPermissionProxy_->GetPermissionRecords(queryGzipStr, len, zipLen, callback);
+    if (ZipUtils::CompressString(queryJsonStr, queryGzipStr) != ZipUtils::OK) {
+        return Constant::FAILURE;
+    }
+    int32_t ret = distributedPermissionProxy_->GetPermissionRecords(queryGzipStr, callback);
     return ret;
 }
 
@@ -515,8 +438,7 @@ bool DistributedPermissionManagerClient::GetDistributedPermissionProxy()
                 PERMISSION_LOG_ERROR(LABEL, "failed to get distributedPermissionProxy_.");
                 return false;
             }
-
-            recipient_ = new DistributedPermissionDeathRecipient();
+            recipient_ = new (std::nothrow) DistributedPermissionDeathRecipient();
             if (!recipient_) {
                 PERMISSION_LOG_ERROR(LABEL, "failed to new recipient_.");
                 return false;
@@ -527,6 +449,6 @@ bool DistributedPermissionManagerClient::GetDistributedPermissionProxy()
 
     return true;
 }
-}  // namespace Permission
-}  // namespace Security
-}  // namespace OHOS
+} // namespace Permission
+} // namespace Security
+} // namespace OHOS

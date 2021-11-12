@@ -13,40 +13,30 @@
  * limitations under the License.
  */
 
-#include "gtest/gtest.h"
-#define private public
-#include "distributed_permission_manager_service.h"
+#include "allocate_duid_test.h"
 
 using namespace std;
 using namespace testing::ext;
-namespace OHOS {
-pid_t IPCSkeleton::pid_ = 1;
-pid_t IPCSkeleton::uid_ = 1;
-std::string IPCSkeleton::localDeviceId_ = "1004";
-std::string IPCSkeleton::deviceId_ = "";
-namespace Security {
-namespace Permission {
-class AllocateDuidTest : public testing::Test {
-public:
-    static void SetUpTestCase()
-    {}
-    static void TearDownTestCase()
-    {}
-    void SetUp()
-    {}
-    void TearDown()
-    {
-        DistributedUidAllocator::GetInstance().Clear();
-        DeviceInfoRepository::GetInstance().Clear();
-    }
-    std::shared_ptr<DistributedPermissionManagerService> GetInstance();
+using namespace OHOS::Security::Permission;
 
-    int32_t validRuid_ = 1024;
-    int32_t resultCode_ = -2;
-};
-std::shared_ptr<DistributedPermissionManagerService> AllocateDuidTest::GetInstance()
+void AllocateDuidTest::SetUpTestCase()
+{}
+
+void AllocateDuidTest::TearDownTestCase()
+{}
+
+void AllocateDuidTest::SetUp()
+{}
+
+void AllocateDuidTest::TearDown()
 {
-    return std::make_shared<DistributedPermissionManagerService>();
+    DistributedUidAllocator::GetInstance().Clear();
+    DeviceInfoRepository::GetInstance().Clear();
+}
+
+std::unique_ptr<DistributedPermissionManagerService> AllocateDuidTest::GetInstance()
+{
+    return std::make_unique<DistributedPermissionManagerService>();
 }
 
 /**
@@ -54,7 +44,7 @@ std::shared_ptr<DistributedPermissionManagerService> AllocateDuidTest::GetInstan
  * @tc.name: AllocateDuid
  * @tc.desc: deviceId is invalid.
  */
-HWTEST_F(AllocateDuidTest, AllocateDuid_0001, Function | MediumTest | Level1)
+HWTEST_F(AllocateDuidTest, AllocateDuid_0001, Function | MediumTest | Level0)
 {
     int32_t duid = GetInstance()->AllocateDuid("", validRuid_);
     GTEST_LOG_(INFO) << duid;
@@ -67,7 +57,7 @@ HWTEST_F(AllocateDuidTest, AllocateDuid_0001, Function | MediumTest | Level1)
  * @tc.desc: deviceId is existing in deviceIdMap,
  *           ruid is invalid.
  */
-HWTEST_F(AllocateDuidTest, AllocateDuid_0002, Function | MediumTest | Level1)
+HWTEST_F(AllocateDuidTest, AllocateDuid_0002, Function | MediumTest | Level0)
 {
     DeviceInfoRepository::GetInstance().SaveDeviceInfo(
         "networkId", "universallyUniqueId", "uniqueDisabilityId", "deviceName", "deviceType");
@@ -82,7 +72,7 @@ HWTEST_F(AllocateDuidTest, AllocateDuid_0002, Function | MediumTest | Level1)
  * @tc.desc: deviceId is existing in deviceIdMap,
  *           duid is existing.
  */
-HWTEST_F(AllocateDuidTest, AllocateDuid_0003, Function | MediumTest | Level1)
+HWTEST_F(AllocateDuidTest, AllocateDuid_0003, Function | MediumTest | Level0)
 {
     DeviceInfoRepository::GetInstance().SaveDeviceInfo(
         "networkId", "universallyUniqueId", "uniqueDisabilityId", "deviceName", "deviceType");
@@ -102,7 +92,7 @@ HWTEST_F(AllocateDuidTest, AllocateDuid_0003, Function | MediumTest | Level1)
  * @tc.desc: deviceId is existing in deviceIdMap,
  *           ruid is special.
  */
-HWTEST_F(AllocateDuidTest, AllocateDuid_0004, Function | MediumTest | Level1)
+HWTEST_F(AllocateDuidTest, AllocateDuid_0004, Function | MediumTest | Level0)
 {
     DeviceInfoRepository::GetInstance().SaveDeviceInfo(
         "networkId", "universallyUniqueId", "uniqueDisabilityId", "deviceName", "deviceType");
@@ -118,7 +108,7 @@ HWTEST_F(AllocateDuidTest, AllocateDuid_0004, Function | MediumTest | Level1)
  *           duid is not existing.
  *           getUidPermissionCommand failure.
  */
-HWTEST_F(AllocateDuidTest, AllocateDuid_0005, Function | MediumTest | Level1)
+HWTEST_F(AllocateDuidTest, AllocateDuid_0005, Function | MediumTest | Level0)
 {
     DeviceInfoRepository::GetInstance().SaveDeviceInfo(
         "networkId", "universallyUniqueId", "uniqueDisabilityIdFailure", "deviceName", "deviceType");
@@ -134,7 +124,7 @@ HWTEST_F(AllocateDuidTest, AllocateDuid_0005, Function | MediumTest | Level1)
  *           duid is not existing.
  *           getUidPermissionCommand success.
  */
-HWTEST_F(AllocateDuidTest, AllocateDuid_0006, Function | MediumTest | Level1)
+HWTEST_F(AllocateDuidTest, AllocateDuid_0006, Function | MediumTest | Level0)
 {
     DeviceInfoRepository::GetInstance().SaveDeviceInfo(
         "networkId", "universallyUniqueId", "uniqueDisabilityIdSuccess", "deviceName", "deviceType");
@@ -142,6 +132,3 @@ HWTEST_F(AllocateDuidTest, AllocateDuid_0006, Function | MediumTest | Level1)
     GTEST_LOG_(INFO) << duid;
     EXPECT_EQ(duid, 12610001);
 }
-}  // namespace Permission
-}  // namespace Security
-}  // namespace OHOS

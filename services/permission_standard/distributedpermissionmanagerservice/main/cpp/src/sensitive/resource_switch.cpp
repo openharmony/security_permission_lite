@@ -17,8 +17,8 @@
 #include "resource_switch_local.h"
 #include "resource_switch_cache.h"
 #include "resource_switch_remote.h"
-#include "../distributed/distributed_data_validator.h"
-#include "../common/constant.h"
+#include "distributed_data_validator.h"
+#include "constant.h"
 #include "ipc_skeleton.h"
 #include "distributed_permission_manager_service.h"
 #include "permission_log.h"
@@ -128,7 +128,7 @@ void ResourceSwitch::OnRemoteChange(std::string deviceId)
     ResourceSwitchCache::GetInstance().UpdateSwitchSetting(remoteSwitchSetting);
 }
 
-int ResourceSwitch::GetLocalSensitiveResourceSwitch(std::string permission)
+int ResourceSwitch::GetLocalSensitiveResourceSwitch(std::string permission) const
 {
     if (!DistributedDataValidator::IsPermissionNameValid(permission)) {
         PERMISSION_LOG_ERROR(
@@ -144,7 +144,7 @@ int ResourceSwitch::GetLocalSensitiveResourceSwitch(std::string permission)
     }
 }
 
-int ResourceSwitch::GetRemoteSensitiveResourceSwitch(std::string deviceId, std::string permission)
+int ResourceSwitch::GetRemoteSensitiveResourceSwitch(std::string deviceId, std::string permission) const
 {
     if (!DistributedDataValidator::IsDeviceIdValid(deviceId) ||
         !DistributedDataValidator::IsPermissionNameValid(permission)) {

@@ -31,24 +31,11 @@
 #include "if_system_ability_manager.h"
 #include "iservice_registry.h"
 #include "ability_manager_interface.h"
+#include "get_uid_permission_command_test.h"
 
 using namespace std;
 using namespace OHOS::Security::Permission;
 using namespace testing::ext;
-
-namespace {}  // namespace
-
-class GetUidPermissionCommandTest : public testing::Test {
-public:
-    GetUidPermissionCommandTest();
-    ~GetUidPermissionCommandTest();
-    static void SetUpTestCase();
-    static void TearDownTestCase();
-    void SetUp();
-    void TearDown();
-
-private:
-};
 
 GetUidPermissionCommandTest::GetUidPermissionCommandTest()
 {}
@@ -56,7 +43,7 @@ GetUidPermissionCommandTest::~GetUidPermissionCommandTest()
 {}
 void GetUidPermissionCommandTest::SetUpTestCase()
 {
-    OHOS::sptr<OHOS::IRemoteObject> bundleObject = NULL;
+    OHOS::sptr<OHOS::IRemoteObject> bundleObject = new OHOS::AppExecFwk::BundleMgrService();
     OHOS::sptr<OHOS::IRemoteObject> permissionObject = new PermissionManagerService();
     auto sysMgr = OHOS::SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
     if (sysMgr == NULL) {
@@ -79,8 +66,8 @@ HWTEST_F(GetUidPermissionCommandTest, GetUidPermissionCommandTest_0001, Function
     std::string srcDeviceId = "srcDeviceId";
     std::string dstDeviceId = "dstDeviceId";
 
-    std::shared_ptr<GetUidPermissionCommand> class_ =
-        std::make_shared<GetUidPermissionCommand>(uid, srcDeviceId, dstDeviceId);
+    std::unique_ptr<GetUidPermissionCommand> class_ =
+        std::make_unique<GetUidPermissionCommand>(uid, srcDeviceId, dstDeviceId);
 
     EXPECT_EQ(class_->remoteProtocol_.commandName, "GetUidPermissionCommand");
     EXPECT_EQ(class_->remoteProtocol_.uniqueId, "GetUidPermissionCommand-1");
@@ -95,8 +82,8 @@ HWTEST_F(GetUidPermissionCommandTest, GetUidPermissionCommandTest_0002, Function
     std::string srcDeviceId = "srcDeviceId";
     std::string dstDeviceId = "dstDeviceId";
 
-    std::shared_ptr<GetUidPermissionCommand> class_ =
-        std::make_shared<GetUidPermissionCommand>(uid, srcDeviceId, dstDeviceId);
+    std::unique_ptr<GetUidPermissionCommand> class_ =
+        std::make_unique<GetUidPermissionCommand>(uid, srcDeviceId, dstDeviceId);
 
     class_->Prepare();
     EXPECT_EQ(class_->remoteProtocol_.statusCode, 0);
@@ -108,8 +95,8 @@ HWTEST_F(GetUidPermissionCommandTest, GetUidPermissionCommandTest_0003, Function
     std::string srcDeviceId = "srcDeviceId";
     std::string dstDeviceId = "dstDeviceId";
 
-    std::shared_ptr<GetUidPermissionCommand> class_ =
-        std::make_shared<GetUidPermissionCommand>(uid, srcDeviceId, dstDeviceId);
+    std::unique_ptr<GetUidPermissionCommand> class_ =
+        std::make_unique<GetUidPermissionCommand>(uid, srcDeviceId, dstDeviceId);
 
     class_->Execute();
     EXPECT_EQ(class_->remoteProtocol_.statusCode, 0);
@@ -122,8 +109,8 @@ HWTEST_F(GetUidPermissionCommandTest, GetUidPermissionCommandTest_0004, Function
     std::string srcDeviceId = "srcDeviceId";
     std::string dstDeviceId = "dstDeviceId";
 
-    std::shared_ptr<GetUidPermissionCommand> class_ =
-        std::make_shared<GetUidPermissionCommand>(uid, srcDeviceId, dstDeviceId);
+    std::unique_ptr<GetUidPermissionCommand> class_ =
+        std::make_unique<GetUidPermissionCommand>(uid, srcDeviceId, dstDeviceId);
 
     class_->Execute();
 
@@ -137,8 +124,8 @@ HWTEST_F(GetUidPermissionCommandTest, GetUidPermissionCommandTest_0005, Function
     std::string srcDeviceId = "srcDeviceId";
     std::string dstDeviceId = "dstDeviceId";
 
-    std::shared_ptr<GetUidPermissionCommand> class_ =
-        std::make_shared<GetUidPermissionCommand>(uid, srcDeviceId, dstDeviceId);
+    std::unique_ptr<GetUidPermissionCommand> class_ =
+        std::make_unique<GetUidPermissionCommand>(uid, srcDeviceId, dstDeviceId);
 
     class_->Execute();
 
@@ -152,8 +139,8 @@ HWTEST_F(GetUidPermissionCommandTest, GetUidPermissionCommandTest_0006, Function
     std::string srcDeviceId = "srcDeviceId";
     std::string dstDeviceId = "dstDeviceId";
 
-    std::shared_ptr<GetUidPermissionCommand> class_ =
-        std::make_shared<GetUidPermissionCommand>(uid, srcDeviceId, dstDeviceId);
+    std::unique_ptr<GetUidPermissionCommand> class_ =
+        std::make_unique<GetUidPermissionCommand>(uid, srcDeviceId, dstDeviceId);
 
     class_->Execute();
 
@@ -167,8 +154,8 @@ HWTEST_F(GetUidPermissionCommandTest, GetUidPermissionCommandTest_0008, Function
     std::string srcDeviceId = "srcDeviceId";
     std::string dstDeviceId = "dstDeviceId";
 
-    std::shared_ptr<GetUidPermissionCommand> class_ =
-        std::make_shared<GetUidPermissionCommand>(uid, srcDeviceId, dstDeviceId);
+    std::unique_ptr<GetUidPermissionCommand> class_ =
+        std::make_unique<GetUidPermissionCommand>(uid, srcDeviceId, dstDeviceId);
 
     class_->Execute();
     class_->Finish();
@@ -183,8 +170,8 @@ HWTEST_F(GetUidPermissionCommandTest, GetUidPermissionCommandTest_0009, Function
     std::string srcDeviceId = "12345678901234567890123456789012345678901234567890123456789012345";
     std::string dstDeviceId = "dstDeviceId";
 
-    std::shared_ptr<GetUidPermissionCommand> class_ =
-        std::make_shared<GetUidPermissionCommand>(uid, srcDeviceId, dstDeviceId);
+    std::unique_ptr<GetUidPermissionCommand> class_ =
+        std::make_unique<GetUidPermissionCommand>(uid, srcDeviceId, dstDeviceId);
 
     class_->Execute();
     class_->Finish();
@@ -199,8 +186,8 @@ HWTEST_F(GetUidPermissionCommandTest, GetUidPermissionCommandTest_0010, Function
     std::string srcDeviceId = "srcDeviceId";
     std::string dstDeviceId = "dstDeviceId";
 
-    std::shared_ptr<GetUidPermissionCommand> class_ =
-        std::make_shared<GetUidPermissionCommand>(uid, srcDeviceId, dstDeviceId);
+    std::unique_ptr<GetUidPermissionCommand> class_ =
+        std::make_unique<GetUidPermissionCommand>(uid, srcDeviceId, dstDeviceId);
 
     class_->Execute();
     class_->Finish();
@@ -215,8 +202,8 @@ HWTEST_F(GetUidPermissionCommandTest, GetUidPermissionCommandTest_0011, Function
     std::string srcDeviceId = "srcDeviceId";
     std::string dstDeviceId = "dstDeviceId";
 
-    std::shared_ptr<GetUidPermissionCommand> class_ =
-        std::make_shared<GetUidPermissionCommand>(uid, srcDeviceId, dstDeviceId);
+    std::unique_ptr<GetUidPermissionCommand> class_ =
+        std::make_unique<GetUidPermissionCommand>(uid, srcDeviceId, dstDeviceId);
 
     class_->Execute();
 
@@ -257,7 +244,7 @@ HWTEST_F(GetUidPermissionCommandTest, GetUidPermissionCommandTest_0012, Function
         "\"sha256\":\"applicationInfo.signatureKey\"}]}],\"remoteSensitivePermission\":null,\"uid\":12600000,"
         "\"uidState\":0},\"uniqueId\":\"GetUidPermissionCommand-12600000\"}";
 
-    std::shared_ptr<GetUidPermissionCommand> class_ = std::make_shared<GetUidPermissionCommand>(json);
+    std::unique_ptr<GetUidPermissionCommand> class_ = std::make_unique<GetUidPermissionCommand>(json);
 
     EXPECT_EQ(class_->remoteProtocol_.commandName, "GetUidPermissionCommand");
     EXPECT_EQ(class_->remoteProtocol_.dstDeviceId, "dstDeviceId");

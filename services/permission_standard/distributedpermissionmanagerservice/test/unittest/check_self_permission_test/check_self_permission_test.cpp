@@ -13,22 +13,7 @@
  * limitations under the License.
  */
 
-#include <thread>
-#include <functional>
-#include <map>
-#include <iostream>
-#include "gtest/gtest.h"
-#include "base_remote_command.h"
-#include "constant.h"
-#include "device_info_repository.h"
-#define private public
-#include "distributed_permission_manager_service.h"
-#include "subject_device_permission_manager.h"
-#include "mock_bundle_mgr.h"
-#include "mock_permission_mgr.h"
-#include "if_system_ability_manager.h"
-#include "iservice_registry.h"
-#include "ability_manager_interface.h"
+#include "check_self_permission_test.h"
 
 using namespace std;
 using namespace OHOS::Security::Permission;
@@ -41,35 +26,32 @@ std::string IPCSkeleton::deviceId_ = "";
 
 namespace Security {
 namespace Permission {
-class CheckSelfPermissionTest : public testing::Test {
-public:
-    static void SetUpTestCase()
-    {
-        cout << "SetUpTestCase()" << endl;
-        OHOS::sptr<OHOS::IRemoteObject> bundleObject = NULL;
-        OHOS::sptr<OHOS::IRemoteObject> permissionObject = new PermissionManagerService();
-        auto sysMgr = OHOS::SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
-        if (sysMgr == NULL) {
-            GTEST_LOG_(ERROR) << "fail to get ISystemAbilityManager";
-            return;
-        }
-        sysMgr->AddSystemAbility(Constant::ServiceId::BUNDLE_MGR_SERVICE_SYS_ABILITY_ID, bundleObject);
-        sysMgr->AddSystemAbility(Constant::ServiceId::SUBSYS_SECURITY_PERMISSION_SYS_SERVICE_ID, permissionObject);
+void CheckSelfPermissionTest::SetUpTestCase()
+{
+    cout << "SetUpTestCase()" << endl;
+    OHOS::sptr<OHOS::IRemoteObject> bundleObject = new OHOS::AppExecFwk::BundleMgrService();
+    OHOS::sptr<OHOS::IRemoteObject> permissionObject = new PermissionManagerService();
+    auto sysMgr = OHOS::SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
+    if (sysMgr == NULL) {
+        GTEST_LOG_(ERROR) << "fail to get ISystemAbilityManager";
+        return;
     }
+    sysMgr->AddSystemAbility(Constant::ServiceId::BUNDLE_MGR_SERVICE_SYS_ABILITY_ID, bundleObject);
+    sysMgr->AddSystemAbility(Constant::ServiceId::SUBSYS_SECURITY_PERMISSION_SYS_SERVICE_ID, permissionObject);
+}
 
-    static void TearDownTestCase()
-    {
-        cout << "TearDownTestCase()" << endl;
-    }
-    void SetUp()
-    {
-        cout << "SetUp() is running" << endl;
-    }
-    void TearDown()
-    {
-        cout << "TearDown()" << endl;
-    }
-};
+void CheckSelfPermissionTest::TearDownTestCase()
+{
+    cout << "TearDownTestCase()" << endl;
+}
+void CheckSelfPermissionTest::SetUp()
+{
+    cout << "SetUp() is running" << endl;
+}
+void CheckSelfPermissionTest::TearDown()
+{
+    cout << "TearDown()" << endl;
+}
 
 HWTEST_F(CheckSelfPermissionTest, CheckSelfPermission01, Function | MediumTest | Level1)
 {

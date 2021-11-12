@@ -39,8 +39,8 @@ struct DeviceInfo {
     std::string deviceName;
     std::string deviceType;
 };
-}  // namespace Permission
-}  // namespace Security
-}  // namespace OHOS
+} // namespace Permission
+} // namespace Security
+} // namespace OHOS
 
-#endif  // DEVICE_INFO_H
+#endif // DEVICE_INFO_H
