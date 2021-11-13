@@ -125,7 +125,6 @@ private:
     bool CheckThirdAppMore(const std::string deviceId, const std::string permission) const;
 
 private:
-    // static constexpr char *TAG = "RequestRemotePermission";
     /**
      * The request UI time out, unit: second
      */

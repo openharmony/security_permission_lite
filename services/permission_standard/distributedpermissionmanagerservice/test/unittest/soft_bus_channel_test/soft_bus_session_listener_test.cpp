@@ -213,12 +213,6 @@ HWTEST_F(SoftBusSessionListenerTest, SoftBusSessionListener_OnBytesReceived_001,
         auto channel = (SoftBusChannel *)executor->GetChannel().get();
         channel->PrepareBytes(type, id, commandName, jsonPayload, compressedBytes, compressedLength);
 
-        // PERMISSION_LOG_INFO(LABEL,
-        //     "compressed length: %{public}d, from %{public}u, result: %{public}d",
-        //     compressedLength,
-        //     jsonPayload.length(),
-        //     code);
-
         // check log
         int sessionId = 1;
         instance.OnBytesReceived(sessionId, compressedBytes, compressedLength);

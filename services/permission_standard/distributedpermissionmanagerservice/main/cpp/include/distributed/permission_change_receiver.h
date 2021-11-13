@@ -40,9 +40,6 @@ private:
 public:
     class AppEventSubscriber : public EventFwk::CommonEventSubscriber {
     public:
-        // explicit AppEventSubscriber(const EventFwk::CommonEventSubscribeInfo &sp) : CommonEventSubscriber(sp){};
-        // ~CommonEventSubscriber() = default;
-        // ~AppEventSubscriber() = default;
         /**
          * A constructor used to create a CommonEventSubscriber instance with the
          * subscribeInfo parameter passed.
