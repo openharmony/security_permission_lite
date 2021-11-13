@@ -17,6 +17,7 @@
 #define VARIANT_VALUE_D_H
 
 #include <string>
+#include <variant>
 
 namespace OHOS {
 namespace Security {
