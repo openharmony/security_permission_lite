@@ -135,14 +135,6 @@ int32_t DistributedPermissionManagerClient::CheckCallerPermission(const std::str
     return distributedPermissionProxy_->CheckCallerPermission(permissionName);
 }
 
-// bool DistributedPermissionManagerClient::IsRestrictedPermission(const std::string &permissionName)
-// {
-//     PERMISSION_LOG_INFO(LABEL, "permissionName = %{public}s", permissionName.c_str());
-//     // if (!GetDistributedPermissionProxy()) {
-//     //     return ERROR;
-//     // }
-//     // return distributedPermissionProxy_->IsRestrictedPermission(permissionName);
-// }
 bool DistributedPermissionManagerClient::IsRestrictedPermission(const std::string &permissionName)
 {
     PERMISSION_LOG_INFO(LABEL, "permissionName = %{public}s", permissionName.c_str());

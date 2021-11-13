@@ -38,7 +38,6 @@
 namespace OHOS {
 namespace Security {
 namespace Permission {
-
 class SensitivePermissionRemind {
 public:
     SensitivePermissionRemind();

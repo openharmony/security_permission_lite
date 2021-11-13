@@ -38,9 +38,8 @@ bool PermissionRecordDao::FindVisitor(
     const GenericValues &visitorGenericValues, std::vector<GenericValues> &visitorValues)
 {
     GenericValues nullGenericValues;
-    if (DataStorage::GetRealDataStorage().FindByConditions(
-            DataStorage::PERMISSION_VISITOR, visitorGenericValues, nullGenericValues, visitorValues) !=
-        Constant::SUCCESS) {
+    if (DataStorage::GetRealDataStorage().FindByConditions(DataStorage::PERMISSION_VISITOR, visitorGenericValues,
+        nullGenericValues, visitorValues) != Constant::SUCCESS) {
         PERMISSION_LOG_ERROR(LABEL, "%{public}s: database PERMISSION_VISITOR table find failed!", __func__);
         return false;
     }
@@ -50,9 +49,8 @@ bool PermissionRecordDao::FindVisitor(
 bool PermissionRecordDao::FindRecord(const GenericValues &recordAndGenericValues,
     const GenericValues &recordOrGenericValues, std::vector<GenericValues> &recordValues)
 {
-    if (DataStorage::GetRealDataStorage().FindByConditions(
-            DataStorage::PERMISSION_RECORD, recordAndGenericValues, recordOrGenericValues, recordValues) !=
-        Constant::SUCCESS) {
+    if (DataStorage::GetRealDataStorage().FindByConditions(DataStorage::PERMISSION_RECORD, recordAndGenericValues,
+        recordOrGenericValues, recordValues) != Constant::SUCCESS) {
         PERMISSION_LOG_ERROR(LABEL, "%{public}s: database PERMISSION_RECORD table find failed!", __func__);
         return false;
     }

@@ -16,7 +16,6 @@
 #ifndef ZIP_UTIL_H
 #define ZIP_UTIL_H
 
-#include <cstddef>
 #include <cstring>
 #include <string>
 #include <zlib.h>

@@ -103,7 +103,6 @@ int32_t PermissionRecordManager::GetPermissionRecordsCompress(const std::string 
     int32_t flag = GetPermissionRecords(queryJsonStr, queryResult);
     nlohmann::json jsonObj = queryResult.to_json(queryResult);
     std::string result = jsonObj.dump();
-
     if (ZipUtils::CompressString(result, resultStr) != ZipUtils::OK) {
         return Constant::FAILURE;
     }
@@ -127,7 +126,6 @@ int32_t PermissionRecordManager::GetPermissionRecordsAsync(const std::string &qu
     };
     std::thread recordThread(task);
     recordThread.detach();
-
     return Constant::SUCCESS;
 }
 
@@ -151,7 +149,6 @@ int32_t PermissionRecordManager::GetPermissionRecords(
     queryResult.endTimeMillis = 0;
     bool flag = GetBundlePermissionUsedRecord(request, bundle, queryResult);
     queryResult.bundlePermissionUsedRecords = bundle;
-
     if (flag) {
         return Constant::SUCCESS;
     }

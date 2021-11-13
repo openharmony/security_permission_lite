@@ -612,7 +612,6 @@ void SensitivePermissionRemind::CloseAns() const
         Notification::NotificationHelper::CancelNotification(item->label, item->notificationId);
     }
 }
-
 } // namespace Permission
 } // namespace Security
 } // namespace OHOS

@@ -77,7 +77,7 @@ public:
     void StopUsingPermission(const std::string &permName, const std::string &appIdInfo);
 
     void AddPermissionUsedRecord(const std::string &permissionName, const std::string &appIdInfo,
-        int32_t sucCount, int32_t failCount);
+        const int32_t sucCount, const int32_t failCount);
 
     int32_t GetPermissionUsedRecords(const QueryPermissionUsedRequest &request, QueryPermissionUsedResult &result);
 
