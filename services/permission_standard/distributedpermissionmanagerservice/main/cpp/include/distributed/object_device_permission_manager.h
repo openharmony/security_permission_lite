@@ -25,7 +25,6 @@
 #include "monitor_manager.h"
 #include "data_validator.h"
 #include "constant.h"
-#include "external_deps.h"
 #include "device_info_manager.h"
 #include "device_info.h"
 #include "permission_bms_manager.h"
@@ -69,8 +68,6 @@ public:
     int32_t NotifyPermissionChanged(const int32_t uid);
     /**
      * Operation function. Add a new uid to deviceId relationship, store in the repository.
-     * <p>
-     * Check input parameter first. If:
      * <ol>
      * <li>DeviceId or uid is invalid, will return <b>FAILURE</b>, and do not add.
      * <li>Uid is the special ruid, which is defined by DuidTranslator are 0 or 1000, will return <b>SUCCESS</b>, and do
@@ -148,7 +145,7 @@ private:
 
 private:
     ObjectDevicePermissionManager();
-    int32_t ProcessDeviceCommandImmediately(const int32_t uid, const std::set<std::string> &devicesToSync);
+    int32_t ProcessDeviceCommandImmediately(const int32_t uid, const std::set<std::string> &devicesToSync) const;
     /**
      * Operation function. Ask RemoteExecutorManager to asynchronous execute DeleteUidPermissionCommand for all
      * deviceIds that has a relationship with given uid, remove them from repository anyway.
@@ -157,9 +154,9 @@ private:
      * @return SUCCESS: 0; FAILURE: -1
      */
     int32_t RemoveNotifyPermissionMonitorUid(const int32_t uid);
-    int32_t VerifyPermissionFromRemoteInner(
-        const std::string &permission, const std::string &deviceId, const int32_t pid, const int32_t uid);
-    bool IsValidVerificationParams(const std::string &permission, const std::string &deviceId, const int32_t uid);
+    int32_t VerifyPermissionFromRemoteInner(const std::string &permission, const std::string &deviceId,
+        const int32_t pid, const int32_t uid);
+    bool IsValidVerificationParams(const std::string &permission, const std::string &deviceId, const int32_t uid) const;
 };
 class CountDownLatch {
 public:

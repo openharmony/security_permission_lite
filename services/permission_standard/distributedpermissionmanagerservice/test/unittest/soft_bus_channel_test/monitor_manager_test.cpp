@@ -129,10 +129,6 @@ HWTEST_F(MonitorManagerTest, MonitorManager_AddOnPermissionChangedListener_001, 
         std::string moduleName = "test.package";
         auto permissionListener =
             std::make_shared<std::function<void(int uid, const std::string &packageName)>>(OnPermissionChanged__);
-        PERMISSION_LOG_DEBUG(LABEL,
-            "AddOnPermissionChangedListener begin, function: %{public}lX, original function: %{public}lX",
-            (unsigned long)(permissionListener.get()),
-            (unsigned long)OnPermissionChanged__);
         instance->AddOnPermissionChangedListener(moduleName, permissionListener);
         PERMISSION_LOG_DEBUG(LABEL, "AddOnPermissionChangedListener end");
 

@@ -33,27 +33,17 @@
 
 #define private public
 #include "distributed_uid_allocator.h"
-#include "request_remote_permission_command.h"
 #include "subject_device_permission_manager.h"
+#include "mock_bundle_mgr.h"
+#include "mock_permission_mgr.h"
+#include "if_system_ability_manager.h"
+#include "iservice_registry.h"
+#include "ability_manager_interface.h"
+#include "request_remote_permission_command_test.h"
 
 using namespace std;
 using namespace OHOS::Security::Permission;
 using namespace testing::ext;
-
-namespace {}  // namespace
-
-class RequestRemotePermissionCommandTest : public testing::Test {
-public:
-    RequestRemotePermissionCommandTest();
-    ~RequestRemotePermissionCommandTest();
-    static void SetUpTestCase();
-    static void TearDownTestCase();
-    void SetUp();
-    void TearDown();
-    const std::shared_ptr<RequestRemotePermissionCommand> GetClass() const;
-
-private:
-};
 
 RequestRemotePermissionCommandTest::RequestRemotePermissionCommandTest()
 {}
@@ -61,7 +51,7 @@ RequestRemotePermissionCommandTest::~RequestRemotePermissionCommandTest()
 {}
 void RequestRemotePermissionCommandTest::SetUpTestCase()
 {
-    OHOS::sptr<OHOS::IRemoteObject> bundleObject = NULL;
+    OHOS::sptr<OHOS::IRemoteObject> bundleObject = new OHOS::AppExecFwk::BundleMgrService();
     OHOS::sptr<OHOS::IRemoteObject> permissionObject = new PermissionManagerService();
     auto sysMgr = OHOS::SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
     if (sysMgr == NULL) {
@@ -94,8 +84,8 @@ HWTEST_F(RequestRemotePermissionCommandTest, RequestRemotePermissionCommandTest_
     std::string bundleName = "bundleName";
     std::string reason = "reason";
 
-    std::shared_ptr<RequestRemotePermissionCommand> class_ =
-        std::make_shared<RequestRemotePermissionCommand>(srcDeviceId, dstDeviceId, requestId);
+    std::unique_ptr<RequestRemotePermissionCommand> class_ =
+        std::make_unique<RequestRemotePermissionCommand>(srcDeviceId, dstDeviceId, requestId);
 
     class_->SetRequestPermissionInfo(uid, permissions, bundleName, reason);
 
@@ -124,8 +114,8 @@ HWTEST_F(RequestRemotePermissionCommandTest, RequestRemotePermissionCommandTest_
     std::string bundleName = "bundleName";
     std::string reason = "reason";
 
-    std::shared_ptr<RequestRemotePermissionCommand> class_ =
-        std::make_shared<RequestRemotePermissionCommand>(srcDeviceId, dstDeviceId, requestId);
+    std::unique_ptr<RequestRemotePermissionCommand> class_ =
+        std::make_unique<RequestRemotePermissionCommand>(srcDeviceId, dstDeviceId, requestId);
 
     class_->Prepare();
     EXPECT_EQ(class_->remoteProtocol_.statusCode, 0);
@@ -157,8 +147,8 @@ HWTEST_F(RequestRemotePermissionCommandTest, RequestRemotePermissionCommandTest_
     DistributedUidAllocator::GetInstance().distributedUidMapByKey_.insert(
         std::pair<std::string, DistributedUidEntity>(key, entity));
 
-    std::shared_ptr<RequestRemotePermissionCommand> class_ =
-        std::make_shared<RequestRemotePermissionCommand>(srcDeviceId, dstDeviceId, requestId);
+    std::unique_ptr<RequestRemotePermissionCommand> class_ =
+        std::make_unique<RequestRemotePermissionCommand>(srcDeviceId, dstDeviceId, requestId);
     class_->SetRequestPermissionInfo(uid, permissions, bundleName, reason);
 
     class_->Execute();
@@ -181,8 +171,8 @@ HWTEST_F(RequestRemotePermissionCommandTest, RequestRemotePermissionCommandTest_
     std::string bundleName = "bundleName";
     std::string reason = "reason";
 
-    std::shared_ptr<RequestRemotePermissionCommand> class_ =
-        std::make_shared<RequestRemotePermissionCommand>(srcDeviceId, dstDeviceId, requestId);
+    std::unique_ptr<RequestRemotePermissionCommand> class_ =
+        std::make_unique<RequestRemotePermissionCommand>(srcDeviceId, dstDeviceId, requestId);
     class_->SetRequestPermissionInfo(uid, permissions, bundleName, reason);
 
     class_->Execute();
@@ -205,8 +195,8 @@ HWTEST_F(RequestRemotePermissionCommandTest, RequestRemotePermissionCommandTest_
     std::string bundleName = "bundleName";
     std::string reason = "reason";
 
-    std::shared_ptr<RequestRemotePermissionCommand> class_ =
-        std::make_shared<RequestRemotePermissionCommand>(srcDeviceId, dstDeviceId, requestId);
+    std::unique_ptr<RequestRemotePermissionCommand> class_ =
+        std::make_unique<RequestRemotePermissionCommand>(srcDeviceId, dstDeviceId, requestId);
     class_->SetRequestPermissionInfo(uid, permissions, bundleName, reason);
 
     class_->Finish();
@@ -228,8 +218,8 @@ HWTEST_F(RequestRemotePermissionCommandTest, RequestRemotePermissionCommandTest_
     std::string bundleName = "bundleName";
     std::string reason = "reason";
 
-    std::shared_ptr<RequestRemotePermissionCommand> class_ =
-        std::make_shared<RequestRemotePermissionCommand>(srcDeviceId, dstDeviceId, requestId);
+    std::unique_ptr<RequestRemotePermissionCommand> class_ =
+        std::make_unique<RequestRemotePermissionCommand>(srcDeviceId, dstDeviceId, requestId);
     class_->SetRequestPermissionInfo(uid, permissions, bundleName, reason);
 
     class_->Prepare();
@@ -254,7 +244,7 @@ HWTEST_F(RequestRemotePermissionCommandTest, RequestRemotePermissionCommandTest_
         "\"srcDeviceId\",\"srcDeviceLevel\":\"\",\"statusCode\":0,\"uid\":1,\"uniqueId\":"
         "\"RequestRemotePermissionCommand-requestId\"}";
 
-    std::shared_ptr<BaseRemoteCommand> class_ = std::make_shared<RequestRemotePermissionCommand>(json);
+    std::unique_ptr<BaseRemoteCommand> class_ = std::make_unique<RequestRemotePermissionCommand>(json);
     class_->Execute();
     EXPECT_EQ(class_->remoteProtocol_.commandName, "RequestRemotePermissionCommand");
     EXPECT_EQ(class_->remoteProtocol_.dstDeviceId, "dstDeviceId");

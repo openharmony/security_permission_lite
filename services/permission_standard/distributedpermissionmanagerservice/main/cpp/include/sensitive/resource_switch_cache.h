@@ -26,9 +26,9 @@ class ResourceSwitchCache {
 public:
     static ResourceSwitchCache &GetInstance();
 
-    bool GetSwitchStatus(std::string sensitiveResource);
+    bool GetSwitchStatus(std::string sensitiveResource) const;
 
-    bool GetSwitchStatus(std::string deviceId, std::string sensitiveResource);
+    bool GetSwitchStatus(std::string deviceId, std::string sensitiveResource) const;
 
     void SetSwitchStatus(std::string sensitiveResource, bool isSwitchAllow);
 

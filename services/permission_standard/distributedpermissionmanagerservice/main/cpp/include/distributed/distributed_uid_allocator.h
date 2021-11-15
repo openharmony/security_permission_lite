@@ -97,7 +97,7 @@ private:
 
     std::recursive_mutex stackLock_;
 };
-}  // namespace Permission
-}  // namespace Security
-}  // namespace OHOS
-#endif  // PERMISSION_BASE_SERVICE_H
+} // namespace Permission
+} // namespace Security
+} // namespace OHOS
+#endif // DISTRIBUTED_UID_ALLOCATOR_H

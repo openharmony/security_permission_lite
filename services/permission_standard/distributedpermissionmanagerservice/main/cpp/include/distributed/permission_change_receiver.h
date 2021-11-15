@@ -17,7 +17,6 @@
 
 #include "common_event.h"
 #include "common_event_manager.h"
-#include "external_deps.h"
 #include "permission_fetcher.h"
 #include "permission_record_manager.h"
 
@@ -41,9 +40,6 @@ private:
 public:
     class AppEventSubscriber : public EventFwk::CommonEventSubscriber {
     public:
-        // explicit AppEventSubscriber(const EventFwk::CommonEventSubscribeInfo &sp) : CommonEventSubscriber(sp){};
-        // ~CommonEventSubscriber() = default;
-        // ~AppEventSubscriber() = default;
         /**
          * A constructor used to create a CommonEventSubscriber instance with the
          * subscribeInfo parameter passed.

@@ -13,12 +13,12 @@
  * limitations under the License.
  */
 
-#ifndef PERMISSION_DEF
-#define PERMISSION_DEF
+#ifndef PERMISSION_DEFINITION
+#define PERMISSION_DEFINITION
 
 #include <string>
 #include <set>
-#include "external_deps.h"
+#include "pms_adapter.h"
 #include "nocopyable.h"
 #include "permission.h"
 #include "permission_def.h"
@@ -37,6 +37,7 @@ public:
     bool IsRestrictedPermission(const std::string &permissionName);
 
 private:
+    sptr<Permission::IPermissionManager> iPermissionManager_;
     PermissionDefinition();
 
     DISALLOW_COPY_AND_MOVE(PermissionDefinition);
@@ -44,4 +45,4 @@ private:
 }  // namespace Permission
 }  // namespace Security
 }  // namespace OHOS
-#endif  // PERMISSION_DEF
+#endif  // PERMISSION_DEFINITION

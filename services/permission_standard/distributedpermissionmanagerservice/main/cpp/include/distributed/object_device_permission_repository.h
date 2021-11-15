@@ -25,7 +25,7 @@
 #include "nlohmann/json.hpp"
 #include "constant.h"
 #include "base_remote_command.h"
-#include "object_device_json.h"
+#include "object_device_json_object.h"
 #include "permission_log.h"
 #include "permission_log.h"
 namespace OHOS {
@@ -37,9 +37,9 @@ public:
     {}
     virtual ~ObjectUid() = default;
     int32_t GetUid();
-    std::set<std::string> GetGrabtedPermission();
+    std::set<std::string> GetGrantedPermission() const;
     void ResetGrantSensitivePermission(std::set<std::string> permissions);
-    bool IsGrantPermission(std::string permission);
+    bool IsGrantPermission(std::string permission) const;
     ObjectUid(const int32_t uid, const std::set<std::string> &grabtedPermission);
 
 private:
@@ -53,8 +53,8 @@ public:
     {}
     ObjectDevice(const std::string &deviceId, std::map<int32_t, std::shared_ptr<ObjectUid>> uniPermissions);
     virtual ~ObjectDevice() = default;
-    std::string GetDeviceId();
-    bool ContainUid(int32_t uid);
+    std::string GetDeviceId() const;
+    bool ContainUid(int32_t uid) const;
     std::map<int32_t, std::shared_ptr<ObjectUid>> GetUidPermissions();
     void AddObjectUid(int32_t uid);
     void RemoveObjectUid(int32_t uid);
@@ -127,7 +127,7 @@ private:
     static ObjectDevicePermissionRepository instance_;
 
     bool IsGrantPermission(int32_t uid, std::string permission);
-    std::vector<ObjectDeviceJson> GetDevicesJsonVector();
+    std::vector<ObjectDeviceJsonObject> GetDevicesJsonVector();
 
 private:
     std::map<std::string, std::shared_ptr<ObjectDevice>> objectDevices_;
@@ -136,7 +136,7 @@ private:
 };  // end of ObjectDevicePermissionRepository
 
 struct DevicesJsonVector {
-    std::vector<ObjectDeviceJson> devicesJson_;
+    std::vector<ObjectDeviceJsonObject> devicesJson_;
 };
 void to_json(nlohmann::json &jsonObject, const DevicesJsonVector &devicesJsonVector);
 void from_json(const nlohmann::json &jsonObject, DevicesJsonVector &devicesJsonVector);

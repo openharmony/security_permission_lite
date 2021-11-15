@@ -53,7 +53,8 @@ public:
         // wait service to init;
         int sleep1000 = 1000;
         std::this_thread::sleep_for(std::chrono::milliseconds(sleep1000));
-        ASSERT_EQ(SoftBusManager::GetInstance().isSoftBusServiceBindSuccess_, true);
+        bool isSoftBusServiceBindSuccess = SoftBusManager::GetInstance().isSoftBusServiceBindSuccess_;
+        ASSERT_TRUE(isSoftBusServiceBindSuccess);
     }
     static void TearDownTestCase(void)
     {
@@ -214,7 +215,6 @@ HWTEST_F(PermissionBmsManagerTest, PermissionBmsManager_GetPermissions_001, Test
         PERMISSION_LOG_INFO(LABEL, "sensitives  : %{public}d", (int)info.remoteSensitivePermission.size());
 
         auto bundle = info.bundles;
-        // PERMISSION_LOG_INFO(LABEL, "bundle.sign       : %{public}d", bundle.at(0).sign.size());
         PERMISSION_LOG_INFO(LABEL, "bundle.name       : %{public}s", bundle.at(0).name.c_str());
         PERMISSION_LOG_INFO(LABEL, "bundle.label      : %{public}s", bundle.at(0).bundleLabel.c_str());
         PERMISSION_LOG_INFO(LABEL, "bundle.permissions: %{public}d", (int)bundle.at(0).permissions.size());
@@ -281,6 +281,7 @@ HWTEST_F(PermissionBmsManagerTest, PermissionBmsManager_GetRegrantedPermissions_
         infop.DEFAULT_SIZE = 1;
         infop.uid = 9;
         UidBundleBo infor;
+        infor.uid = 0;
         int code = instance->GetRegrantedPermissions(infop, infor);
         EXPECT_TRUE(code == Constant::SUCCESS);
         EXPECT_EQ(infop.DEFAULT_SIZE, 1);
@@ -377,7 +378,6 @@ HWTEST_F(PermissionBmsManagerTest, PermissionBmsManager_ReGrantDuidPermissions_0
     }
     {
         PERMISSION_LOG_INFO(LABEL, "PermissionBmsManager_ReGrantDuidPermissions_001-2");
-        // PermissionBmsManager *instance = &PermissionBmsManager::GetInstance();
 
         PermissionBmsManager xinstance;
         PermissionBmsManager *instance = &xinstance;
@@ -440,6 +440,26 @@ HWTEST_F(PermissionBmsManagerTest, PermissionBmsManager_ReGrantDuidPermissions_0
             PERMISSION_LOG_INFO(LABEL, "status2: %{public}d", info.bundles.at(0).permissions.at(0).status);
             EXPECT_TRUE(info.bundles.at(0).permissions.at(0).status == 9);
         }
+    }
+}
+
+/*
+ * Feature: DPMS
+ * Function: PermissionBmsManager
+ * SubFunction: ReGrantDuidPermissions
+ * FunctionPoints:
+ * EnvConditions: NA
+ * CaseDescription: verify Regrant cached permissions for subject device when the permission define may change.
+ */
+HWTEST_F(PermissionBmsManagerTest, PermissionBmsManager_ReGrantDuidPermissions_002, TestSize.Level1)
+{
+    {
+        PERMISSION_LOG_INFO(LABEL, "PermissionBmsManager_ReGrantDuidPermissions_002-1");
+
+        PermissionBmsManager xinstance;
+        PermissionBmsManager *instance = &xinstance;
+
+        instance->Init();
         {
             UidBundleBo info;
             PermissionDto pd;

@@ -23,7 +23,6 @@
 namespace OHOS {
 namespace Security {
 namespace Permission {
-
 enum class AppAttribute {
     // Attribute indicates the application is installed in the device's system image.
     APP_ATTRIBUTE_PRESET = 1 << 0,
@@ -46,7 +45,6 @@ public:
 private:
     std::map<int32_t, int32_t> attributeBuffer_;
 };
-
 }  // namespace Permission
 }  // namespace Security
 }  // namespace OHOS

@@ -13,46 +13,27 @@
  * limitations under the License.
  */
 
-#include "gtest/gtest.h"
-#define private public
-#include "distributed_permission_manager_service.h"
+#include "wait_duid_ready_test.h"
 
 using namespace std;
 using namespace testing::ext;
-namespace OHOS {
-pid_t IPCSkeleton::pid_ = 1;
-pid_t IPCSkeleton::uid_ = 1;
-std::string IPCSkeleton::localDeviceId_ = "1004";
-std::string IPCSkeleton::deviceId_ = "";
-namespace Security {
-namespace Permission {
-class WaitDuidReadyTest : public testing::Test {
-public:
-    static void SetUpTestCase()
-    {}
-    static void TearDownTestCase()
-    {}
-    void SetUp()
-    {}
-    void TearDown()
-    {
-        DistributedUidAllocator::GetInstance().Clear();
-        DeviceInfoRepository::GetInstance().Clear();
-    }
-    std::shared_ptr<DistributedPermissionManagerService> GetInstance();
+using namespace OHOS::Security::Permission;
 
-    int32_t validRuid_ = 1024;
-    int32_t validTime_ = 5;
-    int32_t INVALID_DEVICE_ID_ = Constant::INVALID_DEVICE_ID;
-    int32_t INVALID_RUID_ = Constant::INVALID_RUID;
-    int32_t FAILURE_ = Constant::FAILURE;
-    int32_t INVALID_DISTRIBUTED_UID_ = Constant::INVALID_DISTRIBUTED_UID;
-    int32_t WAIT_DISTRIBUTED_UID_TIME_OUT_ = Constant::WAIT_DISTRIBUTED_UID_TIME_OUT;
-    int32_t CANNOT_GET_PACKAGE_FOR_UID_ = Constant::CANNOT_GET_PACKAGE_FOR_UID;
-};
-std::shared_ptr<DistributedPermissionManagerService> WaitDuidReadyTest::GetInstance()
+void WaitDuidReadyTest::SetUpTestCase()
+{}
+void WaitDuidReadyTest::TearDownTestCase()
+{}
+void WaitDuidReadyTest::SetUp()
+{}
+void WaitDuidReadyTest::TearDown()
 {
-    return std::make_shared<DistributedPermissionManagerService>();
+    DistributedUidAllocator::GetInstance().Clear();
+    DeviceInfoRepository::GetInstance().Clear();
+}
+
+std::unique_ptr<DistributedPermissionManagerService> WaitDuidReadyTest::GetInstance()
+{
+    return std::make_unique<DistributedPermissionManagerService>();
 }
 
 /**
@@ -233,6 +214,3 @@ HWTEST_F(WaitDuidReadyTest, WaitDuidReady_0009, Function | MediumTest | Level1)
     GTEST_LOG_(INFO) << duid;
     EXPECT_EQ(duid, CANNOT_GET_PACKAGE_FOR_UID_);
 }
-}  // namespace Permission
-}  // namespace Security
-}  // namespace OHOS

@@ -57,7 +57,7 @@ public:
      * @param permission Sensitive resource permission.
      * @return 0 if permission invalid, not sensitive resource or switch off(denied). 1 switch on(allow).
      */
-    int GetLocalSensitiveResourceSwitch(std::string permission);
+    int GetLocalSensitiveResourceSwitch(std::string permission) const;
 
     /**
      * Get remote sensitive resource switch.
@@ -66,7 +66,7 @@ public:
      * @param permission Sensitive resource permission.
      * @return 0 if permission invalid, not sensitive resource or switch off. 1 switch on.
      */
-    int GetRemoteSensitiveResourceSwitch(std::string deviceId, std::string permission);
+    int GetRemoteSensitiveResourceSwitch(std::string deviceId, std::string permission) const;
 
 private:
     ResourceSwitch()

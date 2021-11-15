@@ -411,7 +411,7 @@ HWTEST_F(SoftBusChannelTest, SoftBusChannel_SendRequestBytes_001, TestSize.Level
         channel->BuildConnection();
         std::string bytesString = "abcdefg-0123456789";
         const int bytesLength = bytesString.length();
-        int code = channel->SendRequestBytes((unsigned char *)bytesString.c_str(), bytesLength);
+        int code = channel->SendRequestBytes((unsigned char *) bytesString.c_str(), bytesLength);
         EXPECT_TRUE(code == 0);
 
         channel->CloseConnection();
@@ -638,7 +638,7 @@ HWTEST_F(SoftBusChannelTest, SoftBusChannel_HandleDataReceived_001, TestSize.Lev
     int session = 1;
     std::string json = "abcdefg-0123456789";
     int len = 100;
-    char unsigned buf[len];
+    char unsigned buf[len + 1];
     memset_s(buf, len + 1, 0, len + 1);
     channel->Compress(json, buf, len);
     {

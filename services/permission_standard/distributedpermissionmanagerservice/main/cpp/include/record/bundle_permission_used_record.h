@@ -50,6 +50,9 @@ struct BundlePermissionUsedRecord : public Parcelable {
     nlohmann::json to_json(const BundlePermissionUsedRecord &bundle) const;
 
     void from_json(const nlohmann::json &jsonObj, BundlePermissionUsedRecord &bundle);
+
+    static int TranslationIntoBundlePermissionUsedRecord(
+        const GenericValues &inGenericValues, BundlePermissionUsedRecord &outBundleRecord);
 };
 }  // namespace Permission
 }  // namespace Security

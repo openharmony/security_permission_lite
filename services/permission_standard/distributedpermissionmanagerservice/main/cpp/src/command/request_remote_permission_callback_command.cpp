@@ -14,13 +14,12 @@
  */
 
 #include "base_remote_command.h"
-#include "request_remote_permission_callback_command.h"
 #include "permission_log.h"
 #include "subject_device_permission_manager.h"
 #include "object_device_permission_manager.h"
-#include "external_deps.h"
 #include "request_remote_permission.h"
 #include "ipc_skeleton.h"
+#include "request_remote_permission_callback_command.h"
 
 namespace OHOS {
 namespace Security {

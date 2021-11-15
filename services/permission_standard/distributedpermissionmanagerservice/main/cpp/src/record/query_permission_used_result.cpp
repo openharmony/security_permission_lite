@@ -98,20 +98,18 @@ nlohmann::json QueryPermissionUsedResult::to_json(const QueryPermissionUsedResul
     for (auto bundle : result.bundlePermissionUsedRecords) {
         jsonBundle.emplace_back(bundle.to_json(bundle));
     }
-    nlohmann::json jsonObj = nlohmann::json{{"code", result.code},
-        {"beginTimeMillis", result.beginTimeMillis},
-        {"endTimeMillis", result.endTimeMillis},
-        {"bundlePermissionUsedRecords", jsonBundle}};
+    nlohmann::json jsonObj = nlohmann::json {
+        {"c", result.code}, {"bt", result.beginTimeMillis}, {"et", result.endTimeMillis}, {"bp", jsonBundle}};
     return jsonObj;
 }
 
 void QueryPermissionUsedResult::from_json(const nlohmann::json &jsonObj, QueryPermissionUsedResult &result)
 {
-    jsonObj.at("code").get_to(result.code);
-    jsonObj.at("beginTimeMillis").get_to(result.beginTimeMillis);
-    jsonObj.at("endTimeMillis").get_to(result.endTimeMillis);
+    jsonObj.at("c").get_to(result.code);
+    jsonObj.at("bt").get_to(result.beginTimeMillis);
+    jsonObj.at("et").get_to(result.endTimeMillis);
     std::vector<BundlePermissionUsedRecord> bundleVector;
-    nlohmann::json jsonBundle = jsonObj.at("bundlePermissionUsedRecords").get<nlohmann::json>();
+    nlohmann::json jsonBundle = jsonObj.at("bp").get<nlohmann::json>();
     for (auto bundle : jsonBundle) {
         BundlePermissionUsedRecord tempBundle;
         tempBundle.from_json(bundle, tempBundle);

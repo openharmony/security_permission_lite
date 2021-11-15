@@ -13,63 +13,42 @@
  * limitations under the License.
  */
 
-#include <thread>
-#include <functional>
-#include <map>
-#include <iostream>
-#include "gtest/gtest.h"
-#include "base_remote_command.h"
-#include "constant.h"
-#include "device_info_repository.h"
-#define private public
-#include "distributed_permission_manager_service.h"
-#include "subject_device_permission_manager.h"
-#include "mock_bundle_mgr.h"
-#include "mock_permission_mgr.h"
-#include "if_system_ability_manager.h"
-#include "iservice_registry.h"
-#include "ability_manager_interface.h"
-
+#include "check_calling_permission_test_02.h"
 using namespace std;
 using namespace OHOS::Security::Permission;
 using namespace testing::ext;
 namespace OHOS {
 namespace Security {
 namespace Permission {
-class CheckCallingPermissionTest02 : public testing::Test {
-public:
-    static void SetUpTestCase()
-    {
-        cout << "SetUpTestCase()" << endl;
-        pid_t IPCSkeleton::pid_ = 1;
-        pid_t IPCSkeleton::uid_ = 1;
-        std::string IPCSkeleton::localDeviceId_ = "1004";
-        std::string IPCSkeleton::deviceId_ = "";
-        OHOS::sptr<OHOS::IRemoteObject> bundleObject = NULL;
-        OHOS::sptr<OHOS::IRemoteObject> permissionObject = new PermissionManagerService();
-        auto sysMgr = OHOS::SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
-        if (sysMgr == NULL) {
-            GTEST_LOG_(ERROR) << "fail to get ISystemAbilityManager";
-            return;
-        }
-        sysMgr->AddSystemAbility(Constant::ServiceId::BUNDLE_MGR_SERVICE_SYS_ABILITY_ID, bundleObject);
-        sysMgr->AddSystemAbility(Constant::ServiceId::SUBSYS_SECURITY_PERMISSION_SYS_SERVICE_ID, permissionObject);
+void CheckCallingPermissionTest02::SetUpTestCase()
+{
+    cout << "SetUpTestCase()" << endl;
+    pid_t IPCSkeleton::pid_ = 1;
+    pid_t IPCSkeleton::uid_ = 1;
+    std::string IPCSkeleton::localDeviceId_ = "1004";
+    std::string IPCSkeleton::deviceId_ = "";
+    OHOS::sptr<OHOS::IRemoteObject> bundleObject = new OHOS::AppExecFwk::BundleMgrService();
+    OHOS::sptr<OHOS::IRemoteObject> permissionObject = new PermissionManagerService();
+    auto sysMgr = OHOS::SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
+    if (sysMgr == NULL) {
+        GTEST_LOG_(ERROR) << "fail to get ISystemAbilityManager";
+        return;
     }
-
-    static void TearDownTestCase()
-    {
-        cout << "TearDownTestCase()" << endl;
-    }
-    void SetUp()
-    {
-        cout << "SetUp() is running" << endl;
-    }
-    void TearDown()
-    {
-        cout << "TearDown()" << endl;
-    }
-};
-
+    sysMgr->AddSystemAbility(Constant::ServiceId::BUNDLE_MGR_SERVICE_SYS_ABILITY_ID, bundleObject);
+    sysMgr->AddSystemAbility(Constant::ServiceId::SUBSYS_SECURITY_PERMISSION_SYS_SERVICE_ID, permissionObject);
+}
+void CheckCallingPermissionTest02::TearDownTestCase()
+{
+    cout << "TearDownTestCase()" << endl;
+}
+void CheckCallingPermissionTest02::SetUp()
+{
+    cout << "SetUp() is running" << endl;
+}
+void CheckCallingPermissionTest02::TearDown()
+{
+    cout << "TearDown()" << endl;
+}
 HWTEST_F(CheckCallingPermissionTest2, CheckCallingPermission01, Function | MediumTest | Level1)
 {
     string permissionName = "";

@@ -15,13 +15,7 @@
 #include <thread>
 #include <functional>
 
-#include "gtest/gtest.h"
-#include "distributed_permission_manager_service.h"
-#include "mock_bundle_mgr.h"
-#include "mock_permission_mgr.h"
-#include "if_system_ability_manager.h"
-#include "iservice_registry.h"
-#include "ability_manager_interface.h"
+#include "add_permission_used_record_test.h"
 
 using namespace std;
 using namespace testing::ext;
@@ -34,49 +28,38 @@ std::string IPCSkeleton::localDeviceId_ = "1004";
 std::string IPCSkeleton::deviceId_ = "";
 }  // namespace OHOS
 
-class AddPermissionUsedRecordTest : public testing::Test {
-public:
-    DistributedPermissionManagerService managerService;
-    void SetPermissionNames(std::vector<std::string> &permissionNames);
-    void InitVisitorData();
-    void InitRecordData(int64_t timestamp);
-    static void SetUpTestCase()
-    {
-        DeviceInfoManager::GetInstance().AddDeviceInfo(
-            "device_0", "device_0", "device_0", "device_name_0", "device_type");
-        cout << "SetUpTestCase()" << endl;
+void AddPermissionUsedRecordTest::SetUpTestCase()
+{
+    DeviceInfoManager::GetInstance().AddDeviceInfo("device_0", "device_0", "device_0", "device_name_0", "device_type");
+    cout << "SetUpTestCase()" << endl;
 
-        OHOS::sptr<OHOS::IRemoteObject> bundleObject = NULL;
-        OHOS::sptr<OHOS::IRemoteObject> permissionObject = new PermissionManagerService();
-        auto sysMgr = OHOS::SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
-        if (sysMgr == NULL) {
-            GTEST_LOG_(ERROR) << "fail to get ISystemAbilityManager";
-            return;
-        }
+    OHOS::sptr<OHOS::IRemoteObject> bundleObject = new OHOS::AppExecFwk::BundleMgrService();
+    OHOS::sptr<OHOS::IRemoteObject> permissionObject = new PermissionManagerService();
+    auto sysMgr = OHOS::SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
+    if (sysMgr == NULL) {
+        GTEST_LOG_(ERROR) << "fail to get ISystemAbilityManager";
+        return;
+    }
 
         sysMgr->AddSystemAbility(Constant::ServiceId::BUNDLE_MGR_SERVICE_SYS_ABILITY_ID, bundleObject);
         sysMgr->AddSystemAbility(Constant::ServiceId::SUBSYS_SECURITY_PERMISSION_SYS_SERVICE_ID, permissionObject);
     }
 
-    static void TearDownTestCase()
-    {
-        cout << "TearDownTestCase()" << endl;
-    }
-    void SetUp()
-    {
-        GenericValues null;
-        DataStorage::GetRealDataStorage().Remove(DataStorage::PERMISSION_VISITOR, null);
-        DataStorage::GetRealDataStorage().Remove(DataStorage::PERMISSION_RECORD, null);
-        cout << "SetUp() is running" << endl;
-    }
-    void TearDown()
-    {
-        cout << "TearDown()" << endl;
-    }
-    std::vector<std::string> permissionNames;
-    std::vector<GenericValues> visitorValues;
-    std::vector<GenericValues> recordValues;
-};
+void AddPermissionUsedRecordTest::TearDownTestCase()
+{
+    cout << "TearDownTestCase()" << endl;
+}
+void AddPermissionUsedRecordTest::SetUp()
+{
+    GenericValues null;
+    DataStorage::GetRealDataStorage().Remove(DataStorage::PERMISSION_VISITOR, null);
+    DataStorage::GetRealDataStorage().Remove(DataStorage::PERMISSION_RECORD, null);
+    cout << "SetUp() is running" << endl;
+}
+void AddPermissionUsedRecordTest::TearDown()
+{
+    cout << "TearDown()" << endl;
+}
 
 void AddPermissionUsedRecordTest::SetPermissionNames(std::vector<std::string> &permissionNames)
 {
@@ -163,7 +146,8 @@ HWTEST_F(AddPermissionUsedRecordTest, AddPermissionUsedRecord_0100, Function | M
     EXPECT_EQ(recordResult, 0);
     visitorSize = visitorValues.size();
     recordSize = recordValues.size();
-    managerService.AddPermissionsRecord(permissionName, deviceId, uid, accessCount, failCount);
+    std::string appidInfo = DistributedPermissionKit::AppIdInfoHelper::CreateAppIdInfo(0, uid, deviceId);
+    managerService.AddPermissionsRecord(permissionName, appidInfo, accessCount, failCount);
     visitorValues.clear();
     recordValues.clear();
     visitorResult = DataStorage::GetRealDataStorage().Find(DataStorage::PERMISSION_VISITOR, visitorValues);
@@ -201,7 +185,8 @@ HWTEST_F(AddPermissionUsedRecordTest, AddPermissionUsedRecord_0200, Function | M
     EXPECT_EQ(recordResult, 0);
     visitorSize = visitorValues.size();
     recordSize = recordValues.size();
-    managerService.AddPermissionsRecord(permissionName, deviceId, uid, accessCount, failCount);
+    std::string appidInfo = DistributedPermissionKit::AppIdInfoHelper::CreateAppIdInfo(0, uid, deviceId);
+    managerService.AddPermissionsRecord(permissionName, appidInfo, accessCount, failCount);
     visitorValues.clear();
     recordValues.clear();
     visitorResult = DataStorage::GetRealDataStorage().Find(DataStorage::PERMISSION_VISITOR, visitorValues);
@@ -239,8 +224,8 @@ HWTEST_F(AddPermissionUsedRecordTest, AddPermissionUsedRecord_0300, Function | M
     EXPECT_EQ(recordResult, 0);
     visitorSize = visitorValues.size();
     recordSize = recordValues.size();
-
-    managerService.AddPermissionsRecord(permissionName, deviceId, uid, accessCount, failCount);
+    std::string appidInfo = DistributedPermissionKit::AppIdInfoHelper::CreateAppIdInfo(0, uid, deviceId);
+    managerService.AddPermissionsRecord(permissionName, appidInfo, accessCount, failCount);
 
     visitorValues.clear();
     recordValues.clear();
@@ -276,7 +261,8 @@ HWTEST_F(AddPermissionUsedRecordTest, AddPermissionUsedRecord_0400, Function | M
     EXPECT_EQ(recordResult, 0);
     visitorSize = visitorValues.size();
     recordSize = recordValues.size();
-    managerService.AddPermissionsRecord(permissionName, deviceId, uid, accessCount, failCount);
+    std::string appidInfo = DistributedPermissionKit::AppIdInfoHelper::CreateAppIdInfo(0, uid, deviceId);
+    managerService.AddPermissionsRecord(permissionName, appidInfo, accessCount, failCount);
     visitorValues.clear();
     recordValues.clear();
     visitorResult = DataStorage::GetRealDataStorage().Find(DataStorage::PERMISSION_VISITOR, visitorValues);
@@ -306,7 +292,8 @@ HWTEST_F(AddPermissionUsedRecordTest, AddPermissionUsedRecord_0500, Function | M
     int recordResult = DataStorage::GetRealDataStorage().Find(DataStorage::PERMISSION_RECORD, recordValues);
     EXPECT_EQ(recordResult, 0);
     recordSize = recordValues.size();
-    managerService.AddPermissionsRecord(permissionName, deviceId, uid, accessCount, failCount);
+    std::string appidInfo = DistributedPermissionKit::AppIdInfoHelper::CreateAppIdInfo(0, uid, deviceId);
+    managerService.AddPermissionsRecord(permissionName, appidInfo, accessCount, failCount);
     recordValues.clear();
     recordResult = DataStorage::GetRealDataStorage().Find(DataStorage::PERMISSION_RECORD, recordValues);
     EXPECT_EQ(recordResult, 0);
@@ -322,10 +309,6 @@ HWTEST_F(AddPermissionUsedRecordTest, AddPermissionUsedRecord_0500, Function | M
  */
 HWTEST_F(AddPermissionUsedRecordTest, AddPermissionUsedRecord_0600, Function | MediumTest | Level1)
 {
-    std::shared_ptr<DistributedPermissionManagerService> service;
-    service = OHOS::DelayedSingleton<DistributedPermissionManagerService>::GetInstance();
-    service->OnStart();
-    sleep(1);
     visitorValues.clear();
     recordValues.clear();
     int visitorSize = 0;
@@ -344,8 +327,8 @@ HWTEST_F(AddPermissionUsedRecordTest, AddPermissionUsedRecord_0600, Function | M
     int32_t uid = 0;
     int32_t accessCount = 0;
     int32_t failCount = 1;
-
-    service->AddPermissionsRecord(permissionName, deviceId, uid, accessCount, failCount);
+    std::string appidInfo = DistributedPermissionKit::AppIdInfoHelper::CreateAppIdInfo(0, uid, deviceId);
+    managerService.AddPermissionsRecord(permissionName, appidInfo, accessCount, failCount);
     sleep(1);
     visitorValues.clear();
     recordValues.clear();

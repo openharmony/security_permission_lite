@@ -19,7 +19,7 @@ config("permission_test_config") {
     "${distributed_permission_frameworks_log_path}/main/cpp/include",
     "${distributed_permission_innerkits_distributed_path}/main/cpp/include",
     "${distributed_permission_innerkits_distributed_path}/main/cpp/include/permission",
-    "${distributed_permission_record_database_path}/main/cpp/include",
+    "${distributed_permission_database_path}/main/cpp/include",
     "${distributed_permission_services_path}/main/cpp/include",
     "${distributed_permission_services_path}/main/cpp/include/command",
     "${distributed_permission_services_path}/main/cpp/include/common",
@@ -27,6 +27,7 @@ config("permission_test_config") {
     "${distributed_permission_services_path}/main/cpp/include/distributed",
     "${distributed_permission_services_path}/main/cpp/include/protocol",
     "${distributed_permission_services_path}/main/cpp/include/record",
+    "${distributed_permission_services_path}/main/cpp/src/record",
     "${distributed_permission_innerkits_sdk_path}/main/cpp/include/permission_using_remind",
     "${distributed_permission_innerkits_sdk_path}/main/cpp/src/permission_using_remind",
     "${distributed_permission_services_path}/main/cpp/include/remote",
@@ -63,7 +64,5 @@ group("unittest") {
   deps = [
     "unittest/app_id_info_helper_test:unittest",
     "unittest/app_id_info_test:unittest",
-    "unittest/check_permission_inner_test:unittest",
-    "unittest/permission_remind_inner_test:unittest",
   ]
 }

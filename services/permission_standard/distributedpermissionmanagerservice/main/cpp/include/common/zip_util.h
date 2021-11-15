@@ -16,10 +16,11 @@
 #ifndef ZIP_UTIL_H
 #define ZIP_UTIL_H
 
-#include <cstddef>
 #include <cstring>
 #include <string>
 #include <zlib.h>
+
+#include "base64_util.h"
 
 namespace OHOS {
 namespace Security {
@@ -31,6 +32,12 @@ public:
 
     static bool ZipUnCompress(
         const unsigned char *input, const unsigned long tlen, std::string &output, unsigned long len);
+
+    static bool CompressCode(
+        const std::string &input, unsigned long &codeLen, unsigned long &zipLen, std::string &output);
+
+    static bool UnCompressDeCode(
+        const std::string &input, unsigned long &codeLen, unsigned long &zipLen, std::string &output);
 };
 }  // namespace Permission
 }  // namespace Security

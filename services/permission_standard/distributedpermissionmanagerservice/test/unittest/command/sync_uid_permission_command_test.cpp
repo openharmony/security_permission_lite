@@ -29,24 +29,11 @@
 #include "ability_manager_interface.h"
 #include "base_remote_command.h"
 #include "sync_uid_permission_command.h"
+#include "sync_uid_permission_command_test.h"
 
 using namespace std;
 using namespace OHOS::Security::Permission;
 using namespace testing::ext;
-
-namespace {}  // namespace
-
-class SyncUidPermissionCommandTest : public testing::Test {
-public:
-    SyncUidPermissionCommandTest();
-    ~SyncUidPermissionCommandTest();
-    static void SetUpTestCase();
-    static void TearDownTestCase();
-    void SetUp();
-    void TearDown();
-
-private:
-};
 
 SyncUidPermissionCommandTest::SyncUidPermissionCommandTest()
 {}
@@ -54,7 +41,7 @@ SyncUidPermissionCommandTest::~SyncUidPermissionCommandTest()
 {}
 void SyncUidPermissionCommandTest::SetUpTestCase()
 {
-    OHOS::sptr<OHOS::IRemoteObject> bundleObject = NULL;
+    OHOS::sptr<OHOS::IRemoteObject> bundleObject = new OHOS::AppExecFwk::BundleMgrService();
     OHOS::sptr<OHOS::IRemoteObject> permissionObject = new PermissionManagerService();
     auto sysMgr = OHOS::SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
     if (sysMgr == NULL) {
@@ -78,7 +65,7 @@ HWTEST_F(SyncUidPermissionCommandTest, SyncUidPermissionCommandTest_0001, Functi
     std::string dstDeviceId = "dstDeviceId";
 
     std::shared_ptr<SyncUidPermissionCommand> class_ =
-        std::make_shared<SyncUidPermissionCommand>(uid, srcDeviceId, dstDeviceId);
+        std::make_unique<SyncUidPermissionCommand>(uid, srcDeviceId, dstDeviceId);
 
     EXPECT_EQ(class_->remoteProtocol_.commandName, "SyncUidPermissionCommand");
     EXPECT_EQ(class_->remoteProtocol_.uniqueId, "SyncUidPermissionCommand-1");
@@ -94,8 +81,8 @@ HWTEST_F(SyncUidPermissionCommandTest, SyncUidPermissionCommandTest_0002, Functi
     std::string srcDeviceId = "srcDeviceId";
     std::string dstDeviceId = "dstDeviceId";
 
-    std::shared_ptr<SyncUidPermissionCommand> class_ =
-        std::make_shared<SyncUidPermissionCommand>(uid, srcDeviceId, dstDeviceId);
+    std::unique_ptr<SyncUidPermissionCommand> class_ =
+        std::make_unique<SyncUidPermissionCommand>(uid, srcDeviceId, dstDeviceId);
 
     class_->Prepare();
 
@@ -109,8 +96,8 @@ HWTEST_F(SyncUidPermissionCommandTest, SyncUidPermissionCommandTest_0003, Functi
     std::string srcDeviceId = "srcDeviceId";
     std::string dstDeviceId = "dstDeviceId";
 
-    std::shared_ptr<BaseRemoteCommand> class_ =
-        std::make_shared<SyncUidPermissionCommand>(uid, srcDeviceId, dstDeviceId);
+    std::unique_ptr<BaseRemoteCommand> class_ =
+        std::make_unique<SyncUidPermissionCommand>(uid, srcDeviceId, dstDeviceId);
 
     class_->Prepare();
 
@@ -124,8 +111,8 @@ HWTEST_F(SyncUidPermissionCommandTest, SyncUidPermissionCommandTest_0004, Functi
     std::string srcDeviceId = "srcDeviceId";
     std::string dstDeviceId = "dstDeviceId";
 
-    std::shared_ptr<BaseRemoteCommand> class_ =
-        std::make_shared<SyncUidPermissionCommand>(uid, srcDeviceId, dstDeviceId);
+    std::unique_ptr<BaseRemoteCommand> class_ =
+        std::make_unique<SyncUidPermissionCommand>(uid, srcDeviceId, dstDeviceId);
 
     class_->Prepare();
     class_->Execute();
@@ -140,8 +127,8 @@ HWTEST_F(SyncUidPermissionCommandTest, SyncUidPermissionCommandTest_0005, Functi
     std::string srcDeviceId = "012345678900123456789001234567890012345678900123456789001234567890012345";
     std::string dstDeviceId = "dstDeviceId";
 
-    std::shared_ptr<BaseRemoteCommand> class_ =
-        std::make_shared<SyncUidPermissionCommand>(uid, srcDeviceId, dstDeviceId);
+    std::unique_ptr<BaseRemoteCommand> class_ =
+        std::make_unique<SyncUidPermissionCommand>(uid, srcDeviceId, dstDeviceId);
 
     class_->Prepare();
     class_->Execute();
@@ -156,8 +143,8 @@ HWTEST_F(SyncUidPermissionCommandTest, SyncUidPermissionCommandTest_0006, Functi
     std::string srcDeviceId = "srcDeviceId";
     std::string dstDeviceId = "dstDeviceId";
 
-    std::shared_ptr<BaseRemoteCommand> class_ =
-        std::make_shared<SyncUidPermissionCommand>(uid, srcDeviceId, dstDeviceId);
+    std::unique_ptr<BaseRemoteCommand> class_ =
+        std::make_unique<SyncUidPermissionCommand>(uid, srcDeviceId, dstDeviceId);
 
     class_->Finish();
 
@@ -170,8 +157,8 @@ HWTEST_F(SyncUidPermissionCommandTest, SyncUidPermissionCommandTest_0007, Functi
     std::string srcDeviceId = "srcDeviceId";
     std::string dstDeviceId = "dstDeviceId";
 
-    std::shared_ptr<SyncUidPermissionCommand> class_ =
-        std::make_shared<SyncUidPermissionCommand>(uid, srcDeviceId, dstDeviceId);
+    std::unique_ptr<SyncUidPermissionCommand> class_ =
+        std::make_unique<SyncUidPermissionCommand>(uid, srcDeviceId, dstDeviceId);
 
     class_->Prepare();
 
@@ -212,7 +199,7 @@ HWTEST_F(SyncUidPermissionCommandTest, SyncUidPermissionCommandTest_0008, Functi
         "signatureKey\"}]}],\"remoteSensitivePermission\":null,\"uid\":1,\"uidState\":0},\"uniqueId\":"
         "\"SyncUidPermissionCommand-1\"}";
 
-    std::shared_ptr<SyncUidPermissionCommand> class_ = std::make_shared<SyncUidPermissionCommand>(json);
+    std::unique_ptr<SyncUidPermissionCommand> class_ = std::make_unique<SyncUidPermissionCommand>(json);
 
     class_->Execute();
 

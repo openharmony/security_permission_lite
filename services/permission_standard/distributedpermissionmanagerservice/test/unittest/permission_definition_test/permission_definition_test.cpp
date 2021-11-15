@@ -13,18 +13,7 @@
  * limitations under the License.
  */
 
-#include <thread>
-#include <functional>
-#include <iostream>
-#include "gtest/gtest.h"
-#include "permission_definition.h"
-#include "mock_bundle_mgr.h"
-#include "mock_permission_mgr.h"
-#include "if_system_ability_manager.h"
-#include "iservice_registry.h"
-#include "ability_manager_interface.h"
-#include "ipc_skeleton.h"
-
+#include "permission_definition_test.h"
 using namespace testing::ext;
 using namespace OHOS::Security::Permission;
 using namespace std;
@@ -36,37 +25,32 @@ pid_t IPCSkeleton::uid_ = 1;
 std::string IPCSkeleton::localDeviceId_ = "1004";
 std::string IPCSkeleton::deviceId_ = "";
 }  // namespace OHOS
+void PermissionDefinitionTest::SetUpTestCase()
+{
+    cout << "SetUpTestCase()" << endl;
+    OHOS::sptr<OHOS::IRemoteObject> bundleObject = new OHOS::AppExecFwk::BundleMgrService();
+    OHOS::sptr<OHOS::IRemoteObject> permissionObject = new PermissionManagerService();
+    auto sysMgr = OHOS::SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
+    if (sysMgr == NULL) {
+        GTEST_LOG_(ERROR) << "fail to get ISystemAbilityManager";
+        return;
+    }
+    sysMgr->AddSystemAbility(Constant::ServiceId::BUNDLE_MGR_SERVICE_SYS_ABILITY_ID, bundleObject);
+    sysMgr->AddSystemAbility(Constant::ServiceId::SUBSYS_SECURITY_PERMISSION_SYS_SERVICE_ID, permissionObject);
+}
 
-class PermissionDefinitionTest : public testing::Test {
-public:
-    static void SetUpTestCase()
-    {
-        cout << "SetUpTestCase()" << endl;
-        OHOS::sptr<OHOS::IRemoteObject> bundleObject = NULL;
-        OHOS::sptr<OHOS::IRemoteObject> permissionObject = new PermissionManagerService();
-        auto sysMgr = OHOS::SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
-        if (sysMgr == NULL) {
-            GTEST_LOG_(ERROR) << "fail to get ISystemAbilityManager";
-            return;
-        }
-
-        sysMgr->AddSystemAbility(Constant::ServiceId::BUNDLE_MGR_SERVICE_SYS_ABILITY_ID, bundleObject);
-        sysMgr->AddSystemAbility(Constant::ServiceId::SUBSYS_SECURITY_PERMISSION_SYS_SERVICE_ID, permissionObject);
-    }
-
-    static void TearDownTestCase()
-    {
-        cout << "TearDownTestCase()" << endl;
-    }
-    void SetUp()
-    {
-        cout << "SetUp() is running" << endl;
-    }
-    void TearDown()
-    {
-        cout << "TearDown()" << endl;
-    }
-};
+void PermissionDefinitionTest::TearDownTestCase()
+{
+    cout << "TearDownTestCase()" << endl;
+}
+void PermissionDefinitionTest::SetUp()
+{
+    cout << "SetUp() is running" << endl;
+}
+void PermissionDefinitionTest::TearDown()
+{
+    cout << "TearDown()" << endl;
+}
 
 HWTEST_F(PermissionDefinitionTest, Test01, Function | MediumTest | Level1)
 {

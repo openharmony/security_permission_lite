@@ -40,7 +40,7 @@ public:
      *
      * @return true: the process will stop. false: the process will continue
      */
-    bool NeedStopProcess();
+    bool NeedStopProcess() const;
     /**
      * prepare to process the request, and format the input parameters
      *

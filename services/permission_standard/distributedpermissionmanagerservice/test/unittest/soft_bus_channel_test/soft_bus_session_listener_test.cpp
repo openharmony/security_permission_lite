@@ -23,7 +23,6 @@
 
 #include "soft_bus_channel.h"
 
-#include "zip_util.h"
 #include "device_info_manager.h"
 #include "remote_command_manager.h"
 
@@ -213,12 +212,6 @@ HWTEST_F(SoftBusSessionListenerTest, SoftBusSessionListener_OnBytesReceived_001,
 
         auto channel = (SoftBusChannel *)executor->GetChannel().get();
         channel->PrepareBytes(type, id, commandName, jsonPayload, compressedBytes, compressedLength);
-
-        // PERMISSION_LOG_INFO(LABEL,
-        //     "compressed length: %{public}d, from %{public}u, result: %{public}d",
-        //     compressedLength,
-        //     jsonPayload.length(),
-        //     code);
 
         // check log
         int sessionId = 1;

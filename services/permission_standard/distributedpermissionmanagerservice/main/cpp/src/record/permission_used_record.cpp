@@ -138,58 +138,58 @@ size_t PermissionUsedRecord::GetDataSize() const
 
 nlohmann::json PermissionUsedRecord::to_json(const PermissionUsedRecord &record)
 {
-    nlohmann::json jsonObj = nlohmann::json{{"permissionName", record.permissionName},
-        {"accessCountFg", record.accessCountFg},
-        {"rejectCountFg", record.rejectCountFg},
-        {"accessCountBg", record.accessCountBg},
-        {"rejectCountBg", record.rejectCountBg},
-        {"lastAccessTime", record.lastAccessTime},
-        {"lastRejectTime", record.lastRejectTime},
-        {"accessRecordFg", record.accessRecordFg},
-        {"rejectRecordFg", record.rejectRecordFg},
-        {"accessRecordBg", record.accessRecordBg},
-        {"rejectRecordBg", record.rejectRecordBg}};
+    nlohmann::json jsonObj = nlohmann::json{{"pn", record.permissionName},
+        {"acf", record.accessCountFg},
+        {"rcf", record.rejectCountFg},
+        {"acb", record.accessCountBg},
+        {"rcb", record.rejectCountBg},
+        {"lat", record.lastAccessTime},
+        {"lrt", record.lastRejectTime},
+        {"arf", record.accessRecordFg},
+        {"rrf", record.rejectRecordFg},
+        {"arb", record.accessRecordBg},
+        {"rrb", record.rejectRecordBg}};
     return jsonObj;
 }
 
 void PermissionUsedRecord::from_json(const nlohmann::json &jsonObj, PermissionUsedRecord &record)
 {
-    if (jsonObj.find("permissionName") != jsonObj.end() && jsonObj.at("permissionName").is_string()) {
-        jsonObj.at("permissionName").get_to(record.permissionName);
+    if (jsonObj.find("pn") != jsonObj.end() && jsonObj.at("pn").is_string()) {
+        jsonObj.at("pn").get_to(record.permissionName);
     }
-    if (jsonObj.find("accessCountFg") != jsonObj.end() && jsonObj.at("accessCountFg").is_number()) {
-        jsonObj.at("accessCountFg").get_to(record.accessCountFg);
+    if (jsonObj.find("acf") != jsonObj.end() && jsonObj.at("acf").is_number()) {
+        jsonObj.at("acf").get_to(record.accessCountFg);
     }
-    if (jsonObj.find("rejectCountFg") != jsonObj.end() && jsonObj.at("rejectCountFg").is_number()) {
-        jsonObj.at("rejectCountFg").get_to(record.rejectCountFg);
+    if (jsonObj.find("rcf") != jsonObj.end() && jsonObj.at("rcf").is_number()) {
+        jsonObj.at("rcf").get_to(record.rejectCountFg);
     }
-    if (jsonObj.find("accessCountBg") != jsonObj.end() && jsonObj.at("accessCountBg").is_number()) {
-        jsonObj.at("accessCountBg").get_to(record.accessCountBg);
+    if (jsonObj.find("acb") != jsonObj.end() && jsonObj.at("acb").is_number()) {
+        jsonObj.at("acb").get_to(record.accessCountBg);
     }
-    if (jsonObj.find("rejectCountBg") != jsonObj.end() && jsonObj.at("rejectCountBg").is_number()) {
-        jsonObj.at("rejectCountBg").get_to(record.rejectCountBg);
+    if (jsonObj.find("rcb") != jsonObj.end() && jsonObj.at("rcb").is_number()) {
+        jsonObj.at("rcb").get_to(record.rejectCountBg);
     }
-    if (jsonObj.find("lastAccessTime") != jsonObj.end() && jsonObj.at("lastAccessTime").is_number()) {
-        jsonObj.at("lastAccessTime").get_to(record.lastAccessTime);
+    if (jsonObj.find("lat") != jsonObj.end() && jsonObj.at("lat").is_number()) {
+        jsonObj.at("lat").get_to(record.lastAccessTime);
     }
-    if (jsonObj.find("lastRejectTime") != jsonObj.end() && jsonObj.at("lastRejectTime").is_number()) {
-        jsonObj.at("lastRejectTime").get_to(record.lastRejectTime);
+    if (jsonObj.find("lrt") != jsonObj.end() && jsonObj.at("lrt").is_number()) {
+        jsonObj.at("lrt").get_to(record.lastRejectTime);
     }
-    if (jsonObj.find("accessRecordFg") != jsonObj.end() && jsonObj.at("accessRecordFg").is_array()) {
-        jsonObj.at("accessRecordFg").get_to(record.accessRecordFg);
+    if (jsonObj.find("arf") != jsonObj.end() && jsonObj.at("arf").is_array()) {
+        jsonObj.at("arf").get_to(record.accessRecordFg);
     }
-    if (jsonObj.find("rejectRecordFg") != jsonObj.end() && jsonObj.at("rejectRecordFg").is_array()) {
-        jsonObj.at("rejectRecordFg").get_to(record.rejectRecordFg);
+    if (jsonObj.find("rrf") != jsonObj.end() && jsonObj.at("rrf").is_array()) {
+        jsonObj.at("rrf").get_to(record.rejectRecordFg);
     }
-    if (jsonObj.find("accessRecordBg") != jsonObj.end() && jsonObj.at("accessRecordBg").is_array()) {
-        jsonObj.at("accessRecordBg").get_to(record.accessRecordBg);
+    if (jsonObj.find("arb") != jsonObj.end() && jsonObj.at("arb").is_array()) {
+        jsonObj.at("arb").get_to(record.accessRecordBg);
     }
-    if (jsonObj.find("rejectRecordBg") != jsonObj.end() && jsonObj.at("rejectRecordBg").is_array()) {
-        jsonObj.at("rejectRecordBg").get_to(record.rejectRecordBg);
+    if (jsonObj.find("rrb") != jsonObj.end() && jsonObj.at("rrb").is_array()) {
+        jsonObj.at("rrb").get_to(record.rejectRecordBg);
     }
 }
 
-void PermissionUsedRecord::updateRecord(const PermissionUsedRecord &record)
+void PermissionUsedRecord::UpdateRecord(const PermissionUsedRecord &record)
 {
     this->accessCountFg += record.accessCountFg;
     this->rejectCountFg += record.rejectCountFg;
@@ -201,9 +201,9 @@ void PermissionUsedRecord::updateRecord(const PermissionUsedRecord &record)
         (this->lastRejectTime > record.lastRejectTime) ? this->lastRejectTime : record.lastRejectTime;
 }
 
-void PermissionUsedRecord::updateRecordWithTime(const PermissionUsedRecord &record)
+void PermissionUsedRecord::UpdateRecordWithTime(const PermissionUsedRecord &record)
 {
-    updateRecord(record);
+    UpdateRecord(record);
     if (record.accessCountFg > 0 || record.rejectCountFg > 0) {
         if (record.lastAccessTime > 0 && this->accessRecordFg.size() <= Constant::MAX_DETAIL_RECORDS) {
             this->accessRecordFg.emplace_back(record.lastAccessTime);
@@ -217,6 +217,48 @@ void PermissionUsedRecord::updateRecordWithTime(const PermissionUsedRecord &reco
             this->rejectRecordBg.emplace_back(record.lastRejectTime);
         }
     }
+}
+
+int PermissionUsedRecord::TranslationIntoPermissionUsedRecord(
+    const GenericValues &inGenericValues, PermissionUsedRecord &outPermRecord)
+{
+    std::string perName;
+    int32_t code = inGenericValues.GetInt(FIELD_OP_CODE);
+    if (!Constant::PermissionNameToOrFromOpCode(perName, code)) {
+        return Constant::FAILURE;
+    }
+    outPermRecord.permissionName = perName;
+    if (inGenericValues.GetInt(FIELD_IS_FOREGROUND) == 1) {
+        outPermRecord.accessCountFg = inGenericValues.GetInt(FIELD_ACCESS_COUNT);
+        outPermRecord.rejectCountFg = inGenericValues.GetInt(FIELD_REJECT_COUNT);
+    } else {
+        outPermRecord.accessCountBg = inGenericValues.GetInt(FIELD_ACCESS_COUNT);
+        outPermRecord.rejectCountBg = inGenericValues.GetInt(FIELD_REJECT_COUNT);
+    }
+    if (inGenericValues.GetInt(FIELD_ACCESS_COUNT) > inGenericValues.GetInt(FIELD_REJECT_COUNT)) {
+        if (inGenericValues.GetInt(FIELD_REJECT_COUNT) != 0) {
+            outPermRecord.lastRejectTime = inGenericValues.GetInt64(FIELD_TIMESTAMP);
+        }
+        outPermRecord.lastAccessTime = inGenericValues.GetInt64(FIELD_TIMESTAMP);
+    } else {
+        if (inGenericValues.GetInt(FIELD_ACCESS_COUNT) != 0) {
+            outPermRecord.lastAccessTime = inGenericValues.GetInt64(FIELD_TIMESTAMP);
+        }
+        outPermRecord.lastRejectTime = inGenericValues.GetInt64(FIELD_TIMESTAMP);
+    }
+    if (inGenericValues.GetInt(FIELD_FLAG) == 1) {
+        if (outPermRecord.accessCountFg > 0 || outPermRecord.rejectCountFg > 0) {
+            (outPermRecord.lastAccessTime > 0)
+                ? outPermRecord.accessRecordFg.emplace_back(outPermRecord.lastAccessTime)
+                : outPermRecord.rejectRecordFg.emplace_back(outPermRecord.lastRejectTime);
+        } else {
+            (outPermRecord.lastAccessTime > 0)
+                ? outPermRecord.accessRecordBg.emplace_back(outPermRecord.lastAccessTime)
+                : outPermRecord.rejectRecordBg.emplace_back(outPermRecord.lastRejectTime);
+        }
+    }
+
+    return Constant::SUCCESS;
 }
 }  // namespace Permission
 }  // namespace Security

@@ -14,7 +14,6 @@
  */
 
 #include "permission_definition.h"
-#include "permission_kit.h"
 
 namespace OHOS {
 namespace Security {
@@ -37,14 +36,15 @@ bool PermissionDefinition::IsRestrictedPermission(const std::string &permissionN
         PERMISSION_LOG_ERROR(LABEL, "PermissionName data invalid");
         return false;
     }
-    PermissionDefParcel permissionDefParcel;
-    PermissionDef permissionDefResult = permissionDefParcel.permissionDef;
-    int ret = Permission::PermissionKit::GetDefPermission(permissionName, permissionDefResult);
+    std::unique_ptr<PmsAdapter> pmsAdapter = std::make_unique<PmsAdapter>();
+    iPermissionManager_ = pmsAdapter->GetPermissionManager();
+    PermissionDefParcel permissionDefResult;
+    int ret = iPermissionManager_->GetDefPermission(permissionName, permissionDefResult);
     if (ret != 0) {
         PERMISSION_LOG_ERROR(LABEL, "get permission def failed");
         return false;
     }
-    if (permissionDefResult.availableScope == Permission::AvailableScope::AVAILABLE_SCOPE_RESTRICTED) {
+    if (permissionDefResult.permissionDef.availableScope == Permission::AvailableScope::AVAILABLE_SCOPE_RESTRICTED) {
         return true;
     }
     return false;

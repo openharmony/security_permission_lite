@@ -55,7 +55,7 @@ void ResourceSwitchLocal::RegisterContentObserver(OnChangeCallback onChangeCallb
     PERMISSION_LOG_INFO(LABEL, "Register content observer done.");
 }
 
-std::shared_ptr<SensitiveResourceSwitchSetting> ResourceSwitchLocal::GetSwitchSetting()
+std::shared_ptr<SensitiveResourceSwitchSetting> ResourceSwitchLocal::GetSwitchSetting() const
 {
     if (!hasRegistered_) {
         PERMISSION_LOG_ERROR(LABEL, "Get local resource switch entities called before init, please check");
@@ -71,7 +71,7 @@ std::shared_ptr<SensitiveResourceSwitchSetting> ResourceSwitchLocal::GetSwitchSe
         .Build();
 }
 
-bool ResourceSwitchLocal::GetSwitchStatus(std::string sensitiveResource)
+bool ResourceSwitchLocal::GetSwitchStatus(std::string sensitiveResource) const
 {
     if (!hasRegistered_) {
         PERMISSION_LOG_ERROR(LABEL, "Get local resource switch entity called before init, please check");

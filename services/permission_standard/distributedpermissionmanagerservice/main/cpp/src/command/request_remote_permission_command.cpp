@@ -24,9 +24,9 @@
 #include "permission_log.h"
 #include "permission_fetcher.h"
 #include "subject_device_permission_manager.h"
-#include "external_deps.h"
 #include "ipc_skeleton.h"
 #include "distributed_permission_manager_service.h"
+#include "bms_adapter.h"
 #include "request_remote_permission_command.h"
 
 namespace OHOS {
@@ -110,11 +110,11 @@ void RequestRemotePermissionCommand::StartActivityForRequestPermission(std::vect
     if (permissions.empty()) {
         return;
     }
-    std::unique_ptr<ExternalDeps> externalDeps = std::make_unique<ExternalDeps>();
-    if (externalDeps == nullptr) {
+    std::unique_ptr<BmsAdapter> bmsAdapter = std::make_unique<BmsAdapter>();
+    if (bmsAdapter == nullptr) {
         return;
     }
-    iBundleManager_ = externalDeps->GetBundleManager(iBundleManager_);
+    iBundleManager_ = bmsAdapter->GetBundleManager();
     for (auto permission : permissions) {
         if (iBundleManager_->CheckPermission(bundleName_, permission) == 0) {
             PERMISSION_LOG_DEBUG(LABEL,

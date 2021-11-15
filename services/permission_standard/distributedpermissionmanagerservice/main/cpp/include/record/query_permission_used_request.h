@@ -20,6 +20,8 @@
 #include <vector>
 
 #include "nlohmann/json.hpp"
+#include "field_const.h"
+#include "generic_values.h"
 #include "parcel.h"
 #include "query_permission_used_result.h"
 
@@ -47,6 +49,9 @@ struct QueryPermissionUsedRequest : public Parcelable {
     nlohmann::json to_json(const QueryPermissionUsedRequest &request) const;
 
     void from_json(const nlohmann::json &jsonObj, QueryPermissionUsedRequest &request);
+
+    static int TranslationIntoGenericValues(const QueryPermissionUsedRequest &inQueryRequest,
+        GenericValues &outVisitorValues, GenericValues &outRecordAndValues, GenericValues &outRecordOrValues);
 };
 }  // namespace Permission
 }  // namespace Security

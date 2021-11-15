@@ -29,7 +29,7 @@ ResourceSwitchRemote &ResourceSwitchRemote::GetInstance()
     return m_instance;
 }
 
-void ResourceSwitchRemote::SubscribeRemoteChangeListener()
+void ResourceSwitchRemote::SubscribeRemoteChangeListener() const
 {
     if (hasRegistered_) {
         PERMISSION_LOG_INFO(LABEL, "has been registed.");
@@ -39,8 +39,8 @@ void ResourceSwitchRemote::SubscribeRemoteChangeListener()
     PERMISSION_LOG_INFO(LABEL, "Subscribe remote change listener done.");
 }
 
-std::shared_ptr<SensitiveResourceSwitchSetting> ResourceSwitchRemote::PullSwitchSetting(
-    std::string deviceId, bool isNetworkId)
+std::shared_ptr<SensitiveResourceSwitchSetting> ResourceSwitchRemote::PullSwitchSetting(std::string deviceId,
+    bool isNetworkId) const
 {
     PERMISSION_LOG_INFO(LABEL,
         "Pull sensitive resource switches start with deviceId = [%{public}s] isNetworkId = [%{public}s]",
@@ -54,7 +54,7 @@ std::shared_ptr<SensitiveResourceSwitchSetting> ResourceSwitchRemote::PullSwitch
     return remoteSwitchSetting;
 }
 
-void ResourceSwitchRemote::PushSwitchSetting(std::shared_ptr<SensitiveResourceSwitchSetting> switchSetting)
+void ResourceSwitchRemote::PushSwitchSetting(std::shared_ptr<SensitiveResourceSwitchSetting> switchSetting) const
 {
     PERMISSION_LOG_DEBUG(LABEL,
         "Push sensitive resource switches called with switchSetting = [%{public}s]",
@@ -62,15 +62,15 @@ void ResourceSwitchRemote::PushSwitchSetting(std::shared_ptr<SensitiveResourceSw
     PERMISSION_LOG_DEBUG(LABEL, "Push sensitive resource switches asyncExecute done.");
 }
 
-void ResourceSwitchRemote::SyncSwitchSetting()
+void ResourceSwitchRemote::SyncSwitchSetting() const
 {
     PERMISSION_LOG_DEBUG(LABEL, "syncSwitchSetting() called");
 
     PERMISSION_LOG_DEBUG(LABEL, "syncSwitchSetting() done");
 }
 
-std::shared_ptr<SensitiveResourceSwitchSetting> ResourceSwitchRemote::ConvertToSwitchSetting(
-    std::string deviceId, std::map<std::string, int32_t> profileMap)
+std::shared_ptr<SensitiveResourceSwitchSetting> ResourceSwitchRemote::ConvertToSwitchSetting(std::string deviceId,
+    std::map<std::string, int32_t> profileMap) const
 {
     std::shared_ptr<SensitiveResourceSwitchSetting> remoteSwitchSetting =
         SensitiveResourceSwitchSetting::CreateBuilder()->DeviceId(deviceId).Build();
@@ -91,7 +91,7 @@ std::shared_ptr<SensitiveResourceSwitchSetting> ResourceSwitchRemote::ConvertToS
     return remoteSwitchSetting;
 }
 
-std::string ResourceSwitchRemote::ConvertToSensitiveResourceIfPossible(std::pair<std::string, int32_t> mapEntry)
+std::string ResourceSwitchRemote::ConvertToSensitiveResourceIfPossible(std::pair<std::string, int32_t> mapEntry) const
 {
     if (mapEntry.first == Constant::PROFILE_KEY_CAMERA) {
         return Constant::CAMERA;
@@ -106,7 +106,7 @@ std::string ResourceSwitchRemote::ConvertToSensitiveResourceIfPossible(std::pair
     }
 }
 
-bool ResourceSwitchRemote::IsPermittedFromProfile(std::pair<std::string, int32_t> mapEntry)
+bool ResourceSwitchRemote::IsPermittedFromProfile(std::pair<std::string, int32_t> mapEntry) const
 {
     if (mapEntry.second == Constant::PERMISSION_GRANTED_STATUS) {
         return true;

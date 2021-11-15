@@ -27,9 +27,7 @@
 namespace OHOS {
 namespace Security {
 namespace Permission {
-
 class MonitorManager {
-
 public:
     using OnPermissionChangedCallback = std::function<void(int uid, const std::string &packageName)>;
     using OnDeviceOnlineCallback = std::function<void(const std::string &deviceId, const std::string &deviceNetworkId)>;
@@ -115,7 +113,6 @@ private:
     // mutex for device listener maps
     std::mutex deviceMutex_;
 };
-
 }  // namespace Permission
 }  // namespace Security
 }  // namespace OHOS

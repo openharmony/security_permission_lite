@@ -20,6 +20,8 @@
 #include <vector>
 
 #include "constant.h"
+#include "field_const.h"
+#include "generic_values.h"
 #include "nlohmann/json.hpp"
 #include "parcel.h"
 
@@ -62,9 +64,12 @@ struct PermissionUsedRecord : public Parcelable {
      */
     void from_json(const nlohmann::json &jsonObj, PermissionUsedRecord &result);
 
-    void updateRecord(const PermissionUsedRecord &record);
+    void UpdateRecord(const PermissionUsedRecord &record);
 
-    void updateRecordWithTime(const PermissionUsedRecord &record);
+    void UpdateRecordWithTime(const PermissionUsedRecord &record);
+
+    static int TranslationIntoPermissionUsedRecord(
+        const GenericValues &inGenericValues, PermissionUsedRecord &outPermRecord);
 };
 }  // namespace Permission
 }  // namespace Security

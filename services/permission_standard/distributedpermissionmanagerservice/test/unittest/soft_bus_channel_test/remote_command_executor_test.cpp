@@ -111,8 +111,11 @@ public:
     void TearDown()
     {}
 
+    RemoteCommandExecutorTest() : handler_(), executed_(false)
+    {}
+
     std::shared_ptr<DistributedPermissionEventHandler> handler_;
-    bool *executed_ = new bool;
+    bool executed_;
     const long EXECUTE_COMMAND_TIME_OUT = 3;  // 3000 ms
 };
 
@@ -307,9 +310,22 @@ HWTEST_F(RemoteCommandExecutorTest, RemoteCommandExecutor_ClientProcessResult_00
         EXPECT_TRUE(ptrCommand->remoteProtocol_.statusCode == Constant::FAILURE_BUT_CAN_RETRY);
         EXPECT_TRUE(ptrCommand->remoteProtocol_.message == Constant::COMMAND_GET_REGRANTED_PERMISSIONS_FAILED);
     }
+}
+
+/*
+ * Feature: DPMS
+ * Function: RemoteCommandExecutor
+ * SubFunction: ClientProcessResult
+ * FunctionPoints: finish command
+ * EnvConditions: NA
+ * CaseDescription: Verify finish a command
+ */
+HWTEST_F(RemoteCommandExecutorTest, RemoteCommandExecutor_ClientProcessResult_002, TestSize.Level1)
+{
+    PERMISSION_LOG_DEBUG(LABEL, "RemoteCommandExecutor_ClientProcessResult_002");
 
     {
-        PERMISSION_LOG_DEBUG(LABEL, "RemoteCommandExecutor_ClientProcessResult_001-3");
+        PERMISSION_LOG_DEBUG(LABEL, "RemoteCommandExecutor_ClientProcessResult_002-1");
         const int32_t uid = UID_GetRegrantedPermissions_FAILED + 1;
         const std::string srcDeviceId = SELF_DEVICE_;
         const std::string dstDeviceId = TARGET_DEVICE_;
@@ -324,7 +340,7 @@ HWTEST_F(RemoteCommandExecutorTest, RemoteCommandExecutor_ClientProcessResult_00
     }
 
     {
-        PERMISSION_LOG_DEBUG(LABEL, "RemoteCommandExecutor_ClientProcessResult_001-4");
+        PERMISSION_LOG_DEBUG(LABEL, "RemoteCommandExecutor_ClientProcessResult_002-2");
         const int32_t uid = UID_FINISH_SUCCESS_INDEX;
         const std::string srcDeviceId = SELF_DEVICE_;
         const std::string dstDeviceId = TARGET_DEVICE_;
@@ -437,17 +453,17 @@ HWTEST_F(RemoteCommandExecutorTest, RemoteCommandExecutor_ExecuteRemoteCommand_0
         instance.SetChannel(channel);
 
         // simulate a response
-        *executed_ = false;
+        executed_ = false;
         std::function<void()> runner = [&]() {
             PERMISSION_LOG_DEBUG(LABEL, "enter runner");
             std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_500));
             const std::string id = "message-unique-id-100";  // UID_GetRegrantedPermissions_FAILED
             std::string dummyResult = "";
             channel->HandleResponse(id, dummyResult);
-            *executed_ = true;
+            executed_ = true;
         };
         std::thread responseThread(runner);
-        EXPECT_TRUE(*executed_ == false);
+        EXPECT_TRUE(executed_ == false);
 
         // will got an empty response
         PERMISSION_LOG_DEBUG(LABEL, "ExecuteRemoteCommand begin");
@@ -461,7 +477,7 @@ HWTEST_F(RemoteCommandExecutorTest, RemoteCommandExecutor_ExecuteRemoteCommand_0
         }
 
         // check executed status
-        EXPECT_TRUE(*executed_ == true);
+        EXPECT_TRUE(executed_ == true);
 
         // check empty response
         EXPECT_TRUE(code == Constant::FAILURE);
@@ -469,8 +485,26 @@ HWTEST_F(RemoteCommandExecutorTest, RemoteCommandExecutor_ExecuteRemoteCommand_0
         PERMISSION_LOG_DEBUG(LABEL, "check done");
     }
 
+    channel->CloseConnection();
+    channel->Release();
+}
+
+/*
+ * Feature: DPMS
+ * Function: RemoteCommandExecutor
+ * SubFunction: ExecuteRemoteCommand
+ * FunctionPoints: execute remote command
+ * EnvConditions: NA
+ * CaseDescription: Verify execute a remote command at remote device
+ */
+HWTEST_F(RemoteCommandExecutorTest, RemoteCommandExecutor_ExecuteRemoteCommand_003, TestSize.Level1)
+{
+    PERMISSION_LOG_DEBUG(LABEL, "RemoteCommandExecutor_ExecuteRemoteCommand_003");
+    std::shared_ptr<SoftBusChannel> channel = std::make_shared<SoftBusChannel>(TARGET_UDID_);
+    channel->BuildConnection();
+
     {
-        PERMISSION_LOG_DEBUG(LABEL, "RemoteCommandExecutor_ExecuteRemoteCommand_002-2");
+        PERMISSION_LOG_DEBUG(LABEL, "RemoteCommandExecutor_ExecuteRemoteCommand_003-1");
         // remote command: transfer to remote, wait response, finish local
         // will get a COMMAND_GET_REGRANTED_PERMISSIONS_FAILED error at execute,
         // will get a COMMAND_RESULT_FAILED error at finish.
@@ -485,17 +519,17 @@ HWTEST_F(RemoteCommandExecutorTest, RemoteCommandExecutor_ExecuteRemoteCommand_0
         instance.SetChannel(channel);
 
         // simulate a response, response uid 100.
-        *executed_ = false;
+        executed_ = false;
         std::function<void()> runner = [&]() {
             PERMISSION_LOG_DEBUG(LABEL, "enter runner");
             std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_100));
             const std::string id = "message-unique-id-100";  // UID_GetRegrantedPermissions_FAILED
             std::string dummyResult = "{[100]}";
             channel->HandleResponse(id, dummyResult);
-            *executed_ = true;
+            executed_ = true;
         };
         std::thread responseThread(runner);
-        EXPECT_TRUE(*executed_ == false);
+        EXPECT_TRUE(executed_ == false);
 
         bool isRemote = true;
         int code = instance.ExecuteRemoteCommand(ptrCommand, isRemote);
@@ -506,7 +540,7 @@ HWTEST_F(RemoteCommandExecutorTest, RemoteCommandExecutor_ExecuteRemoteCommand_0
         }
 
         // check executed status
-        EXPECT_TRUE(*executed_ == true);
+        EXPECT_TRUE(executed_ == true);
         // check invalid response
         PERMISSION_LOG_DEBUG(LABEL, "return status: %{public}d.", code);
         EXPECT_TRUE(code != Constant::SUCCESS);
@@ -516,8 +550,26 @@ HWTEST_F(RemoteCommandExecutorTest, RemoteCommandExecutor_ExecuteRemoteCommand_0
         std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_100));
     }
 
+    channel->CloseConnection();
+    channel->Release();
+}
+
+/*
+ * Feature: DPMS
+ * Function: RemoteCommandExecutor
+ * SubFunction: ExecuteRemoteCommand
+ * FunctionPoints: execute remote command
+ * EnvConditions: NA
+ * CaseDescription: Verify execute a remote command at remote device
+ */
+HWTEST_F(RemoteCommandExecutorTest, RemoteCommandExecutor_ExecuteRemoteCommand_004, TestSize.Level1)
+{
+    PERMISSION_LOG_DEBUG(LABEL, "RemoteCommandExecutor_ExecuteRemoteCommand_004");
+    std::shared_ptr<SoftBusChannel> channel = std::make_shared<SoftBusChannel>(TARGET_UDID_);
+    channel->BuildConnection();
+
     {
-        PERMISSION_LOG_DEBUG(LABEL, "RemoteCommandExecutor_ExecuteRemoteCommand_002-3");
+        PERMISSION_LOG_DEBUG(LABEL, "RemoteCommandExecutor_ExecuteRemoteCommand_004-1");
         // remote command: transfer to remote, wait response, finish local
         // will get a success at execute,
         // will get a COMMAND_RESULT_FAILED error at finish.
@@ -531,17 +583,17 @@ HWTEST_F(RemoteCommandExecutorTest, RemoteCommandExecutor_ExecuteRemoteCommand_0
         // prepare channel
         instance.SetChannel(channel);
         // simulate a response, response uid 101.
-        *executed_ = false;
+        executed_ = false;
         std::function<void()> runner = [&]() {
             PERMISSION_LOG_DEBUG(LABEL, "enter runner");
             std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_100));
             const std::string id = "message-unique-id-100";  // UID_GetRegrantedPermissions_FAILED
             std::string dummyResult = "{[101]}";
             channel->HandleResponse(id, dummyResult);
-            *executed_ = true;
+            executed_ = true;
         };
         std::thread responseThread(runner);
-        EXPECT_TRUE(*executed_ == false);
+        EXPECT_TRUE(executed_ == false);
 
         bool isRemote = true;
         int code = instance.ExecuteRemoteCommand(ptrCommand, isRemote);
@@ -552,12 +604,31 @@ HWTEST_F(RemoteCommandExecutorTest, RemoteCommandExecutor_ExecuteRemoteCommand_0
         }
 
         // check executed status
-        EXPECT_TRUE(*executed_ == true);
+        EXPECT_TRUE(executed_ == true);
         // check finish failed
         EXPECT_TRUE(code == Constant::FAILURE_BUT_CAN_RETRY);
     }
+
+    channel->CloseConnection();
+    channel->Release();
+}
+
+/*
+ * Feature: DPMS
+ * Function: RemoteCommandExecutor
+ * SubFunction: ExecuteRemoteCommand
+ * FunctionPoints: execute remote command
+ * EnvConditions: NA
+ * CaseDescription: Verify execute a remote command at remote device
+ */
+HWTEST_F(RemoteCommandExecutorTest, RemoteCommandExecutor_ExecuteRemoteCommand_005, TestSize.Level1)
+{
+    PERMISSION_LOG_DEBUG(LABEL, "RemoteCommandExecutor_ExecuteRemoteCommand_005");
+    std::shared_ptr<SoftBusChannel> channel = std::make_shared<SoftBusChannel>(TARGET_UDID_);
+    channel->BuildConnection();
+
     {
-        PERMISSION_LOG_DEBUG(LABEL, "RemoteCommandExecutor_ExecuteRemoteCommand_002-4");
+        PERMISSION_LOG_DEBUG(LABEL, "RemoteCommandExecutor_ExecuteRemoteCommand_005-1");
         // remote command: transfer to remote, wait response, finish local
         const int32_t uid = UID_FINISH_SUCCESS_INDEX;
         const std::string srcDeviceId = SELF_DEVICE_;
@@ -698,7 +769,7 @@ HWTEST_F(RemoteCommandExecutorTest, RemoteCommandExecutor_ProcessOneCommand_002,
  */
 HWTEST_F(RemoteCommandExecutorTest, RemoteCommandExecutor_AddCommand_001, TestSize.Level1)
 {
-    PERMISSION_LOG_DEBUG(LABEL, "RemoteCommandExecutor_ProcessBufferedCommands_001");
+    PERMISSION_LOG_DEBUG(LABEL, "RemoteCommandExecutor_AddCommand_001");
     {
         // check parameter: nullptr
         RemoteCommandExecutor instance(TARGET_UDID_);
@@ -736,6 +807,19 @@ HWTEST_F(RemoteCommandExecutorTest, RemoteCommandExecutor_AddCommand_001, TestSi
         EXPECT_TRUE(code == Constant::SUCCESS);
         EXPECT_TRUE(instance.commands_.size() == 1);
     }
+}
+
+/*
+ * Feature: DPMS
+ * Function: RemoteCommandExecutor
+ * SubFunction: AddCommand
+ * FunctionPoints: add commands to be execute.
+ * EnvConditions: NA
+ * CaseDescription: Verify add commands
+ */
+HWTEST_F(RemoteCommandExecutorTest, RemoteCommandExecutor_AddCommand_002, TestSize.Level1)
+{
+    PERMISSION_LOG_DEBUG(LABEL, "RemoteCommandExecutor_AddCommand_002");
     {
         // multi commands
         const int32_t uid = UID_FINISH_SUCCESS_INDEX;
@@ -782,6 +866,24 @@ HWTEST_F(RemoteCommandExecutorTest, RemoteCommandExecutor_ProcessBufferedCommand
         int code = instance.ProcessBufferedCommands();
         EXPECT_TRUE(Constant::SUCCESS == code);
     }
+
+    channel->CloseConnection();
+    channel->Release();
+}
+
+/*
+ * Feature: DPMS
+ * Function: RemoteCommandExecutor
+ * SubFunction: ProcessBufferedCommands
+ * FunctionPoints: add commands and execute them.
+ * EnvConditions: NA
+ * CaseDescription: Verify add commands and execute them all.
+ */
+HWTEST_F(RemoteCommandExecutorTest, RemoteCommandExecutor_ProcessBufferedCommands_002, TestSize.Level1)
+{
+    PERMISSION_LOG_DEBUG(LABEL, "RemoteCommandExecutor_ProcessBufferedCommands_002");
+    std::shared_ptr<SoftBusChannel> channel = std::make_shared<SoftBusChannel>(TARGET_UDID_);
+    channel->BuildConnection();
     {
         PERMISSION_LOG_DEBUG(LABEL, "RemoteCommandExecutor_ProcessBufferedCommands_001-2");
         // remote command: transfer to remote, wait response, finish local
