@@ -105,24 +105,6 @@ int32_t DistributedPermissionProxy::CheckDPermission(int32_t dUid, const std::st
 
 int32_t DistributedPermissionProxy::CheckPermission(const std::string &permissionName, const std::string &appIdInfo)
 {
-    // PERMISSION_LOG_INFO(LABEL, "permissionName = %{public}s, appIdInfo = %{public}s", permissionName.c_str(),
-    //     appIdInfo.c_str());
-    // MessageParcel data;
-    // if (!data.WriteString(permissionName)) {
-    //     PERMISSION_LOG_ERROR(LABEL, "failed to WriteString(permissionName).");
-    //     return PERMISSION_DENIED;
-    // }
-    // if (!data.WriteString(appIdInfo)) {
-    //     PERMISSION_LOG_ERROR(LABEL, "failed to WriteString(appIdInfo).");
-    //     return PERMISSION_DENIED;
-    // }
-    // MessageParcel reply;
-    // int32_t result = ERROR;
-    // bool ret = SendRequest(IDistributedPermission::MessageCode::DISTRIBUTED_CHECK_PERMISSION, data, reply);
-    // if (ret) {
-    //     result = reply.ReadInt32();
-    //     PERMISSION_LOG_INFO(LABEL, "result = %{public}d", result);
-    // }
     return 0;
 }
 

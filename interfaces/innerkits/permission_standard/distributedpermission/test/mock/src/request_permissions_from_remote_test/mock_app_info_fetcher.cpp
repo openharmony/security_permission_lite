@@ -12,8 +12,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <iostream>
-#include <map>
 #include "app_info_fetcher.h"
 #include "constant.h"
 namespace OHOS {

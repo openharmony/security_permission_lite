@@ -388,7 +388,6 @@ public:
      */
     static std::string GetLocalDeviceId();
 };
-
 }  // namespace Permission
 }  // namespace Security
 }  // namespace OHOS
