@@ -18,12 +18,15 @@
 
 #include <string>
 #include <set>
+#include <sys/types.h>
+#include <unistd.h>
 #include "i_distributed_permission.h"
 #include "zip_utils.h"
 #include "pms_adapter.h"
 #include "permission/permission.h"
 #include "permission_def.h"
 #include "permission_log.h"
+#include "parameter.h"
 
 namespace OHOS {
 namespace Security {
@@ -77,7 +80,7 @@ public:
     void StopUsingPermission(const std::string &permName, const std::string &appIdInfo);
 
     void AddPermissionUsedRecord(const std::string &permissionName, const std::string &appIdInfo,
-        const int32_t sucCount, const int32_t failCount);
+        int32_t sucCount, int32_t failCount);
 
     int32_t GetPermissionUsedRecords(const QueryPermissionUsedRequest &request, QueryPermissionUsedResult &result);
 
@@ -95,6 +98,7 @@ private:
     sptr<IRemoteObject::DeathRecipient> recipient_;
     const static int MAX_LENGTH = 256;
     sptr<Permission::IPermissionManager> iPermissionManager_;
+    const static int32_t DEVICE_UUID_LENGTH = 65;
 };
 }  // namespace Permission
 }  // namespace Security

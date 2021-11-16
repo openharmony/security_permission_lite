@@ -37,7 +37,6 @@
 #include "permission_reminder_info.h"
 #include "device_info_manager.h"
 #include "subject_device_permission_manager.h"
-#include "permission_definition.h"
 #include "on_request_permissions_result.h"
 #include "request_remote_permission.h"
 #include "resource_manager.h"
@@ -114,46 +113,6 @@ public:
      * @return Permission checked result, 0: GRANTED, -1: DENIED.
      */
     virtual int32_t CheckPermission(const std::string &permissionName, const std::string &appIdInfo) override;
-
-    /**
-     * Check self permission.
-     *
-     * @param permissionName, permission name.
-     * @return If the permission is granted, 0: GRANTED; otherwise, -1: DENIED.
-     */
-    virtual int32_t CheckSelfPermission(const std::string& permissionName) override;
-
-    /**
-     * Check current process's permission.
-     *
-     * @param permissionName, permission name.
-     * @return If the permission is granted, 0: GRANTED; otherwise, -1: DENIED.
-     */
-    virtual int32_t CheckCallingPermission(const std::string& permissionName) override;
-
-    /**
-     * Check current process's or self permission.
-     *
-     * @param permissionName, permission name.
-     * @return If the permission is granted, 0: GRANTED; otherwise, -1: DENIED.
-     */
-    virtual int32_t CheckCallingOrSelfPermission(const std::string& permissionName) override;
-
-    /**
-     * Check caller's permission.
-     *
-     * @param permissionName, permission name.
-     * @return If the permission is granted, 0: GRANTED; otherwise, -1: DENIED.
-     */
-    virtual int32_t CheckCallerPermission(const std::string& permissionName) override;
-
-    /**
-     * Check if the permission is restricted.
-     *
-     * @param permissionName, permission name.
-     * @return If the permission is restricted, return true; otherwise, return false.
-     */
-    virtual bool IsRestrictedPermission(const std::string& permissionName) override;
 
     /**
      * Verify if the given application has been granted permission with the given name to access the remote device.

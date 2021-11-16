@@ -53,6 +53,7 @@ ohos_unittest("PermissionRemindInnerTest") {
     "${distributed_permission_services_path}/main/cpp/src/record/permission_used_record.cpp",
     "${distributed_permission_services_path}/main/cpp/src/record/query_permission_used_request.cpp",
     "${distributed_permission_services_path}/main/cpp/src/record/query_permission_used_result.cpp",
+    "../../mock/src/soft_bus_session_mock.cpp",
     "permission_remind_inner_test.cpp",
   ]
 

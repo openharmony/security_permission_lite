@@ -309,69 +309,6 @@ int32_t DistributedPermissionManagerService::CheckPermission(const std::string &
     return CheckPermission(permissionName, nodeId, pid, uid);
 }
 
-int32_t DistributedPermissionManagerService::CheckSelfPermission(const std::string &permissionName)
-{
-    PERMISSION_LOG_INFO(LABEL, "permissionName = %{public}s", permissionName.c_str());
-    if (!DistributedDataValidator::IsPermissionNameValid(permissionName)) {
-        PERMISSION_LOG_ERROR(LABEL, "CheckSelfPermission::permissionName is not valid");
-        return Constant::PERMISSION_DENIED;
-    }
-    // CheckSelfPermission is used by applications to check whether they have certain permissions,
-    // so the IPC package is used to get the process id and uid of the call source.
-    pid_t pid = IPCSkeleton::GetCallingPid();
-    pid_t uid = IPCSkeleton::GetCallingUid();
-    AppIdInfo appIdInfoObj;
-    std::string appIdInfo = DistributedPermissionKit::AppIdInfoHelper::CreateAppIdInfo(pid, uid, "");
-    return CheckPermission(permissionName, appIdInfo);
-}
-
-int32_t DistributedPermissionManagerService::CheckCallingPermission(const std::string &permissionName)
-{
-    PERMISSION_LOG_INFO(LABEL, "permissionName = %{public}s", permissionName.c_str());
-    if (!DistributedDataValidator::IsPermissionNameValid(permissionName)) {
-        PERMISSION_LOG_ERROR(LABEL, "CheckSelfPermission::permissionName is not valid");
-        return Constant::PERMISSION_DENIED;
-    }
-    // Only used to check the permissions of the caller.
-    pid_t pid = IPCSkeleton::GetCallingPid();
-    pid_t uid = IPCSkeleton::GetCallingUid();
-    std::string deviceId = IPCSkeleton::GetCallingDeviceID();
-    char localDeviceId[Constant::DEVICE_UUID_LENGTH] = {0};
-    GetDevUdid(localDeviceId, Constant::DEVICE_UUID_LENGTH);
-    if ((pid == getpid()) && (uid == (pid_t)getuid()) && (deviceId == localDeviceId)) {
-        return Constant::PERMISSION_DENIED;
-    }
-    std::string appIdInfo = DistributedPermissionKit::AppIdInfoHelper::CreateAppIdInfo(pid, uid, deviceId);
-    return CheckPermission(permissionName, appIdInfo);
-}
-
-int32_t DistributedPermissionManagerService::CheckCallingOrSelfPermission(const std::string &permissionName)
-{
-    PERMISSION_LOG_INFO(LABEL, "permissionName = %{public}s", permissionName.c_str());
-    if (!DistributedDataValidator::IsPermissionNameValid(permissionName)) {
-        PERMISSION_LOG_ERROR(LABEL, "CheckSelfPermission::permissionName is not valid");
-        return Constant::PERMISSION_DENIED;
-    }
-    // Check the permission of its own application or caller application.
-    pid_t pid = IPCSkeleton::GetCallingPid();
-    pid_t uid = IPCSkeleton::GetCallingUid();
-    std::string deviceId = IPCSkeleton::GetCallingDeviceID();
-    std::string appIdInfo = DistributedPermissionKit::AppIdInfoHelper::CreateAppIdInfo(pid, uid, deviceId);
-    return CheckPermission(permissionName, appIdInfo);
-}
-
-int32_t DistributedPermissionManagerService::CheckCallerPermission(const std::string &permissionName)
-{
-    PERMISSION_LOG_INFO(LABEL, "permissionName = %{public}s", permissionName.c_str());
-    return CheckCallingOrSelfPermission(permissionName);
-}
-
-bool DistributedPermissionManagerService::IsRestrictedPermission(const std::string &permissionName)
-{
-    PERMISSION_LOG_INFO(LABEL, "permissionName = %{public}s", permissionName.c_str());
-    return PermissionDefinition::GetInstance().IsRestrictedPermission(permissionName);
-}
-
 int32_t DistributedPermissionManagerService::VerifyPermissionFromRemote(const std::string &permission,
     const std::string &nodeId, const std::string &appIdInfo)
 {

@@ -34,8 +34,8 @@ static const int OPENSESSION_RETRY_TIMES = 10 * 60;
 static const int OPENSESSION_RETRY_INTERVAL_MS = 100;
 }  // namespace
 
-const std::string SoftBusManager::DPMS_PACKAGE_NAME = "ohos.security.distributed_permission";
-const std::string SoftBusManager::SESSION_NAME = "ohos.security.dpms_channel";
+const std::string SoftBusManager::DPMS_PACKAGE_NAME = "security.distributed_permission";
+const std::string SoftBusManager::SESSION_NAME = "security.dpms_channel";
 
 SoftBusManager::SoftBusManager() : isSoftBusServiceBindSuccess_(false), inited_(false), mutex_(), fulfillMutex_()
 {

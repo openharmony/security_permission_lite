@@ -20,7 +20,7 @@
 #include "system_ability_definition.h"
 #include "ipc_skeleton.h"
 #include "distributed_permission_kit.h"
-#include "parameter.h"
+#include "permission/permission_kit.h"
 
 namespace OHOS {
 namespace Security {
@@ -98,8 +98,6 @@ int32_t DistributedPermissionManagerClient::CheckSelfPermission(const std::strin
     // so the IPC package is used to get the process id and uid of the call source.
     pid_t pid = IPCSkeleton::GetCallingPid();
     pid_t uid = IPCSkeleton::GetCallingUid();
-    std::cout << "pid:"<<pid<<std::endl;
-    std::cout << "uid:"<<uid<<std::endl;
     AppIdInfo appIdInfoObj;
     std::string appIdInfo = DistributedPermissionKit::AppIdInfoHelper::CreateAppIdInfo(pid, uid, "");
     return distributedPermissionProxy_->CheckPermission(permissionName, appIdInfo);
@@ -111,8 +109,21 @@ int32_t DistributedPermissionManagerClient::CheckCallingPermission(const std::st
     if (!GetDistributedPermissionProxy()) {
         return ERROR;
     }
-
-    return distributedPermissionProxy_->CheckCallingPermission(permissionName);
+    if (!DistributedPermissionManagerClient::IsPermissionNameValid(permissionName)) {
+        PERMISSION_LOG_ERROR(LABEL, "CheckCallingPermission::permissionName is not valid");
+        return Constant::PERMISSION_DENIED;
+    }
+    // Only used to check the permissions of the caller.
+    pid_t pid = IPCSkeleton::GetCallingPid();
+    pid_t uid = IPCSkeleton::GetCallingUid();
+    std::string deviceId = IPCSkeleton::GetCallingDeviceID();
+    char localDeviceId[DEVICE_UUID_LENGTH] = {0};
+    GetDevUdid(localDeviceId, DEVICE_UUID_LENGTH);
+    if ((pid == getpid()) && (uid == (pid_t) getuid()) && (deviceId == localDeviceId)) {
+        return Constant::PERMISSION_DENIED;
+    }
+    std::string appIdInfo = DistributedPermissionKit::AppIdInfoHelper::CreateAppIdInfo(pid, uid, deviceId);
+    return distributedPermissionProxy_->CheckPermission(permissionName, appIdInfo);
 }
 
 int32_t DistributedPermissionManagerClient::CheckCallingOrSelfPermission(const std::string &permissionName)
@@ -121,8 +132,16 @@ int32_t DistributedPermissionManagerClient::CheckCallingOrSelfPermission(const s
     if (!GetDistributedPermissionProxy()) {
         return ERROR;
     }
-
-    return distributedPermissionProxy_->CheckCallingOrSelfPermission(permissionName);
+    if (!DistributedPermissionManagerClient::IsPermissionNameValid(permissionName)) {
+        PERMISSION_LOG_ERROR(LABEL, "CheckCallingOrSelfPermission::permissionName is not valid");
+        return Constant::PERMISSION_DENIED;
+    }
+    // Check the permission of its own application or caller application.
+    pid_t pid = IPCSkeleton::GetCallingPid();
+    pid_t uid = IPCSkeleton::GetCallingUid();
+    std::string deviceId = IPCSkeleton::GetCallingDeviceID();
+    std::string appIdInfo = DistributedPermissionKit::AppIdInfoHelper::CreateAppIdInfo(pid, uid, deviceId);
+    return distributedPermissionProxy_->CheckPermission(permissionName, appIdInfo);
 }
 
 int32_t DistributedPermissionManagerClient::CheckCallerPermission(const std::string &permissionName)
@@ -131,8 +150,7 @@ int32_t DistributedPermissionManagerClient::CheckCallerPermission(const std::str
     if (!GetDistributedPermissionProxy()) {
         return ERROR;
     }
-
-    return distributedPermissionProxy_->CheckCallerPermission(permissionName);
+    return CheckCallingOrSelfPermission(permissionName);
 }
 
 bool DistributedPermissionManagerClient::IsRestrictedPermission(const std::string &permissionName)
@@ -142,15 +160,14 @@ bool DistributedPermissionManagerClient::IsRestrictedPermission(const std::strin
         PERMISSION_LOG_ERROR(LABEL, "PermissionName data invalid");
         return false;
     }
-    std::unique_ptr<PmsAdapter> pmsAdapter = std::make_unique<PmsAdapter>();
-    iPermissionManager_ = pmsAdapter->GetPermissionManager();
-    PermissionDefParcel permissionDefResult;
-    int ret = iPermissionManager_->GetDefPermission(permissionName, permissionDefResult);
+    PermissionDefParcel permissionDefParcel;
+    PermissionDef permissionDefResult = permissionDefParcel.permissionDef;
+    int ret = Permission::PermissionKit::GetDefPermission(permissionName, permissionDefResult);
     if (ret != 0) {
         PERMISSION_LOG_ERROR(LABEL, "get permission def failed");
         return false;
     }
-    if (permissionDefResult.permissionDef.availableScope == Permission::AvailableScope::AVAILABLE_SCOPE_RESTRICTED) {
+    if (permissionDefResult.availableScope == Permission::AvailableScope::AVAILABLE_SCOPE_RESTRICTED) {
         return true;
     }
     return false;
