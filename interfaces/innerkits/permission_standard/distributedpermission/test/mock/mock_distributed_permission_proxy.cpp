@@ -678,5 +678,5 @@ bool DistributedPermissionProxy::SendRequest(
     return true;
 }
 }  // namespace Permission
+}  // namespace Permission
 }  // namespace Security
-}  // namespace OHOS

@@ -76,51 +76,6 @@ int32_t DistributedPermissionStub::OnRemoteRequest(uint32_t code, MessageParcel 
             }
             break;
         }
-        case static_cast<uint32_t>(IDistributedPermission::MessageCode::CHECK_SELF_PERMISSION): {
-            std::string permissionName = data.ReadString();
-            int32_t ret = CheckSelfPermission(permissionName);
-            if (!reply.WriteInt32(ret)) {
-                PERMISSION_LOG_ERROR(LABEL, "failed to WriteInt32(ret)");
-                return ERROR;
-            }
-            break;
-        }
-        case static_cast<uint32_t>(IDistributedPermission::MessageCode::CHECK_CALLING_PERMISSION): {
-            std::string permissionName = data.ReadString();
-            int32_t ret = CheckCallingPermission(permissionName);
-            if (!reply.WriteInt32(ret)) {
-                PERMISSION_LOG_ERROR(LABEL, "failed to WriteInt32(ret)");
-                return ERROR;
-            }
-            break;
-        }
-        case static_cast<uint32_t>(IDistributedPermission::MessageCode::CHECK_CALLING_OR_SELF_PERMISSION): {
-            std::string permissionName = data.ReadString();
-            int32_t ret = CheckCallingOrSelfPermission(permissionName);
-            if (!reply.WriteInt32(ret)) {
-                PERMISSION_LOG_ERROR(LABEL, "failed to WriteInt32(ret)");
-                return ERROR;
-            }
-            break;
-        }
-        case static_cast<uint32_t>(IDistributedPermission::MessageCode::CHECK_CALLER_PERMISSION): {
-            std::string permissionName = data.ReadString();
-            int32_t ret = CheckCallerPermission(permissionName);
-            if (!reply.WriteInt32(ret)) {
-                PERMISSION_LOG_ERROR(LABEL, "failed to WriteInt32(ret)");
-                return ERROR;
-            }
-            break;
-        }
-        case static_cast<uint32_t>(IDistributedPermission::MessageCode::IS_RESTRICTED_PERMISSION): {
-            std::string permissionName = data.ReadString();
-            bool ret = IsRestrictedPermission(permissionName);
-            if (!reply.WriteBool(ret)) {
-                PERMISSION_LOG_ERROR(LABEL, "failed to WriteBool(ret)");
-                return ERROR;
-            }
-            break;
-        }
         case static_cast<uint32_t>(IDistributedPermission::MessageCode::VERIFY_PERMISSION_FROM_REMOTE): {
             std::string permission = data.ReadString();
             std::string nodeId = data.ReadString();

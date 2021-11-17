@@ -19,6 +19,7 @@ config("permission_test_config") {
     "${distributed_permission_frameworks_log_path}/main/cpp/include",
     "${distributed_permission_innerkits_distributed_path}/main/cpp/include",
     "${distributed_permission_innerkits_distributed_path}/main/cpp/include/permission",
+    "${distributed_permission_innerkits_distributed_path}/test/mock/include",
     "${distributed_permission_database_path}/main/cpp/include",
     "${distributed_permission_services_path}/main/cpp/include",
     "${distributed_permission_services_path}/main/cpp/include/command",
@@ -64,5 +65,10 @@ group("unittest") {
   deps = [
     "unittest/app_id_info_helper_test:unittest",
     "unittest/app_id_info_test:unittest",
+    "unittest/check_caller_permission_test:unittest",
+    "unittest/check_calling_or_self_permission_test:unittest",
+    "unittest/check_calling_permission_test:unittest",
+    "unittest/check_self_permission_test:unittest",
+    "unittest/is_restricted_permission_test:unittest",
   ]
 }

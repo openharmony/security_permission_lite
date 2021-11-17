@@ -40,16 +40,6 @@ public:
 
     virtual int32_t CheckPermission(const std::string &permissionName, const std::string &appIdInfo) = 0;
 
-    virtual int32_t CheckSelfPermission(const std::string &permissionName) = 0;
-
-    virtual int32_t CheckCallingPermission(const std::string &permissionName) = 0;
-
-    virtual int32_t CheckCallingOrSelfPermission(const std::string &permissionName) = 0;
-
-    virtual int32_t CheckCallerPermission(const std::string &permissionName) = 0;
-
-    virtual bool IsRestrictedPermission(const std::string &permissionName) = 0;
-
     virtual int32_t VerifyPermissionFromRemote(const std::string &permission, const std::string &nodeId,
         const std::string &appIdInfo) = 0;
 
@@ -86,7 +76,6 @@ public:
         QUERY_DUID = 0xf002,
         DISTRIBUTED_CHECK_D_PERMISSION = 0xf006,
         DISTRIBUTED_CHECK_PERMISSION = 0xf007,
-        CHECK_SELF_PERMISSION = 0xf008,
         CHECK_CALLING_PERMISSION = 0xf009,
         CHECK_CALLING_OR_SELF_PERMISSION = 0xf010,
         CHECK_CALLER_PERMISSION = 0xf011,

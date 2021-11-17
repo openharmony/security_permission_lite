@@ -18,12 +18,15 @@
 
 #include <string>
 #include <set>
+#include <sys/types.h>
+#include <unistd.h>
 #include "i_distributed_permission.h"
 #include "zip_utils.h"
 #include "pms_adapter.h"
 #include "permission/permission.h"
 #include "permission_def.h"
 #include "permission_log.h"
+#include "parameter.h"
 
 namespace OHOS {
 namespace Security {
@@ -95,6 +98,7 @@ private:
     sptr<IRemoteObject::DeathRecipient> recipient_;
     const static int MAX_LENGTH = 256;
     sptr<Permission::IPermissionManager> iPermissionManager_;
+    const static int32_t DEVICE_UUID_LENGTH = 65;
 };
 }  // namespace Permission
 }  // namespace Security

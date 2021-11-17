@@ -48,7 +48,6 @@ ohos_unittest("verify_permission_from_remote_test") {
     "${distributed_permission_services_path}/main/cpp/src/distributed/object_device_permission_repository.cpp",
     "${distributed_permission_services_path}/main/cpp/src/distributed/permission_callback.cpp",
     "${distributed_permission_services_path}/main/cpp/src/distributed/permission_change_receiver.cpp",
-    "${distributed_permission_services_path}/main/cpp/src/distributed/permission_definition.cpp",
     "${distributed_permission_services_path}/main/cpp/src/distributed/permission_fetcher.cpp",
     "${distributed_permission_services_path}/main/cpp/src/distributed/permission_listener.cpp",
     "${distributed_permission_services_path}/main/cpp/src/distributed/permission_re_granter.cpp",
