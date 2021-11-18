@@ -33,11 +33,11 @@ namespace OHOS {
 namespace Security {
 namespace Permission {
 namespace {
-static constexpr OHOS::HiviewDFX::HiLogLabel LABEL = {
-    LOG_CORE, SECURITY_DOMAIN_PERMISSION, "RequestRemotePermissionCommand"};
+static constexpr OHOS::HiviewDFX::HiLogLabel LABEL = {LOG_CORE, SECURITY_DOMAIN_PERMISSION,
+    "RequestRemotePermissionCommand"};
 }
-RequestRemotePermissionCommand::RequestRemotePermissionCommand(
-    const std::string &srcDeviceId, const std::string &dstDeviceId, const std::string &requestId)
+RequestRemotePermissionCommand::RequestRemotePermissionCommand(const std::string &srcDeviceId,
+    const std::string &dstDeviceId, const std::string &requestId)
     : requestId_(requestId)
 {
     remoteProtocol_.commandName = COMMAND_NAME;
@@ -90,8 +90,8 @@ std::string RequestRemotePermissionCommand::ToJsonPayload()
  * @param bundleName the request package name
  * @param reason the request reason string
  */
-void RequestRemotePermissionCommand::SetRequestPermissionInfo(
-    int32_t uid, const std::vector<std::string> &permissions, const std::string &bundleName, const std::string &reason)
+void RequestRemotePermissionCommand::SetRequestPermissionInfo(int32_t uid, const std::vector<std::string> &permissions,
+    const std::string &bundleName, const std::string &reason)
 {
     uid_ = uid;
     permissions_ = permissions;
@@ -117,16 +117,13 @@ void RequestRemotePermissionCommand::StartActivityForRequestPermission(std::vect
     iBundleManager_ = bmsAdapter->GetBundleManager();
     for (auto permission : permissions) {
         if (iBundleManager_->CheckPermission(bundleName_, permission) == 0) {
-            PERMISSION_LOG_DEBUG(LABEL,
-                "mock Activity DO GRANT permission{uid = %{public}d, requestId = %{public}s }",
-                uid_,
-                requestId_.c_str());
-            SubjectDevicePermissionManager::GetInstance().GrantSensitivePermissionToRemoteApp(
-                permission, remoteProtocol_.srcDeviceId, uid_);
+            PERMISSION_LOG_DEBUG(LABEL, "mock Activity DO GRANT permission{uid = %{public}d, requestId = %{public}s }",
+                uid_, requestId_.c_str());
+            SubjectDevicePermissionManager::GetInstance().GrantSensitivePermissionToRemoteApp(permission,
+                remoteProtocol_.srcDeviceId, uid_);
         } else {
             PERMISSION_LOG_DEBUG(LABEL,
-                "mock Activity DO NOT GRANT permission{uid = %{public}d, requestId = %{public}s }",
-                uid_,
+                "mock Activity DO NOT GRANT permission{uid = %{public}d, requestId = %{public}s }", uid_,
                 requestId_.c_str());
         }
     }
@@ -140,8 +137,8 @@ void RequestRemotePermissionCommand::StartActivityForRequestPermission(std::vect
  * @param ruid the uid of the subject
  * @return the permission that need to request by UI
  */
-std::vector<std::string> RequestRemotePermissionCommand::FormatRequestPermissions(
-    std::vector<std::string> &permissions, const std::string &deviceId, int32_t ruid)
+std::vector<std::string> RequestRemotePermissionCommand::FormatRequestPermissions(std::vector<std::string> &permissions,
+    const std::string &deviceId, int32_t ruid)
 {
     int32_t duid = SubjectDevicePermissionManager::GetInstance().GetDistributedUid(deviceId, ruid);
     std::vector<std::string> needRequestPermissions;
@@ -153,8 +150,7 @@ std::vector<std::string> RequestRemotePermissionCommand::FormatRequestPermission
         if (SubjectDevicePermissionManager::GetInstance().CheckDistributedPermission(duid, permission) ==
             Constant::PERMISSION_GRANTED) {
             PERMISSION_LOG_DEBUG(LABEL,
-                "sensitive permission = %{public}s from subject request have been granted before ",
-                permission.c_str());
+                "sensitive permission = %{public}s from subject request have been granted before ", permission.c_str());
             continue;
         }
         needRequestPermissions.push_back(permission);
@@ -165,8 +161,7 @@ std::vector<std::string> RequestRemotePermissionCommand::FormatRequestPermission
 void RequestRemotePermissionCommand::Prepare()
 {
     PERMISSION_LOG_INFO(LABEL,
-        "prepare: start as: RequestRemotePermissionCommand{uid = %{public}d, requestId = %{public}s }",
-        uid_,
+        "prepare: start as: RequestRemotePermissionCommand{uid = %{public}d, requestId = %{public}s }", uid_,
         requestId_.c_str());
 
     remoteProtocol_.statusCode = Constant::SUCCESS;
@@ -179,16 +174,14 @@ void RequestRemotePermissionCommand::Finish()
 {
     remoteProtocol_.statusCode = Constant::SUCCESS;
     PERMISSION_LOG_INFO(LABEL,
-        "finish: end as: RequestRemotePermissionCommand{uid = %{public}d, requestId = %{public}s }",
-        uid_,
+        "finish: end as: RequestRemotePermissionCommand{uid = %{public}d, requestId = %{public}s }", uid_,
         requestId_.c_str());
 }
 
 void RequestRemotePermissionCommand::Execute()
 {
     PERMISSION_LOG_INFO(LABEL,
-        "execute: start as: RequestRemotePermissionCommand{uid = %{public}d, requestId = %{public}s }",
-        uid_,
+        "execute: start as: RequestRemotePermissionCommand{uid = %{public}d, requestId = %{public}s }", uid_,
         requestId_.c_str());
 
     remoteProtocol_.responseDeviceId = Constant::GetLocalDeviceId();
@@ -209,18 +202,12 @@ void RequestRemotePermissionCommand::Execute()
     if (handler == nullptr) {
         PERMISSION_LOG_ERROR(LABEL, "fail to get EventHandler");
     } else {
-        std::string taskName("RequestRemotePermissionCallbackCommand");
-        // auto task = [this, &remoteProtocol_, uid_, requestId_, &bundleName_]() {
-        auto task = [this]() {
-            // new a command to notice subject the request permission result
-            std::shared_ptr<RequestRemotePermissionCallbackCommand> callbackCommand_ =
-                RemoteCommandFactory::GetInstance().NewRequestRemotePermissionCallbackCommand(
-                    remoteProtocol_.responseDeviceId, remoteProtocol_.srcDeviceId, requestId_, uid_, bundleName_);
-
-            RemoteCommandManager::GetInstance().AddCommand(remoteProtocol_.srcDeviceId, callbackCommand_);
-            RemoteCommandManager::GetInstance().ProcessDeviceCommandImmediately(remoteProtocol_.srcDeviceId);
-        };
-        handler->PostTask(task, taskName);
+        // new a command to notice subject the request permission result
+        std::shared_ptr<RequestRemotePermissionCallbackCommand> callbackCommand_ =
+            RemoteCommandFactory::GetInstance().NewRequestRemotePermissionCallbackCommand(
+                remoteProtocol_.responseDeviceId, remoteProtocol_.srcDeviceId, requestId_, uid_, bundleName_);
+        RemoteCommandManager::GetInstance().AddCommand(remoteProtocol_.srcDeviceId, callbackCommand_);
+        RemoteCommandManager::GetInstance().ProcessDeviceCommandImmediately(remoteProtocol_.srcDeviceId);
     }
 
     remoteProtocol_.statusCode = Constant::SUCCESS;
@@ -228,6 +215,6 @@ void RequestRemotePermissionCommand::Execute()
 
     PERMISSION_LOG_DEBUG(LABEL, "execute: end as: RequestRemotePermissionCommand");
 }
-}  // namespace Permission
-}  // namespace Security
-}  // namespace OHOS
+} // namespace Permission
+} // namespace Security
+} // namespace OHOS
