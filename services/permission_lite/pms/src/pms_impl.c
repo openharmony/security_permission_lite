@@ -226,7 +226,7 @@ static int WritePermissions(const char *identifier, const cJSON *root)
     }
     int ret = WriteString(path, jsonStr);
     HalFree(path);
-    free(jsonStr);
+    HalFree(jsonStr);
     return ret;
 }
 
