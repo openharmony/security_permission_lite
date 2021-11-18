@@ -36,7 +36,7 @@ static const long WAIT_SESSION_CLOSE_MILLISECONDS = 5 * 1000;
 static const int RPC_TRANSFER_HEAD_BYTES_LENGTH = 1024 * 256;
 // decompress buf size
 static const int RPC_TRANSFER_BYTES_MAX_LENGTH = 1024 * 1024;
-}  // namespace
+} // namespace
 SoftBusChannel::SoftBusChannel(const std::string &deviceId)
     : deviceId_(deviceId), mutex_(), callbacks_(), responseResult_(""), loadedCond_()
 {
@@ -119,27 +119,25 @@ void SoftBusChannel::Release()
 std::string SoftBusChannel::ExecuteCommand(const std::string &commandName, const std::string &jsonPayload)
 {
     if (commandName.empty() || jsonPayload.empty()) {
-        PERMISSION_LOG_ERROR(LABEL,
-            "invalid params, commandName: %{public}s, jsonPayload: %{public}s",
-            commandName.c_str(),
-            jsonPayload.c_str());
+        PERMISSION_LOG_ERROR(LABEL, "invalid params, commandName: %{public}s, jsonPayload: %{public}s",
+            commandName.c_str(), jsonPayload.c_str());
         return "";
     }
 
     // to use a lib like libuuid
-    int uuidStrLen = 37;  // 32+4+1
+    int uuidStrLen = 37; // 32+4+1
     char uuidbuf[uuidStrLen];
     random_uuid(uuidbuf, uuidStrLen);
     std::string uuid(uuidbuf);
     PERMISSION_LOG_DEBUG(LABEL, "generated message uuid: %{public}s", uuid.c_str());
 
     int len = RPC_TRANSFER_HEAD_BYTES_LENGTH + jsonPayload.length();
-    unsigned char *buf = (unsigned char *)malloc(len + 1);
-    memset_s(buf, len + 1, 0, len + 1);
+    unsigned char *buf = (unsigned char *) malloc(len + 1);
     if (buf == nullptr) {
         PERMISSION_LOG_ERROR(LABEL, "no enough memory: %{public}d", len);
         return "";
     }
+    memset_s(buf, len + 1, 0, len + 1);
     int result = PrepareBytes(REQUEST_TYPE, uuid, commandName, jsonPayload, buf, len);
     if (result != Constant::SUCCESS) {
         free(buf);
@@ -206,7 +204,17 @@ void SoftBusChannel::HandleDataReceived(int session, const unsigned char *bytes,
 
     std::string type = message->GetType();
     if (REQUEST_TYPE == (type)) {
-        HandleRequest(session, message->GetId(), message->GetCommandName(), message->GetJsonPayload());
+        std::function<void()> delayed = ([=]() {
+            HandleRequest(session, message->GetId(), message->GetCommandName(), message->GetJsonPayload());
+        });
+
+        std::shared_ptr<DistributedPermissionEventHandler> handler =
+            DelayedSingleton<DistributedPermissionManagerService>::GetInstance()->GetEventHandler();
+        if (handler == nullptr) {
+            PERMISSION_LOG_ERROR(LABEL, "fail to get EventHandler");
+            return;
+        }
+        handler->ProxyPostTask(delayed, "HandleDataReceived_HandleRequest");
     } else if (RESPONSE_TYPE == (type)) {
         HandleResponse(message->GetId(), message->GetJsonPayload());
     } else {
@@ -227,21 +235,20 @@ int SoftBusChannel::Compress(const std::string &json, const unsigned char *compr
 {
     uLong len = compressBound(json.size());
     // length will not so that long
-    if (compressedLength > 0 && (int)len > compressedLength) {
+    if (compressedLength > 0 && (int) len > compressedLength) {
         PERMISSION_LOG_ERROR(LABEL,
-            "compress error. data length overflow, bound length: %{public}d, buffer length: %{public}d",
-            (int)len,
+            "compress error. data length overflow, bound length: %{public}d, buffer length: %{public}d", (int) len,
             compressedLength);
         return Constant::FAILURE;
     }
 
-    int result = compress((Byte *)compressedBytes, &len, (unsigned char *)json.c_str(), json.size() + 1);
+    int result = compress((Byte *) compressedBytes, &len, (unsigned char *) json.c_str(), json.size() + 1);
     if (result != Z_OK) {
         PERMISSION_LOG_ERROR(LABEL, "compress failed! error code: %{public}d", result);
         return result;
     }
-    PERMISSION_LOG_DEBUG(
-        LABEL, "compress complete. compress %{public}d bytes to %{public}d", compressedLength, (int)len);
+    PERMISSION_LOG_DEBUG(LABEL, "compress complete. compress %{public}d bytes to %{public}d", compressedLength,
+        (int) len);
     compressedLength = len;
     return Constant::SUCCESS;
 }
@@ -250,24 +257,22 @@ std::string SoftBusChannel::Decompress(const unsigned char *bytes, const int len
 {
     PERMISSION_LOG_DEBUG(LABEL, "input length: %{public}d", length);
     uLong len = RPC_TRANSFER_BYTES_MAX_LENGTH;
-    unsigned char *buf = (unsigned char *)malloc(len + 1);
-    memset_s(buf, len + 1, 0, len + 1);
+    unsigned char *buf = (unsigned char *) malloc(len + 1);
     if (buf == nullptr) {
         PERMISSION_LOG_ERROR(LABEL, "no enough memory!");
         return "";
     }
-    int result = uncompress(buf, &len, (unsigned char *)bytes, length);
+    memset_s(buf, len + 1, 0, len + 1);
+    int result = uncompress(buf, &len, (unsigned char *) bytes, length);
     if (result != Z_OK) {
         PERMISSION_LOG_ERROR(LABEL,
-            "uncompress failed, error code: %{public}d, bound length: %{public}d, buffer length: %{public}d",
-            result,
-            (int)len,
-            length);
+            "uncompress failed, error code: %{public}d, bound length: %{public}d, buffer length: %{public}d", result,
+            (int) len, length);
         free(buf);
         return "";
     }
     buf[len] = '\0';
-    std::string str((char *)buf);
+    std::string str((char *) buf);
     free(buf);
     PERMISSION_LOG_DEBUG(LABEL, "done, output: %{public}s", str.c_str());
     return str;
@@ -330,23 +335,23 @@ void SoftBusChannel::CancelCloseConnectionIfNeeded()
     isDelayClosing_ = false;
 }
 
-void SoftBusChannel::HandleRequest(
-    int session, const std::string &id, const std::string &commandName, const std::string &jsonPayload)
+void SoftBusChannel::HandleRequest(int session, const std::string &id, const std::string &commandName,
+    const std::string &jsonPayload)
 {
     std::shared_ptr<BaseRemoteCommand> command =
         RemoteCommandFactory::GetInstance().NewRemoteCommandFromJson(commandName, jsonPayload);
     if (command == nullptr) {
         // send result back directly
-        PERMISSION_LOG_WARN(
-            LABEL, "command %{public}s cannot get from json %{public}s", commandName.c_str(), jsonPayload.c_str());
+        PERMISSION_LOG_WARN(LABEL, "command %{public}s cannot get from json %{public}s", commandName.c_str(),
+            jsonPayload.c_str());
 
         int sendlen = RPC_TRANSFER_HEAD_BYTES_LENGTH + jsonPayload.length();
-        unsigned char *sendbuf = (unsigned char *)malloc(sendlen + 1);
-        memset_s(sendbuf, sendlen + 1, 0, sendlen + 1);
+        unsigned char *sendbuf = (unsigned char *) malloc(sendlen + 1);
         if (sendbuf == nullptr) {
             PERMISSION_LOG_ERROR(LABEL, "no enough memory: %{public}d", sendlen);
             return;
         }
+        memset_s(sendbuf, sendlen + 1, 0, sendlen + 1);
         int sendResult = PrepareBytes(RESPONSE_TYPE, id, commandName, jsonPayload, sendbuf, sendlen);
         if (sendResult != Constant::SUCCESS) {
             free(sendbuf);
@@ -360,21 +365,19 @@ void SoftBusChannel::HandleRequest(
 
     // execute command
     command->Execute();
-    PERMISSION_LOG_DEBUG(LABEL,
-        "command uniqueId: %{public}s, finish with status: %{public}d, message: %{public}s",
-        command->remoteProtocol_.uniqueId.c_str(),
-        command->remoteProtocol_.statusCode,
+    PERMISSION_LOG_DEBUG(LABEL, "command uniqueId: %{public}s, finish with status: %{public}d, message: %{public}s",
+        command->remoteProtocol_.uniqueId.c_str(), command->remoteProtocol_.statusCode,
         command->remoteProtocol_.message.c_str());
 
     // send result back
     std::string resultJsonPayload = command->ToJsonPayload();
     int len = RPC_TRANSFER_HEAD_BYTES_LENGTH + resultJsonPayload.length();
-    unsigned char *buf = (unsigned char *)malloc(len + 1);
-    memset_s(buf, len + 1, 0, len + 1);
+    unsigned char *buf = (unsigned char *) malloc(len + 1);
     if (buf == nullptr) {
         PERMISSION_LOG_ERROR(LABEL, "no enough memory: %{public}d", len);
         return;
     }
+    memset_s(buf, len + 1, 0, len + 1);
     int result = PrepareBytes(RESPONSE_TYPE, id, commandName, resultJsonPayload, buf, len);
     if (result != Constant::SUCCESS) {
         free(buf);
@@ -406,6 +409,6 @@ int SoftBusChannel::SendResponseBytes(int session, const unsigned char *bytes, c
     PERMISSION_LOG_DEBUG(LABEL, "send successfully.");
     return Constant::SUCCESS;
 }
-}  // namespace Permission
-}  // namespace Security
-}  // namespace OHOS
+} // namespace Permission
+} // namespace Security
+} // namespace OHOS

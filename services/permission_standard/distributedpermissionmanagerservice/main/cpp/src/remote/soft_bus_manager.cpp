@@ -32,7 +32,8 @@ static const SessionAttribute SESSION_ATTR = {.dataType = TYPE_BYTES};
 static const int REASON_EXIST = -3;
 static const int OPENSESSION_RETRY_TIMES = 10 * 60;
 static const int OPENSESSION_RETRY_INTERVAL_MS = 100;
-}  // namespace
+static const int UDID_MAX_LENGTH = 128; // udid/uuid max length
+} // namespace
 
 const std::string SoftBusManager::DPMS_PACKAGE_NAME = "ohos.security.distributed_permission";
 const std::string SoftBusManager::SESSION_NAME = "security.dpms_channel";
@@ -79,8 +80,8 @@ void SoftBusManager::Initialize()
         std::string extra = "";
         std::shared_ptr<SoftBusDeviceConnectionListener> ptrDeviceStateCallback =
             std::make_shared<SoftBusDeviceConnectionListener>();
-        ret = DistributedHardware::DeviceManager::GetInstance().RegisterDevStateCallback(
-            packageName, extra, ptrDeviceStateCallback);
+        ret = DistributedHardware::DeviceManager::GetInstance().RegisterDevStateCallback(packageName, extra,
+            ptrDeviceStateCallback);
         if (ret != ERR_OK) {
             PERMISSION_LOG_ERROR(LABEL, "Initialize: RegisterDevStateCallback error, result: %{public}d", ret);
             inited_.store(false);
@@ -116,9 +117,7 @@ void SoftBusManager::Initialize()
 
 void SoftBusManager::Destroy()
 {
-    PERMISSION_LOG_DEBUG(LABEL,
-        "destroy, init: %{public}d, isSoftBusServiceBindSuccess: %{public}d",
-        inited_.load(),
+    PERMISSION_LOG_DEBUG(LABEL, "destroy, init: %{public}d, isSoftBusServiceBindSuccess: %{public}d", inited_.load(),
         isSoftBusServiceBindSuccess_);
 
     if (inited_.load() == false) {
@@ -165,14 +164,11 @@ int32_t SoftBusManager::OpenSession(const std::string &deviceId)
     PERMISSION_LOG_INFO(LABEL, "openSession, networkId: %{public}s", networkId.c_str());
 
     // async open session, should waitting for OnSessionOpened event.
-    int sessionId = ::OpenSession(
-        SESSION_NAME.c_str(), SESSION_NAME.c_str(), networkId.c_str(), SESSION_GROUP_ID.c_str(), &SESSION_ATTR);
+    int sessionId = ::OpenSession(SESSION_NAME.c_str(), SESSION_NAME.c_str(), networkId.c_str(),
+        SESSION_GROUP_ID.c_str(), &SESSION_ATTR);
 
-    PERMISSION_LOG_DEBUG(LABEL,
-        "session info: sessionId: %{public}d, uuid: %{public}s, udid: %{public}s",
-        sessionId,
-        info.deviceId.universallyUniqueId.c_str(),
-        info.deviceId.uniqueDisabilityId.c_str());
+    PERMISSION_LOG_DEBUG(LABEL, "session info: sessionId: %{public}d, uuid: %{public}s, udid: %{public}s", sessionId,
+        info.deviceId.universallyUniqueId.c_str(), info.deviceId.uniqueDisabilityId.c_str());
 
     // wait session opening
     int retryTimes = 0;
@@ -182,8 +178,8 @@ int32_t SoftBusManager::OpenSession(const std::string &deviceId)
         if (SoftBusSessionListener::GetSessionState(sessionId) < 0) {
             std::this_thread::sleep_for(sleepTime);
             if (retryTimes % logSpan == 0) {
-                PERMISSION_LOG_INFO(
-                    LABEL, "openSession, waitting for: %{public}d ms", retryTimes * OPENSESSION_RETRY_INTERVAL_MS);
+                PERMISSION_LOG_INFO(LABEL, "openSession, waitting for: %{public}d ms",
+                    retryTimes * OPENSESSION_RETRY_INTERVAL_MS);
             }
             continue;
         }
@@ -194,6 +190,9 @@ int32_t SoftBusManager::OpenSession(const std::string &deviceId)
         PERMISSION_LOG_ERROR(LABEL, "openSession, timeout, session: %{public}" PRId64, state);
         return Constant::FAILURE;
     }
+
+    // 11-18 Modify for softbus -10992 problem
+    SoftBusSessionListener::DeleteSessionIdFromMap(sessionId);
 
     PERMISSION_LOG_DEBUG(LABEL, "openSession, succeed, session: %{public}" PRId64, state);
     return sessionId;
@@ -265,48 +264,45 @@ std::string SoftBusManager::GetUniqueDisabilityIdByNodeId(const std::string &nod
 
 std::string SoftBusManager::GetUuidByNodeId(const std::string &nodeId) const
 {
-    // udid/uuid max length
-    int len = 128;
-    uint8_t *info = (uint8_t *)malloc(len + 1);
-    memset_s(info, len + 1, 0, len + 1);
+    uint8_t *info = (uint8_t *) malloc(UDID_MAX_LENGTH + 1);
     if (info == nullptr) {
-        PERMISSION_LOG_ERROR(LABEL, "no enough memory: %{public}d", len);
+        PERMISSION_LOG_ERROR(LABEL, "no enough memory: %{public}d", UDID_MAX_LENGTH);
         return "";
     }
-    int32_t ret =
-        ::GetNodeKeyInfo(DPMS_PACKAGE_NAME.c_str(), nodeId.c_str(), NodeDeivceInfoKey::NODE_KEY_UUID, info, len);
+    memset_s(info, UDID_MAX_LENGTH + 1, 0, UDID_MAX_LENGTH + 1);
+    int32_t ret = ::GetNodeKeyInfo(DPMS_PACKAGE_NAME.c_str(), nodeId.c_str(), NodeDeivceInfoKey::NODE_KEY_UUID, info,
+        UDID_MAX_LENGTH);
     if (ret != Constant::SUCCESS) {
         free(info);
         PERMISSION_LOG_WARN(LABEL, "GetNodeKeyInfo error, return code: %{public}d", ret);
         return "";
     }
-    std::string uuid((char *)info);
+    std::string uuid((char *) info);
     free(info);
-    PERMISSION_LOG_DEBUG(
-        LABEL, "call softbus finished. nodeId(in): %{public}s, uuid: %{public}s", nodeId.c_str(), uuid.c_str());
+    PERMISSION_LOG_DEBUG(LABEL, "call softbus finished. nodeId(in): %{public}s, uuid: %{public}s", nodeId.c_str(),
+        uuid.c_str());
     return uuid;
 }
 
 std::string SoftBusManager::GetUdidByNodeId(const std::string &nodeId) const
 {
-    int len = 128;
-    uint8_t *info = (uint8_t *)malloc(len + 1);
-    memset_s(info, len + 1, 0, len + 1);
+    uint8_t *info = (uint8_t *) malloc(UDID_MAX_LENGTH + 1);
     if (info == nullptr) {
-        PERMISSION_LOG_ERROR(LABEL, "no enough memory: %{public}d", len);
+        PERMISSION_LOG_ERROR(LABEL, "no enough memory: %{public}d", UDID_MAX_LENGTH);
         return "";
     }
-    int32_t ret =
-        ::GetNodeKeyInfo(DPMS_PACKAGE_NAME.c_str(), nodeId.c_str(), NodeDeivceInfoKey::NODE_KEY_UDID, info, len);
+    memset_s(info, UDID_MAX_LENGTH + 1, 0, UDID_MAX_LENGTH + 1);
+    int32_t ret = ::GetNodeKeyInfo(DPMS_PACKAGE_NAME.c_str(), nodeId.c_str(), NodeDeivceInfoKey::NODE_KEY_UDID, info,
+        UDID_MAX_LENGTH);
     if (ret != Constant::SUCCESS) {
         free(info);
         PERMISSION_LOG_WARN(LABEL, "GetNodeKeyInfo error, code: %{public}d", ret);
         return "";
     }
-    std::string udid((char *)info);
+    std::string udid((char *) info);
     free(info);
-    PERMISSION_LOG_DEBUG(
-        LABEL, "call softbus finished: nodeId(in): %{public}s, udid: %{public}s", nodeId.c_str(), udid.c_str());
+    PERMISSION_LOG_DEBUG(LABEL, "call softbus finished: nodeId(in): %{public}s, udid: %{public}s", nodeId.c_str(),
+        udid.c_str());
     return udid;
 }
 
@@ -326,11 +322,8 @@ int SoftBusManager::FulfillLocalDeviceInfo()
         return Constant::FAILURE;
     }
 
-    PERMISSION_LOG_DEBUG(LABEL,
-        "call softbus finished, networkId:%{public}s, name:%{public}s, type:%{public}d",
-        info.networkId,
-        info.deviceName,
-        info.deviceTypeId);
+    PERMISSION_LOG_DEBUG(LABEL, "call softbus finished, networkId:%{public}s, name:%{public}s, type:%{public}d",
+        info.networkId, info.deviceName, info.deviceTypeId);
 
     std::string uuid = GetUuidByNodeId(info.networkId);
     std::string udid = GetUdidByNodeId(info.networkId);
@@ -340,17 +333,14 @@ int SoftBusManager::FulfillLocalDeviceInfo()
         return Constant::FAILURE;
     }
 
-    DeviceInfoManager::GetInstance().AddDeviceInfo(
-        info.networkId, uuid, udid, info.deviceName, std::to_string(info.deviceTypeId));
-    PERMISSION_LOG_DEBUG(LABEL,
-        "AddDeviceInfo finished, networkId:%{public}s, uuid:%{public}s, udid:%{public}s",
-        info.networkId,
-        uuid.c_str(),
-        udid.c_str());
+    DeviceInfoManager::GetInstance().AddDeviceInfo(info.networkId, uuid, udid, info.deviceName,
+        std::to_string(info.deviceTypeId));
+    PERMISSION_LOG_DEBUG(LABEL, "AddDeviceInfo finished, networkId:%{public}s, uuid:%{public}s, udid:%{public}s",
+        info.networkId, uuid.c_str(), udid.c_str());
 
     fulfillMutex_.unlock();
     return Constant::SUCCESS;
 }
-}  // namespace Permission
-}  // namespace Security
-}  // namespace OHOS
+} // namespace Permission
+} // namespace Security
+} // namespace OHOS
