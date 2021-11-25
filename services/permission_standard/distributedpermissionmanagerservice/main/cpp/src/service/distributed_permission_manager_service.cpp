@@ -231,15 +231,19 @@ int32_t DistributedPermissionManagerService::CheckLocalPermission(int32_t uid, c
 {
     std::unique_ptr<BmsAdapter> bmsAdapter = std::make_unique<BmsAdapter>();
     std::unique_ptr<PmsAdapter> pmsAdapter = std::make_unique<PmsAdapter>();
-    iBundleManager_ = bmsAdapter->GetBundleManager();
     if (iBundleManager_ == nullptr) {
-        PERMISSION_LOG_INFO(LABEL, "%{public}s: iBundleManager_ is nullptr.", __func__);
-        return Constant::PERMISSION_DENIED;
+        iBundleManager_ = bmsAdapter->GetBundleManager();
+        if (iBundleManager_ == nullptr) {
+            PERMISSION_LOG_INFO(LABEL, "%{public}s: iBundleManager_ is nullptr.", __func__);
+            return Constant::PERMISSION_DENIED;
+        }
     }
-    iPermissionManager_ = pmsAdapter->GetPermissionManager();
     if (iPermissionManager_ == nullptr) {
-        PERMISSION_LOG_INFO(LABEL, "%{public}s: iBundleManager_ is nullptr.", __func__);
-        return Constant::PERMISSION_DENIED;
+        iPermissionManager_ = pmsAdapter->GetPermissionManager();
+        if (iPermissionManager_ == nullptr) {
+            PERMISSION_LOG_INFO(LABEL, "%{public}s: iPermissionManager_ is nullptr.", __func__);
+            return Constant::PERMISSION_DENIED;
+        }
     }
     std::vector<std::string> bundleNames;
     bool result = iBundleManager_->GetBundlesForUid(uid, bundleNames);

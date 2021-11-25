@@ -36,19 +36,14 @@ PermissionRecordManager::~PermissionRecordManager()
 {}
 
 // add permission used record
-void PermissionRecordManager::AddPermissionsRecord(
-    const std::string &permissionName, const std::string &deviceId, int32_t uid, int32_t sucCount, int32_t failCount)
+void PermissionRecordManager::AddPermissionsRecord(const std::string &permissionName, const std::string &deviceId,
+    int32_t uid, int32_t sucCount, int32_t failCount)
 {
     OHOS::Utils::UniqueWriteGuard<OHOS::Utils::RWLock> lk(this->rwLock_);
     PERMISSION_LOG_INFO(LABEL,
         "%{public}s called, permissionName: %{public}s, deviceId: %{public}s, uid: %{public}d, sucCount: %{public}d, "
         "failCount: %{public}d",
-        __func__,
-        permissionName.c_str(),
-        Constant::EncryptDevId(deviceId).c_str(),
-        uid,
-        sucCount,
-        failCount);
+        __func__, permissionName.c_str(), Constant::EncryptDevId(deviceId).c_str(), uid, sucCount, failCount);
 
     auto DelRecordsTask = [this]() {
         PERMISSION_LOG_INFO(LABEL, "---DeletePermissionRecords task called");
@@ -79,8 +74,8 @@ bool PermissionRecordManager::AddVisitor(const std::string &deviceId, int32_t ui
     return true;
 }
 
-bool PermissionRecordManager::AddRecord(
-    const std::string &permissionName, int32_t visitorId, int32_t uid, int32_t sucCount, int32_t failCount)
+bool PermissionRecordManager::AddRecord(const std::string &permissionName, int32_t visitorId, int32_t uid,
+    int32_t sucCount, int32_t failCount)
 {
     PermissionRecord permissionRecord;
     permissionRecord.visitorId = visitorId;
@@ -120,17 +115,18 @@ int32_t PermissionRecordManager::GetPermissionRecordsAsync(const std::string &qu
         PERMISSION_LOG_INFO(LABEL, "---GetPermissionRecords task called");
         QueryPermissionUsedResult defaultResult;
         PermissionRecordManager::GetInstance().GetPermissionRecords(queryJsonStr, defaultResult);
-        PERMISSION_LOG_INFO(
-            LABEL, "%{public}s callback OnQueried called, resultCode: %{public}d", __func__, defaultResult.code);
+        PERMISSION_LOG_INFO(LABEL, "%{public}s callback OnQueried called, resultCode: %{public}d", __func__,
+            defaultResult.code);
         callback->OnQueried(defaultResult.code, defaultResult);
     };
     std::thread recordThread(task);
     recordThread.detach();
+
     return Constant::SUCCESS;
 }
 
-int32_t PermissionRecordManager::GetPermissionRecords(
-    const std::string &queryJsonStr, QueryPermissionUsedResult &queryResult)
+int32_t PermissionRecordManager::GetPermissionRecords(const std::string &queryJsonStr,
+    QueryPermissionUsedResult &queryResult)
 {
     PERMISSION_LOG_INFO(LABEL, "%{public}s called, queryJsonStr: %{public}s", __func__, queryJsonStr.c_str());
 
@@ -149,6 +145,7 @@ int32_t PermissionRecordManager::GetPermissionRecords(
     queryResult.endTimeMillis = 0;
     bool flag = GetBundlePermissionUsedRecord(request, bundle, queryResult);
     queryResult.bundlePermissionUsedRecords = bundle;
+
     if (flag) {
         return Constant::SUCCESS;
     }
@@ -162,8 +159,8 @@ bool PermissionRecordManager::GetBundlePermissionUsedRecord(const QueryPermissio
     GenericValues visitorGenericValues;
     GenericValues recordAndGenericValues;
     GenericValues recordOrGenericValues;
-    if (QueryPermissionUsedRequest::TranslationIntoGenericValues(
-            request, visitorGenericValues, recordAndGenericValues, recordOrGenericValues) != Constant::SUCCESS) {
+    if (QueryPermissionUsedRequest::TranslationIntoGenericValues(request, visitorGenericValues, recordAndGenericValues,
+        recordOrGenericValues) != Constant::SUCCESS) {
         PERMISSION_LOG_ERROR(LABEL, "%{public}s: time conditions are invalid!", __func__);
         return false;
     }
@@ -186,8 +183,8 @@ bool PermissionRecordManager::GetBundlePermissionUsedRecord(const QueryPermissio
 
         std::vector<GenericValues> recordValues;
         recordAndGenericValues.Put(FIELD_VISITOR_ID, visitor.GetInt(FIELD_ID));
-        int32_t recordRet = PermissionRecordRepository::GetInstance().FindRecordValues(
-            recordAndGenericValues, recordOrGenericValues, recordValues);
+        int32_t recordRet = PermissionRecordRepository::GetInstance().FindRecordValues(recordAndGenericValues,
+            recordOrGenericValues, recordValues);
         if (recordRet != Constant::SUCCESS) {
             queryResult.code = recordRet;
         }
@@ -221,8 +218,8 @@ bool PermissionRecordManager::GetRecordFromDB(int32_t allFlag, const std::vector
         }
         record.Put(FIELD_FLAG, allFlag);
         if (PermissionUsedRecord::TranslationIntoPermissionUsedRecord(record, tempRecord) != Constant::SUCCESS) {
-            PERMISSION_LOG_ERROR(
-                LABEL, "%{public}s: opCode translate into PermissionName failed! Cannot recognize opCode.", __func__);
+            PERMISSION_LOG_ERROR(LABEL,
+                "%{public}s: opCode translate into PermissionName failed! Cannot recognize opCode.", __func__);
             queryResult.code = Constant::NOT_DEFINED;
             return false;
         }
@@ -294,15 +291,13 @@ int PermissionRecordManager::DeletePermissionRecords(int32_t days)
     return Constant::SUCCESS;
 }
 
-bool PermissionRecordManager::GetPermissionVisitor(
-    const std::string &deviceId, const int uid, PermissionVisitor &permissionVisitor)
+bool PermissionRecordManager::GetPermissionVisitor(const std::string &deviceId, const int uid,
+    PermissionVisitor &permissionVisitor)
 {
     DeviceInfo deviceInfo;
-    if (!DelayedSingleton<DeviceInfoManager>::GetInstance()->GetDeviceInfo(
-            deviceId, DeviceIdType::UNKNOWN, deviceInfo)) {
-        PERMISSION_LOG_INFO(LABEL,
-            "%{public}s cannot get DeviceInfo by deviceId %{public}s",
-            __func__,
+    if (!DelayedSingleton<DeviceInfoManager>::GetInstance()->GetDeviceInfo(deviceId, DeviceIdType::UNKNOWN,
+        deviceInfo)) {
+        PERMISSION_LOG_INFO(LABEL, "%{public}s cannot get DeviceInfo by deviceId %{public}s", __func__,
             Constant::EncryptDevId(deviceId).c_str());
         return false;
     }
@@ -319,24 +314,23 @@ bool PermissionRecordManager::GetPermissionVisitor(
     }
     result = iBundleManager_->GetBundleInfo(bundleName, AppExecFwk::BundleFlag::GET_BUNDLE_DEFAULT, bundleInfo);
     if (!result) {
-        PERMISSION_LOG_INFO(
-            LABEL, "%{public}s cannot get bundleInfo by bundleName %{public}s", __func__, bundleName.c_str());
+        PERMISSION_LOG_INFO(LABEL, "%{public}s cannot get bundleInfo by bundleName %{public}s", __func__,
+            bundleName.c_str());
         return false;
     }
     PERMISSION_LOG_INFO(LABEL, "%{public}s ------------- end BMS------------", __func__);
-    PermissionVisitor::SetPermissionVisitor(
-        deviceId, deviceInfo.deviceName, 0, bundleName, bundleInfo.label, permissionVisitor);
+    PermissionVisitor::SetPermissionVisitor(deviceId, deviceInfo.deviceName, 0, bundleName, bundleInfo.label,
+        permissionVisitor);
     return true;
 }
 
-bool PermissionRecordManager::GetPermissionRecord(
-    const std::string &permissionName, int32_t visitorId, int32_t uid, PermissionRecord &permissionRecord)
+bool PermissionRecordManager::GetPermissionRecord(const std::string &permissionName, int32_t visitorId, int32_t uid,
+    PermissionRecord &permissionRecord)
 {
     int32_t opCode = 0;
     // blocked
     // get isforeground by uid
-    int even = 2;
-    bool isForeground = (permissionRecord.accessCount + permissionRecord.rejectCount) % even == 1 ? true : false;
+    bool isForeground = true;
     std::string tempName = permissionName;
     if (Constant::PermissionNameToOrFromOpCode(tempName, opCode)) {
         permissionRecord.timestamp = TimeUtil::GetTimestamp();
@@ -346,6 +340,6 @@ bool PermissionRecordManager::GetPermissionRecord(
     }
     return false;
 }
-}  // namespace Permission
-}  // namespace Security
-}  // namespace OHOS
+} // namespace Permission
+} // namespace Security
+} // namespace OHOS

@@ -20,7 +20,7 @@ ohos_unittest("is_restricted_permission_test") {
   module_out_path = module_output_path
 
   sources = [
-    "${distributed_permission_innerkits_distributed_path}/test/mock/src/mock_permission_kit.cpp",
+    "${distributed_permission_innerkits_distributed_path}/test/mock/src/mock_permission_manager_proxy.cpp",
     "is_restricted_permission_test.cpp",
   ]
 
