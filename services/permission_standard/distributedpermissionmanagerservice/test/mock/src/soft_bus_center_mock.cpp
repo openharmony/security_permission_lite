@@ -90,13 +90,13 @@ int32_t GetNodeKeyInfo(
         if (key == NodeDeivceInfoKey::NODE_KEY_UDID) {
             std::string temp = networkId;
             temp += ":udid-001";
-            strncpy((char *)info, temp.c_str(), temp.length());
+            strncpy_s((char *)info, infoLen, temp.c_str(), temp.length());
             infoLen = temp.length();
         }
         if (key == NodeDeivceInfoKey::NODE_KEY_UUID) {
             std::string temp = networkId;
             temp += ":uuid-001";
-            strncpy((char *)info, temp.c_str(), temp.length());
+            strncpy_s((char *)info, infoLen, temp.c_str(), temp.length());
         }
         PERMISSION_LOG_DEBUG(LABEL, "success, count: %{public}d, id: %{public}s", regCount_, info);
         return Constant::SUCCESS;
