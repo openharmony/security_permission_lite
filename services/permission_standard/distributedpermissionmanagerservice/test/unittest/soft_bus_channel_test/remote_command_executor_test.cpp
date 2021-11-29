@@ -180,7 +180,7 @@ HWTEST_F(RemoteCommandExecutorTest, RemoteCommandExecutor_Construct_002, TestSiz
     time_t end = TimeUtil::GetTimestamp();
     PERMISSION_LOG_DEBUG(LABEL,
         "RemoteCommandExecutor_Construct_002: ellapsed %{public}ld second(s) from %{public}ld to %{public}ld",
-        (long)end - begin,
+        (long)end - (long)begin,
         (long)begin,
         (long)end);
 
