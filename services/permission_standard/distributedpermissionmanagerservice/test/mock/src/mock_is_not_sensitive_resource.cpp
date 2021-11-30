@@ -56,7 +56,6 @@ int32_t SoftBusManager::OpenSession(const std::string &deviceId)
 
 int SoftBusManager::CloseSession(int sessionId)
 {
-
     return 0;
 }
 
