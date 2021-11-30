@@ -54,7 +54,7 @@ private:
     std::vector<std::string> permissions_;
     std::string bundleName_;
     std::string reason_;
-    int32_t uid_;
+    int32_t uid_ = 0;
 };
 }  // namespace Permission
 }  // namespace Security

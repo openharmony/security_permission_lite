@@ -58,8 +58,8 @@ private:
     DISALLOW_COPY_AND_MOVE(PermissionDefinitionCache);
 
     /**
-     * key: permission name.
-     * value: PermissionDef.
+     * key: the permission name.
+     * value: the object of PermissionDef.
      */
     std::map<std::string, PermissionDef> permissionDefinitionMap_;
 

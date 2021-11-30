@@ -13,38 +13,28 @@
  * limitations under the License.
  */
 
-#include <thread>
-#include <functional>
-
-#include "gtest/gtest.h"
-#include <iostream>
-#include "distributed_permission_kit.h"
+#include "app_id_info_helper_test.h"
 
 using namespace testing::ext;
 using namespace OHOS::Security::Permission;
 using namespace std;
 
-class AppIdInfoHelperTest : public testing::Test {
-public:
-    static void SetUpTestCase()
-    {
-        cout << "SetUpTestCase()" << endl;
-    }
-
-    static void TearDownTestCase()
-    {
-        cout << "TearDownTestCase()" << endl;
-    }
-    void SetUp()
-    {
-        cout << "SetUp() is running" << endl;
-    }
-    void TearDown()
-    {
-        cout << "TearDown()" << endl;
-    }
-};
-
+void AppIdInfoHelperTest::SetUpTestCase()
+{
+    cout << "SetUpTestCase()" << endl;
+}
+void AppIdInfoHelperTest::TearDownTestCase()
+{
+    cout << "TearDownTestCase()" << endl;
+}
+void AppIdInfoHelperTest::SetUp()
+{
+    cout << "SetUp() is running" << endl;
+}
+void AppIdInfoHelperTest::TearDown()
+{
+    cout << "TearDown()" << endl;
+}
 HWTEST_F(AppIdInfoHelperTest, Test01, Function | MediumTest | Level1)
 {
     pid_t pid = 1;

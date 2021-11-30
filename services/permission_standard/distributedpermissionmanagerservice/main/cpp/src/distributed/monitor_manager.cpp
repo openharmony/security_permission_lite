@@ -160,7 +160,6 @@ void MonitorManager::OnDeviceOffline(const std::string &deviceId, const std::str
         callback(deviceId, deviceNetworkId);
     }
 }
-
 }  // namespace Permission
 }  // namespace Security
 }  // namespace OHOS

@@ -16,13 +16,7 @@
 #include <thread>
 #include <functional>
 
-#include "gtest/gtest.h"
-#include "distributed_permission_manager_service.h"
-#include "mock_bundle_mgr.h"
-#include "mock_permission_mgr.h"
-#include "if_system_ability_manager.h"
-#include "iservice_registry.h"
-#include "ability_manager_interface.h"
+#include "delete_permission_used_record_test.h"
 
 using namespace std;
 using namespace testing::ext;
@@ -35,45 +29,36 @@ std::string IPCSkeleton::localDeviceId_ = "1004";
 std::string IPCSkeleton::deviceId_ = "";
 }  // namespace OHOS
 
-class DeletePermissionUsedRecordTest : public testing::Test {
-public:
-    std::vector<GenericValues> visitorValues;
-    std::vector<GenericValues> recordValues;
-    DistributedPermissionManagerService managerService;
-    void InitVisitorData();
-    void InitRecordData(int64_t timestamp);
-    static void SetUpTestCase()
-    {
-        OHOS::sptr<OHOS::IRemoteObject> bundleObject = NULL;
-        OHOS::sptr<OHOS::IRemoteObject> permissionObject = new PermissionManagerService();
-        auto sysMgr = OHOS::SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
-        if (sysMgr == NULL) {
-            GTEST_LOG_(ERROR) << "fail to get ISystemAbilityManager";
-            return;
-        }
+void DeletePermissionUsedRecordTest::SetUpTestCase()
+{
+    OHOS::sptr<OHOS::IRemoteObject> bundleObject = new OHOS::AppExecFwk::BundleMgrService();
+    OHOS::sptr<OHOS::IRemoteObject> permissionObject = new PermissionManagerService();
+    auto sysMgr = OHOS::SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
+    if (sysMgr == NULL) {
+        GTEST_LOG_(ERROR) << "fail to get ISystemAbilityManager";
+        return;
+    }
+    sysMgr->AddSystemAbility(Constant::ServiceId::BUNDLE_MGR_SERVICE_SYS_ABILITY_ID, bundleObject);
+    sysMgr->AddSystemAbility(Constant::ServiceId::SUBSYS_SECURITY_PERMISSION_SYS_SERVICE_ID, permissionObject);
+}
 
-        sysMgr->AddSystemAbility(Constant::ServiceId::BUNDLE_MGR_SERVICE_SYS_ABILITY_ID, bundleObject);
-        sysMgr->AddSystemAbility(Constant::ServiceId::SUBSYS_SECURITY_PERMISSION_SYS_SERVICE_ID, permissionObject);
-    }
+void DeletePermissionUsedRecordTest::TearDownTestCase()
+{
+    cout << "TearDownTestCase()" << endl;
+}
+void DeletePermissionUsedRecordTest::SetUp()
+{
+    GenericValues null;
+    DataStorage::GetRealDataStorage().Remove(DataStorage::PERMISSION_VISITOR, null);
+    DataStorage::GetRealDataStorage().Remove(DataStorage::PERMISSION_RECORD, null);
+    cout << "SetUp() is running" << endl;
+}
+void DeletePermissionUsedRecordTest::TearDown()
+{
+    cout << "TearDown()" << endl;
+}
 
-    static void TearDownTestCase()
-    {
-        cout << "TearDownTestCase()" << endl;
-    }
-    void SetUp()
-    {
-        GenericValues null;
-        DataStorage::GetRealDataStorage().Remove(DataStorage::PERMISSION_VISITOR, null);
-        DataStorage::GetRealDataStorage().Remove(DataStorage::PERMISSION_RECORD, null);
-        cout << "SetUp() is running" << endl;
-    }
-    void TearDown()
-    {
-        cout << "TearDown()" << endl;
-    }
-};
-
-void AddPermissionUsedRecordTest::InitVisitorData()
+void DeletePermissionUsedRecordTest::InitVisitorData()
 {
     std::vector<GenericValues> visitor;
     GenericValues genericVisitor;
@@ -96,7 +81,7 @@ void AddPermissionUsedRecordTest::InitVisitorData()
     DataStorage::GetRealDataStorage().Add(DataStorage::PERMISSION_VISITOR, visitor);
 }
 
-void AddPermissionUsedRecordTest::InitRecordData(int64_t timestamp)
+void DeletePermissionUsedRecordTest::InitRecordData(int64_t timestamp)
 {
     int opCode = 4;
     std::vector<GenericValues> visitor;
@@ -132,7 +117,7 @@ void AddPermissionUsedRecordTest::InitRecordData(int64_t timestamp)
  * @tc.number: DeletePermissionUsedRecord_0100
  * @tc.name: test delete permission used record by uid
  */
-HWTEST_F(AddPermissionUsedRecordTest, DeletePermissionUsedRecord_0100, Function | MediumTest | Level1)
+HWTEST_F(DeletePermissionUsedRecordTest, DeletePermissionUsedRecord_0100, Function | MediumTest | Level1)
 {
     InitVisitorData();
     InitRecordData(TimeUtil::GetTimestamp());

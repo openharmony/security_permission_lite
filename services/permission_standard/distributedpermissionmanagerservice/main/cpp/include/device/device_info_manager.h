@@ -12,6 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 #ifndef DEVICE_INFO_MANAGER_H
 #define DEVICE_INFO_MANAGER_H
 
@@ -97,7 +98,7 @@ public:
      */
     bool IsDeviceUniversallyUniqueId(const std::string &nodeId) const;
 };
-}  // namespace Permission
-}  // namespace Security
-}  // namespace OHOS
-#endif  // PERMISSION_BASE_SERVICE_H
+} // namespace Permission
+} // namespace Security
+} // namespace OHOS
+#endif // DEVICE_INFO_MANAGER_H

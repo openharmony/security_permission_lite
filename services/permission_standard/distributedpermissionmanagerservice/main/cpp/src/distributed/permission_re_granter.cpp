@@ -14,6 +14,8 @@
  */
 
 #include "permission_re_granter.h"
+#include "bms_adapter.h"
+#include "pms_adapter.h"
 
 namespace OHOS {
 namespace Security {
@@ -69,13 +71,13 @@ void PermissionReGranter::ReGrantDuidPermissions(UidBundleBo& uidBundlePermInfo)
 
 void PermissionReGranter::GetPermissionInfoNoThrow(const std::string& permission, PermissionDefParcel& permInfo)
 {
-    std::unique_ptr<ExternalDeps> externalDeps = std::make_unique<ExternalDeps>();
-    if (externalDeps == nullptr) {
-        PERMISSION_LOG_INFO(LABEL, "getPermissionInfoNoThrow::externalDeps is nullptr.");
+    std::unique_ptr<PmsAdapter> pmsAdapter = std::make_unique<PmsAdapter>();
+    if (pmsAdapter == nullptr) {
+        PERMISSION_LOG_INFO(LABEL, "getPermissionInfoNoThrow::pmsAdapter is nullptr.");
         return;
     }
     sptr<Permission::IPermissionManager> iPermissionManager_;
-    iPermissionManager_ = externalDeps->GetPermissionManager(iPermissionManager_);
+    iPermissionManager_ = pmsAdapter->GetPermissionManager();
     iPermissionManager_->GetDefPermission(permission, permInfo);
 }
 
@@ -83,8 +85,8 @@ bool PermissionReGranter::VerifySignatruePermission(
     const PermissionDefParcel &permInfo, const UidBundleBo &uidBundlePermInfo)
 {
     sptr<AppExecFwk::IBundleMgr> iBundleManager_;
-    std::unique_ptr<ExternalDeps> externalDeps = std::make_unique<ExternalDeps>();
-    iBundleManager_ = externalDeps->GetBundleManager(iBundleManager_);
+    std::unique_ptr<BmsAdapter> bmsAdapter = std::make_unique<BmsAdapter>();
+    iBundleManager_ = bmsAdapter->GetBundleManager();
 
     AppExecFwk::BundleInfo bundleInfo;
     int result = iBundleManager_->GetBundleInfo(

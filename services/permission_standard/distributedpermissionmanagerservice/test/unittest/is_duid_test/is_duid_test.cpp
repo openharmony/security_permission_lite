@@ -13,31 +13,20 @@
  * limitations under the License.
  */
 
-#include "gtest/gtest.h"
-#include "distributed_permission_kit.h"
-#define private public
-#include "distributed_permission_manager_service.h"
+#include "is_duid_test.h"
 
 using namespace std;
 using namespace testing::ext;
-namespace OHOS {
-pid_t IPCSkeleton::pid_ = 1;
-pid_t IPCSkeleton::uid_ = 1;
-std::string IPCSkeleton::localDeviceId_ = "1004";
-std::string IPCSkeleton::deviceId_ = "";
-namespace Security {
-namespace Permission {
-class IsDuidTest : public testing::Test {
-public:
-    static void SetUpTestCase()
-    {}
-    static void TearDownTestCase()
-    {}
-    void SetUp()
-    {}
-    void TearDown()
-    {}
-};
+using namespace OHOS::Security::Permission;
+
+void IsDuidTest::SetUpTestCase()
+{}
+void IsDuidTest::TearDownTestCase()
+{}
+void IsDuidTest::SetUp()
+{}
+void IsDuidTest::TearDown()
+{}
 
 /**
  * @tc.number: IsDuid_0001
@@ -62,6 +51,3 @@ HWTEST_F(IsDuidTest, IsDuid_0002, Function | MediumTest | Level1)
     GTEST_LOG_(INFO) << flag;
     EXPECT_FALSE(flag);
 }
-}  // namespace Permission
-}  // namespace Security
-}  // namespace OHOS

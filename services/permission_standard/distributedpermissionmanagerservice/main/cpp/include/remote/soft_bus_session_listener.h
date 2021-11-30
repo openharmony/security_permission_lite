@@ -92,6 +92,8 @@ public:
      */
     static int64_t GetSessionState(int32_t sessionId);
 
+    static void DeleteSessionIdFromMap(int32_t sessionId);
+
     static const int64_t STATE_OPENING = -1;
     static const int64_t STATE_NOTFOUND = -2;
 
@@ -106,7 +108,7 @@ private:
      */
     static std::mutex g_SessionMutex_;
 };
-}  // namespace Permission
-}  // namespace Security
-}  // namespace OHOS
-#endif  // SOFT_BUS_SESSION_LISTENER_H
+} // namespace Permission
+} // namespace Security
+} // namespace OHOS
+#endif // SOFT_BUS_SESSION_LISTENER_H

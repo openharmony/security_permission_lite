@@ -29,7 +29,7 @@ public:
     /**
      * Register remote switch change observer.
      */
-    void SubscribeRemoteChangeListener();
+    void SubscribeRemoteChangeListener() const;
 
     /**
      * Query all remote sensitive resource switch from remote side: device profile.
@@ -38,30 +38,30 @@ public:
      * @param isNetworkId Indicate that the device id is deviceNetworkId or UDID.
      * @return Sensitive resource switch status containing switch allowed or denied information.
      */
-    std::shared_ptr<SensitiveResourceSwitchSetting> PullSwitchSetting(std::string deviceId, bool isNetworkId);
+    std::shared_ptr<SensitiveResourceSwitchSetting> PullSwitchSetting(std::string deviceId, bool isNetworkId) const;
 
     /**
      * Asynchronously sync all local sensitive resource switch to remote side: device profile.
      *
      * @param switchSetting Sensitive resource switch status containing allowed or denied information.
      */
-    void PushSwitchSetting(std::shared_ptr<SensitiveResourceSwitchSetting> switchSetting);
+    void PushSwitchSetting(std::shared_ptr<SensitiveResourceSwitchSetting> switchSetting) const;
 
     /**
      * Just notify device profile to sync all switch settings.
      */
-    void SyncSwitchSetting();
+    void SyncSwitchSetting() const;
 
 private:
     ResourceSwitchRemote() : hasRegistered_(false)
     {}
 
-    std::shared_ptr<SensitiveResourceSwitchSetting> ConvertToSwitchSetting(
-        std::string deviceId, std::map<std::string, int32_t> profileMap);
+    std::shared_ptr<SensitiveResourceSwitchSetting> ConvertToSwitchSetting(std::string deviceId,
+        std::map<std::string, int32_t> profileMap) const;
 
-    std::string ConvertToSensitiveResourceIfPossible(std::pair<std::string, int32_t> mapEntry);
+    std::string ConvertToSensitiveResourceIfPossible(std::pair<std::string, int32_t> mapEntry) const;
 
-    bool IsPermittedFromProfile(std::pair<std::string, int32_t> mapEntry);
+    bool IsPermittedFromProfile(std::pair<std::string, int32_t> mapEntry) const;
 
 private:
     bool hasRegistered_;

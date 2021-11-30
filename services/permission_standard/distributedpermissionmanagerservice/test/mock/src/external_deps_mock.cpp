@@ -12,8 +12,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "external_deps.h"
-
 #include "bundle_mgr_interface.h"
 #include "bundle_mgr_proxy.h"
 #include "iservice_registry.h"
@@ -26,7 +24,6 @@ namespace Security {
 namespace Permission {
 namespace {
 static constexpr OHOS::HiviewDFX::HiLogLabel LABEL = {LOG_CORE, SECURITY_DOMAIN_PERMISSION, "EXTERNAL_DEPS_MOCK"};
-const Constant::ServiceId BUNDLE_MGR_SERVICE_SYS_ABILITY_ID = (Constant::ServiceId)401;
 class MockPermissionManager : public IPermissionManager {
 public:
     // IRemoteBroker
@@ -116,7 +113,7 @@ public:
         if (permissionName == "") {
             return -1;
         }
-        int APP_ATTRIBUTE_SIGNED_WITH_PLATFORM_KEY = 1 << 2;
+        int APP_ATTRIBUTE_SIGNED_WITH_PLATFORM_KEY = 4;
         if (permissionName == "ohos.permission.READ_CONTACTS" || permissionName == "ohos.permission.WRITE_CONTACTS") {
             permissionDefResult.permissionDef.permissionName = permissionName;
             permissionDefResult.permissionDef.bundleName = permissionName + "bundleName";
@@ -139,44 +136,6 @@ public:
     };
 };
 }  // namespace
-
-sptr<AppExecFwk::IBundleMgr> ExternalDeps::GetBundleManager(sptr<AppExecFwk::IBundleMgr> iBundleManager_)
-{
-    return iface_cast<AppExecFwk::IBundleMgr>(GetSystemAbility(BUNDLE_MGR_SERVICE_SYS_ABILITY_ID));
-}
-
-sptr<Permission::IPermissionManager> ExternalDeps::GetPermissionManager(
-    sptr<Permission::IPermissionManager> iPermissionManager_)
-{
-    sptr<Permission::IPermissionManager> ipm = new MockPermissionManager;
-    PERMISSION_LOG_INFO(LABEL,
-        "get system ability(%{public}d) proxy success.",
-        Constant::ServiceId::SUBSYS_SECURITY_PERMISSION_SYS_SERVICE_ID);
-    return ipm;
-}
-
-sptr<AAFwk::IAbilityManager> ExternalDeps::GetAbilityManager(sptr<AAFwk::IAbilityManager> iAbilityManager_)
-{
-    PERMISSION_LOG_ERROR(LABEL, "system error. not mocked");
-    return nullptr;
-}
-
-sptr<IRemoteObject> ExternalDeps::GetSystemAbility(const Constant::ServiceId systemAbilityId)
-{
-    sptr<ISystemAbilityManager> systemAbilityManager =
-        SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
-    if (!systemAbilityManager) {
-        PERMISSION_LOG_ERROR(LABEL, "fail to get system ability mgr.");
-        return nullptr;
-    }
-    sptr<IRemoteObject> remoteObject = systemAbilityManager->GetSystemAbility(systemAbilityId);
-    if (!remoteObject) {
-        PERMISSION_LOG_ERROR(LABEL, "fail to get system ability proxy.");
-        return nullptr;
-    }
-    PERMISSION_LOG_INFO(LABEL, "get system ability(%{public}d) proxy success.", systemAbilityId);
-    return remoteObject;
-}
 }  // namespace Permission
 }  // namespace Security
 }  // namespace OHOS

@@ -206,9 +206,22 @@ HWTEST_F(RemoteCommandManagerTest, RemoteCommandManager_ExecuteCommand_001, Test
             responseThread.join();
         }
     }
+}
+
+/*
+ * Feature: DPMS
+ * Function: RemoteCommandManager
+ * SubFunction: ExecuteCommand
+ * FunctionPoints: execute a command
+ * EnvConditions: NA
+ * CaseDescription: NA
+ */
+HWTEST_F(RemoteCommandManagerTest, RemoteCommandManager_ExecuteCommand_002, TestSize.Level1)
+{
+    PERMISSION_LOG_DEBUG(LABEL, "RemoteCommandManager_ExecuteCommand_002");
 
     {
-        PERMISSION_LOG_DEBUG(LABEL, "RemoteCommandManager_ExecuteCommand_001-4");
+        PERMISSION_LOG_DEBUG(LABEL, "RemoteCommandManager_ExecuteCommand_002-1");
         // fail
         const int UID_GetPermissions_FAILED = 1;
         const int32_t uid = UID_GetPermissions_FAILED;
@@ -293,6 +306,19 @@ HWTEST_F(RemoteCommandManagerTest, RemoteCommandManager_AddCommand_001, TestSize
         instance->RemoveCommand(TARGET_UDID_);
         EXPECT_TRUE(instance->executors_.size() == 0);
     }
+}
+
+/*
+ * Feature: DPMS
+ * Function: RemoteCommandManager
+ * SubFunction: AddCommand
+ * FunctionPoints: add command and remove
+ * EnvConditions: NA
+ * CaseDescription: NA
+ */
+HWTEST_F(RemoteCommandManagerTest, RemoteCommandManager_AddCommand_002, TestSize.Level1)
+{
+    PERMISSION_LOG_DEBUG(LABEL, "RemoteCommandManager_AddCommand_002");
     {
         // multi commands
         const int32_t uid = UID_FINISH_SUCCESS_INDEX;
@@ -352,8 +378,21 @@ HWTEST_F(RemoteCommandManagerTest, RemoteCommandManager_ProcessDeviceCommandImme
         int code = instance->ProcessDeviceCommandImmediately(TARGET_UDID_);
         EXPECT_TRUE(Constant::FAILURE == code);
     }
+}
+
+/*
+ * Feature: DPMS
+ * Function: RemoteCommandManager
+ * SubFunction: ProcessDeviceCommandImmediately
+ * FunctionPoints: execute buffered commands for a device
+ * EnvConditions: NA
+ * CaseDescription: NA
+ */
+HWTEST_F(RemoteCommandManagerTest, RemoteCommandManager_ProcessDeviceCommandImmediately_002, TestSize.Level1)
+{
+    PERMISSION_LOG_DEBUG(LABEL, "RemoteCommandManager_ProcessDeviceCommandImmediately_002");
     {
-        PERMISSION_LOG_DEBUG(LABEL, "RemoteCommandManager_ProcessDeviceCommandImmediately_001-3");
+        PERMISSION_LOG_DEBUG(LABEL, "RemoteCommandManager_ProcessDeviceCommandImmediately_002-1");
         // fail: FAILURE_BUT_CAN_RETRY
         const int32_t uid = UID_GetRegrantedPermissions_FAILED;
         const std::string srcDeviceId = SELF_DEVICE_;
@@ -387,10 +426,23 @@ HWTEST_F(RemoteCommandManagerTest, RemoteCommandManager_ProcessDeviceCommandImme
             responseThread.join();
         }
 
-        PERMISSION_LOG_DEBUG(LABEL, "RemoteCommandManager_ProcessDeviceCommandImmediately_001-3 end");
+        PERMISSION_LOG_DEBUG(LABEL, "RemoteCommandManager_ProcessDeviceCommandImmediately_002 end");
     }
+}
+
+/*
+ * Feature: DPMS
+ * Function: RemoteCommandManager
+ * SubFunction: ProcessDeviceCommandImmediately
+ * FunctionPoints: execute buffered commands for a device
+ * EnvConditions: NA
+ * CaseDescription: NA
+ */
+HWTEST_F(RemoteCommandManagerTest, RemoteCommandManager_ProcessDeviceCommandImmediately_003, TestSize.Level1)
+{
+    PERMISSION_LOG_DEBUG(LABEL, "RemoteCommandManager_ProcessDeviceCommandImmediately_003");
     {
-        PERMISSION_LOG_DEBUG(LABEL, "RemoteCommandManager_ProcessDeviceCommandImmediately_001-4");
+        PERMISSION_LOG_DEBUG(LABEL, "RemoteCommandManager_ProcessDeviceCommandImmediately_003-1");
         // success
         const int32_t uid = UID_FINISH_SUCCESS_INDEX;
         const std::string srcDeviceId = SELF_DEVICE_;
@@ -418,8 +470,21 @@ HWTEST_F(RemoteCommandManagerTest, RemoteCommandManager_ProcessDeviceCommandImme
             responseThread.join();
         }
     }
+}
+
+/*
+ * Feature: DPMS
+ * Function: RemoteCommandManager
+ * SubFunction: ProcessDeviceCommandImmediately
+ * FunctionPoints: execute buffered commands for a device
+ * EnvConditions: NA
+ * CaseDescription: NA
+ */
+HWTEST_F(RemoteCommandManagerTest, RemoteCommandManager_ProcessDeviceCommandImmediately_004, TestSize.Level1)
+{
+    PERMISSION_LOG_DEBUG(LABEL, "RemoteCommandManager_ProcessDeviceCommandImmediately_004");
     {
-        PERMISSION_LOG_DEBUG(LABEL, "RemoteCommandManager_ProcessDeviceCommandImmediately_001-5");
+        PERMISSION_LOG_DEBUG(LABEL, "RemoteCommandManager_ProcessDeviceCommandImmediately_004-1");
         // success, multi commands
         const int32_t uid = UID_FINISH_SUCCESS_INDEX;
         const std::string srcDeviceId = SELF_DEVICE_;
@@ -484,13 +549,27 @@ HWTEST_F(RemoteCommandManagerTest, RemoteCommandManager_Loop_001, TestSize.Level
             instance->GetExecutorChannel(TARGET_UUID_)->Release();
         }
         int code = instance->Loop();
-        PERMISSION_LOG_DEBUG(LABEL, "ret code: %{public}d", code);
         EXPECT_TRUE(Constant::SUCCESS == code);
 
         std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_1S));
     }
+    int sleep500 = 500;
+    std::this_thread::sleep_for(std::chrono::milliseconds(sleep500));
+}
+
+/*
+ * Feature: DPMS
+ * Function: RemoteCommandManager
+ * SubFunction: Loop
+ * FunctionPoints: Execute all buffered commands for all device asynchronized.
+ * EnvConditions: NA
+ * CaseDescription: NA
+ */
+HWTEST_F(RemoteCommandManagerTest, RemoteCommandManager_Loop_002, TestSize.Level1)
+{
+    PERMISSION_LOG_DEBUG(LABEL, "RemoteCommandManager_Loop_002");
     {
-        PERMISSION_LOG_DEBUG(LABEL, "RemoteCommandManager_Loop_001-2");
+        PERMISSION_LOG_DEBUG(LABEL, "RemoteCommandManager_Loop_002-1");
         // 1 command
         const int32_t uid = UID_GetRegrantedPermissions_FAILED;
         const std::string srcDeviceId = SELF_DEVICE_;
@@ -510,14 +589,12 @@ HWTEST_F(RemoteCommandManagerTest, RemoteCommandManager_Loop_001, TestSize.Level
             // fail response: FAILURE_BUT_CAN_RETRY
             std::string dummyResult = "{[100]}";
             auto channel = (SoftBusChannel *)(instance->GetExecutorChannel(TARGET_UDID_).get());
-            PERMISSION_LOG_DEBUG(LABEL, "channel in callback, %{public}ld", (long)channel);
             count++;
             channel->HandleResponse(id, dummyResult);
         };
         std::thread responseThread(runner);
 
         int code = instance->Loop();
-        PERMISSION_LOG_DEBUG(LABEL, "ret code: %{public}d", code);
         EXPECT_TRUE(Constant::SUCCESS == code);
 
         // wait thread
@@ -528,14 +605,26 @@ HWTEST_F(RemoteCommandManagerTest, RemoteCommandManager_Loop_001, TestSize.Level
         std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_100));
         EXPECT_EQ(count.load(), 1);
     }
-    {
-        PERMISSION_LOG_DEBUG(LABEL, "RemoteCommandManager_Loop_001-3");
-        // multi commands
-        const int32_t uid = UID_FINISH_SUCCESS_INDEX;
-        const std::string srcDeviceId = SELF_DEVICE_;
-        const std::string dstDeviceId = TARGET_DEVICE_;
-        const std::shared_ptr<BaseRemoteCommand> ptrCommand =
-            RemoteCommandFactory::GetInstance().NewGetUidPermissionCommand(uid, srcDeviceId, dstDeviceId);
+    int sleep500 = 500;
+    std::this_thread::sleep_for(std::chrono::milliseconds(sleep500));
+}
+
+/*
+ * Feature: DPMS
+ * Function: RemoteCommandManager
+ * SubFunction: Loop
+ * FunctionPoints: Execute all buffered commands for all device asynchronized.
+ * EnvConditions: NA
+ * CaseDescription: NA
+ */
+HWTEST_F(RemoteCommandManagerTest, RemoteCommandManager_Loop_003, TestSize.Level1)
+{
+    // multi commands
+    const int32_t uid = UID_FINISH_SUCCESS_INDEX;
+    const std::string srcDeviceId = SELF_DEVICE_;
+    const std::string dstDeviceId = TARGET_DEVICE_;
+    const std::shared_ptr<BaseRemoteCommand> ptrCommand =
+        RemoteCommandFactory::GetInstance().NewGetUidPermissionCommand(uid, srcDeviceId, dstDeviceId);
 
         const std::shared_ptr<BaseRemoteCommand> ptrCommand2 =
             RemoteCommandFactory::GetInstance().NewGetUidPermissionCommand(uid + 1, srcDeviceId, dstDeviceId);
@@ -571,40 +660,48 @@ HWTEST_F(RemoteCommandManagerTest, RemoteCommandManager_Loop_001, TestSize.Level
         int code = instance->Loop();
         EXPECT_TRUE(Constant::SUCCESS == code);
 
-        PERMISSION_LOG_DEBUG(LABEL, "wait for tasks1");
-        int sleep150 = 150;
-        std::this_thread::sleep_for(std::chrono::milliseconds(sleep150));
-        EXPECT_EQ(count.load(), 1);
+    int sleep150 = 150;
+    std::this_thread::sleep_for(std::chrono::milliseconds(sleep150));
+    EXPECT_EQ(count.load(), 1);
 
-        // wait thread
-        if (responseThread.joinable()) {
-            responseThread.join();
-        }
-        // wait for executor thread
-        PERMISSION_LOG_DEBUG(LABEL, "wait for tasks2");
-        int sleep500 = 500;
-        std::this_thread::sleep_for(std::chrono::milliseconds(sleep500));
-        EXPECT_EQ(count.load(), 2);
-
-        if (responseThread2.joinable()) {
-            responseThread2.join();
-        }
+    // wait thread
+    if (responseThread.joinable()) {
+        responseThread.join();
     }
-    {
-        PERMISSION_LOG_DEBUG(LABEL, "RemoteCommandManager_Loop_001-4");
-        // multi commands & multi devices
-        const int32_t uid = UID_FINISH_SUCCESS_INDEX;
-        const std::string srcDeviceId = SELF_DEVICE_;
-        const std::string dstDeviceId = TARGET_DEVICE_;
-        const std::shared_ptr<BaseRemoteCommand> ptrCommand =
-            RemoteCommandFactory::GetInstance().NewGetUidPermissionCommand(uid, srcDeviceId, dstDeviceId);
-        const std::shared_ptr<BaseRemoteCommand> ptrCommand2 =
-            RemoteCommandFactory::GetInstance().NewGetUidPermissionCommand(uid + 1, srcDeviceId, dstDeviceId);
-        const std::shared_ptr<BaseRemoteCommand> ptrCommand3 =
-            RemoteCommandFactory::GetInstance().NewGetUidPermissionCommand(uid + 2, srcDeviceId, dstDeviceId);
+    // wait for executor thread
+    int sleep500 = 500;
+    std::this_thread::sleep_for(std::chrono::milliseconds(sleep500));
+    EXPECT_EQ(count.load(), 2);
 
-        RemoteCommandManager *instance = &RemoteCommandManager::GetInstance();
-        instance->Clear();
+    if (responseThread2.joinable()) {
+        responseThread2.join();
+    }
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(sleep500));
+}
+
+/*
+ * Feature: DPMS
+ * Function: RemoteCommandManager
+ * SubFunction: Loop
+ * FunctionPoints: Execute all buffered commands for all device asynchronized.
+ * EnvConditions: NA
+ * CaseDescription: NA
+ */
+HWTEST_F(RemoteCommandManagerTest, RemoteCommandManager_Loop_004, TestSize.Level1)
+{
+    // multi commands & multi devices
+    const int32_t uid = UID_FINISH_SUCCESS_INDEX;
+    const std::string srcDeviceId = SELF_DEVICE_;
+    const std::string dstDeviceId = TARGET_DEVICE_;
+    const std::shared_ptr<BaseRemoteCommand> ptrCommand =
+        RemoteCommandFactory::GetInstance().NewGetUidPermissionCommand(uid, srcDeviceId, dstDeviceId);
+    const std::shared_ptr<BaseRemoteCommand> ptrCommand2 =
+        RemoteCommandFactory::GetInstance().NewGetUidPermissionCommand(uid + 1, srcDeviceId, dstDeviceId);
+    const std::shared_ptr<BaseRemoteCommand> ptrCommand3 =
+        RemoteCommandFactory::GetInstance().NewGetUidPermissionCommand(uid + 2, srcDeviceId, dstDeviceId);
+    RemoteCommandManager *instance = &RemoteCommandManager::GetInstance();
+    instance->Clear();
 
         // simulate response
         std::atomic<int> count(0);
@@ -635,36 +732,33 @@ HWTEST_F(RemoteCommandManagerTest, RemoteCommandManager_Loop_001, TestSize.Level
         instance->AddCommand(TARGET_UUID_, ptrCommand3);
         int code = instance->Loop();
 
-        PERMISSION_LOG_DEBUG(LABEL, "wait for tasks1");
-        int sleep150 = 150;
-        std::this_thread::sleep_for(std::chrono::milliseconds(sleep150));
-        EXPECT_EQ(count.load(), 1);
+    // wait for tasks1
+    int sleep150 = 150;
+    std::this_thread::sleep_for(std::chrono::milliseconds(sleep150));
+    EXPECT_EQ(count.load(), 1);
 
-        PERMISSION_LOG_DEBUG(LABEL, "wait for tasks2");
-        std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_100));
-        EXPECT_EQ(count.load(), 2);
+    // wait for tasks2
+    std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_100));
+    EXPECT_EQ(count.load(), 2);
+    EXPECT_TRUE(Constant::SUCCESS == code);
 
-        EXPECT_TRUE(Constant::SUCCESS == code);
-
-        // wait thread
-        if (responseThread.joinable()) {
-            responseThread.join();
-        }
-        PERMISSION_LOG_DEBUG(LABEL, "wait for tasks3");
-        // wait for executor thread
-        std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_1S));
-        EXPECT_EQ(count.load(), 3);
-        // wait for timeout thread to complete(maybe)
-        PERMISSION_LOG_DEBUG(LABEL, "wait for timeout thread");
-        if (instance->GetExecutorChannel(TARGET_UDID_) != nullptr) {
-            instance->GetExecutorChannel(TARGET_UDID_)->Release();
-        }
-        if (instance->GetExecutorChannel(TARGET_UUID_) != nullptr) {
-            instance->GetExecutorChannel(TARGET_UUID_)->Release();
-        }
-        int sleep5000 = 500;
-        std::this_thread::sleep_for(std::chrono::milliseconds(sleep5000));
+    // wait thread
+    if (responseThread.joinable()) {
+        responseThread.join();
     }
+    // wait for tasks3
+    std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_1S));
+    EXPECT_EQ(count.load(), 3);
+    // wait for timeout thread to complete(maybe)
+    if (instance->GetExecutorChannel(TARGET_UDID_) != nullptr) {
+        instance->GetExecutorChannel(TARGET_UDID_)->Release();
+    }
+    if (instance->GetExecutorChannel(TARGET_UUID_) != nullptr) {
+        instance->GetExecutorChannel(TARGET_UUID_)->Release();
+    }
+    int sleep5000 = 5000;
+    std::this_thread::sleep_for(std::chrono::milliseconds(sleep5000));
+
     int sleep500 = 500;
     std::this_thread::sleep_for(std::chrono::milliseconds(sleep500));
 }

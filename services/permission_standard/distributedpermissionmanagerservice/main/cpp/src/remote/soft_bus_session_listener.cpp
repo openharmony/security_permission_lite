@@ -29,7 +29,7 @@ namespace {
 static const int32_t SESSION_NAME_MAXLENGTH = 64;
 static const int32_t SESSION_ACCEPTED = 0;
 static const int32_t SESSION_REFUSED = -1;
-}  // namespace
+} // namespace
 
 std::mutex SoftBusSessionListener::g_SessionMutex_;
 std::map<int32_t, int64_t> SoftBusSessionListener::g_SessionOpenedMap_;
@@ -60,7 +60,7 @@ int32_t SoftBusSessionListener::OnSessionOpened(int32_t session, int32_t result)
     std::lock_guard<std::mutex> guard(g_SessionMutex_);
     auto iter = g_SessionOpenedMap_.find(session);
     if (iter == g_SessionOpenedMap_.end()) {
-        g_SessionOpenedMap_.insert(std::pair<int32_t, int64_t>(session, (int64_t)1));
+        g_SessionOpenedMap_.insert(std::pair<int32_t, int64_t>(session, (int64_t) 1));
     } else {
         iter->second = iter->second + 1;
     }
@@ -106,7 +106,7 @@ void SoftBusSessionListener::OnBytesReceived(int32_t sessionId, const void *data
         PERMISSION_LOG_ERROR(LABEL, "GetExecutorChannel, failed, networkId: %{public}s", contents);
         return;
     }
-    channel->HandleDataReceived(sessionId, (unsigned char *)data, dataLen);
+    channel->HandleDataReceived(sessionId, (unsigned char *) data, dataLen);
 }
 
 int64_t SoftBusSessionListener::GetSessionState(int32_t sessionId)
@@ -119,6 +119,17 @@ int64_t SoftBusSessionListener::GetSessionState(int32_t sessionId)
     }
     return (iter->second);
 }
-}  // namespace Permission
-}  // namespace Security
-}  // namespace OHOS
+
+void SoftBusSessionListener::DeleteSessionIdFromMap(int32_t sessionID)
+{
+    PERMISSION_LOG_DEBUG(LABEL, "DeleteSessionIdFromMap");
+    // delete sessionId in map
+    std::lock_guard<std::mutex> guard(g_SessionMutex_);
+    auto iter = g_SessionOpenedMap_.find(sessionID);
+    if (iter != g_SessionOpenedMap_.end()) {
+        g_SessionOpenedMap_.erase(iter);
+    }
+}
+} // namespace Permission
+} // namespace Security
+} // namespace OHOS

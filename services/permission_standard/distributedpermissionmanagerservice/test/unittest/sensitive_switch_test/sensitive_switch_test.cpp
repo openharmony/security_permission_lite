@@ -12,16 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <gtest/gtest.h>
-#include "constant.h"
-#define private public
-#include "distributed_permission_manager_service.h"
-#include "resource_switch.h"
-#include "resource_switch_cache.h"
-#include "resource_switch_local.h"
-#include "resource_switch_remote.h"
-#include "sensitive_resource_switch_setting.h"
-#include "ipc_skeleton.h"
+#include "sensitive_switch_test.h"
 using namespace testing::ext;
 namespace OHOS {
 std::string IPCSkeleton::localDeviceId_ = "1004";
@@ -31,27 +22,24 @@ namespace {
 static const std::string DEVICE_("test-device-id-001");
 }  // namespace
 
-class SensitiveSwitchTest : public testing::Test {
-public:
-    static void SetUpTestCase(void)
-    {
-        OHOS::DelayedSingleton<DistributedPermissionManagerService>::GetInstance()->OnStart();
-    }
-    static void TearDownTestCase(void)
-    {
-        OHOS::DelayedSingleton<DistributedPermissionManagerService>::GetInstance()->OnStop();
-    }
-    void SetUp()
-    {
-        ResourceSwitch::GetInstance().Initialize();
-        int32_t time = 5;
-        sleep(time);
-    }
-    void TearDown()
-    {
-        ResourceSwitchCache::GetInstance().cache_.clear();
-    }
-};
+void SensitiveSwitchTest::SetUpTestCase(void)
+{
+    OHOS::DelayedSingleton<DistributedPermissionManagerService>::GetInstance()->OnStart();
+}
+void SensitiveSwitchTest::TearDownTestCase(void)
+{
+    OHOS::DelayedSingleton<DistributedPermissionManagerService>::GetInstance()->OnStop();
+}
+void SensitiveSwitchTest::SetUp()
+{
+    ResourceSwitch::GetInstance().Initialize();
+    int32_t time = 5;
+    sleep(time);
+}
+void SensitiveSwitchTest::TearDown()
+{
+    ResourceSwitchCache::GetInstance().cache_.clear();
+}
 
 HWTEST_F(SensitiveSwitchTest, SensitiveSwitch_OnLocalChange_001, TestSize.Level1)
 {

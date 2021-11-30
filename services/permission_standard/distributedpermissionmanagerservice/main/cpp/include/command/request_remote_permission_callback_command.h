@@ -48,7 +48,7 @@ private:
     std::set<std::string> objectGrantedResult_;
     std::string requestId_;
     std::string bundleName_;
-    int32_t uid_;
+    int32_t uid_ = 0;
 };
 }  // namespace Permission
 }  // namespace Security

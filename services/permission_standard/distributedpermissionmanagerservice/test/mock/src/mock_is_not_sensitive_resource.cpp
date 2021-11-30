@@ -15,7 +15,6 @@
 
 #define private public
 #include "bundle_mgr_interface.h"
-#include "external_deps.h"
 #include "i_permission_manager.h"
 #include "permission_bms_manager.h"
 #include "request_remote_permission.h"
@@ -118,7 +117,8 @@ int RemoteCommandManager::ExecuteCommand(const std::string &deviceId, const std:
     if (deviceId == "uniqueDisabilityIdSuccess") {
         std::string key = DistributedUidAllocator::GetInstance().Hash("uniqueDisabilityIdSuccess", 1024);
         DistributedUidEntity distributedUidEntity;
-        distributedUidEntity.distributedUid = 12610001;
+        int32_t duid = 12610001;
+        distributedUidEntity.distributedUid = duid;
         DistributedUidAllocator::GetInstance().distributedUidMapByKey_.insert(
             std::pair<std::string, DistributedUidEntity>(key, distributedUidEntity));
         return Constant::SUCCESS;
@@ -174,8 +174,6 @@ std::shared_ptr<RpcChannel> RemoteCommandManager::GetExecutorChannel(const std::
 {
     return nullptr;
 }
-
-// ExternalDeps
 void RemoteCommandManager::RemoveCommand(const std::string &deviceId)
 {}
 
@@ -227,8 +225,8 @@ RequestRemotePermission &RequestRemotePermission ::GetInstance()
     static RequestRemotePermission instance;
     return instance;
 }
-bool RequestRemotePermission::CanRequestPermissionFromRemote(
-    const std::string &permission, const std::string &deviceId, const int32_t pid, const int32_t uid)
+bool RequestRemotePermission::CanRequestPermissionFromRemote(const std::string &permission, const std::string &deviceId,
+    const int32_t pid, const int32_t uid) const
 {
     return true;
 }

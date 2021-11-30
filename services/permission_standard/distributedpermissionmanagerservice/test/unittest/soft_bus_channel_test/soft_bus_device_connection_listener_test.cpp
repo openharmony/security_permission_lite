@@ -25,7 +25,6 @@
 
 #include "soft_bus_channel.h"
 
-#include "zip_util.h"
 #include "device_info_manager.h"
 #include "remote_command_manager.h"
 

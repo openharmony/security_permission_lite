@@ -11,6 +11,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import("//base/security/permission/permission.gni")
 import("//build/ohos.gni")
 
 ################################################################
@@ -20,7 +21,13 @@ config("permission_standard_communication_adapter_cxx_public_config") {
   visibility = [ ":*" ]
   include_dirs = [
     "main/cpp/include",
+    "${distributed_permission_frameworks_log_path}/main/cpp/include",
+    "//base/security/permission/services/permission_standard/distributedpermissionmanagerservice/main/cpp/include/common",
     "//base/security/permission/interfaces/innerkits/permission_standard/permissionsdk/main/cpp/include",
+    "//foundation/aafwk/standard/interfaces/innerkits/ability_manager/include",
+    "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_base/include",
+    "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_core/include/bundlemgr",
+    "//foundation/distributedhardware/devicemanager/interfaces/inner_kits/native_cpp/include",
   ]
 }
 
@@ -32,14 +39,36 @@ ohos_shared_library("permission_standard_communication_adapter_cxx") {
       [ ":permission_standard_communication_adapter_cxx_public_config" ]
 
   include_dirs = [
-    "main/cpp/include",
     "main/cpp/src",
     "//utils/native/base/include",
   ]
 
-  sources = [ "main/cpp/src/permission_def_parcel.cpp" ]
+  sources = [
+    "main/cpp/src/ams_adapter.cpp",
+    "main/cpp/src/app_id_info.cpp",
+    "main/cpp/src/bms_adapter.cpp",
+    "main/cpp/src/permission_def_parcel.cpp",
+    "main/cpp/src/pms_adapter.cpp",
+  ]
 
-  deps = [ "//utils/native/base:utils" ]
+  deps = [
+    "${distributed_permission_frameworks_log_path}:permission_standard_infrastructure_cxx",
+    "//base/startup/syspara_lite/interfaces/innerkits/native/syspara:syspara",
+    "//foundation/aafwk/standard/interfaces/innerkits/base:base",
+    "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_base:appexecfwk_base",
+    "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_core:appexecfwk_core",
+    "//foundation/appexecfwk/standard/interfaces/innerkits/libeventhandler:libeventhandler",
+    "//foundation/distributedhardware/devicemanager/interfaces/inner_kits/native_cpp:devicemanagersdk",
+    "//foundation/distributedschedule/safwk/interfaces/innerkits/safwk:system_ability_fwk",
+    "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
+    "//utils/native/base:utils",
+  ]
 
-  external_deps = [ "ipc:ipc_core" ]
+  external_deps = [
+    "aafwk_standard:want",
+    "dsoftbus_standard:softbus_client",
+    "hiviewdfx_hilog_native:libhilog",
+    "ipc:ipc_core",
+  ]
+  cflags_cc = [ "-DHILOG_ENABLE" ]
 }

@@ -26,8 +26,8 @@ RequestRemotePermission &RequestRemotePermission ::GetInstance()
     static RequestRemotePermission instance;
     return instance;
 }
-bool RequestRemotePermission::CanRequestPermissionFromRemote(
-    const std::string &permission, const std::string &deviceId, const int32_t pid, const int32_t uid)
+bool RequestRemotePermission::CanRequestPermissionFromRemote(const std::string &permission, const std::string &deviceId,
+    const int32_t pid, const int32_t uid) const
 {
     if (!DistributedDataValidator::IsPermissionNameValid(permission) ||
         !DistributedDataValidator::IsDeviceIdValid(deviceId)) {
@@ -48,8 +48,7 @@ bool RequestRemotePermission::CanRequestPermissionFromRemote(
     }
     if (ObjectDevicePermissionManager::GetInstance().VerifyPermissionFromRemote(permission, deviceId, pid, uid) ==
         Constant::PERMISSION_GRANTED) {
-        PERMISSION_LOG_ERROR(LABEL,
-            "CanRequestPermissionFromRemote:permission %{public}s ihave been granted before",
+        PERMISSION_LOG_ERROR(LABEL, "CanRequestPermissionFromRemote:permission %{public}s have been granted before",
             permission.c_str());
         return false;
     }
@@ -62,7 +61,7 @@ bool RequestRemotePermission::CanRequestPermissionFromRemote(
     // when the  switch code is complete, need add func  CheckThirdAppMore(deviceId, permission)
     return true;
 }
-bool RequestRemotePermission::CheckThirdAppMore(const std::string deviceId, const std::string permission)
+bool RequestRemotePermission::CheckThirdAppMore(const std::string deviceId, const std::string permission) const
 {
     return ResourceSwitch::GetInstance().GetRemoteSensitiveResourceSwitch(deviceId, permission) ==
            Constant::RESOURCE_SWITCH_STATUS_ALLOWED;

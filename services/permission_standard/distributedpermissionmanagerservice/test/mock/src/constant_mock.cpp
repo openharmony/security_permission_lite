@@ -17,7 +17,6 @@
 namespace OHOS {
 namespace Security {
 namespace Permission {
-
 const std::string Constant::SYSTEM_PERMISSION_TYPE = "system";
 const std::string Constant::APP_PERMISSION_TYPE = "app";
 
@@ -147,7 +146,6 @@ const std::vector<std::string> Constant::PERMISSION_RECORDS_GETTING_LIST = {"oho
     "ohos.permission.ACTIVITY_MOTION",
     "ohos.permission.READ_HEALTH_DATA",
     "ohos.permission.DISTRIBUTED_DATA"};
-
 }  // namespace Permission
 }  // namespace Security
 }  // namespace OHOS

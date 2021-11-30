@@ -49,8 +49,8 @@ struct PermissionReminderInfo : public Parcelable {
     void SetBundleLabel(std::string strParam);
     void SetPermName(std::string strParam);
 };
-} // namespace Permission
-} // namespace Security
-} // namespace OHOS
+}  // namespace Permission
+}  // namespace Security
+}  // namespace OHOS
 
-#endif // PERMISSION_REMINDER_INFO_H
+#endif  // PERMISSION_REMINDER_INFO_H

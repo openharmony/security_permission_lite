@@ -41,7 +41,7 @@ RequestPermissionsInfo::RequestPermissionsInfo(const std::vector<std::string> pe
     timeStringStream << std::put_time(std::localtime(&time), "%H%M%S");
     requestId_ = deviceId + timeStringStream.str();
 }
-bool RequestPermissionsInfo::NeedStopProcess()
+bool RequestPermissionsInfo::NeedStopProcess() const
 {
     if (permissions_.empty()) {
         PERMISSION_LOG_ERROR(LABEL, "requestPermissionsFromRemote permissions is null");

@@ -17,6 +17,7 @@
 #include "distributed_permission_manager_service.h"
 #include "permission_kit.h"
 #include "permission_callback.h"
+#include "bms_adapter.h"
 
 namespace OHOS {
 namespace Security {
@@ -133,8 +134,8 @@ int32_t ObjectDevicePermissionManager::RemoveNotifyPermissionMonitorUid(const in
     return RemoteCommandManager::GetInstance().Loop();
 }
 
-int32_t ObjectDevicePermissionManager::ProcessDeviceCommandImmediately(
-    const int32_t uid, const std::set<std::string> &devicesToSync)
+int32_t ObjectDevicePermissionManager::ProcessDeviceCommandImmediately(const int32_t uid,
+    const std::set<std::string> &devicesToSync) const
 {
     const std::shared_ptr<CountDownLatch> latch = std::make_shared<CountDownLatch>(1);
     std::string taskName("ProcessDeviceCommandImmediately");
@@ -262,9 +263,8 @@ int32_t ObjectDevicePermissionManager::VerifyPermissionFromRemoteInner(
     }
     if (PermissionBmsManager::GetInstance().IsSystemSignatureUid(uid)) {
         // For system program,check if self have the permissin ,the permission will sync to object
-        std::unique_ptr<ExternalDeps> externalDeps = std::make_unique<ExternalDeps>();
-        iBundleManager_ = externalDeps->GetBundleManager(iBundleManager_);
-        iPermissionManager_ = externalDeps->GetPermissionManager(iPermissionManager_);
+        std::unique_ptr<BmsAdapter> bmsAdapter = std::make_unique<BmsAdapter>();
+        iBundleManager_ = bmsAdapter->GetBundleManager();
 
         std::vector<std::string> bundleNames;
         iBundleManager_->GetBundlesForUid(uid, bundleNames);
@@ -282,8 +282,8 @@ int32_t ObjectDevicePermissionManager::VerifyPermissionFromRemoteInner(
     }
     return ObjectDevicePermissionRepository::GetInstance().VerifyPermissionFromRemote(permission, deviceId, pid, uid);
 }
-bool ObjectDevicePermissionManager::IsValidVerificationParams(
-    const std::string &permission, const std::string &deviceId, const int32_t uid)
+bool ObjectDevicePermissionManager::IsValidVerificationParams(const std::string &permission,
+    const std::string &deviceId, const int32_t uid) const
 {
     if (!DistributedDataValidator::IsPermissionNameValid(permission)) {
         PERMISSION_LOG_ERROR(LABEL, "invalid permission: %{public}s", permission.c_str());

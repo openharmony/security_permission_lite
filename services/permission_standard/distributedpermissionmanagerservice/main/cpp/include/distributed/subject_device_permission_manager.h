@@ -77,16 +77,11 @@ public:
     /**
      * Operation function. Using duidTranslator to generate a duid. Then add relationship from deviceId to uid and add
      * relationship from duid to permissionItemNames.
-     * <p>
-     * Check input parameter first. If:
-     * <ol>
-     * <li>DeviceId is invalid, will return <b>INVALID_DEVICE_ID</b>, and will not add.
-     * <li>ObjectUid is null, or permissionItems is null, will return <b>INVALID_UID_PERMISSION</b>, and will not
-     * add.
-     * </ol>
-     * Secondly, ask DuidTranslator to get a duid for deviceId and ruid pair. If the allocated duid is not a duid, then
-     * return <b>INVALID_DUID</b>.
-     * <p>
+     * Check input parameter first.
+     * If DeviceId is invalid, will return <b>INVALID_DEVICE_ID</b>, and will not add.
+     * If ObjectUid is null, or permissionItems is null, will return <b>INVALID_UID_PERMISSION</b>, and will not add.
+     * Secondly, ask DuidTranslator to get a duid for deviceId and ruid pair. If the allocated duid is not a duid,
+     * then return INVALID_DUID.
      * Finally, save the deviceId to uid relationship, and save the duid to permissionItemNames relationship. New one
      * will over the old ones.
      *
@@ -113,16 +108,11 @@ public:
 
     /**
      * Operation function. Remove one relationship from deviceId to ruids, and from duid to permissionItemNames.
-     * <p>
-     * Check input parameter first. If:
-     * <ol>
-     * <li>DeviceId is invalid, will return <b>INVALID_DEVICE_ID</b>, and will not remove anyone.
-     * <li>Ruid is invalid, will return <b>INVALID_RUID</b>, and will not remove anyone.
-     * </ol>
+     * Check input parameter first.
+     * If DeviceId is invalid, will return INVALID_DEVICE_ID, and will not remove anyone.
+     * If Ruid is invalid, will return INVALID_RUID, and will not remove anyone.
      * Secondly, remove this relationship from deviceId to uid.
-     * <p>
      * Thirdly, get the duid. Remove the relationship from duid to permissionItemNames, if duid exist.
-     * <p>
      * Finally, notify duidTranslator to delete deviceId.
      *
      * @param deviceId The remote mapped deviceId.
@@ -142,9 +132,9 @@ public:
 
     /**
      * Query function.Check if a duid has the specific permissionName.
-     * Check input parameter first. If:
-     * Duid is special, return PERMISSION_GRANTED.
-     * PermissionName or Duid is invalid, return PERMISSION_DENIED.
+     * Check input parameter first.
+     * If Duid is special, return PERMISSION_GRANTED.
+     * If PermissionName or Duid is invalid, return PERMISSION_DENIED.
      * Check all permissionName for this duid, and if any match the input name, return PERMISSION_GRANTED,
      * else return PERMISSION_DENIED.
      *
@@ -194,9 +184,9 @@ private:
 
     std::recursive_mutex stackLock_;
 
-    void ReGrantDuidPermissionsLocked(UidBundleBo &uidBundlePermInfo);
+    void ReGrantDuidPermissionsLocked(UidBundleBo &uidBundlePermInfo) const;
 };
-}  // namespace Permission
-}  // namespace Security
-}  // namespace OHOS
-#endif  // PERMISSION_BASE_SERVICE_H
+} // namespace Permission
+} // namespace Security
+} // namespace OHOS
+#endif // SUBJECT_DEVICE_PERMISSION_MANAGER_H

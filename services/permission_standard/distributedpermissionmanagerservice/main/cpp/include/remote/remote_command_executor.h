@@ -146,7 +146,7 @@ private:
     std::recursive_mutex mutex_;
 
     // commands buffer
-    std::deque<std::shared_ptr<BaseRemoteCommand> > commands_;
+    std::deque<std::shared_ptr<BaseRemoteCommand>> commands_;
 
     // consumer running flag, true if the consumer is RUNNING, false otherwise. @see ProcessBufferedCommands
     bool running_;

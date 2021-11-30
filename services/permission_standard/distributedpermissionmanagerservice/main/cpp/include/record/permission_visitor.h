@@ -17,6 +17,9 @@
 #define PERMISSION_VISITOR_H
 
 #include <string>
+#include "constant.h"
+#include "field_const.h"
+#include "generic_values.h"
 
 namespace OHOS {
 namespace Security {
@@ -34,6 +37,11 @@ struct PermissionVisitor {
     static bool SetPermissionVisitor(const std::string &deviceId, const std::string &deviceName,
         const int32_t bundleUserId, const std::string &bundleName, const std::string &bundleLabel,
         PermissionVisitor &permissionVisitor);
+
+    static int TranslationIntoPermissionVisitor(
+        const GenericValues &inGenericValues, PermissionVisitor &outPermissionVisitor);
+    static int TranslationIntoGenericValues(
+        const PermissionVisitor &inPermissionVisitor, GenericValues &outGenericValues);
 };
 }  // namespace Permission
 }  // namespace Security

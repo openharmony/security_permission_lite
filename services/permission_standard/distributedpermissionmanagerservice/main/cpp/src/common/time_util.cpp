@@ -18,13 +18,11 @@
 namespace OHOS {
 namespace Security {
 namespace Permission {
-
 int64_t TimeUtil::GetTimestamp()
 {
     const time_t t = time(NULL);
     return t;
 }
-
 }  // namespace Permission
 }  // namespace Security
 }  // namespace OHOS

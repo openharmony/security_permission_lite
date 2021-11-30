@@ -39,7 +39,7 @@ public:
      *
      * @return Sensitive resource switch status containing allowed or denied information.
      */
-    std::shared_ptr<SensitiveResourceSwitchSetting> GetSwitchSetting();
+    std::shared_ptr<SensitiveResourceSwitchSetting> GetSwitchSetting() const;
 
     /**
      * Get single local sensitive resource switch status from settings.
@@ -47,7 +47,7 @@ public:
      * @param sensitiveResource The query sensitive resource.
      * @return Allowed or denied information.
      */
-    bool GetSwitchStatus(std::string sensitiveResource);
+    bool GetSwitchStatus(std::string sensitiveResource) const;
 
 private:
     ResourceSwitchLocal() : hasRegistered_(false)

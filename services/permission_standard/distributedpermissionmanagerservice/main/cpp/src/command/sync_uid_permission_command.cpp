@@ -14,11 +14,12 @@
  */
 
 #include "base_remote_command.h"
-#include "sync_uid_permission_command.h"
 #include "permission_log.h"
 #include "subject_device_permission_manager.h"
-#include "external_deps.h"
 #include "ipc_skeleton.h"
+#include "bms_adapter.h"
+#include "pms_adapter.h"
+#include "sync_uid_permission_command.h"
 
 namespace OHOS {
 namespace Security {
@@ -44,8 +45,6 @@ SyncUidPermissionCommand::SyncUidPermissionCommand(const std::string &json)
     BaseRemoteCommand::FromRemoteProtocolJson(jsonObject);
     if (jsonObject.find("uid") != jsonObject.end() && jsonObject.at("uid").is_number()) {
         uid_ = jsonObject.at("uid").get<int32_t>();
-    } else {
-        uid_ = 0;
     }
     nlohmann::json bundlePermissionsJson = jsonObject.at("uidPermission").get<nlohmann::json>();
     BaseRemoteCommand::FromUidBundlePermissionsJson(bundlePermissionsJson, uidPermission_);
@@ -61,12 +60,13 @@ std::string SyncUidPermissionCommand::ToJsonPayload()
 
 void SyncUidPermissionCommand::Prepare()
 {
-    std::unique_ptr<ExternalDeps> externalDeps = std::make_unique<ExternalDeps>();
-    if (externalDeps == nullptr) {
+    std::unique_ptr<BmsAdapter> bmsAdapter = std::make_unique<BmsAdapter>();
+    std::unique_ptr<PmsAdapter> pmsAdapter = std::make_unique<PmsAdapter>();
+    if (bmsAdapter == nullptr || pmsAdapter == nullptr) {
         return;
     }
-    iBundleManager_ = externalDeps->GetBundleManager(iBundleManager_);
-    iPermissionManager_ = externalDeps->GetPermissionManager(iPermissionManager_);
+    iBundleManager_ = bmsAdapter->GetBundleManager();
+    iPermissionManager_ = pmsAdapter->GetPermissionManager();
     permissionFetcher_ = std::make_shared<PermissionFetcher>(iBundleManager_, iPermissionManager_);
 
     PERMISSION_LOG_INFO(LABEL, "prepare: start as: SyncUidPermissionCommand{uid = %{public}d }", uid_);
@@ -105,12 +105,13 @@ void SyncUidPermissionCommand::Execute()
 {
     PERMISSION_LOG_INFO(LABEL, "execute: start as: SyncUidPermissionCommand{uid = %{public}d }", uid_);
 
-    std::unique_ptr<ExternalDeps> externalDeps = std::make_unique<ExternalDeps>();
-    if (externalDeps == nullptr) {
+    std::unique_ptr<BmsAdapter> bmsAdapter = std::make_unique<BmsAdapter>();
+    std::unique_ptr<PmsAdapter> pmsAdapter = std::make_unique<PmsAdapter>();
+    if (bmsAdapter == nullptr || pmsAdapter == nullptr) {
         return;
     }
-    iBundleManager_ = externalDeps->GetBundleManager(iBundleManager_);
-    iPermissionManager_ = externalDeps->GetPermissionManager(iPermissionManager_);
+    iBundleManager_ = bmsAdapter->GetBundleManager();
+    iPermissionManager_ = pmsAdapter->GetPermissionManager();
     permissionFetcher_ = std::make_shared<PermissionFetcher>(iBundleManager_, iPermissionManager_);
 
     remoteProtocol_.responseDeviceId = Constant::GetLocalDeviceId();
