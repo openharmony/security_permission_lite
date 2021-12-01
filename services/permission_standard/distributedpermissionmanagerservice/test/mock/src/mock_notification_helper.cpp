@@ -224,7 +224,7 @@ ErrCode NotificationHelper::SetDisturbMode(NotificationConstant::DisturbMode mod
     return 0;
 }
 
-ErrCode NotificationHelper::GetDisturbMode(NotificationConstant::DisturbMode &disturbMode)
+ErrCode NotificationHelper::GetDisturbMode(NotificationConstant::DisturbMode& disturbMode)
 {
     return 0;
 }

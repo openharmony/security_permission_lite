@@ -34,25 +34,11 @@
 #include "distributed_uid_allocator.h"
 #include "request_remote_permission_callback_command.h"
 #include "subject_device_permission_manager.h"
+#include "request_remote_permission_callback_command_test.h"
 
 using namespace std;
 using namespace OHOS::Security::Permission;
 using namespace testing::ext;
-
-namespace {}  // namespace
-
-class RequestRemotePermissionCallbackCommandTest : public testing::Test {
-public:
-    RequestRemotePermissionCallbackCommandTest();
-    ~RequestRemotePermissionCallbackCommandTest();
-    static void SetUpTestCase();
-    static void TearDownTestCase();
-    void SetUp();
-    void TearDown();
-    const std::shared_ptr<RequestRemotePermissionCallbackCommand> GetClass() const;
-
-private:
-};
 
 RequestRemotePermissionCallbackCommandTest::RequestRemotePermissionCallbackCommandTest()
 {}
@@ -60,7 +46,7 @@ RequestRemotePermissionCallbackCommandTest::~RequestRemotePermissionCallbackComm
 {}
 void RequestRemotePermissionCallbackCommandTest::SetUpTestCase()
 {
-    OHOS::sptr<OHOS::IRemoteObject> bundleObject = NULL;
+    OHOS::sptr<OHOS::IRemoteObject> bundleObject = new OHOS::AppExecFwk::BundleMgrService();
     OHOS::sptr<OHOS::IRemoteObject> permissionObject = new PermissionManagerService();
 
     auto sysMgr = OHOS::SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
@@ -91,8 +77,8 @@ HWTEST_F(RequestRemotePermissionCallbackCommandTest, RequestRemotePermissionCall
     std::string requestId = "requestId";
     std::string bundleName = "bundleName";
 
-    std::shared_ptr<RequestRemotePermissionCallbackCommand> class_ =
-        std::make_shared<RequestRemotePermissionCallbackCommand>(srcDeviceId, dstDeviceId, requestId, uid, bundleName);
+    std::unique_ptr<RequestRemotePermissionCallbackCommand> class_ =
+        std::make_unique<RequestRemotePermissionCallbackCommand>(srcDeviceId, dstDeviceId, requestId, uid, bundleName);
 
     EXPECT_EQ(class_->remoteProtocol_.commandName, "RequestRemotePermissionCallbackCommand");
     EXPECT_EQ(class_->remoteProtocol_.uniqueId, "RequestRemotePermissionCallbackCommand-1");
@@ -110,8 +96,8 @@ HWTEST_F(RequestRemotePermissionCallbackCommandTest, RequestRemotePermissionCall
     std::string requestId = "requestId";
     std::string bundleName = "bundleName";
 
-    std::shared_ptr<RequestRemotePermissionCallbackCommand> class_ =
-        std::make_shared<RequestRemotePermissionCallbackCommand>(dstDeviceId, dstDeviceId, requestId, uid, bundleName);
+    std::unique_ptr<RequestRemotePermissionCallbackCommand> class_ =
+        std::make_unique<RequestRemotePermissionCallbackCommand>(dstDeviceId, dstDeviceId, requestId, uid, bundleName);
 
     std::hash<std::string> hashStr;
     std::string key = std::to_string(hashStr(dstDeviceId)) + "_" + std::to_string(uid);
@@ -148,8 +134,8 @@ HWTEST_F(RequestRemotePermissionCallbackCommandTest, RequestRemotePermissionCall
     std::string requestId = "requestId";
     std::string bundleName = "bundleName";
 
-    std::shared_ptr<RequestRemotePermissionCallbackCommand> class_ =
-        std::make_shared<RequestRemotePermissionCallbackCommand>(srcDeviceId, dstDeviceId, requestId, uid, bundleName);
+    std::unique_ptr<RequestRemotePermissionCallbackCommand> class_ =
+        std::make_unique<RequestRemotePermissionCallbackCommand>(srcDeviceId, dstDeviceId, requestId, uid, bundleName);
 
     class_->Execute();
 
@@ -166,8 +152,8 @@ HWTEST_F(RequestRemotePermissionCallbackCommandTest, RequestRemotePermissionCall
     std::string requestId = "requestId";
     std::string bundleName = "bundleName";
 
-    std::shared_ptr<RequestRemotePermissionCallbackCommand> class_ =
-        std::make_shared<RequestRemotePermissionCallbackCommand>(srcDeviceId, dstDeviceId, requestId, uid, bundleName);
+    std::unique_ptr<RequestRemotePermissionCallbackCommand> class_ =
+        std::make_unique<RequestRemotePermissionCallbackCommand>(srcDeviceId, dstDeviceId, requestId, uid, bundleName);
 
     class_->Finish();
 
@@ -183,8 +169,8 @@ HWTEST_F(RequestRemotePermissionCallbackCommandTest, RequestRemotePermissionCall
     std::string requestId = "requestId";
     std::string bundleName = "bundleName";
 
-    std::shared_ptr<RequestRemotePermissionCallbackCommand> class_ =
-        std::make_shared<RequestRemotePermissionCallbackCommand>(srcDeviceId, dstDeviceId, requestId, uid, bundleName);
+    std::unique_ptr<RequestRemotePermissionCallbackCommand> class_ =
+        std::make_unique<RequestRemotePermissionCallbackCommand>(srcDeviceId, dstDeviceId, requestId, uid, bundleName);
 
     std::hash<std::string> hashStr;
     std::string key = std::to_string(hashStr(dstDeviceId)) + "_" + std::to_string(uid);
@@ -230,8 +216,8 @@ HWTEST_F(RequestRemotePermissionCallbackCommandTest, RequestRemotePermissionCall
         "\"responseDeviceId\":\"\",\"responseVersion\":1,\"srcDeviceId\":\"srcDeviceId\",\"srcDeviceLevel\":\"\","
         "\"statusCode\":0,\"uid\":1,\"uniqueId\":\"RequestRemotePermissionCallbackCommand-1\"}";
 
-    std::shared_ptr<RequestRemotePermissionCallbackCommand> class_ =
-        std::make_shared<RequestRemotePermissionCallbackCommand>(json);
+    std::unique_ptr<RequestRemotePermissionCallbackCommand> class_ =
+        std::make_unique<RequestRemotePermissionCallbackCommand>(json);
     class_->Execute();
 
     EXPECT_EQ(class_->remoteProtocol_.commandName, "RequestRemotePermissionCallbackCommand");

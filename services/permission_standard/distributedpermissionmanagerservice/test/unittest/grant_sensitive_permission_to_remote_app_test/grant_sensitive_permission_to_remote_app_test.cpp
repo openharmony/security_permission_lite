@@ -12,9 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <gtest/gtest.h>
-#define private public
-#include "distributed_permission_manager_service.h"
+#include "grant_sensitive_permission_to_remote_app_test.h"
 using namespace testing::ext;
 namespace OHOS {
 pid_t IPCSkeleton::pid_ = 1;
@@ -24,17 +22,14 @@ std::string IPCSkeleton::deviceId_ = "";
 namespace Security {
 namespace Permission {
 namespace {}  // namespace
-class GrantSensitivePermissionToRemoteAppTest : public testing::Test {
-public:
-    static void SetUpTestCase(void)
-    {}
-    static void TearDownTestCase(void)
-    {}
-    void SetUp()
-    {}
-    void TearDown()
-    {}
-};
+void GrantSensitivePermissionToRemoteAppTest::SetUpTestCase(void)
+{}
+void GrantSensitivePermissionToRemoteAppTest::TearDownTestCase(void)
+{}
+void GrantSensitivePermissionToRemoteAppTest::SetUp()
+{}
+void GrantSensitivePermissionToRemoteAppTest::TearDown()
+{}
 /*
  * Feature: DPMS
  * Function: GrantSensitivePermissionToRemoteApp

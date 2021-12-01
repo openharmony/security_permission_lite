@@ -22,17 +22,14 @@
 #include <memory>
 #include <iostream>
 #include "gtest/gtest.h"
-#include "base_remote_command.h"
 #define private public
 #include "distributed_uid_allocator.h"
-#include "delete_uid_permission_command.h"
 #include "ipc_skeleton.h"
+#include "base_remote_command_test.h"
 
 using namespace std;
 using namespace OHOS::Security::Permission;
 using namespace testing::ext;
-
-namespace {}  // namespace
 
 namespace OHOS {
 pid_t IPCSkeleton::pid_ = 1;
@@ -40,22 +37,6 @@ pid_t IPCSkeleton::uid_ = 1;
 std::string IPCSkeleton::localDeviceId_ = "1004";
 std::string IPCSkeleton::deviceId_ = "";
 }  // namespace OHOS
-
-class BaseRemoteCommandTest : public testing::Test {
-public:
-    BaseRemoteCommandTest();
-    ~BaseRemoteCommandTest();
-    static void SetUpTestCase();
-    static void TearDownTestCase();
-    void SetUp();
-    void TearDown();
-    const std::shared_ptr<BaseRemoteCommand> GetClass() const;
-    UidBundleBo GetDefaultInfo() const;
-    UidBundleBo GetNullPermissionsInfo() const;
-    UidBundleBo GetNullRemoteSensitivePermissionsInfo() const;
-
-private:
-};
 
 BaseRemoteCommandTest::BaseRemoteCommandTest()
 {}

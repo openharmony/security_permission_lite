@@ -35,7 +35,6 @@ PermissionFetcher::PermissionFetcher(
 
 int32_t PermissionFetcher::GetPermissions(int32_t uid, UidBundleBo &info)
 {
-
     std::vector<std::string> bundleNames_;
     AppExecFwk::BundleInfo bundleInfo_;
 
@@ -55,9 +54,7 @@ int32_t PermissionFetcher::GetPermissions(int32_t uid, UidBundleBo &info)
     }
 
     for (auto bundleName_ : bundleNames_) {
-
         PERMISSION_LOG_DEBUG(LABEL, "bundleName_ = %{public}s", bundleName_.c_str());
-
         if (!iBundleManager_->GetBundleInfo(bundleName_, AppExecFwk::BundleFlag::GET_BUNDLE_DEFAULT, bundleInfo_)) {
             PERMISSION_LOG_ERROR(
                 LABEL, "getPermissions cannot get BundleInfo. bundleName: %{public}s", bundleName_.c_str());
@@ -98,11 +95,8 @@ BundlePermissionsDto PermissionFetcher::CreateBundlePermissionsInfo(
     std::vector<std::string> reqPermissions = bundleInfo.reqPermissions;
 
     for (auto reqPermission : reqPermissions) {
-
         PERMISSION_LOG_DEBUG(LABEL, "Permission start: %{public}s ", reqPermission.c_str());
-
         PermissionDto permission;
-
         PermissionDefParcel permissionDefParcel;
         PermissionDef permissionDefResult;
 
@@ -124,7 +118,6 @@ BundlePermissionsDto PermissionFetcher::CreateBundlePermissionsInfo(
             PERMISSION_LOG_DEBUG(LABEL, "filterPermission UseByLocalApp : %{public}s ", reqPermission.c_str());
             continue;
         }
-
         if (APP_TYPE_OTHER == appType_ && GrantMode::USER_GRANT == permission.grantMode) {
             PERMISSION_LOG_DEBUG(LABEL, "filterPermission OTHER USER_GRANT : %{public}s ", reqPermission.c_str());
             continue;
@@ -156,7 +149,6 @@ BundlePermissionsDto PermissionFetcher::CreateBundlePermissionsInfo(
 
 int32_t PermissionFetcher::GetRegrantedPermissions(UidBundleBo &pInfo, UidBundleBo &rInfo)
 {
-
     if (BaseRemoteCommand::IsValid(pInfo)) {
         PERMISSION_LOG_ERROR(LABEL, "getRegrantedPermissions: UidBundleBo is not valid. ");
         return Constant::FAILURE;
@@ -188,7 +180,6 @@ int32_t PermissionFetcher::GetRegrantedPermissions(UidBundleBo &pInfo, UidBundle
  */
 BundlePermissionsDto PermissionFetcher::MergeBundlePermissionsInfo(BundlePermissionsDto &pInfo)
 {
-
     BundlePermissionsDto rInfo;
     std::string appType_ = iBundleManager_->GetAppType(pInfo.name);
 
@@ -199,13 +190,10 @@ BundlePermissionsDto PermissionFetcher::MergeBundlePermissionsInfo(BundlePermiss
 
     std::vector<PermissionDto> tempPermissions;
     for (auto permission : pInfo.permissions) {
-
         PERMISSION_LOG_DEBUG(LABEL, "MergePermission : {permission = %{public}s }", permission.name.c_str());
-
         auto it = std::find_if(tempPermissions.begin(),
             tempPermissions.end(),
             [&permission](const auto &exisPermission) { return exisPermission.name == permission.name; });
-
         if (it != tempPermissions.end()) {
             continue;
         }
@@ -225,7 +213,6 @@ BundlePermissionsDto PermissionFetcher::MergeBundlePermissionsInfo(BundlePermiss
     rInfo.appId = pInfo.appId;
     return rInfo;
 }
-
 }  // namespace Permission
 }  // namespace Security
 }  // namespace OHOS

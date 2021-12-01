@@ -25,26 +25,12 @@
 #include "base_remote_command.h"
 #include "distributed_uid_allocator.h"
 #include "sync_uid_state_command.h"
+#include "sync_uid_state_command_test.h"
 #define private public
 
 using namespace std;
 using namespace OHOS::Security::Permission;
 using namespace testing::ext;
-
-namespace {}  // namespace
-
-class SyncUidStateCommandTest : public testing::Test {
-public:
-    SyncUidStateCommandTest();
-    ~SyncUidStateCommandTest();
-    static void SetUpTestCase();
-    static void TearDownTestCase();
-    void SetUp();
-    void TearDown();
-    const std::shared_ptr<SyncUidStateCommand> GetClass() const;
-
-private:
-};
 
 SyncUidStateCommandTest::SyncUidStateCommandTest()
 {}
@@ -65,7 +51,7 @@ HWTEST_F(SyncUidStateCommandTest, SyncUidStateCommandTest_0001, Function | Mediu
     std::string srcDeviceId = "srcDeviceId";
     std::string dstDeviceId = "dstDeviceId";
 
-    std::shared_ptr<SyncUidStateCommand> class_ = std::make_shared<SyncUidStateCommand>(uid, srcDeviceId, dstDeviceId);
+    std::unique_ptr<SyncUidStateCommand> class_ = std::make_unique<SyncUidStateCommand>(uid, srcDeviceId, dstDeviceId);
 
     EXPECT_EQ(class_->remoteProtocol_.commandName, "SyncUidStateCommand");
     EXPECT_EQ(class_->remoteProtocol_.uniqueId, "SyncUidStateCommand-1");
@@ -80,7 +66,7 @@ HWTEST_F(SyncUidStateCommandTest, SyncUidStateCommandTest_0002, Function | Mediu
     std::string srcDeviceId = "srcDeviceId";
     std::string dstDeviceId = "dstDeviceId";
 
-    std::shared_ptr<SyncUidStateCommand> class_ = std::make_shared<SyncUidStateCommand>(uid, srcDeviceId, dstDeviceId);
+    std::unique_ptr<SyncUidStateCommand> class_ = std::make_unique<SyncUidStateCommand>(uid, srcDeviceId, dstDeviceId);
 
     class_->Prepare();
     EXPECT_EQ(class_->remoteProtocol_.statusCode, 0);
@@ -93,7 +79,7 @@ HWTEST_F(SyncUidStateCommandTest, SyncUidStateCommandTest_0003, Function | Mediu
     std::string srcDeviceId = "srcDeviceId";
     std::string dstDeviceId = "dstDeviceId";
 
-    std::shared_ptr<SyncUidStateCommand> class_ = std::make_shared<SyncUidStateCommand>(uid, srcDeviceId, dstDeviceId);
+    std::unique_ptr<SyncUidStateCommand> class_ = std::make_unique<SyncUidStateCommand>(uid, srcDeviceId, dstDeviceId);
 
     class_->Execute();
 
@@ -107,7 +93,7 @@ HWTEST_F(SyncUidStateCommandTest, SyncUidStateCommandTest_0004, Function | Mediu
     std::string srcDeviceId = "srcDeviceId";
     std::string dstDeviceId = "dstDeviceId";
 
-    std::shared_ptr<SyncUidStateCommand> class_ = std::make_shared<SyncUidStateCommand>(uid, srcDeviceId, dstDeviceId);
+    std::unique_ptr<SyncUidStateCommand> class_ = std::make_unique<SyncUidStateCommand>(uid, srcDeviceId, dstDeviceId);
 
     class_->Finish();
 
@@ -120,7 +106,7 @@ HWTEST_F(SyncUidStateCommandTest, SyncUidStateCommandTest_0005, Function | Mediu
     std::string srcDeviceId = "srcDeviceId";
     std::string dstDeviceId = "dstDeviceId";
 
-    std::shared_ptr<SyncUidStateCommand> class_ = std::make_shared<SyncUidStateCommand>(uid, srcDeviceId, dstDeviceId);
+    std::unique_ptr<SyncUidStateCommand> class_ = std::make_unique<SyncUidStateCommand>(uid, srcDeviceId, dstDeviceId);
 
     class_->Prepare();
     std::string result = class_->ToJsonPayload();
@@ -138,7 +124,7 @@ HWTEST_F(SyncUidStateCommandTest, SyncUidStateCommandTest_0006, Function | Mediu
         "\"success\",\"requestVersion\":1,\"responseDeviceId\":\"999\",\"responseVersion\":1,\"srcDeviceId\":"
         "\"srcDeviceId\",\"srcDeviceLevel\":\"\",\"statusCode\":0,\"uid\":1,\"uniqueId\":\"SyncUidStateCommand-1\"}";
 
-    std::shared_ptr<BaseRemoteCommand> class_ = std::make_shared<SyncUidStateCommand>(json);
+    std::unique_ptr<BaseRemoteCommand> class_ = std::make_unique<SyncUidStateCommand>(json);
 
     EXPECT_EQ(class_->remoteProtocol_.commandName, "SyncUidStateCommand");
     EXPECT_EQ(class_->remoteProtocol_.dstDeviceId, "dstDeviceId");

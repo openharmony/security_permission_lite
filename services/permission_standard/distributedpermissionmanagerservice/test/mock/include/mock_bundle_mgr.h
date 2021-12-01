@@ -19,24 +19,21 @@
 #include <vector>
 #include "ability_info.h"
 #include "application_info.h"
-#include "bundle_mgr_interface.h"
+#include "i_bundle_mgr_mock.h"
 #include "iremote_proxy.h"
 #include "iremote_stub.h"
 
 namespace OHOS {
 namespace AppExecFwk {
-
-class BundleMgrProxy : public IRemoteProxy<IBundleMgr> {
+class BundleMgrProxy : public IRemoteProxy<IBundleMgrMock> {
 public:
-    explicit BundleMgrProxy(const sptr<IRemoteObject> &impl) : IRemoteProxy<IBundleMgr>(impl)
+    explicit BundleMgrProxy(const sptr<IRemoteObject> &impl) : IRemoteProxy<IBundleMgrMock>(impl)
     {}
 };
-
-class BundleMgrStub : public IRemoteStub<IBundleMgr> {
+class BundleMgrStub : public IRemoteStub<IBundleMgrMock> {
 public:
-    DECLARE_INTERFACE_DESCRIPTOR(u"IBundleMgr");
+    DECLARE_INTERFACE_DESCRIPTOR(u"IBundleMgrMock");
 };
-
 class BundleMgrService : public BundleMgrStub {
 public:
     bool GetApplicationInfo(
@@ -76,7 +73,7 @@ public:
     bool RegisterBundleStatusCallback(const sptr<IBundleStatusCallback> &bundleStatusCallback) override;
     bool ClearBundleStatusCallback(const sptr<IBundleStatusCallback> &bundleStatusCallback) override;
     bool UnregisterBundleStatusCallback() override;
-    bool DumpInfos(const DumpFlag flag, const std::string &bundleName, std::string &result) override;
+    bool DumpInfos(const MockDumpFlag flag, const std::string &bundleName, std::string &result) override;
     bool IsApplicationEnabled(const std::string &bundleName) override;
     bool SetApplicationEnabled(const std::string &bundleName, bool isEnable) override;
     bool IsAbilityEnabled(const AbilityInfo &abilityInfo) override;
@@ -91,7 +88,6 @@ public:
         const std::vector<int> &uids, const sptr<OnPermissionChangedCallback> &callback) override;
     bool UnregisterPermissionsChanged(const sptr<OnPermissionChangedCallback> &callback) override;
     sptr<IBundleInstaller> GetBundleInstaller() override;
-
     bool GetAllFormsInfo(std::vector<FormInfo> &formInfos) override;
     bool GetFormsInfoByApp(const std::string &bundleName, std::vector<FormInfo> &formInfos) override;
     bool GetFormsInfoByModule(
@@ -102,7 +98,8 @@ public:
     ~BundleMgrService()
     {}
 };
-    
+
 }  // namespace AppExecFwk
 }  // namespace OHOS
+
 #endif  // OHOS_AAFWK_ABILITY_MOCK_BUNDLE_MANAGER_H

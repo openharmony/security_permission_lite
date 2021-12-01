@@ -221,8 +221,22 @@ HWTEST_F(PermissionChangeReceiverTest, PermissionChangeReceiver_OnReceive_001, T
         data.want_.SetElement(element);
         instance.OnReceive(data);
     }
+}
+/*
+ * Feature: DPMS
+ * Function: PermissionChangeReceiver
+ * SubFunction: OnReceive
+ * FunctionPoints: NA
+ * EnvConditions: NA
+ * CaseDescription: verify user removed event
+ */
+HWTEST_F(PermissionChangeReceiverTest, PermissionChangeReceiver_OnReceive_002, TestSize.Level1)
+{
+    PERMISSION_LOG_DEBUG(LABEL, "PermissionChangeReceiver_OnReceive_002");
+    PermissionChangeReceiver instance;
+    // check logs
     {
-        PERMISSION_LOG_DEBUG(LABEL, "PermissionChangeReceiver_OnReceive_001-unknown_event");
+        PERMISSION_LOG_DEBUG(LABEL, "PermissionChangeReceiver_OnReceive_002-unknown_event");
         EventFwk::CommonEventData data;
         data.want_.SetAction("unknown");
         // uid: 2105
@@ -232,7 +246,7 @@ HWTEST_F(PermissionChangeReceiverTest, PermissionChangeReceiver_OnReceive_001, T
         instance.OnReceive(data);
     }
     {
-        PERMISSION_LOG_DEBUG(LABEL, "PermissionChangeReceiver_OnReceive_001-unknown_bundle");
+        PERMISSION_LOG_DEBUG(LABEL, "PermissionChangeReceiver_OnReceive_002-unknown_bundle");
         EventFwk::CommonEventData data;
         data.want_.SetAction(EventFwk::CommonEventSupport::COMMON_EVENT_USER_REMOVED);
         // uid: 2105

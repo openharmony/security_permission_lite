@@ -13,37 +13,24 @@
  * limitations under the License.
  */
 
-#include "gtest/gtest.h"
-#define private public
-#include "distributed_permission_manager_service.h"
+#include "query_duid_test.h"
 
 using namespace std;
 using namespace testing::ext;
-namespace OHOS {
-pid_t IPCSkeleton::pid_ = 1;
-pid_t IPCSkeleton::uid_ = 1;
-std::string IPCSkeleton::localDeviceId_ = "1004";
-std::string IPCSkeleton::deviceId_ = "";
-namespace Security {
-namespace Permission {
-class QueryDuidTest : public testing::Test {
-public:
-    static void SetUpTestCase()
-    {}
-    static void TearDownTestCase()
-    {}
-    void SetUp()
-    {}
-    void TearDown()
-    {
-        DistributedUidAllocator::GetInstance().Clear();
-        DeviceInfoRepository::GetInstance().Clear();
-    }
-    std::shared_ptr<DistributedPermissionManagerService> GetInstance();
+using namespace OHOS::Security::Permission;
 
-    int32_t validRuid_ = 1024;
-    int32_t resultCode_ = -2;
-};
+void QueryDuidTest::SetUpTestCase()
+{}
+void QueryDuidTest::TearDownTestCase()
+{}
+void QueryDuidTest::SetUp()
+{}
+void QueryDuidTest::TearDown()
+{
+    DistributedUidAllocator::GetInstance().Clear();
+    DeviceInfoRepository::GetInstance().Clear();
+}
+
 std::shared_ptr<DistributedPermissionManagerService> QueryDuidTest::GetInstance()
 {
     return std::make_shared<DistributedPermissionManagerService>();
@@ -153,6 +140,3 @@ HWTEST_F(QueryDuidTest, QueryDuid_0007, Function | MediumTest | Level1)
     GTEST_LOG_(INFO) << duid;
     EXPECT_EQ(duid, 12601000);
 }
-}  // namespace Permission
-}  // namespace Security
-}  // namespace OHOS

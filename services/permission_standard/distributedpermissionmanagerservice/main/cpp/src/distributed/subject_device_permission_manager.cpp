@@ -412,7 +412,7 @@ void SubjectDevicePermissionManager::ReGrantAllDuidPermissions()
     PERMISSION_LOG_DEBUG(LABEL, "end");
 }
 
-void SubjectDevicePermissionManager::ReGrantDuidPermissionsLocked(UidBundleBo &uidBundlePermInfo)
+void SubjectDevicePermissionManager::ReGrantDuidPermissionsLocked(UidBundleBo &uidBundlePermInfo) const
 {
     if (PermissionBmsManager::GetInstance().IsSystemSignatureUid(uidBundlePermInfo.uid)) {
         return;
@@ -420,6 +420,6 @@ void SubjectDevicePermissionManager::ReGrantDuidPermissionsLocked(UidBundleBo &u
 
     PermissionBmsManager::GetInstance().ReGrantDuidPermissions(uidBundlePermInfo);
 }
-}  // namespace Permission
-}  // namespace Security
-}  // namespace OHOS
+} // namespace Permission
+} // namespace Security
+} // namespace OHOS

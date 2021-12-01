@@ -29,6 +29,29 @@ bool PermissionVisitor::SetPermissionVisitor(const std::string &deviceId, const 
     permissionVisitor.bundleLabel = bundleLabel;
     return true;
 };
+
+int PermissionVisitor::TranslationIntoPermissionVisitor(
+    const GenericValues &inGenericValues, PermissionVisitor &outPermissionVisitor)
+{
+    outPermissionVisitor.id = inGenericValues.GetInt(FIELD_ID);
+    outPermissionVisitor.deviceId = inGenericValues.GetString(FIELD_DEVICE_ID);
+    outPermissionVisitor.deviceName = inGenericValues.GetString(FIELD_DEVICE_NAME);
+    outPermissionVisitor.bundleUserId = inGenericValues.GetInt(FIELD_BUNDLE_USER_ID);
+    outPermissionVisitor.bundleName = inGenericValues.GetString(FIELD_BUNDLE_NAME);
+    outPermissionVisitor.bundleLabel = inGenericValues.GetString(FIELD_BUNDLE_LABEL);
+    return Constant::SUCCESS;
+}
+
+int PermissionVisitor::TranslationIntoGenericValues(
+    const PermissionVisitor &inPermissionVisitor, GenericValues &outGenericValues)
+{
+    outGenericValues.Put(FIELD_DEVICE_ID, inPermissionVisitor.deviceId);
+    outGenericValues.Put(FIELD_DEVICE_NAME, inPermissionVisitor.deviceName);
+    outGenericValues.Put(FIELD_BUNDLE_USER_ID, inPermissionVisitor.bundleUserId);
+    outGenericValues.Put(FIELD_BUNDLE_NAME, inPermissionVisitor.bundleName);
+    outGenericValues.Put(FIELD_BUNDLE_LABEL, inPermissionVisitor.bundleLabel);
+    return Constant::SUCCESS;
+}
 }  // namespace Permission
 }  // namespace Security
 }  // namespace OHOS

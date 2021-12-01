@@ -14,20 +14,7 @@
  */
 
 #define private public
-#include <cstdio>
-#include <fstream>
-#include <sstream>
-#include <gtest/gtest.h>
-#include "mock_bundle_mgr.h"
-#include "mock_permission_mgr.h"
-#include "if_system_ability_manager.h"
-#include "iservice_registry.h"
-#include "ability_manager_interface.h"
-#include "distributed_permission_manager_service.h"
-#include "on_using_permission_reminder_stub.h"
-#include "on_using_permission_reminder_proxy.h"
-#include "permission_reminder_info.h"
-
+#include "permission_remind_test.h"
 using namespace std;
 using namespace testing::ext;
 using namespace OHOS::Security::Permission;
@@ -37,49 +24,30 @@ pid_t IPCSkeleton::pid_ = 1;
 pid_t IPCSkeleton::uid_ = 1;
 std::string IPCSkeleton::localDeviceId_ = "1004";
 std::string IPCSkeleton::deviceId_ = "";
-
-static const int32_t uid_normal_1_ = 12612345;
-static const int32_t uid_normal_2_ = 12512345;
-static const int32_t uid_normal_3_ = 12600000;
-static const int32_t uid_normal_4_ = 12500000;
-
+std::string permName = Constant::CAMERA;
 } // namespace OHOS
-
-class PermissionRemindTest : public testing::Test {
-public:
-    std::shared_ptr<DistributedPermissionManagerService> dpms_;
-
-public:
-    std::string permName = Constant::CAMERA;
-    int32_t pid = 101;
-    int32_t uid = uid_normal_1_;
-    std::string deviceId = "ohos.deviceId.test";
-    std::string deviceName = "ohos.deviceLabel.test";
-
-    static void SetUpTestCase()
-    {
-        OHOS::sptr<OHOS::IRemoteObject> bundleObject = NULL;
-        OHOS::sptr<OHOS::IRemoteObject> permissionObject = new PermissionManagerService();
-
-        auto sysMgr = OHOS::SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
-        if (sysMgr == NULL) {
-            GTEST_LOG_(ERROR) << "fail to get ISystemAbilityManager";
-            return;
-        }
-
-        sysMgr->AddSystemAbility(Constant::ServiceId::BUNDLE_MGR_SERVICE_SYS_ABILITY_ID, bundleObject);
-        sysMgr->AddSystemAbility(Constant::ServiceId::SUBSYS_SECURITY_PERMISSION_SYS_SERVICE_ID, permissionObject);
+void PermissionRemindTest::SetUpTestCase()
+{
+    OHOS::sptr<OHOS::IRemoteObject> bundleObject = new OHOS::AppExecFwk::BundleMgrService();
+    OHOS::sptr<OHOS::IRemoteObject> permissionObject = new PermissionManagerService();
+    auto sysMgr = OHOS::SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
+    if (sysMgr == NULL) {
+        GTEST_LOG_(ERROR) << "fail to get ISystemAbilityManager";
+        return;
     }
+    sysMgr->AddSystemAbility(Constant::ServiceId::BUNDLE_MGR_SERVICE_SYS_ABILITY_ID, bundleObject);
+    sysMgr->AddSystemAbility(Constant::ServiceId::SUBSYS_SECURITY_PERMISSION_SYS_SERVICE_ID, permissionObject);
+}
 
-    static void TearDownTestCase()
-    {
-        cout << "TearDownTestCase()" << endl;
-    }
-    void SetUp()
-    {
-        dpms_ = OHOS::DelayedSingleton<DistributedPermissionManagerService>::GetInstance();
-        dpms_->OnStart();
-        DeviceInfoRepository::GetInstance().SaveDeviceInfo(deviceId, deviceId, deviceId, deviceName, "");
+void PermissionRemindTest::TearDownTestCase()
+{
+    cout << "TearDownTestCase()" << endl;
+}
+void PermissionRemindTest::SetUp()
+{
+    dpms_ = DelayedSingleton<DistributedPermissionManagerService>::GetInstance();
+    dpms_->OnStart();
+    DeviceInfoRepository::GetInstance().SaveDeviceInfo(deviceId, deviceId, deviceId, deviceName, "");
 
         BundlePermissionsDto bundles;
         bundles.name = "bundles.name";
@@ -105,38 +73,28 @@ public:
         std::set<std::string> remoteSensitivePermission;
         remoteSensitivePermission.insert(permName);
 
-        SubjectDevicePermissionManager::GetInstance().distributedPermissionMapping_.insert(
-            std::pair<int32_t, UidBundleBo>(uid, uidBundleBo));
-    }
-    void TearDown()
-    {
-        DeviceInfoRepository::GetInstance().Clear();
-        SubjectDevicePermissionManager::GetInstance().distributedPermissionMapping_.clear();
-        dpms_->OnStop();
-    }
-};
+    SubjectDevicePermissionManager::GetInstance().distributedPermissionMapping_.insert(
+        std::pair<int32_t, UidBundleBo>(uid, uidBundleBo));
+}
+void PermissionRemindTest::TearDown()
+{
+    DeviceInfoRepository::GetInstance().Clear();
+    SubjectDevicePermissionManager::GetInstance().distributedPermissionMapping_.clear();
+    dpms_->OnStop();
+}
 
-class TestCallback : public OnUsingPermissionReminderStub {
-public:
-    TestCallback() = default;
-    virtual ~TestCallback() = default;
+void PermissionRemindTest::TestCallback::StartUsingPermission(const PermissionReminderInfo &permReminderInfo)
+{
+    EXPECT_EQ(permName, OHOS::Str16ToStr8(permReminderInfo.permName));
+}
 
-    std::string permName = Constant::CAMERA;
-
-    void StartUsingPermission(const PermissionReminderInfo& permReminderInfo)
-    {
-        EXPECT_EQ(permName, OHOS::Str16ToStr8(permReminderInfo.permName));
-    }
-
-    void StopUsingPermission(const PermissionReminderInfo& permReminderInfo)
-    {
-        EXPECT_EQ(permName, OHOS::Str16ToStr8(permReminderInfo.permName));
-    }
-};
-
+void PermissionRemindTest::TestCallback::StopUsingPermission(const PermissionReminderInfo &permReminderInfo)
+{
+    EXPECT_EQ(permName, OHOS::Str16ToStr8(permReminderInfo.permName));
+}
 HWTEST_F(PermissionRemindTest, PermissionRemindTest01, Function | MediumTest | Level1)
 {
-    OHOS::sptr<TestCallback> callback;
+    OHOS::sptr<PermissionRemindTest::TestCallback> callback;
     int ret = -1;
     ret = dpms_->RegisterUsingPermissionReminder(callback);
     EXPECT_EQ(-2, ret);
@@ -147,7 +105,7 @@ HWTEST_F(PermissionRemindTest, PermissionRemindTest01, Function | MediumTest | L
 
 HWTEST_F(PermissionRemindTest, PermissionRemindTest02, Function | MediumTest | Level1)
 {
-    OHOS::sptr<TestCallback> callback(new TestCallback());
+    OHOS::sptr<PermissionRemindTest::TestCallback> callback(new PermissionRemindTest::TestCallback());
     int ret = -1;
 
     ret = dpms_->RegisterUsingPermissionReminder(callback);
@@ -165,7 +123,7 @@ HWTEST_F(PermissionRemindTest, PermissionRemindTest02, Function | MediumTest | L
 
 HWTEST_F(PermissionRemindTest, PermissionRemindTest03, Function | MediumTest | Level1)
 {
-    OHOS::sptr<TestCallback> callback(new TestCallback());
+    OHOS::sptr<PermissionRemindTest::TestCallback> callback(new PermissionRemindTest::TestCallback());
     int ret = -1;
 
     ret = dpms_->RegisterUsingPermissionReminder(callback);
@@ -177,17 +135,14 @@ HWTEST_F(PermissionRemindTest, PermissionRemindTest03, Function | MediumTest | L
     uid = uid_normal_1_;
     deviceId = "ohos.deviceId.test";
 
-    dpms_->StartUsingPermission(permName, pid, uid, deviceId);
-
-    dpms_->StopUsingPermission(permName, pid, uid, deviceId);
+    std::string appidInfo = DistributedPermissionKit::AppIdInfoHelper::CreateAppIdInfo(pid, uid, deviceId);
+    dpms_->StartUsingPermission(permName, appidInfo);
+    dpms_->StopUsingPermission(permName, appidInfo);
 
     // Case 02
     permName = "";
-    pid = 101;
-    uid = uid_normal_1_;
-    deviceId = "ohos.deviceId.test";
-    dpms_->StartUsingPermission(permName, pid, uid, deviceId);
-    dpms_->StopUsingPermission(permName, pid, uid, deviceId);
+    dpms_->StartUsingPermission(permName, appidInfo);
+    dpms_->StopUsingPermission(permName, appidInfo);
 
     ret = dpms_->UnregisterUsingPermissionReminder(callback);
     EXPECT_EQ(0, ret);
@@ -195,7 +150,7 @@ HWTEST_F(PermissionRemindTest, PermissionRemindTest03, Function | MediumTest | L
 
 HWTEST_F(PermissionRemindTest, PermissionRemindTest04, Function | MediumTest | Level1)
 {
-    OHOS::sptr<TestCallback> callback(new TestCallback());
+    OHOS::sptr<PermissionRemindTest::TestCallback> callback(new PermissionRemindTest::TestCallback());
     int ret = -1;
 
     ret = dpms_->RegisterUsingPermissionReminder(callback);
@@ -206,15 +161,13 @@ HWTEST_F(PermissionRemindTest, PermissionRemindTest04, Function | MediumTest | L
     pid = 101;
     uid = uid_normal_1_;
     deviceId = "ohos.deviceId.test";
-    ret = dpms_->CheckPermissionAndStartUsing(permName, pid, uid, deviceId);
+    std::string appidInfo1 = DistributedPermissionKit::AppIdInfoHelper::CreateAppIdInfo(pid, uid, deviceId);
+    ret = dpms_->CheckPermissionAndStartUsing(permName, appidInfo1);
     EXPECT_EQ(0, ret);
 
     // Case 02
     permName = "ohos.permission.NotSensitivePermission";
-    pid = 101;
-    uid = uid_normal_1_;
-    deviceId = "ohos.deviceId.test";
-    ret = dpms_->CheckPermissionAndStartUsing(permName, pid, uid, deviceId);
+    ret = dpms_->CheckPermissionAndStartUsing(permName, appidInfo1);
     EXPECT_EQ(-1, ret);
 
     // Case 03
@@ -222,7 +175,8 @@ HWTEST_F(PermissionRemindTest, PermissionRemindTest04, Function | MediumTest | L
     pid = 101;
     uid = uid_normal_2_;
     deviceId = "ohos.deviceId.test1";
-    ret = dpms_->CheckPermissionAndStartUsing(permName, pid, uid, deviceId);
+    std::string appidInfo2 = DistributedPermissionKit::AppIdInfoHelper::CreateAppIdInfo(pid, uid, deviceId);
+    ret = dpms_->CheckPermissionAndStartUsing(permName, appidInfo2);
     EXPECT_EQ(-1, ret);
 
     // Case 04
@@ -230,7 +184,8 @@ HWTEST_F(PermissionRemindTest, PermissionRemindTest04, Function | MediumTest | L
     pid = 101;
     uid = uid_normal_3_;
     deviceId = "ohos.deviceId.test";
-    ret = dpms_->CheckPermissionAndStartUsing(permName, pid, uid, deviceId);
+    std::string appidInfo3 = DistributedPermissionKit::AppIdInfoHelper::CreateAppIdInfo(pid, uid, deviceId);
+    ret = dpms_->CheckPermissionAndStartUsing(permName, appidInfo3);
     EXPECT_EQ(0, ret);
 
     // Case 05
@@ -238,7 +193,8 @@ HWTEST_F(PermissionRemindTest, PermissionRemindTest04, Function | MediumTest | L
     pid = 101;
     uid = uid_normal_4_;
     deviceId = "ohos.deviceId.test";
-    ret = dpms_->CheckPermissionAndStartUsing(permName, pid, uid, deviceId);
+    std::string appidInfo4 = DistributedPermissionKit::AppIdInfoHelper::CreateAppIdInfo(pid, uid, deviceId);
+    ret = dpms_->CheckPermissionAndStartUsing(permName, appidInfo4);
     EXPECT_EQ(-1, ret);
 
     ret = dpms_->UnregisterUsingPermissionReminder(callback);
@@ -247,7 +203,7 @@ HWTEST_F(PermissionRemindTest, PermissionRemindTest04, Function | MediumTest | L
 
 HWTEST_F(PermissionRemindTest, PermissionRemindTest05, Function | MediumTest | Level1)
 {
-    auto callback = OHOS::sptr<TestCallback>(new TestCallback);
+    auto callback = OHOS::sptr<PermissionRemindTest::TestCallback>(new PermissionRemindTest::TestCallback);
 
     PermissionReminderInfo info;
     info.deviceId = OHOS::Str8ToStr16("A");
@@ -310,24 +266,17 @@ HWTEST_F(PermissionRemindTest, PermissionRemindTest08, Function | MediumTest | L
 
 HWTEST_F(PermissionRemindTest, PermissionRemindTest09, Function | MediumTest | Level1)
 {
-    permName = Constant::CAMERA;
     pid = 101;
     uid = uid_normal_1_;
     deviceId = "ohos.deviceId.test";
+    std::string appidInfo = DistributedPermissionKit::AppIdInfoHelper::CreateAppIdInfo(pid, uid, deviceId);
 
-    dpms_->StartUsingPermission(permName, pid, uid, deviceId);
+    permName = Constant::CAMERA;
+    dpms_->StartUsingPermission(permName, appidInfo);
 
     permName = Constant::LOCATION;
-    pid = 101;
-    uid = uid_normal_1_;
-    deviceId = "ohos.deviceId.test";
-
-    dpms_->StartUsingPermission(permName, pid, uid, deviceId);
+    dpms_->StartUsingPermission(permName, appidInfo);
 
     permName = Constant::LOCATION_IN_BACKGROUND;
-    pid = 101;
-    uid = uid_normal_1_;
-    deviceId = "ohos.deviceId.test";
-
-    dpms_->StopUsingPermission(permName, pid, uid, deviceId);
+    dpms_->StopUsingPermission(permName, appidInfo);
 }

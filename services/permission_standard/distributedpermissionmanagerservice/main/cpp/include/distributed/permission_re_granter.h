@@ -17,7 +17,6 @@
 
 #include "base_remote_command.h"
 #include "permission_log.h"
-#include "external_deps.h"
 #include "permission_fetcher.h"
 #include "base_remote_command.h"
 

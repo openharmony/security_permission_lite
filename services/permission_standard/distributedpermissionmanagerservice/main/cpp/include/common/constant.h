@@ -418,7 +418,7 @@ public:
      */
     static std::string GetLocalDeviceId();
 };
-}  // namespace Permission
-}  // namespace Security
-}  // namespace OHOS
-#endif  // PERMISSION_BASE_SERVICE_H
+} // namespace Permission
+} // namespace Security
+} // namespace OHOS
+#endif // PERMISSION_BASE_SERVICE_H

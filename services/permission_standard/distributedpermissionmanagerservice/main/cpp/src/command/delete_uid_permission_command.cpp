@@ -14,11 +14,11 @@
  */
 
 #include "base_remote_command.h"
-#include "delete_uid_permission_command.h"
 #include "permission_fetcher.h"
 #include "permission_log.h"
 #include "subject_device_permission_manager.h"
 #include "ipc_skeleton.h"
+#include "delete_uid_permission_command.h"
 
 namespace OHOS {
 namespace Security {
@@ -37,7 +37,6 @@ DeleteUidPermissionCommand::DeleteUidPermissionCommand(
     remoteProtocol_.dstDeviceId = dstDeviceId;
     remoteProtocol_.responseVersion = Constant::DISTRIBUTED_PERMISSION_SERVICE_VERSION;
     remoteProtocol_.requestVersion = Constant::DISTRIBUTED_PERMISSION_SERVICE_VERSION;
-    uid_ = 0;
 }
 
 DeleteUidPermissionCommand::DeleteUidPermissionCommand(const std::string &json)
@@ -46,8 +45,6 @@ DeleteUidPermissionCommand::DeleteUidPermissionCommand(const std::string &json)
     BaseRemoteCommand::FromRemoteProtocolJson(jsonObject);
     if (jsonObject.find("uid") != jsonObject.end() && jsonObject.at("uid").is_number()) {
         uid_ = jsonObject.at("uid").get<int32_t>();
-    } else {
-        uid_ = 0;
     }
 }
 

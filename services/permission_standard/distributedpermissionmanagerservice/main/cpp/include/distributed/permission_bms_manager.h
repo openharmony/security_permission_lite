@@ -20,7 +20,6 @@
 #include <memory>
 #include <functional>
 #include "refbase.h"
-#include "external_deps.h"
 
 #include "app_info_fetcher.h"
 #include "permission_fetcher.h"

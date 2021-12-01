@@ -12,42 +12,51 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <gtest/gtest.h>
-#define private public
-#include "distributed_permission_manager_service.h"
+
+#include "object_device_permission_manager_func_test.h"
 using namespace testing::ext;
 namespace OHOS {
 pid_t IPCSkeleton::pid_ = 1;
 pid_t IPCSkeleton::uid_ = 1;
 std::string IPCSkeleton::localDeviceId_ = "1004";
 std::string IPCSkeleton::deviceId_ = "";
+std::string deviceId1 = "deviceId1";
+std::string deviceId2 = "deviceId2";
+std::string deviceId3 = "deviceId3";
 namespace Security {
 namespace Permission {
 namespace {}  // namespace
-class ObjectDevicePermissionManagerFuncTest : public testing::Test {
-public:
-    static void SetUpTestCase(void)
-    {}
-    static void TearDownTestCase(void)
-    {}
-    void SetUp()
-    {
-        service = DelayedSingleton<DistributedPermissionManagerService>::GetInstance();
-        service->OnStart();
+
+void ObjectDevicePermissionManagerFuncTest::SetUpTestCase(void)
+{}
+void ObjectDevicePermissionManagerFuncTest::TearDownTestCase(void)
+{}
+void ObjectDevicePermissionManagerFuncTest::SetUp()
+{
+    OHOS::sptr<OHOS::IRemoteObject> bundleObject = new OHOS::AppExecFwk::BundleMgrService();
+    OHOS::sptr<OHOS::IRemoteObject> permissionObject = new PermissionManagerService();
+    auto sysMgr = OHOS::SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
+    if (sysMgr == NULL) {
+        GTEST_LOG_(ERROR) << "fail to get ISystemAbilityManager";
+        return;
     }
-    void TearDown()
-    {
-        service->OnStop();
-    }
-    std::shared_ptr<DistributedPermissionManagerService> service;
-};
+    sysMgr->AddSystemAbility(Constant::ServiceId::BUNDLE_MGR_SERVICE_SYS_ABILITY_ID, bundleObject);
+    sysMgr->AddSystemAbility(Constant::ServiceId::SUBSYS_SECURITY_PERMISSION_SYS_SERVICE_ID, permissionObject);
+    service = DelayedSingleton<DistributedPermissionManagerService>::GetInstance();
+}
+void ObjectDevicePermissionManagerFuncTest::TearDown()
+{}
+const static int32_t checkResult0 = 0;
+const static int32_t checkResult1 = 1;
+const static int32_t checkResult2 = 2;
+const static int32_t checkResult3 = 3;
 std::set<std::string> getRecoverPermissions(std::string deviceId, int32_t uid)
 {
     return ObjectDevicePermissionRepository::GetInstance()
         .objectDevices_.at(deviceId)
         ->GetUidPermissions()
         .at(uid)
-        ->GetGrabtedPermission();
+        ->GetGrantedPermission();
 }
 void testRecoverFileNomal(std::string deviceId1, int32_t uid, std::string permission1, std::string permission2)
 {
@@ -59,7 +68,7 @@ void testRecoverFileNomal(std::string deviceId1, int32_t uid, std::string permis
             i++;
         }
     }
-    EXPECT_TRUE(i == 2 && recoverPermissions.size() == 2);
+    EXPECT_TRUE(i == checkResult2 && recoverPermissions.size() == checkResult2);
     GTEST_LOG_(INFO) << "testRecoverFileNomal  is run";
 }
 /*
@@ -73,25 +82,19 @@ void testRecoverFileNomal(std::string deviceId1, int32_t uid, std::string permis
 HWTEST_F(ObjectDevicePermissionManagerFuncTest, func_test_clear_0100, TestSize.Level1)
 {
     GTEST_LOG_(INFO) << "func_test_clear_0100";
-    std::string deviceId1 = "deviceId1";
-    std::string deviceId2 = "deviceId2";
-    std::string deviceId3 = "deviceId3";
     int32_t uid = 1;
     int32_t uid2 = 2;
     ObjectDevicePermissionRepository::GetInstance().PutDeviceIdUidPair(deviceId1, uid);
     ObjectDevicePermissionRepository::GetInstance().PutDeviceIdUidPair(deviceId2, uid2);
     ObjectDevicePermissionRepository::GetInstance().PutDeviceIdUidPair(deviceId3, uid2);
-    EXPECT_TRUE(ObjectDevicePermissionRepository::GetInstance().objectDevices_.size() == 3);
+    EXPECT_TRUE(ObjectDevicePermissionRepository::GetInstance().objectDevices_.size() == checkResult3);
     ObjectDevicePermissionManager::GetInstance().Clear();
-    EXPECT_TRUE(ObjectDevicePermissionRepository::GetInstance().objectDevices_.size() == 0);
+    EXPECT_TRUE(ObjectDevicePermissionRepository::GetInstance().objectDevices_.size() == checkResult0);
     ObjectDevicePermissionRepository::GetInstance().RecoverFromFile();
-    EXPECT_TRUE(ObjectDevicePermissionRepository::GetInstance().objectDevices_.size() == 0);
+    EXPECT_TRUE(ObjectDevicePermissionRepository::GetInstance().objectDevices_.size() == checkResult0);
 }
 HWTEST_F(ObjectDevicePermissionManagerFuncTest, func_test_recover_from_file_0100, TestSize.Level1)
 {
-    std::string deviceId1 = "deviceId1";
-    std::string deviceId2 = "deviceId2";
-    std::string deviceId3 = "deviceId3";
     int32_t uid = 1;
     int32_t uid2 = 2;
     ObjectDevicePermissionRepository::GetInstance().PutDeviceIdUidPair(deviceId1, uid);
@@ -115,9 +118,9 @@ HWTEST_F(ObjectDevicePermissionManagerFuncTest, func_test_recover_from_file_0100
     ObjectDevicePermissionManager::GetInstance().ResetGrantSensitivePermission(deviceId3, uid2, permissions2);
     ObjectDevicePermissionRepository::GetInstance().SaveToFile();
     ObjectDevicePermissionRepository::GetInstance().Clear();
-    EXPECT_TRUE(ObjectDevicePermissionRepository::GetInstance().objectDevices_.size() == 0);
+    EXPECT_TRUE(ObjectDevicePermissionRepository::GetInstance().objectDevices_.size() == checkResult0);
     ObjectDevicePermissionRepository::GetInstance().RecoverFromFile();
-    EXPECT_TRUE(ObjectDevicePermissionRepository::GetInstance().objectDevices_.size() == 3);
+    EXPECT_TRUE(ObjectDevicePermissionRepository::GetInstance().objectDevices_.size() == checkResult3);
     testRecoverFileNomal(deviceId1, uid, permission1, permission2);
     std::set<std::string> recoverPermissions2 = getRecoverPermissions(deviceId3, uid2);
     std::set<std::string>::iterator it2;
@@ -128,7 +131,7 @@ HWTEST_F(ObjectDevicePermissionManagerFuncTest, func_test_recover_from_file_0100
             j++;
         }
     }
-    EXPECT_TRUE(j == 3 && recoverPermissions2.size() == 3);
+    EXPECT_TRUE(j == checkResult3 && recoverPermissions2.size() == checkResult3);
     // test multiple  uid
     std::map<int32_t, std::shared_ptr<ObjectUid>> multipleUidMap =
         ObjectDevicePermissionRepository::GetInstance().objectDevices_.at(deviceId3)->GetUidPermissions();
@@ -140,15 +143,12 @@ HWTEST_F(ObjectDevicePermissionManagerFuncTest, func_test_recover_from_file_0100
             k++;
         }
     }
-    EXPECT_TRUE(k == 2 && multipleUidMap.size() == 2);
+    EXPECT_TRUE(k == checkResult2 && multipleUidMap.size() == checkResult2);
 }
 HWTEST_F(ObjectDevicePermissionManagerFuncTest, func_test_remove_notify_permission_monitor_userId_0100, TestSize.Level1)
 {
     GTEST_LOG_(INFO) << "func_test_remove_notify_permission_monitor_userId_0100";
     ObjectDevicePermissionManager::GetInstance().Clear();
-    std::string deviceId1 = "deviceId1";
-    std::string deviceId2 = "deviceId2";
-    std::string deviceId3 = "deviceId3";
     int32_t uid = 100000;   // sys
     int32_t uid2 = 100001;  // del target
     int32_t uid3 = 102101;  // del target
@@ -170,7 +170,7 @@ HWTEST_F(ObjectDevicePermissionManagerFuncTest, func_test_remove_notify_permissi
             i++;
         }
     }
-    EXPECT_TRUE(i == 2 && multipleUidMap.size() == 2);
+    EXPECT_TRUE(i == checkResult2 && multipleUidMap.size() == checkResult2);
 
     std::map<int32_t, std::shared_ptr<ObjectUid>> multipleUidMap2 =
         ObjectDevicePermissionRepository::GetInstance().objectDevices_.at(deviceId2)->GetUidPermissions();
@@ -181,7 +181,7 @@ HWTEST_F(ObjectDevicePermissionManagerFuncTest, func_test_remove_notify_permissi
             j++;
         }
     }
-    EXPECT_TRUE(j == 1 && multipleUidMap2.size() == 1);
+    EXPECT_TRUE(j == checkResult1 && multipleUidMap2.size() == checkResult1);
 }
 // Check uid is negative, do remove operation instead.
 HWTEST_F(ObjectDevicePermissionManagerFuncTest, func_test_notify_permission_changed_0100, TestSize.Level1)
@@ -209,7 +209,7 @@ HWTEST_F(ObjectDevicePermissionManagerFuncTest, func_test_notify_permission_chan
     int result = ObjectDevicePermissionManager::GetInstance().NotifyPermissionChanged(-uid);
     std::map<int32_t, std::shared_ptr<ObjectUid>> multipleUidMap =
         ObjectDevicePermissionRepository::GetInstance().objectDevices_.at(deviceId)->GetUidPermissions();
-    EXPECT_TRUE(result == Constant::SUCCESS && multipleUidMap.size() == 0);
+    EXPECT_TRUE(result == Constant::SUCCESS && multipleUidMap.size() == checkResult0);
 }
 // toSyncDevices.empty()
 HWTEST_F(ObjectDevicePermissionManagerFuncTest, func_test_notify_permission_changed_0400, TestSize.Level1)

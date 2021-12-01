@@ -29,13 +29,13 @@ public:
     OnUsingPermissionReminderStub();
     virtual ~OnUsingPermissionReminderStub() override;
 
-    int32_t OnRemoteRequest(uint32_t code, MessageParcel& data, MessageParcel& reply, MessageOption& option) override;
+    int32_t OnRemoteRequest(uint32_t code, MessageParcel &data, MessageParcel &reply, MessageOption &option) override;
 
 private:
     DISALLOW_COPY_AND_MOVE(OnUsingPermissionReminderStub);
 };
-} // namespace Permission
-} // namespace Security
-} // namespace OHOS
+}  // namespace Permission
+}  // namespace Security
+}  // namespace OHOS
 
-#endif // ON_USING_PERMISSION_REMINDER_STUB_H
+#endif  // ON_USING_PERMISSION_REMINDER_STUB_H

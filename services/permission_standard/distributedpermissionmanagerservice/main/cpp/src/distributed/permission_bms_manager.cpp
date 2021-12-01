@@ -16,6 +16,8 @@
 #include "permission_bms_manager.h"
 #include "monitor_manager.h"
 #include "distributed_data_validator.h"
+#include "bms_adapter.h"
+#include "pms_adapter.h"
 
 namespace OHOS {
 namespace Security {
@@ -52,13 +54,14 @@ int PermissionBmsManager::Init()
         PERMISSION_LOG_ERROR(LABEL, "construct AppInfoFetcher failed.");
         return Constant::FAILURE;
     }
-    std::unique_ptr<ExternalDeps> externalDeps = std::make_unique<ExternalDeps>();
-    if (externalDeps == nullptr) {
-        PERMISSION_LOG_ERROR(LABEL, "construct ExternalDeps failed.");
+    std::unique_ptr<BmsAdapter> bmsAdapter = std::make_unique<BmsAdapter>();
+    std::unique_ptr<PmsAdapter> pmsAdapter = std::make_unique<PmsAdapter>();
+    if (bmsAdapter == nullptr || pmsAdapter == nullptr) {
+        PERMISSION_LOG_ERROR(LABEL, "construct bmsAdapter or pmsAdapter failed.");
         return Constant::FAILURE;
     }
-    iBundleManager_ = externalDeps->GetBundleManager(iBundleManager_);
-    iPermissionManager_ = externalDeps->GetPermissionManager(iPermissionManager_);
+    iBundleManager_ = bmsAdapter->GetBundleManager();
+    iPermissionManager_ = pmsAdapter->GetPermissionManager();
     permissionFetcher_ = std::make_shared<PermissionFetcher>(iBundleManager_, iPermissionManager_);
     if (permissionFetcher_ == nullptr) {
         PERMISSION_LOG_ERROR(LABEL, "construct PermissionFetcher failed.");
@@ -109,8 +112,8 @@ bool PermissionBmsManager::IsSystemSignatureUid(const int32_t &uid)
         return true;
     }
 
-    std::shared_ptr<ExternalDeps> externalDeps = std::make_shared<ExternalDeps>();
-    iBundleManager_ = externalDeps->GetBundleManager(iBundleManager_);
+    std::unique_ptr<BmsAdapter> bmsAdapter = std::make_unique<BmsAdapter>();
+    iBundleManager_ = bmsAdapter->GetBundleManager();
 
     std::vector<std::string> bundleNames;
     if (!iBundleManager_->GetBundlesForUid(uid, bundleNames)) {

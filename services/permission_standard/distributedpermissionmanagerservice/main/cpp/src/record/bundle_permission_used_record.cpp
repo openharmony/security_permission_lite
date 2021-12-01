@@ -95,31 +95,41 @@ nlohmann::json BundlePermissionUsedRecord::to_json(const BundlePermissionUsedRec
         jsonRecord.emplace_back(record.to_json(record));
     }
     nlohmann::json jsonObj = nlohmann::json{
-        {"deviceId", bundle.deviceId},
-        {"deviceLabel", bundle.deviceLabel},
-        {"bundleName", bundle.bundleName},
-        {"bundleLabel", bundle.bundleLabel},
-        {"applicationIconId", bundle.applicationIconId},
-        {"permissionUsedRecords", jsonRecord},
+        {"di", bundle.deviceId},
+        {"dl", bundle.deviceLabel},
+        {"bn", bundle.bundleName},
+        {"bl", bundle.bundleLabel},
+        {"ai", bundle.applicationIconId},
+        {"pr", jsonRecord},
     };
     return jsonObj;
 }
 
 void BundlePermissionUsedRecord::from_json(const nlohmann::json &jsonObj, BundlePermissionUsedRecord &bundle)
 {
-    jsonObj.at("deviceId").get_to(bundle.deviceId);
-    jsonObj.at("deviceLabel").get_to(bundle.deviceLabel);
-    jsonObj.at("bundleName").get_to(bundle.bundleName);
-    jsonObj.at("bundleLabel").get_to(bundle.bundleLabel);
-    jsonObj.at("applicationIconId").get_to(bundle.applicationIconId);
+    jsonObj.at("di").get_to(bundle.deviceId);
+    jsonObj.at("dl").get_to(bundle.deviceLabel);
+    jsonObj.at("bn").get_to(bundle.bundleName);
+    jsonObj.at("bl").get_to(bundle.bundleLabel);
+    jsonObj.at("ai").get_to(bundle.applicationIconId);
     std::vector<PermissionUsedRecord> recordVector;
-    nlohmann::json permissionUsedRecords = jsonObj.at("permissionUsedRecords").get<nlohmann::json>();
+    nlohmann::json permissionUsedRecords = jsonObj.at("pr").get<nlohmann::json>();
     for (auto record : permissionUsedRecords) {
         PermissionUsedRecord tempRecord;
         tempRecord.from_json(record, tempRecord);
         recordVector.emplace_back(tempRecord);
     }
     bundle.permissionUsedRecords = recordVector;
+}
+
+int BundlePermissionUsedRecord::TranslationIntoBundlePermissionUsedRecord(
+    const GenericValues &inGenericValues, BundlePermissionUsedRecord &outBundleRecord)
+{
+    outBundleRecord.deviceId = inGenericValues.GetString(FIELD_DEVICE_ID);
+    outBundleRecord.deviceLabel = inGenericValues.GetString(FIELD_DEVICE_NAME);
+    outBundleRecord.bundleName = inGenericValues.GetString(FIELD_BUNDLE_NAME);
+    outBundleRecord.bundleLabel = inGenericValues.GetString(FIELD_BUNDLE_LABEL);
+    return Constant::SUCCESS;
 }
 }  // namespace Permission
 }  // namespace Security

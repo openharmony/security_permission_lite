@@ -17,7 +17,10 @@
 #define PERMISSION_RECORD_H
 
 #include <string>
-#include "../common/time_util.h"
+#include "constant.h"
+#include "field_const.h"
+#include "generic_values.h"
+#include "time_util.h"
 namespace OHOS {
 namespace Security {
 namespace Permission {
@@ -31,9 +34,10 @@ struct PermissionRecord {
 
     PermissionRecord() = default;
 
-    static bool SetPermissionRecord(const int64_t timestamp, const int32_t visitorId, const int32_t opCode,
-        const bool isForeground, const int32_t accessCount, const int32_t rejectCount,
-        PermissionRecord &permissionRecord);
+    static int TranslationIntoPermissionRecord(
+        const GenericValues &inGenericValues, PermissionRecord &outPermissionRecord);
+    static int TranslationIntoGenericValues(
+        const PermissionRecord &inPermissionRecord, GenericValues &outGenericValues);
 };
 }  // namespace Permission
 }  // namespace Security

@@ -18,7 +18,6 @@
 namespace OHOS {
 namespace Security {
 namespace Permission {
-
 const std::string Constant::SYSTEM_PERMISSION_TYPE = "system";
 const std::string Constant::APP_PERMISSION_TYPE = "app";
 
@@ -78,9 +77,10 @@ const std::map<std::string, int32_t> Constant::NAME_TO_OP_CODE_MAP = {
 bool Constant::PermissionNameToOrFromOpCode(std::string &permissionName, int32_t &opCode)
 {
     if (permissionName.empty()) {
-        auto ite = std::find_if(NAME_TO_OP_CODE_MAP.begin(),
-            NAME_TO_OP_CODE_MAP.end(),
-            [opCode](const std::map<std::string, int32_t>::value_type &pair) { return opCode == pair.second; });
+        auto ite = std::find_if(NAME_TO_OP_CODE_MAP.begin(), NAME_TO_OP_CODE_MAP.end(),
+            [opCode](const std::map<std::string, int32_t>::value_type &pair) {
+                return opCode == pair.second;
+            });
         if (ite != NAME_TO_OP_CODE_MAP.end()) {
             permissionName = ite->first;
             return true;
@@ -102,9 +102,10 @@ const std::vector<std::string> Constant::USE_BY_LOCAL_APP_LIST = {
 
 bool Constant::UseByLocalApp(std::string &permissionName)
 {
-    auto it = std::find_if(USE_BY_LOCAL_APP_LIST.begin(),
-        USE_BY_LOCAL_APP_LIST.end(),
-        [&permissionName](const auto &useByLocalApp) { return permissionName == useByLocalApp; });
+    auto it = std::find_if(USE_BY_LOCAL_APP_LIST.begin(), USE_BY_LOCAL_APP_LIST.end(),
+        [&permissionName](const auto &useByLocalApp) {
+            return permissionName == useByLocalApp;
+        });
     if (it != USE_BY_LOCAL_APP_LIST.end()) {
         return true;
     }
@@ -138,19 +139,10 @@ const int32_t Constant::RESOURCE_SWITCH_STATUS_DENIED = 0;
 const int32_t Constant::RESOURCE_SWITCH_STATUS_ALLOWED = 1;
 
 const std::vector<std::string> Constant::PERMISSION_RECORDS_GETTING_LIST = {"ohos.permission.READ_CONTACTS",
-    "ohos.permission.GET_TELEPHONY_STATE",
-    "ohos.permission.LOCATION",
-    "ohos.permission.MICROPHONE",
-    "ohos.permission.CAMERA",
-    "ohos.permission.WRITE_CALENDAR",
-    "ohos.permission.READ_CALENDAR",
-    "ohos.permission.MEDIA_LOCATION",
-    "ohos.permission.READ_MEDIA",
-    "ohos.permission.WRITE_MEDIA",
-    "ohos.permission.ACTIVITY_MOTION",
-    "ohos.permission.READ_HEALTH_DATA",
-    "ohos.permission.DISTRIBUTED_DATA"};
-
-}  // namespace Permission
-}  // namespace Security
-}  // namespace OHOS
+    "ohos.permission.GET_TELEPHONY_STATE", "ohos.permission.LOCATION", "ohos.permission.MICROPHONE",
+    "ohos.permission.CAMERA", "ohos.permission.WRITE_CALENDAR", "ohos.permission.READ_CALENDAR",
+    "ohos.permission.MEDIA_LOCATION", "ohos.permission.READ_MEDIA", "ohos.permission.WRITE_MEDIA",
+    "ohos.permission.ACTIVITY_MOTION", "ohos.permission.READ_HEALTH_DATA", "ohos.permission.DISTRIBUTED_DATA"};
+} // namespace Permission
+} // namespace Security
+} // namespace OHOS

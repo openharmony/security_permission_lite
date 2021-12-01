@@ -15,8 +15,7 @@
 #include <thread>
 #include <functional>
 
-#include "gtest/gtest.h"
-#include "distributed_permission_manager_service.h"
+#include "get_permission_used_records_test.h"
 
 using namespace std;
 using namespace testing::ext;
@@ -29,93 +28,89 @@ std::string IPCSkeleton::localDeviceId_ = "1004";
 std::string IPCSkeleton::deviceId_ = "";
 }  // namespace OHOS
 
-class GetPermissionUsedRecordsTest : public testing::Test {
-public:
-    static void InitVisitorData()
-    {
-        std::vector<GenericValues> visitor;
-        GenericValues genericVisitor;
-        genericVisitor.Put(FIELD_DEVICE_ID, "device_0");
-        genericVisitor.Put(FIELD_DEVICE_NAME, "device_name_0");
-        genericVisitor.Put(FIELD_BUNDLE_USER_ID, 0);
-        genericVisitor.Put(FIELD_BUNDLE_NAME, "bundleName_0");
-        genericVisitor.Put(FIELD_BUNDLE_LABEL, "bundleInfo.label_0");
-        visitor.emplace_back(genericVisitor);
+void GetPermissionUsedRecordsTest::InitVisitorData()
+{
+    std::vector<GenericValues> visitor;
+    GenericValues genericVisitor;
+    genericVisitor.Put(FIELD_DEVICE_ID, "device_0");
+    genericVisitor.Put(FIELD_DEVICE_NAME, "device_name_0");
+    genericVisitor.Put(FIELD_BUNDLE_USER_ID, 0);
+    genericVisitor.Put(FIELD_BUNDLE_NAME, "bundleName_0");
+    genericVisitor.Put(FIELD_BUNDLE_LABEL, "bundleInfo.label_0");
+    visitor.emplace_back(genericVisitor);
 
-        GenericValues genericVisitor1;
-        genericVisitor1.Put(FIELD_DEVICE_ID, "device_1");
-        genericVisitor1.Put(FIELD_DEVICE_NAME, "device_name_1");
-        genericVisitor1.Put(FIELD_BUNDLE_USER_ID, 0);
-        genericVisitor1.Put(FIELD_BUNDLE_NAME, "bundleName_1");
-        genericVisitor1.Put(FIELD_BUNDLE_LABEL, "bundleInfo.label_1");
-        visitor.emplace_back(genericVisitor1);
-        DataStorage::GetRealDataStorage().Add(DataStorage::PERMISSION_VISITOR, visitor);
-    }
-    static void InitRecordData(int64_t timestamp)
-    {
-        int opCode = 4;
-        int rejectCount = 3;
-        std::vector<GenericValues> visitor;
-        DataStorage::GetRealDataStorage().Find(DataStorage::PERMISSION_VISITOR, visitor);
-        int visitorId = 0;
-        if (visitor.size() > 0) {
-            visitorId = visitor[0].GetInt(FIELD_ID);
-        }
-
-        std::vector<GenericValues> record;
-        GenericValues genericRecordFore;
-        genericRecordFore.Put(FIELD_TIMESTAMP, timestamp);
-        genericRecordFore.Put(FIELD_VISITOR_ID, visitorId);
-        genericRecordFore.Put(FIELD_OP_CODE, opCode);
-        genericRecordFore.Put(FIELD_IS_FOREGROUND, 1);
-        genericRecordFore.Put(FIELD_ACCESS_COUNT, rejectCount);
-        genericRecordFore.Put(FIELD_REJECT_COUNT, rejectCount);
-
-        GenericValues genericRecordBack;
-        genericRecordBack.Put(FIELD_TIMESTAMP, timestamp - Constant::PRECISION);
-        genericRecordBack.Put(FIELD_VISITOR_ID, visitorId);
-        genericRecordBack.Put(FIELD_OP_CODE, opCode);
-        genericRecordBack.Put(FIELD_IS_FOREGROUND, 0);
-        genericRecordBack.Put(FIELD_ACCESS_COUNT, 1);
-        genericRecordBack.Put(FIELD_REJECT_COUNT, 0);
-
-        GenericValues genericRecord;
-        genericRecord.Put(FIELD_TIMESTAMP, timestamp);
-        genericRecord.Put(FIELD_VISITOR_ID, visitorId);
-        genericRecord.Put(FIELD_OP_CODE, 1);
-        genericRecord.Put(FIELD_IS_FOREGROUND, 0);
-        genericRecord.Put(FIELD_ACCESS_COUNT, 1);
-        genericRecord.Put(FIELD_REJECT_COUNT, rejectCount);
-        record.emplace_back(genericRecordFore);
-        record.emplace_back(genericRecordBack);
-        record.emplace_back(genericRecord);
-        DataStorage::GetRealDataStorage().Add(DataStorage::PERMISSION_RECORD, record);
+    GenericValues genericVisitor1;
+    genericVisitor1.Put(FIELD_DEVICE_ID, "device_1");
+    genericVisitor1.Put(FIELD_DEVICE_NAME, "device_name_1");
+    genericVisitor1.Put(FIELD_BUNDLE_USER_ID, 0);
+    genericVisitor1.Put(FIELD_BUNDLE_NAME, "bundleName_1");
+    genericVisitor1.Put(FIELD_BUNDLE_LABEL, "bundleInfo.label_1");
+    visitor.emplace_back(genericVisitor1);
+    DataStorage::GetRealDataStorage().Add(DataStorage::PERMISSION_VISITOR, visitor);
+}
+void GetPermissionUsedRecordsTest::InitRecordData(int64_t timestamp)
+{
+    int opCode = 4;
+    int rejectCount = 3;
+    std::vector<GenericValues> visitor;
+    DataStorage::GetRealDataStorage().Find(DataStorage::PERMISSION_VISITOR, visitor);
+    int visitorId = 0;
+    if (visitor.size() > 0) {
+        visitorId = visitor[0].GetInt(FIELD_ID);
     }
 
-    static void SetUpTestCase()
-    {
-        GenericValues null;
-        DataStorage::GetRealDataStorage().Remove(DataStorage::PERMISSION_VISITOR, null);
-        DataStorage::GetRealDataStorage().Remove(DataStorage::PERMISSION_RECORD, null);
-        InitVisitorData();
-        InitRecordData(TimeUtil::GetTimestamp());
-        cout << "SetUpTestCase()" << endl;
-    }
+    std::vector<GenericValues> record;
+    GenericValues genericRecordFore;
+    genericRecordFore.Put(FIELD_TIMESTAMP, timestamp);
+    genericRecordFore.Put(FIELD_VISITOR_ID, visitorId);
+    genericRecordFore.Put(FIELD_OP_CODE, opCode);
+    genericRecordFore.Put(FIELD_IS_FOREGROUND, 1);
+    genericRecordFore.Put(FIELD_ACCESS_COUNT, rejectCount);
+    genericRecordFore.Put(FIELD_REJECT_COUNT, rejectCount);
 
-    static void TearDownTestCase()
-    {
-        cout << "TearDownTestCase()" << endl;
-    }
-    void SetUp()
-    {
-        cout << "SetUp() is running" << endl;
-    }
-    void TearDown()
-    {
-        cout << "TearDown()" << endl;
-    }
-    DistributedPermissionManagerService managerService;
-};
+    GenericValues genericRecordBack;
+    genericRecordBack.Put(FIELD_TIMESTAMP, timestamp - Constant::PRECISION);
+    genericRecordBack.Put(FIELD_VISITOR_ID, visitorId);
+    genericRecordBack.Put(FIELD_OP_CODE, opCode);
+    genericRecordBack.Put(FIELD_IS_FOREGROUND, 0);
+    genericRecordBack.Put(FIELD_ACCESS_COUNT, 1);
+    genericRecordBack.Put(FIELD_REJECT_COUNT, 0);
+
+    GenericValues genericRecord;
+    genericRecord.Put(FIELD_TIMESTAMP, timestamp);
+    genericRecord.Put(FIELD_VISITOR_ID, visitorId);
+    genericRecord.Put(FIELD_OP_CODE, 1);
+    genericRecord.Put(FIELD_IS_FOREGROUND, 0);
+    genericRecord.Put(FIELD_ACCESS_COUNT, 1);
+    genericRecord.Put(FIELD_REJECT_COUNT, rejectCount);
+    record.emplace_back(genericRecordFore);
+    record.emplace_back(genericRecordBack);
+    record.emplace_back(genericRecord);
+    DataStorage::GetRealDataStorage().Add(DataStorage::PERMISSION_RECORD, record);
+}
+
+void GetPermissionUsedRecordsTest::SetUpTestCase()
+{
+    GenericValues null;
+    DataStorage::GetRealDataStorage().Remove(DataStorage::PERMISSION_VISITOR, null);
+    DataStorage::GetRealDataStorage().Remove(DataStorage::PERMISSION_RECORD, null);
+    InitVisitorData();
+    InitRecordData(TimeUtil::GetTimestamp());
+    cout << "SetUpTestCase()" << endl;
+}
+
+void GetPermissionUsedRecordsTest::TearDownTestCase()
+{
+    cout << "TearDownTestCase()" << endl;
+}
+void GetPermissionUsedRecordsTest::SetUp()
+{
+    cout << "SetUp() is running" << endl;
+}
+void GetPermissionUsedRecordsTest::TearDown()
+{
+    cout << "TearDown()" << endl;
+}
 
 /**
  * @tc.number: GetPermissionUsedRecords_0100
@@ -131,28 +126,17 @@ HWTEST_F(GetPermissionUsedRecordsTest, GetPermissionUsedRecords_0100, Function |
     QueryPermissionUsedResult result;
     nlohmann::json jsonObj = request.to_json(request);
     string queryJsonStr = jsonObj.dump();
+    std::string queryGzipStr;
     string resultStr;
-
-    uLong zipLen = queryJsonStr.length();
-    uLong len = compressBound(zipLen);
-    unsigned char *buf = (unsigned char *)malloc(len);
-    bool state = ZipUtil::ZipCompress(queryJsonStr, zipLen, buf, len);
-    EXPECT_TRUE(state);
-    string enStr;
-    Base64Util::Encode(buf, len, enStr);
-    free(buf);
-    buf = nullptr;
-    int flag = managerService.GetPermissionRecords(enStr, len, zipLen, resultStr);
+    if (ZipUtils::CompressString(queryJsonStr, queryGzipStr) != ZipUtils::OK) {
+        EXPECT_EQ(1, 0);
+    }
+    int flag = managerService.GetPermissionRecords(queryGzipStr, resultStr);
     EXPECT_EQ(flag, 0);
-
-    unsigned char *pOut = (unsigned char *)malloc(len);
-    Base64Util::Decode(resultStr, pOut, len);
     std::string resultJsonStr;
-    ZipUtil::ZipUnCompress(pOut, len, resultJsonStr, zipLen);
-
-    free(pOut);
-    pOut = nullptr;
-
+    if (ZipUtils::DecompressString(resultStr, resultJsonStr) != ZipUtils::OK) {
+        EXPECT_EQ(1, 0);
+    }
     nlohmann::json jsonRes = nlohmann::json::parse(resultJsonStr, nullptr, false);
     result.from_json(jsonRes, result);
     EXPECT_EQ(result.code, 200);
@@ -180,22 +164,17 @@ HWTEST_F(GetPermissionUsedRecordsTest, GetPermissionUsedRecords_0200, Function |
     nlohmann::json jsonObj = request.to_json(request);
     string queryJsonStr = jsonObj.dump();
     string resultStr;
-
-    uLong zipLen = queryJsonStr.length();
-    uLong len = compressBound(zipLen);
-    unsigned char *buf = (unsigned char *)malloc(len);
-    bool state = ZipUtil::ZipCompress(queryJsonStr, zipLen, buf, len);
-    EXPECT_TRUE(state);
-    string enStr;
-    Base64Util::Encode(buf, len, enStr);
-    int flag = managerService.GetPermissionRecords(enStr, len, zipLen, resultStr);
+    std::string queryGzipStr;
+    if (ZipUtils::CompressString(queryJsonStr, queryGzipStr) != ZipUtils::OK) {
+        EXPECT_EQ(1, 0);
+    }
+    int flag = managerService.GetPermissionRecords(queryGzipStr, resultStr);
     EXPECT_EQ(flag, 0);
 
-    unsigned char *pOut = (unsigned char *)malloc(len);
-    Base64Util::Decode(resultStr, pOut, len);
     std::string resultJsonStr;
-    ZipUtil::ZipUnCompress(pOut, len, resultJsonStr, zipLen);
-
+    if (ZipUtils::DecompressString(resultStr, resultJsonStr) != ZipUtils::OK) {
+        EXPECT_EQ(1, 0);
+    }
     nlohmann::json jsonRes = nlohmann::json::parse(resultJsonStr, nullptr, false);
     result.from_json(jsonRes, result);
     EXPECT_EQ(result.code, 200);
@@ -223,29 +202,17 @@ HWTEST_F(GetPermissionUsedRecordsTest, GetPermissionUsedRecords_0300, Function |
     nlohmann::json jsonObj = request.to_json(request);
     string queryJsonStr = jsonObj.dump();
     string resultStr;
-
-    uLong zipLen = queryJsonStr.length();
-    uLong len = compressBound(zipLen);
-    unsigned char *buf = (unsigned char *)malloc(len);
-    bool state = ZipUtil::ZipCompress(queryJsonStr, zipLen, buf, len);
-    EXPECT_TRUE(state);
-    string enStr;
-    Base64Util::Encode(buf, len, enStr);
-    if (buf) {
-        free(buf);
-        buf = nullptr;
+    std::string queryGzipStr;
+    if (ZipUtils::CompressString(queryJsonStr, queryGzipStr) != ZipUtils::OK) {
+        EXPECT_EQ(1, 0);
     }
-
-    int flag = managerService.GetPermissionRecords(enStr, len, zipLen, resultStr);
+    int flag = managerService.GetPermissionRecords(queryGzipStr, resultStr);
     EXPECT_EQ(flag, 0);
 
-    unsigned char *pOut = (unsigned char *)malloc(len);
-    Base64Util::Decode(resultStr, pOut, len);
     std::string resultJsonStr;
-    ZipUtil::ZipUnCompress(pOut, len, resultJsonStr, zipLen);
-    free(pOut);
-    pOut = nullptr;
-
+    if (ZipUtils::DecompressString(resultStr, resultJsonStr) != ZipUtils::OK) {
+        EXPECT_EQ(1, 0);
+    }
     nlohmann::json jsonRes = nlohmann::json::parse(resultJsonStr, nullptr, false);
     result.from_json(jsonRes, result);
     EXPECT_EQ(result.code, 200);

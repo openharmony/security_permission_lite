@@ -411,7 +411,7 @@ HWTEST_F(SoftBusChannelTest, SoftBusChannel_SendRequestBytes_001, TestSize.Level
         channel->BuildConnection();
         std::string bytesString = "abcdefg-0123456789";
         const int bytesLength = bytesString.length();
-        int code = channel->SendRequestBytes((unsigned char *)bytesString.c_str(), bytesLength);
+        int code = channel->SendRequestBytes((unsigned char *) bytesString.c_str(), bytesLength);
         EXPECT_TRUE(code == 0);
 
         channel->CloseConnection();

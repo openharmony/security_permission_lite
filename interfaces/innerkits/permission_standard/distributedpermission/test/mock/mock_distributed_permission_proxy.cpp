@@ -13,10 +13,7 @@
  * limitations under the License.
  */
 
-#include "distributed_permission_proxy.h"
 #include "constant.h"
-#include "base64_util.h"
-#include "zip_util.h"
 #include "permission_log.h"
 
 namespace OHOS {
@@ -569,7 +566,7 @@ void DistributedPermissionProxy::StopUsingPermission(
 }
 
 void DistributedPermissionProxy::AddPermissionsRecord(const std::string &permissionName, const std::string &deviceId,
-    const int32_t uid, const int32_t sucCount, const int32_t failCount)
+    const int32_t uid, int32_t sucCount, int32_t failCount)
 {
     PERMISSION_LOG_INFO(LABEL,
         "permissionName = %{public}s, deviceId = %{public}s, uid = %{public}d, sucCount = "
@@ -609,8 +606,7 @@ void DistributedPermissionProxy::AddPermissionsRecord(const std::string &permiss
     }
 }
 
-int32_t DistributedPermissionProxy::GetPermissionRecords(
-    const std::string &request, unsigned long &codeLen, unsigned long &zipLen, std::string &resultStr)
+int32_t DistributedPermissionProxy::GetPermissionRecords(const std::string &request, std::string &resultStr)
 {
     PERMISSION_LOG_INFO(LABEL, "request = %{public}s, resultStr = %{public}s", request.c_str(), resultStr.c_str());
     MessageParcel data;
@@ -618,22 +614,12 @@ int32_t DistributedPermissionProxy::GetPermissionRecords(
         PERMISSION_LOG_ERROR(LABEL, "failed to WriteString(request).");
         return -1;
     }
-    if (!data.WriteUint64(codeLen)) {
-        PERMISSION_LOG_ERROR(LABEL, "failed to WriteUint64(codeLen).");
-        return -1;
-    }
-    if (!data.WriteUint64(zipLen)) {
-        PERMISSION_LOG_ERROR(LABEL, "failed to WriteUint64(zipLen).");
-        return -1;
-    }
     MessageParcel reply;
     bool ret = SendRequest(IDistributedPermission::MessageCode::GET_PERMISSION_RECORDS, data, reply);
     if (ret) {
         QueryPermissionUsedRequest query;
-        unsigned char *pOut = (unsigned char *)malloc(codeLen);
-        Base64Util::Decode(request, pOut, codeLen);
         std::string requestJsonStr;
-        if (!ZipUtil::ZipUnCompress(pOut, codeLen, requestJsonStr, zipLen)) {
+        if (ZipUtils::DecompressString(request, requestJsonStr) != ZipUtils::OK) {
             return Constant::FAILURE;
         }
         nlohmann::json jsonRes = nlohmann::json::parse(requestJsonStr, nullptr, false);
@@ -644,46 +630,37 @@ int32_t DistributedPermissionProxy::GetPermissionRecords(
             result.code = Constant::SUCCESS_GET_RECORD;
             nlohmann::json jsonObj = result.to_json(result);
             std::string resultJsonStr = jsonObj.dump();
-            unsigned long zipLen = resultJsonStr.length();
-            unsigned long len = compressBound(zipLen);
-            unsigned char *buf = (unsigned char *)malloc(len);
-
-            if (!ZipUtil::ZipCompress(resultJsonStr, zipLen, buf, len)) {
+            if (ZipUtils::CompressString(resultJsonStr, resultStr) != ZipUtils::OK) {
                 return Constant::FAILURE;
             }
-            Base64Util::Encode(buf, len, resultStr);
         }
+        return Constant::SUCCESS;
     }
-    return Constant::SUCCESS;
-}
 
-int32_t DistributedPermissionProxy::GetPermissionRecords(const std::string &request, unsigned long &codeLen,
-    unsigned long &zipLen, const sptr<OnPermissionUsedRecord> &callback)
-{
-    PERMISSION_LOG_INFO(LABEL, "queryGzipStr = %{public}s, callback = OnPermissionUsedRecord", request.c_str());
-    MessageParcel data;
-    if (!data.WriteString(request)) {
-        PERMISSION_LOG_ERROR(LABEL, "failed to WriteString(request).");
-        return false;
-    }
-    if (!data.WriteRemoteObject(callback->AsObject())) {
-        PERMISSION_LOG_ERROR(LABEL, "failed to WriteRemoteObject(callback).");
-        return false;
-    }
-    MessageParcel reply;
-    int32_t code = ERROR;
-    bool ret = SendRequest(IDistributedPermission::MessageCode::GET_PERMISSION_RECORDS_ASYNCH, data, reply);
-    if (ret) {
-
-        QueryPermissionUsedRequest query;
-        unsigned char *pOut = (unsigned char *)malloc(codeLen);
-        Base64Util::Decode(request, pOut, codeLen);
-        std::string requestJsonStr;
-        if (!ZipUtil::ZipUnCompress(pOut, codeLen, requestJsonStr, zipLen)) {
-            return Constant::FAILURE;
+    int32_t DistributedPermissionProxy::GetPermissionRecords(const std::string &request,
+        const sptr<OnPermissionUsedRecord> &callback)
+    {
+        PERMISSION_LOG_INFO(LABEL, "queryGzipStr = %{public}s, callback = OnPermissionUsedRecord", request.c_str());
+        MessageParcel data;
+        if (!data.WriteString(request)) {
+            PERMISSION_LOG_ERROR(LABEL, "failed to WriteString(request).");
+            return false;
         }
-        nlohmann::json jsonRes = nlohmann::json::parse(requestJsonStr, nullptr, false);
-        query.from_json(jsonRes, query);
+        if (!data.WriteRemoteObject(callback->AsObject())) {
+            PERMISSION_LOG_ERROR(LABEL, "failed to WriteRemoteObject(callback).");
+            return false;
+        }
+        MessageParcel reply;
+        int32_t code = ERROR;
+        bool ret = SendRequest(IDistributedPermission::MessageCode::GET_PERMISSION_RECORDS_ASYNCH, data, reply);
+        if (ret) {
+            QueryPermissionUsedRequest query;
+            std::string requestJsonStr;
+            if (ZipUtils::DecompressString(request, requestJsonStr) != ZipUtils::OK) {
+                return Constant::FAILURE;
+            }
+            nlohmann::json jsonRes = nlohmann::json::parse(requestJsonStr, nullptr, false);
+            query.from_json(jsonRes, query);
 
         if (query.bundleName == "success") {
             QueryPermissionUsedResult result;
@@ -701,5 +678,5 @@ bool DistributedPermissionProxy::SendRequest(
     return true;
 }
 }  // namespace Permission
+}  // namespace Permission
 }  // namespace Security
-}  // namespace OHOS
