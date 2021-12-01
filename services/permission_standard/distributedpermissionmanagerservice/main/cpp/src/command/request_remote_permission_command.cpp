@@ -100,12 +100,12 @@ void RequestRemotePermissionCommand::SetRequestPermissionInfo(int32_t uid, const
 }
 
 /**
- * Current the UI is not design, So use the property item to mock the activity operation。<br>
+ * Current the UI is not design, So use the property item to mock the Ability operation。<br>
  * if "request." + permission is true, DPMS will grant the sensitive permission
  *
  * @param permissions the permissions that will grant to remote
  */
-void RequestRemotePermissionCommand::StartActivityForRequestPermission(std::vector<std::string> &permissions)
+void RequestRemotePermissionCommand::StartAbilityForRequestPermission(std::vector<std::string> &permissions)
 {
     if (permissions.empty()) {
         return;
@@ -117,13 +117,13 @@ void RequestRemotePermissionCommand::StartActivityForRequestPermission(std::vect
     iBundleManager_ = bmsAdapter->GetBundleManager();
     for (auto permission : permissions) {
         if (iBundleManager_->CheckPermission(bundleName_, permission) == 0) {
-            PERMISSION_LOG_DEBUG(LABEL, "mock Activity DO GRANT permission{uid = %{public}d, requestId = %{public}s }",
+            PERMISSION_LOG_DEBUG(LABEL, "mock Ability DO GRANT permission{uid = %{public}d, requestId = %{public}s }",
                 uid_, requestId_.c_str());
             SubjectDevicePermissionManager::GetInstance().GrantSensitivePermissionToRemoteApp(permission,
                 remoteProtocol_.srcDeviceId, uid_);
         } else {
             PERMISSION_LOG_DEBUG(LABEL,
-                "mock Activity DO NOT GRANT permission{uid = %{public}d, requestId = %{public}s }", uid_,
+                "mock Ability DO NOT GRANT permission{uid = %{public}d, requestId = %{public}s }", uid_,
                 requestId_.c_str());
         }
     }
@@ -191,10 +191,10 @@ void RequestRemotePermissionCommand::Execute()
         FormatRequestPermissions(permissions_, remoteProtocol_.srcDeviceId, uid_);
 
     if (needRequestPermissions.size() > 0) {
-        PERMISSION_LOG_INFO(LABEL, "start startActivityForRequestPermission");
+        PERMISSION_LOG_INFO(LABEL, "start startAbilityForRequestPermission");
         // start active and the the result of the active
-        StartActivityForRequestPermission(needRequestPermissions);
-        PERMISSION_LOG_INFO(LABEL, "end startActivityForRequestPermission");
+        StartAbilityForRequestPermission(needRequestPermissions);
+        PERMISSION_LOG_INFO(LABEL, "end startAbilityForRequestPermission");
     }
 
     std::shared_ptr<DistributedPermissionEventHandler> handler =

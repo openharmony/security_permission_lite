@@ -41,7 +41,7 @@ public:
         const std::string &bundleName, const std::string &reason);
 
 private:
-    void StartActivityForRequestPermission(std::vector<std::string> &permissions);
+    void StartAbilityForRequestPermission(std::vector<std::string> &permissions);
     std::vector<std::string> FormatRequestPermissions(
         std::vector<std::string> &permissions, const std::string &deviceId, int32_t ruid);
 
