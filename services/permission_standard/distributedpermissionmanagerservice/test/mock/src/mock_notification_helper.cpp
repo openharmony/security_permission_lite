@@ -219,17 +219,12 @@ ErrCode NotificationHelper::SetNotificationsEnabledForDefaultBundle(const std::s
     return 0;
 }
 
-ErrCode NotificationHelper::SetDoNotDisturbDate(const NotificationDoNotDisturbDate & doNotDisturbDate)
+ErrCode NotificationHelper::SetDisturbMode(NotificationConstant::DisturbMode mode)
 {
     return 0;
 }
 
-ErrCode NotificationHelper::GetDoNotDisturbDate(NotificationDoNotDisturbDate & doNotDisturbDate)
-{
-    return 0;
-}
-
-ErrCode NotificationHelper::DoesSupportDoNotDisturbMode(bool &doesSupport)
+ErrCode NotificationHelper::GetDisturbMode(NotificationConstant::DisturbMode& disturbMode)
 {
     return 0;
 }
