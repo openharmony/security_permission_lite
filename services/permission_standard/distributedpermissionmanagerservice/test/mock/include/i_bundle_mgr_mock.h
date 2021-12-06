@@ -230,7 +230,7 @@ public:
      * @param permissionDefs Indicates the list of objects containing the permission group information.
      * @return Returns true if the PermissionDef objects is successfully obtained; returns false otherwise.
      */
-     virtual bool GetAllPermissionGroupDefs(std::vector<PermissionDef> &permissionDefs) = 0;
+    virtual bool GetAllPermissionGroupDefs(std::vector<PermissionDef> &permissionDefs) = 0;
     /**
      * @brief Checks whether a specified bundle has been granted a specific permission.
      * @param bundleName Indicates the name of the bundle to check.

@@ -14,8 +14,8 @@
  */
 
 #include "mock_bundle_mgr.h"
-#include "application_info.h"
 #include <iostream>
+#include "application_info.h"
 
 namespace OHOS {
 namespace AppExecFwk {

@@ -21,12 +21,12 @@
 #include <fstream>
 #include <memory>
 #include <iostream>
+#include "gtest/gtest.h"
 #include "mock_bundle_mgr.h"
 #include "constant_mock.h"
 #include "mock_permission_mgr.h"
 #include "base_remote_command.h"
 #include "get_uid_permission_command.h"
-#include "gtest/gtest.h"
 #include "if_system_ability_manager.h"
 #include "iservice_registry.h"
 #include "ability_manager_interface.h"
