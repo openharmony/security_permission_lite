@@ -21,13 +21,12 @@
 #include <fstream>
 #include <memory>
 #include <iostream>
+#include "gtest/gtest.h"
 #include "mock_bundle_mgr.h"
 #include "constant_mock.h"
 #include "mock_permission_mgr.h"
 #include "base_remote_command.h"
 #include "get_uid_permission_command.h"
-
-#include "gtest/gtest.h"
 #include "if_system_ability_manager.h"
 #include "iservice_registry.h"
 #include "ability_manager_interface.h"
@@ -42,17 +41,7 @@ GetUidPermissionCommandTest::GetUidPermissionCommandTest()
 GetUidPermissionCommandTest::~GetUidPermissionCommandTest()
 {}
 void GetUidPermissionCommandTest::SetUpTestCase()
-{
-    OHOS::sptr<OHOS::IRemoteObject> bundleObject = new OHOS::AppExecFwk::BundleMgrService();
-    OHOS::sptr<OHOS::IRemoteObject> permissionObject = new PermissionManagerService();
-    auto sysMgr = OHOS::SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
-    if (sysMgr == NULL) {
-        GTEST_LOG_(ERROR) << "fail to get ISystemAbilityManager";
-        return;
-    }
-    sysMgr->AddSystemAbility(Constant::ServiceId::BUNDLE_MGR_SERVICE_SYS_ABILITY_ID, bundleObject);
-    sysMgr->AddSystemAbility(Constant::ServiceId::SUBSYS_SECURITY_PERMISSION_SYS_SERVICE_ID, permissionObject);
-}
+{}
 void GetUidPermissionCommandTest::TearDownTestCase()
 {}
 void GetUidPermissionCommandTest::SetUp()
@@ -89,35 +78,6 @@ HWTEST_F(GetUidPermissionCommandTest, GetUidPermissionCommandTest_0002, Function
     EXPECT_EQ(class_->remoteProtocol_.statusCode, 0);
 }
 
-HWTEST_F(GetUidPermissionCommandTest, GetUidPermissionCommandTest_0003, Function | MediumTest | Level1)
-{
-    int32_t uid = 12600000;
-    std::string srcDeviceId = "srcDeviceId";
-    std::string dstDeviceId = "dstDeviceId";
-
-    std::unique_ptr<GetUidPermissionCommand> class_ =
-        std::make_unique<GetUidPermissionCommand>(uid, srcDeviceId, dstDeviceId);
-
-    class_->Execute();
-    EXPECT_EQ(class_->remoteProtocol_.statusCode, 0);
-    EXPECT_EQ(class_->remoteProtocol_.message, "success");
-}
-
-HWTEST_F(GetUidPermissionCommandTest, GetUidPermissionCommandTest_0004, Function | MediumTest | Level1)
-{
-    int32_t uid = 12600000;
-    std::string srcDeviceId = "srcDeviceId";
-    std::string dstDeviceId = "dstDeviceId";
-
-    std::unique_ptr<GetUidPermissionCommand> class_ =
-        std::make_unique<GetUidPermissionCommand>(uid, srcDeviceId, dstDeviceId);
-
-    class_->Execute();
-
-    EXPECT_EQ(class_->remoteProtocol_.statusCode, 0);
-    EXPECT_EQ(class_->remoteProtocol_.message, "success");
-}
-
 HWTEST_F(GetUidPermissionCommandTest, GetUidPermissionCommandTest_0005, Function | MediumTest | Level1)
 {
     int32_t uid = -1;
@@ -131,37 +91,6 @@ HWTEST_F(GetUidPermissionCommandTest, GetUidPermissionCommandTest_0005, Function
 
     EXPECT_EQ(class_->remoteProtocol_.statusCode, -2);
     EXPECT_EQ(class_->remoteProtocol_.message, "failed to get permissions");
-}
-
-HWTEST_F(GetUidPermissionCommandTest, GetUidPermissionCommandTest_0006, Function | MediumTest | Level1)
-{
-    int32_t uid = 1024;
-    std::string srcDeviceId = "srcDeviceId";
-    std::string dstDeviceId = "dstDeviceId";
-
-    std::unique_ptr<GetUidPermissionCommand> class_ =
-        std::make_unique<GetUidPermissionCommand>(uid, srcDeviceId, dstDeviceId);
-
-    class_->Execute();
-
-    EXPECT_EQ(class_->remoteProtocol_.statusCode, -2);
-    EXPECT_EQ(class_->remoteProtocol_.message, "permissions exceed MAX_UID_PERMISSIONS_COUNT");
-}
-
-HWTEST_F(GetUidPermissionCommandTest, GetUidPermissionCommandTest_0008, Function | MediumTest | Level1)
-{
-    int32_t uid = 12610001;
-    std::string srcDeviceId = "srcDeviceId";
-    std::string dstDeviceId = "dstDeviceId";
-
-    std::unique_ptr<GetUidPermissionCommand> class_ =
-        std::make_unique<GetUidPermissionCommand>(uid, srcDeviceId, dstDeviceId);
-
-    class_->Execute();
-    class_->Finish();
-
-    EXPECT_EQ(class_->remoteProtocol_.statusCode, 0);
-    EXPECT_EQ(class_->remoteProtocol_.message, "success");
 }
 
 HWTEST_F(GetUidPermissionCommandTest, GetUidPermissionCommandTest_0009, Function | MediumTest | Level1)
@@ -194,38 +123,6 @@ HWTEST_F(GetUidPermissionCommandTest, GetUidPermissionCommandTest_0010, Function
 
     EXPECT_EQ(class_->remoteProtocol_.statusCode, -2);
     EXPECT_EQ(class_->remoteProtocol_.message, "execute command failed");
-}
-
-HWTEST_F(GetUidPermissionCommandTest, GetUidPermissionCommandTest_0011, Function | MediumTest | Level1)
-{
-    int32_t uid = 12600000;
-    std::string srcDeviceId = "srcDeviceId";
-    std::string dstDeviceId = "dstDeviceId";
-
-    std::unique_ptr<GetUidPermissionCommand> class_ =
-        std::make_unique<GetUidPermissionCommand>(uid, srcDeviceId, dstDeviceId);
-
-    class_->Execute();
-
-    EXPECT_EQ(class_->remoteProtocol_.statusCode, 0);
-    EXPECT_EQ(class_->remoteProtocol_.message, "success");
-
-    std::string result = class_->ToJsonPayload();
-
-    std::string json =
-        "{\"commandName\":\"GetUidPermissionCommand\",\"dstDeviceId\":\"dstDeviceId\",\"dstDeviceLevel\":\"\","
-        "\"message\":\"success\",\"requestVersion\":1,\"responseDeviceId\":\"1004\",\"responseVersion\":1,"
-        "\"srcDeviceId\":\"srcDeviceId\",\"srcDeviceLevel\":\"\",\"statusCode\":0,\"uid\":12600000,\"uidPermission\":{"
-        "\"DEFAULT_SIZE\":10,\"MIN_UID_PACKAGES_NUM\":1,\"appAttribute\":2,\"bundles\":[{\"appId\":\"bundleInfo."
-        "appId\",\"bundleLabel\":\"bundleInfo.label\",\"name\":\"bundleInfo.name\",\"permissions\":[{\"defInfo\":0,"
-        "\"grantMode\":0,\"level\":0,\"name\":\"reqPermissions1\",\"status\":1,\"type\":\"app\"},{\"defInfo\":0,"
-        "\"grantMode\":0,\"level\":0,\"name\":\"reqPermissions2\",\"status\":1,\"type\":\"app\"},{\"defInfo\":0,"
-        "\"grantMode\":0,\"level\":0,\"name\":\"reqPermissions3\",\"status\":1,\"type\":\"app\"},{\"defInfo\":0,"
-        "\"grantMode\":0,\"level\":0,\"name\":\"reqPermissions4\",\"status\":1,\"type\":\"app\"},{\"defInfo\":0,"
-        "\"grantMode\":0,\"level\":0,\"name\":\"reqPermissions5\",\"status\":1,\"type\":\"app\"}],\"sign\":[{"
-        "\"sha256\":\"applicationInfo.signatureKey\"}]}],\"remoteSensitivePermission\":null,\"uid\":12600000,"
-        "\"uidState\":0},\"uniqueId\":\"GetUidPermissionCommand-12600000\"}";
-    EXPECT_EQ(result, json);
 }
 
 HWTEST_F(GetUidPermissionCommandTest, GetUidPermissionCommandTest_0012, Function | MediumTest | Level1)

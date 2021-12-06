@@ -48,13 +48,6 @@ HWTEST_F(CheckCallingPermissionTest, CheckCallingPermission01, Function | Medium
     int ret = DistributedPermissionKit::CheckCallingPermission(permissionName);
     EXPECT_EQ(result, ret);
 }
-HWTEST_F(CheckCallingPermissionTest, CheckCallingPermission02, Function | MediumTest | Level1)
-{
-    string permissionName = "ohos.permission.INTERNET";
-    int result = Constant::PERMISSION_GRANTED;
-    int ret = DistributedPermissionKit::CheckCallingPermission(permissionName);
-    EXPECT_EQ(result, ret);
-}
 }  // namespace Permission
 }  // namespace Security
 }  // namespace OHOS

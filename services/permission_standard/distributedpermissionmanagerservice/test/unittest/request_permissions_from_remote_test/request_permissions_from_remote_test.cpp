@@ -24,22 +24,13 @@ namespace Permission {
 namespace {
 static constexpr OHOS::HiviewDFX::HiLogLabel LABEL = {LOG_CORE, SECURITY_DOMAIN_PERMISSION, "PermissionBmsManager"};
 }
-namespace {}  // namespace
+namespace {} // namespace
 void RequestPermissionsFromRemoteTest::SetUpTestCase(void)
 {}
 void RequestPermissionsFromRemoteTest::TearDownTestCase(void)
 {}
 void RequestPermissionsFromRemoteTest::SetUp()
 {
-    OHOS::sptr<OHOS::IRemoteObject> bundleObject = new OHOS::AppExecFwk::BundleMgrService();
-    OHOS::sptr<OHOS::IRemoteObject> permissionObject = new PermissionManagerService();
-    auto sysMgr = OHOS::SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
-    if (sysMgr == NULL) {
-        GTEST_LOG_(ERROR) << "fail to get ISystemAbilityManager";
-        return;
-    }
-    sysMgr->AddSystemAbility(Constant::ServiceId::BUNDLE_MGR_SERVICE_SYS_ABILITY_ID, bundleObject);
-    sysMgr->AddSystemAbility(Constant::ServiceId::SUBSYS_SECURITY_PERMISSION_SYS_SERVICE_ID, permissionObject);
     service = DelayedSingleton<DistributedPermissionManagerService>::GetInstance();
 }
 void RequestPermissionsFromRemoteTest::TearDown()
@@ -54,8 +45,8 @@ HWTEST_F(RequestPermissionsFromRemoteTest, request_permissionsservice_from_remot
     std::string bundleName("");
     std::string deviceId("deviceId");
     int32_t reasonResId = -1;
-    DeviceInfoRepository::GetInstance().SaveDeviceInfo(
-        nodeId, "universallyUniqueId", deviceId, "deviceName", "deviceType");
+    DeviceInfoRepository::GetInstance().SaveDeviceInfo(nodeId, "universallyUniqueId", deviceId, "deviceName",
+        "deviceType");
     // case NeedStopProcess fail
     service->RequestPermissionsFromRemote(permissions, callback, nodeId, bundleName, reasonResId);
     std::this_thread::sleep_for(timeFast);
@@ -75,8 +66,8 @@ HWTEST_F(RequestPermissionsFromRemoteTest, request_permissionsservice_from_remot
     std::string bundleName("");
     std::string deviceId("deviceId");
     int32_t reasonResId = -1;
-    DeviceInfoRepository::GetInstance().SaveDeviceInfo(
-        nodeId, "universallyUniqueId", deviceId, "deviceName", "deviceType");
+    DeviceInfoRepository::GetInstance().SaveDeviceInfo(nodeId, "universallyUniqueId", deviceId, "deviceName",
+        "deviceType");
     // requestingDevices_.count(request->deviceId_) != 0
     RequestRemotePermission::GetInstance().requestingDevices_.insert(
         std::pair<std::string, std::string>(deviceId, deviceId));
@@ -99,8 +90,8 @@ HWTEST_F(RequestPermissionsFromRemoteTest, request_permissionsservice_from_remot
     std::string bundleName("");
     std::string deviceId("deviceId");
     int32_t reasonResId = -1;
-    DeviceInfoRepository::GetInstance().SaveDeviceInfo(
-        nodeId, "universallyUniqueId", deviceId, "deviceName", "deviceType");
+    DeviceInfoRepository::GetInstance().SaveDeviceInfo(nodeId, "universallyUniqueId", deviceId, "deviceName",
+        "deviceType");
     RequestRemotePermission::GetInstance().requestingDevices_.erase(deviceId);
     // case   RequestPermissionsInfo::CanRequestPermissions IsDeviceIdValid fail
     service->RequestPermissionsFromRemote(permissions, callback, nodeId, bundleName, reasonResId);
@@ -123,8 +114,8 @@ HWTEST_F(RequestPermissionsFromRemoteTest, request_permissionsservice_from_remot
     std::string deviceId("deviceId");
     int32_t reasonResId = -1;
     // case  InitObjectLocaleReason bundleName=""
-    DeviceInfoRepository::GetInstance().SaveDeviceInfo(
-        nodeId, "universallyUniqueId", deviceId, "deviceName", "deviceType");
+    DeviceInfoRepository::GetInstance().SaveDeviceInfo(nodeId, "universallyUniqueId", deviceId, "deviceName",
+        "deviceType");
     service->RequestPermissionsFromRemote(permissions, callback, nodeId, bundleName, reasonResId);
     std::this_thread::sleep_for(timeFast);
     PERMISSION_LOG_INFO(LABEL, "onResult_ : %{public}d,", callback->onResult_);
@@ -143,8 +134,8 @@ HWTEST_F(RequestPermissionsFromRemoteTest, request_permissionsservice_from_remot
     std::string nodeId("networkId");
     std::string bundleName("bundleName");
     std::string deviceId("deviceId");
-    DeviceInfoRepository::GetInstance().SaveDeviceInfo(
-        nodeId, "universallyUniqueId", deviceId, "deviceName", "deviceType");
+    DeviceInfoRepository::GetInstance().SaveDeviceInfo(nodeId, "universallyUniqueId", deviceId, "deviceName",
+        "deviceType");
     // case  InitObjectLocaleReason reasonResId_ < 0)
     int32_t reasonResId = -1;
     service->RequestPermissionsFromRemote(permissions, callback, nodeId, bundleName, reasonResId);
@@ -166,8 +157,8 @@ HWTEST_F(RequestPermissionsFromRemoteTest, request_permissionsservice_from_remot
     std::string bundleName("bundleName");
     std::string deviceId("deviceId");
     int32_t reasonResId = -1;
-    DeviceInfoRepository::GetInstance().SaveDeviceInfo(
-        nodeId, "universallyUniqueId", deviceId, "deviceName", "deviceType");
+    DeviceInfoRepository::GetInstance().SaveDeviceInfo(nodeId, "universallyUniqueId", deviceId, "deviceName",
+        "deviceType");
     //  case now  InitObjectLocaleReason reasonString_ is  not empty  ,will be request command
     reasonResId = 1;
     service->RequestPermissionsFromRemote(permissions, callback, nodeId, bundleName, reasonResId);
@@ -190,8 +181,8 @@ HWTEST_F(RequestPermissionsFromRemoteTest, request_permissionsservice_from_remot
     std::string bundleName("bundleName");
     std::string deviceId("deviceId");
     int32_t reasonResId = 1;
-    DeviceInfoRepository::GetInstance().SaveDeviceInfo(
-        nodeId, "universallyUniqueId", deviceId, "deviceName", "deviceType");
+    DeviceInfoRepository::GetInstance().SaveDeviceInfo(nodeId, "universallyUniqueId", deviceId, "deviceName",
+        "deviceType");
     //  case now  InitObjectLocaleReason reasonString_ is  not empty  ,will be request command
     service->RequestPermissionsFromRemote(permissions, callback, nodeId, bundleName, reasonResId);
     std::this_thread::sleep_for(timeFast);
@@ -213,8 +204,8 @@ HWTEST_F(RequestPermissionsFromRemoteTest, request_permissionsservice_from_remot
     std::string bundleName("bundleName");
     std::string deviceId("deviceIdTimeout");
     int32_t reasonResId = 1;
-    DeviceInfoRepository::GetInstance().SaveDeviceInfo(
-        nodeId, "universallyUniqueId", deviceId, "deviceName", "deviceType");
+    DeviceInfoRepository::GetInstance().SaveDeviceInfo(nodeId, "universallyUniqueId", deviceId, "deviceName",
+        "deviceType");
     service->RequestPermissionsFromRemote(permissions, callback, nodeId, bundleName, reasonResId);
     std::this_thread::sleep_for(timeFast);
     PERMISSION_LOG_INFO(LABEL, "onResult_ : %{public}d,", callback->onResult_);
@@ -235,8 +226,8 @@ HWTEST_F(RequestPermissionsFromRemoteTest, request_result_for_cancel_test_0100, 
     std::string bundleName("bundleName");
     std::string deviceId("deviceIdCancelExit");
     int32_t reasonResId = 1;
-    DeviceInfoRepository::GetInstance().SaveDeviceInfo(
-        nodeId, "universallyUniqueId", deviceId, "deviceName", "deviceType");
+    DeviceInfoRepository::GetInstance().SaveDeviceInfo(nodeId, "universallyUniqueId", deviceId, "deviceName",
+        "deviceType");
     // will sleep 60s
     service->RequestPermissionsFromRemote(permissions, callback, nodeId, bundleName, reasonResId);
     std::this_thread::sleep_for(timeFast);
@@ -259,8 +250,8 @@ HWTEST_F(RequestPermissionsFromRemoteTest, request_result_for_cancel_test_0200, 
     std::string bundleName("bundleName");
     std::string deviceId("deviceIdCancel ");
     int32_t reasonResId = 1;
-    DeviceInfoRepository::GetInstance().SaveDeviceInfo(
-        nodeId, "universallyUniqueId", deviceId, "deviceName", "deviceType");
+    DeviceInfoRepository::GetInstance().SaveDeviceInfo(nodeId, "universallyUniqueId", deviceId, "deviceName",
+        "deviceType");
     // will sleep 60s
     service->RequestPermissionsFromRemote(permissions, callback, nodeId, bundleName, reasonResId);
     std::this_thread::sleep_for(timeFast);
@@ -272,6 +263,6 @@ HWTEST_F(RequestPermissionsFromRemoteTest, request_result_for_cancel_test_0200, 
     EXPECT_EQ(callback->onCancel_, 100);
     EXPECT_EQ(callback->onTimeOut_, 100);
 }
-}  // namespace Permission
-}  // namespace Security
-}  // namespace OHOS
+} // namespace Permission
+} // namespace Security
+} // namespace OHOS

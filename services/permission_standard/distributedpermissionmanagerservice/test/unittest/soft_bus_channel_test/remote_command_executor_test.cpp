@@ -22,15 +22,15 @@
 
 #include "constant.h"
 #include "distributed_permission_manager_service.h"
-
+#include "session.h"
 using namespace testing::ext;
 using namespace testing;
 namespace OHOS {
 namespace Security {
 namespace Permission {
 namespace {
-static constexpr OHOS::HiviewDFX::HiLogLabel LABEL = {
-    LOG_CORE, SECURITY_DOMAIN_PERMISSION, "RemoteCommandExecutorTest"};
+static constexpr OHOS::HiviewDFX::HiLogLabel LABEL = {LOG_CORE, SECURITY_DOMAIN_PERMISSION,
+    "RemoteCommandExecutorTest"};
 }
 // copied from get_uid_permission_command_mock.cpp
 namespace {
@@ -55,7 +55,7 @@ static const std::string TARGET_DEVICE_ID_(TARGET_UDID_);
 
 static const int SLEEP_100 = 100;
 static const int SLEEP_500 = 500;
-}  // namespace
+} // namespace
 
 class RemoteCommandExecutorTest : public testing::Test {
 public:
@@ -77,8 +77,8 @@ public:
         ASSERT_EQ(SoftBusManager::GetInstance().isSoftBusServiceBindSuccess_, true);
 
         // 2.assume target device info synchroized
-        DeviceInfoManager::GetInstance().AddDeviceInfo(
-            TARGET_NETWORK_ID_, TARGET_UUID_, TARGET_UDID_, TARGET_DEVICE_, std::to_string(1));
+        DeviceInfoManager::GetInstance().AddDeviceInfo(TARGET_NETWORK_ID_, TARGET_UUID_, TARGET_UDID_, TARGET_DEVICE_,
+            std::to_string(1));
         // should got it
         DeviceInfo info;
         bool result = DeviceInfoManager::GetInstance().GetDeviceInfo(TARGET_DEVICE_ID_, DeviceIdType::UNKNOWN, info);
@@ -86,8 +86,8 @@ public:
         EXPECT_EQ(info.deviceId.networkId, TARGET_NETWORK_ID_);
 
         // for DeviceIdUtil
-        DeviceInfoManager::GetInstance().AddDeviceInfo(
-            deviceIdForDeviceIdUtil, deviceIdForDeviceIdUtil, "1", "2", std::to_string(1));
+        DeviceInfoManager::GetInstance().AddDeviceInfo(deviceIdForDeviceIdUtil, deviceIdForDeviceIdUtil, "1", "2",
+            std::to_string(1));
     }
     static void TearDownTestCase(void)
     {
@@ -116,7 +116,7 @@ public:
 
     std::shared_ptr<DistributedPermissionEventHandler> handler_;
     bool executed_;
-    const long EXECUTE_COMMAND_TIME_OUT = 3;  // 3000 ms
+    const long EXECUTE_COMMAND_TIME_OUT = 3; // 3000 ms
 };
 
 /*
@@ -163,7 +163,7 @@ HWTEST_F(RemoteCommandExecutorTest, RemoteCommandExecutor_Construct_002, TestSiz
     {
         RemoteCommandExecutor instance(TARGET_UDID_);
 
-        const int32_t uid = UID_MOCK_NORMAL;  // normal uid, see mock, 10000
+        const int32_t uid = UID_MOCK_NORMAL; // normal uid, see mock, 10000
         const std::string srcDeviceId = SELF_DEVICE_;
         const std::string dstDeviceId = TARGET_DEVICE_;
         const std::shared_ptr<BaseRemoteCommand> ptrCommand =
@@ -180,12 +180,10 @@ HWTEST_F(RemoteCommandExecutorTest, RemoteCommandExecutor_Construct_002, TestSiz
     time_t end = TimeUtil::GetTimestamp();
     PERMISSION_LOG_DEBUG(LABEL,
         "RemoteCommandExecutor_Construct_002: ellapsed %{public}ld second(s) from %{public}ld to %{public}ld",
-        (long)end - (long)begin,
-        (long)begin,
-        (long)end);
+        (long) end - (long)begin, (long) begin, (long) end);
 
-    PERMISSION_LOG_DEBUG(LABEL, "start: %{public}ld", (long)begin);
-    PERMISSION_LOG_DEBUG(LABEL, "end: %{public}ld", (long)end);
+    PERMISSION_LOG_DEBUG(LABEL, "start: %{public}ld", (long) begin);
+    PERMISSION_LOG_DEBUG(LABEL, "end: %{public}ld", (long) end);
 
     EXPECT_TRUE(end - begin >= 3);
 }
@@ -457,7 +455,7 @@ HWTEST_F(RemoteCommandExecutorTest, RemoteCommandExecutor_ExecuteRemoteCommand_0
         std::function<void()> runner = [&]() {
             PERMISSION_LOG_DEBUG(LABEL, "enter runner");
             std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_500));
-            const std::string id = "message-unique-id-100";  // UID_GetRegrantedPermissions_FAILED
+            const std::string id = "message-unique-id-100"; // UID_GetRegrantedPermissions_FAILED
             std::string dummyResult = "";
             channel->HandleResponse(id, dummyResult);
             executed_ = true;
@@ -502,7 +500,6 @@ HWTEST_F(RemoteCommandExecutorTest, RemoteCommandExecutor_ExecuteRemoteCommand_0
     PERMISSION_LOG_DEBUG(LABEL, "RemoteCommandExecutor_ExecuteRemoteCommand_003");
     std::shared_ptr<SoftBusChannel> channel = std::make_shared<SoftBusChannel>(TARGET_UDID_);
     channel->BuildConnection();
-
     {
         PERMISSION_LOG_DEBUG(LABEL, "RemoteCommandExecutor_ExecuteRemoteCommand_003-1");
         // remote command: transfer to remote, wait response, finish local
@@ -522,10 +519,10 @@ HWTEST_F(RemoteCommandExecutorTest, RemoteCommandExecutor_ExecuteRemoteCommand_0
         executed_ = false;
         std::function<void()> runner = [&]() {
             PERMISSION_LOG_DEBUG(LABEL, "enter runner");
-            std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_100));
-            const std::string id = "message-unique-id-100";  // UID_GetRegrantedPermissions_FAILED
+            std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_500));
+            std::string uuid = ::GetUuidMock();
             std::string dummyResult = "{[100]}";
-            channel->HandleResponse(id, dummyResult);
+            channel->HandleResponse(uuid, dummyResult);
             executed_ = true;
         };
         std::thread responseThread(runner);
@@ -586,10 +583,10 @@ HWTEST_F(RemoteCommandExecutorTest, RemoteCommandExecutor_ExecuteRemoteCommand_0
         executed_ = false;
         std::function<void()> runner = [&]() {
             PERMISSION_LOG_DEBUG(LABEL, "enter runner");
-            std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_100));
-            const std::string id = "message-unique-id-100";  // UID_GetRegrantedPermissions_FAILED
-            std::string dummyResult = "{[101]}";
-            channel->HandleResponse(id, dummyResult);
+            std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_500));
+            std::string uuid = ::GetUuidMock();
+            std::string dummyResult = "{[101]}"; // UID_GetRegrantedPermissions_FAILED
+            channel->HandleResponse(uuid, dummyResult);
             executed_ = true;
         };
         std::thread responseThread(runner);
@@ -643,10 +640,10 @@ HWTEST_F(RemoteCommandExecutorTest, RemoteCommandExecutor_ExecuteRemoteCommand_0
         bool executed = false;
         std::function<void()> runner = [&]() {
             PERMISSION_LOG_DEBUG(LABEL, "enter runner");
-            std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_100));
-            const std::string id = "message-unique-id-1000";  // UID_FINISH_SUCCESS_INDEX
-            std::string dummyResult = "{[1000]}";
-            channel->HandleResponse(id, dummyResult);
+            std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_500));
+            std::string uuid = ::GetUuidMock();
+            std::string dummyResult = "{[1000]}"; // UID_FINISH_SUCCESS_INDEX
+            channel->HandleResponse(uuid, dummyResult);
             executed = true;
         };
         std::thread responseThread(runner);
@@ -688,6 +685,7 @@ HWTEST_F(RemoteCommandExecutorTest, RemoteCommandExecutor_ProcessOneCommand_001,
     }
 
     {
+        std::shared_ptr<SoftBusChannel> channel = std::make_shared<SoftBusChannel>(deviceIdForDeviceIdUtil);
         // local command: execute and finish
         // will get a COMMAND_RESULT_SUCCESS error at execute,
         // will get a COMMAND_RESULT_SUCCESS error at finish.
@@ -698,12 +696,22 @@ HWTEST_F(RemoteCommandExecutorTest, RemoteCommandExecutor_ProcessOneCommand_001,
             RemoteCommandFactory::GetInstance().NewGetUidPermissionCommand(uid, srcDeviceId, dstDeviceId);
 
         RemoteCommandExecutor instance(deviceIdForDeviceIdUtil);
-        int code = instance.ProcessOneCommand(ptrCommand);
-        EXPECT_TRUE(ptrCommand->remoteProtocol_.statusCode == Constant::SUCCESS);
 
-        PERMISSION_LOG_DEBUG(LABEL, "result message: %{public}s", ptrCommand->remoteProtocol_.message.c_str());
-        PERMISSION_LOG_DEBUG(LABEL, "expect message: %{public}s", Constant::COMMAND_RESULT_SUCCESS.c_str());
-        EXPECT_TRUE(ptrCommand->remoteProtocol_.message == Constant::COMMAND_RESULT_SUCCESS);
+        instance.SetChannel(channel);
+        // simulate a response
+        std::function<void()> runner = [&]() {
+            PERMISSION_LOG_DEBUG(LABEL, "enter runner");
+            std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_500));
+            std::string uuid = ::GetUuidMock();
+            std::string dummyResult = "{[1000]}";
+            channel->HandleResponse(uuid, dummyResult);
+        };
+        std::thread responseThread(runner);
+
+        int code = instance.ProcessOneCommand(ptrCommand);
+        if (responseThread.joinable()) {
+            responseThread.join();
+        }
 
         EXPECT_TRUE(code == Constant::SUCCESS);
     }
@@ -738,10 +746,10 @@ HWTEST_F(RemoteCommandExecutorTest, RemoteCommandExecutor_ProcessOneCommand_002,
         // simulate a response
         std::function<void()> runner = [&]() {
             PERMISSION_LOG_DEBUG(LABEL, "enter runner");
-            std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_100));
-            const std::string id = "message-unique-id-1000";
+            std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_500));
+            std::string uuid = ::GetUuidMock();
             std::string dummyResult = "{[1000]}";
-            channel->HandleResponse(id, dummyResult);
+            channel->HandleResponse(uuid, dummyResult);
         };
         std::thread responseThread(runner);
 
@@ -908,19 +916,19 @@ HWTEST_F(RemoteCommandExecutorTest, RemoteCommandExecutor_ProcessBufferedCommand
         {
             std::function<void()> runner = [&]() {
                 PERMISSION_LOG_DEBUG(LABEL, "enter runner 1");
-                std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_100));
-                const std::string id = "message-unique-id-1000";
+                std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_100 + 150));
+                std::string uuid = ::GetUuidMock();
                 std::string dummyResult = "{[1000]}";
-                channel->HandleResponse(id, dummyResult);
+                channel->HandleResponse(uuid, dummyResult);
             };
             std::thread responseThread(runner);
 
             std::function<void()> runner2 = [&]() {
                 PERMISSION_LOG_DEBUG(LABEL, "enter runner 2");
                 std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_500));
-                const std::string id = "message-unique-id-1000";
+                std::string uuid = ::GetUuidMock();
                 std::string dummyResult = "{[1000]}";
-                channel->HandleResponse(id, dummyResult);
+                channel->HandleResponse(uuid, dummyResult);
             };
             std::thread responseThread2(runner2);
 
@@ -930,7 +938,7 @@ HWTEST_F(RemoteCommandExecutorTest, RemoteCommandExecutor_ProcessBufferedCommand
             std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_500));
             PERMISSION_LOG_DEBUG(LABEL, "RemoteCommandExecutor_ProcessBufferedCommands_001-2:response");
             EXPECT_TRUE(code == Constant::SUCCESS);
-            EXPECT_EQ(instance.commands_.size(), (uint32_t)0);
+            EXPECT_EQ(instance.commands_.size(), (uint32_t) 0);
 
             // for test
             if (responseThread.joinable()) {
@@ -981,7 +989,7 @@ HWTEST_F(RemoteCommandExecutorTest, RemoteCommandExecutor_ProcessBufferedCommand
         instance.AddCommand(ptrCommand2);
         instance.AddCommand(ptrCommand);
         instance.AddCommand(ptrCommand2);
-        EXPECT_EQ(instance.commands_.size(), (uint32_t)2);
+        EXPECT_EQ(instance.commands_.size(), (uint32_t) 2);
 
         // prepare channel
         instance.SetChannel(channel);
@@ -989,19 +997,19 @@ HWTEST_F(RemoteCommandExecutorTest, RemoteCommandExecutor_ProcessBufferedCommand
 
         std::function<void()> runner = [&]() {
             PERMISSION_LOG_DEBUG(LABEL, "enter runner 1");
-            std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_100));
-            const std::string id = "message-unique-id-1000";
+            std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_100 + 150));
+            std::string uuid = ::GetUuidMock();
             std::string dummyResult = "{[1000]}";
-            channel->HandleResponse(id, dummyResult);
+            channel->HandleResponse(uuid, dummyResult);
         };
         std::thread responseThread(runner);
 
         std::function<void()> runner2 = [&]() {
             PERMISSION_LOG_DEBUG(LABEL, "enter runner 2");
             std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_500));
-            const std::string id = "message-unique-id-1001";
+            std::string uuid = ::GetUuidMock();
             std::string dummyResult = "{[1000]}";
-            channel->HandleResponse(id, dummyResult);
+            channel->HandleResponse(uuid, dummyResult);
         };
         std::thread responseThread2(runner2);
 
@@ -1012,14 +1020,14 @@ HWTEST_F(RemoteCommandExecutorTest, RemoteCommandExecutor_ProcessBufferedCommand
         // wait to process commands.
         std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_500));
         PERMISSION_LOG_DEBUG(LABEL, "RemoteCommandExecutor_ProcessBufferedCommands_001-2:response1");
-        EXPECT_EQ(instance.commands_.size(), (uint32_t)1);
+        EXPECT_EQ(instance.commands_.size(), (uint32_t) 1);
         EXPECT_TRUE(instance.running_ != false);
 
         // wait to process commands.
         std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_500));
         PERMISSION_LOG_DEBUG(LABEL, "RemoteCommandExecutor_ProcessBufferedCommands_001-2:response2");
         // mock a normal response command, finish
-        EXPECT_EQ(instance.commands_.size(), (uint32_t)0);
+        EXPECT_EQ(instance.commands_.size(), (uint32_t) 0);
 
         // for test
         if (responseThread.joinable()) {
@@ -1036,6 +1044,6 @@ HWTEST_F(RemoteCommandExecutorTest, RemoteCommandExecutor_ProcessBufferedCommand
 
     PERMISSION_LOG_DEBUG(LABEL, "RemoteCommandExecutor_ProcessBufferedCommandsWithThread_001 complete");
 }
-}  // namespace Permission
-}  // namespace Security
-}  // namespace OHOS
+} // namespace Permission
+} // namespace Security
+} // namespace OHOS

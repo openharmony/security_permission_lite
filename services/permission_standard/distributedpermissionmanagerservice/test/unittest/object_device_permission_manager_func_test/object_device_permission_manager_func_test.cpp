@@ -25,7 +25,7 @@ std::string deviceId2 = "deviceId2";
 std::string deviceId3 = "deviceId3";
 namespace Security {
 namespace Permission {
-namespace {}  // namespace
+namespace {} // namespace
 
 void ObjectDevicePermissionManagerFuncTest::SetUpTestCase(void)
 {}
@@ -33,15 +33,6 @@ void ObjectDevicePermissionManagerFuncTest::TearDownTestCase(void)
 {}
 void ObjectDevicePermissionManagerFuncTest::SetUp()
 {
-    OHOS::sptr<OHOS::IRemoteObject> bundleObject = new OHOS::AppExecFwk::BundleMgrService();
-    OHOS::sptr<OHOS::IRemoteObject> permissionObject = new PermissionManagerService();
-    auto sysMgr = OHOS::SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
-    if (sysMgr == NULL) {
-        GTEST_LOG_(ERROR) << "fail to get ISystemAbilityManager";
-        return;
-    }
-    sysMgr->AddSystemAbility(Constant::ServiceId::BUNDLE_MGR_SERVICE_SYS_ABILITY_ID, bundleObject);
-    sysMgr->AddSystemAbility(Constant::ServiceId::SUBSYS_SECURITY_PERMISSION_SYS_SERVICE_ID, permissionObject);
     service = DelayedSingleton<DistributedPermissionManagerService>::GetInstance();
 }
 void ObjectDevicePermissionManagerFuncTest::TearDown()
@@ -149,9 +140,9 @@ HWTEST_F(ObjectDevicePermissionManagerFuncTest, func_test_remove_notify_permissi
 {
     GTEST_LOG_(INFO) << "func_test_remove_notify_permission_monitor_userId_0100";
     ObjectDevicePermissionManager::GetInstance().Clear();
-    int32_t uid = 100000;   // sys
-    int32_t uid2 = 100001;  // del target
-    int32_t uid3 = 102101;  // del target
+    int32_t uid = 100000; // sys
+    int32_t uid2 = 100001; // del target
+    int32_t uid3 = 102101; // del target
     int32_t uid4 = 200001;
     ObjectDevicePermissionRepository::GetInstance().PutDeviceIdUidPair(deviceId1, uid);
     ObjectDevicePermissionRepository::GetInstance().PutDeviceIdUidPair(deviceId1, uid2);
@@ -239,6 +230,6 @@ HWTEST_F(ObjectDevicePermissionManagerFuncTest, func_test_notify_permission_chan
     int result = ObjectDevicePermissionManager::GetInstance().NotifyPermissionChanged(uid);
     EXPECT_TRUE(result == Constant::FAILURE);
 }
-}  // namespace Permission
-}  // namespace Security
-}  // namespace OHOS
+} // namespace Permission
+} // namespace Security
+} // namespace OHOS

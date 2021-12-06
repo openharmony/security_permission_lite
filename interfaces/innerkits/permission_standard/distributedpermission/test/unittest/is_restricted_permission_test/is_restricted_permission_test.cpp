@@ -37,13 +37,6 @@ void IsRestrictedPermissionTest::TearDown()
     cout << "TearDown()" << endl;
 }
 
-HWTEST_F(IsRestrictedPermissionTest, IsRestrictedPermissionTest01, Function | MediumTest | Level1)
-{
-    string ohosPermissionName = "ohos.permission.READ_CONTACTS";
-    bool ret = DistributedPermissionKit::IsRestrictedPermission(ohosPermissionName);
-    EXPECT_TRUE(ret);
-}
-
 HWTEST_F(IsRestrictedPermissionTest, IsRestrictedPermissionTest02, Function | MediumTest | Level1)
 {
     string ohosPermissionName = "ohos.permission.INTERNET";

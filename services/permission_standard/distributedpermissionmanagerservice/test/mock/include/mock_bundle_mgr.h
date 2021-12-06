@@ -59,11 +59,12 @@ public:
     bool GetHapModuleInfo(const AbilityInfo &abilityInfo, HapModuleInfo &hapModuleInfo) override;
     bool GetLaunchWantForBundle(const std::string &bundleName, Want &want) override;
     int CheckPublicKeys(const std::string &firstBundleName, const std::string &secondBundleName) override;
+    bool GetAppsGrantedPermissions(
+        const std::vector<std::string> &permissions, std::vector<std::string> &appNames) override;
     int CheckPermission(const std::string &bundleName, const std::string &permission) override;
     bool GetPermissionDef(const std::string &permissionName, PermissionDef &permissionDef) override;
     bool GetAllPermissionGroupDefs(std::vector<PermissionDef> &permissionDefs) override;
-    bool GetAppsGrantedPermissions(
-        const std::vector<std::string> &permissions, std::vector<std::string> &appNames) override;
+    
     bool HasSystemCapability(const std::string &capName) override;
     bool GetSystemAvailableCapabilities(std::vector<std::string> &systemCaps) override;
     bool IsSafeMode() override;

@@ -40,17 +40,7 @@ SyncUidPermissionCommandTest::SyncUidPermissionCommandTest()
 SyncUidPermissionCommandTest::~SyncUidPermissionCommandTest()
 {}
 void SyncUidPermissionCommandTest::SetUpTestCase()
-{
-    OHOS::sptr<OHOS::IRemoteObject> bundleObject = new OHOS::AppExecFwk::BundleMgrService();
-    OHOS::sptr<OHOS::IRemoteObject> permissionObject = new PermissionManagerService();
-    auto sysMgr = OHOS::SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
-    if (sysMgr == NULL) {
-        GTEST_LOG_(ERROR) << "fail to get ISystemAbilityManager";
-        return;
-    }
-    sysMgr->AddSystemAbility(Constant::ServiceId::BUNDLE_MGR_SERVICE_SYS_ABILITY_ID, bundleObject);
-    sysMgr->AddSystemAbility(Constant::ServiceId::SUBSYS_SECURITY_PERMISSION_SYS_SERVICE_ID, permissionObject);
-}
+{}
 void SyncUidPermissionCommandTest::TearDownTestCase()
 {}
 void SyncUidPermissionCommandTest::SetUp()
@@ -75,68 +65,6 @@ HWTEST_F(SyncUidPermissionCommandTest, SyncUidPermissionCommandTest_0001, Functi
     EXPECT_EQ(class_->remoteProtocol_.requestVersion, 1);
 }
 
-HWTEST_F(SyncUidPermissionCommandTest, SyncUidPermissionCommandTest_0002, Function | MediumTest | Level2)
-{
-    int32_t uid = 1;
-    std::string srcDeviceId = "srcDeviceId";
-    std::string dstDeviceId = "dstDeviceId";
-
-    std::unique_ptr<SyncUidPermissionCommand> class_ =
-        std::make_unique<SyncUidPermissionCommand>(uid, srcDeviceId, dstDeviceId);
-
-    class_->Prepare();
-
-    EXPECT_EQ(class_->remoteProtocol_.statusCode, 0);
-    EXPECT_EQ(class_->remoteProtocol_.message, "success");
-}
-
-HWTEST_F(SyncUidPermissionCommandTest, SyncUidPermissionCommandTest_0003, Function | MediumTest | Level1)
-{
-    int32_t uid = 1024;
-    std::string srcDeviceId = "srcDeviceId";
-    std::string dstDeviceId = "dstDeviceId";
-
-    std::unique_ptr<BaseRemoteCommand> class_ =
-        std::make_unique<SyncUidPermissionCommand>(uid, srcDeviceId, dstDeviceId);
-
-    class_->Prepare();
-
-    EXPECT_EQ(class_->remoteProtocol_.statusCode, -2);
-    EXPECT_EQ(class_->remoteProtocol_.message, "permissions exceed MAX_UID_PERMISSIONS_COUNT");
-}
-
-HWTEST_F(SyncUidPermissionCommandTest, SyncUidPermissionCommandTest_0004, Function | MediumTest | Level1)
-{
-    int32_t uid = 1;
-    std::string srcDeviceId = "srcDeviceId";
-    std::string dstDeviceId = "dstDeviceId";
-
-    std::unique_ptr<BaseRemoteCommand> class_ =
-        std::make_unique<SyncUidPermissionCommand>(uid, srcDeviceId, dstDeviceId);
-
-    class_->Prepare();
-    class_->Execute();
-
-    EXPECT_EQ(class_->remoteProtocol_.statusCode, 0);
-    EXPECT_EQ(class_->remoteProtocol_.message, "success");
-}
-
-HWTEST_F(SyncUidPermissionCommandTest, SyncUidPermissionCommandTest_0005, Function | MediumTest | Level1)
-{
-    int32_t uid = 2;
-    std::string srcDeviceId = "012345678900123456789001234567890012345678900123456789001234567890012345";
-    std::string dstDeviceId = "dstDeviceId";
-
-    std::unique_ptr<BaseRemoteCommand> class_ =
-        std::make_unique<SyncUidPermissionCommand>(uid, srcDeviceId, dstDeviceId);
-
-    class_->Prepare();
-    class_->Execute();
-
-    EXPECT_EQ(class_->remoteProtocol_.statusCode, -2);
-    EXPECT_EQ(class_->remoteProtocol_.message, "execute command failed");
-}
-
 HWTEST_F(SyncUidPermissionCommandTest, SyncUidPermissionCommandTest_0006, Function | MediumTest | Level1)
 {
     int32_t uid = 1;
@@ -149,38 +77,6 @@ HWTEST_F(SyncUidPermissionCommandTest, SyncUidPermissionCommandTest_0006, Functi
     class_->Finish();
 
     EXPECT_EQ(class_->remoteProtocol_.statusCode, 0);
-}
-
-HWTEST_F(SyncUidPermissionCommandTest, SyncUidPermissionCommandTest_0007, Function | MediumTest | Level1)
-{
-    int32_t uid = 1;
-    std::string srcDeviceId = "srcDeviceId";
-    std::string dstDeviceId = "dstDeviceId";
-
-    std::unique_ptr<SyncUidPermissionCommand> class_ =
-        std::make_unique<SyncUidPermissionCommand>(uid, srcDeviceId, dstDeviceId);
-
-    class_->Prepare();
-
-    EXPECT_EQ(class_->remoteProtocol_.statusCode, 0);
-    EXPECT_EQ(class_->remoteProtocol_.message, "success");
-
-    std::string result = class_->ToJsonPayload();
-    std::string json =
-        "{\"commandName\":\"SyncUidPermissionCommand\",\"dstDeviceId\":\"dstDeviceId\",\"dstDeviceLevel\":\"\","
-        "\"message\":\"success\",\"requestVersion\":1,\"responseDeviceId\":\"\",\"responseVersion\":1,\"srcDeviceId\":"
-        "\"srcDeviceId\",\"srcDeviceLevel\":\"\",\"statusCode\":0,\"uid\":1,\"uidPermission\":{\"DEFAULT_SIZE\":10,"
-        "\"MIN_UID_PACKAGES_NUM\":1,\"appAttribute\":2,\"bundles\":[{\"appId\":\"bundleInfo.appId\",\"bundleLabel\":"
-        "\"bundleInfo.label\",\"name\":\"bundleInfo.name\",\"permissions\":[{\"defInfo\":0,\"grantMode\":0,\"level\":"
-        "0,\"name\":\"reqPermissions1\",\"status\":1,\"type\":\"app\"},{\"defInfo\":0,\"grantMode\":0,\"level\":0,"
-        "\"name\":\"reqPermissions2\",\"status\":1,\"type\":\"app\"},{\"defInfo\":0,\"grantMode\":0,\"level\":0,"
-        "\"name\":\"reqPermissions3\",\"status\":1,\"type\":\"app\"},{\"defInfo\":0,\"grantMode\":0,\"level\":0,"
-        "\"name\":\"reqPermissions4\",\"status\":1,\"type\":\"app\"},{\"defInfo\":0,\"grantMode\":0,\"level\":0,"
-        "\"name\":\"reqPermissions5\",\"status\":1,\"type\":\"app\"}],\"sign\":[{\"sha256\":\"applicationInfo."
-        "signatureKey\"}]}],\"remoteSensitivePermission\":null,\"uid\":1,\"uidState\":0},\"uniqueId\":"
-        "\"SyncUidPermissionCommand-1\"}";
-
-    EXPECT_EQ(result, json);
 }
 
 HWTEST_F(SyncUidPermissionCommandTest, SyncUidPermissionCommandTest_0008, Function | MediumTest | Level1)
