@@ -24,17 +24,7 @@ namespace Permission {
 namespace {}  // namespace
 
 void CanRequestPermissionFromRemoteTest::SetUpTestCase(void)
-{
-    OHOS::sptr<OHOS::IRemoteObject> bundleObject = new OHOS::AppExecFwk::BundleMgrService();
-    OHOS::sptr<OHOS::IRemoteObject> permissionObject = new PermissionManagerService();
-    auto sysMgr = OHOS::SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
-    if (sysMgr == NULL) {
-        GTEST_LOG_(ERROR) << "fail to get ISystemAbilityManager";
-        return;
-    }
-    sysMgr->AddSystemAbility(Constant::ServiceId::BUNDLE_MGR_SERVICE_SYS_ABILITY_ID, bundleObject);
-    sysMgr->AddSystemAbility(Constant::ServiceId::SUBSYS_SECURITY_PERMISSION_SYS_SERVICE_ID, permissionObject);
-}
+{}
 void CanRequestPermissionFromRemoteTest::TearDownTestCase(void)
 {}
 void CanRequestPermissionFromRemoteTest::SetUp()

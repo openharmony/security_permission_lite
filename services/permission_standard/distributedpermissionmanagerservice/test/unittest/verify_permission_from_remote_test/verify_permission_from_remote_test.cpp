@@ -23,18 +23,7 @@ namespace Security {
 namespace Permission {
 namespace {} // namespace
 void VerifyPermissionFromRemoteTest::SetUpTestCase(void)
-{
-    OHOS::sptr<OHOS::IRemoteObject> bundleObject = new OHOS::AppExecFwk::BundleMgrService();
-    OHOS::sptr<OHOS::IRemoteObject> permissionObject = new PermissionManagerService();
-    auto sysMgr = OHOS::SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
-    if (sysMgr == NULL) {
-        GTEST_LOG_(ERROR) << "fail to get ISystemAbilityManager";
-        return;
-    }
-
-    sysMgr->AddSystemAbility(Constant::ServiceId::BUNDLE_MGR_SERVICE_SYS_ABILITY_ID, bundleObject);
-    sysMgr->AddSystemAbility(Constant::ServiceId::SUBSYS_SECURITY_PERMISSION_SYS_SERVICE_ID, permissionObject);
-}
+{}
 void VerifyPermissionFromRemoteTest::TearDownTestCase(void)
 {}
 void VerifyPermissionFromRemoteTest::SetUp()
@@ -88,10 +77,7 @@ HWTEST_F(VerifyPermissionFromRemoteTest, verify_permission_from_remote_001, Test
     uid = 101000;
     std::string appidInfo3 = DistributedPermissionKit::AppIdInfoHelper::CreateAppIdInfo(pid, uid);
     EXPECT_TRUE(service->VerifyPermissionFromRemote(permission, nodeId, appidInfo3) == Constant::PERMISSION_GRANTED);
-    //  IsSystemSignatureUid
-    uid = 100111;
-    std::string appidInfo4 = DistributedPermissionKit::AppIdInfoHelper::CreateAppIdInfo(pid, uid);
-    EXPECT_TRUE(service->VerifyPermissionFromRemote(permission, nodeId, appidInfo4) == Constant::PERMISSION_GRANTED);
+
     //  Is  not SystemSignatureUid  objectDevices_  no permission cache
     uid = 122111;
     std::string appidInfo5 = DistributedPermissionKit::AppIdInfoHelper::CreateAppIdInfo(pid, uid);
@@ -114,8 +100,8 @@ HWTEST_F(VerifyPermissionFromRemoteTest, verify_self_permission_from_remote_001,
     std::string deviceName("deviceName");
     std::string deviceType("deviceType");
     // case permission =""
-    DeviceInfoRepository::GetInstance().SaveDeviceInfo(
-        nodeId, "universallyUniqueId", deviceId, "deviceName", "deviceType");
+    DeviceInfoRepository::GetInstance().SaveDeviceInfo(nodeId, "universallyUniqueId", deviceId, "deviceName",
+        "deviceType");
     EXPECT_TRUE(service->VerifySelfPermissionFromRemote(permission, nodeId) == Constant::PERMISSION_DENIED);
 }
 } // namespace Permission

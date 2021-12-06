@@ -47,14 +47,6 @@ HWTEST_F(CheckSelfPermissionTest, CheckSelfPermission01, Function | MediumTest |
     int ret = DistributedPermissionKit::CheckSelfPermission(permissionName);
     EXPECT_EQ(result, ret);
 }
-
-HWTEST_F(CheckSelfPermissionTest, CheckSelfPermission02, Function | MediumTest | Level1)
-{
-    string permissionName = "ohos.permission.INTERNET";
-    int result = Constant::PERMISSION_GRANTED;
-    int ret = DistributedPermissionKit::CheckSelfPermission(permissionName);
-    EXPECT_EQ(result, ret);
-}
 }  // namespace Permission
 }  // namespace Security
 }  // namespace OHOS

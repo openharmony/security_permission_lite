@@ -199,26 +199,6 @@ public:
      */
     virtual int CheckPublicKeys(const std::string &firstBundleName, const std::string &secondBundleName) = 0;
     /**
-     * @brief Checks whether a specified bundle has been granted a specific permission.
-     * @param bundleName Indicates the name of the bundle to check.
-     * @param permission Indicates the permission to check.
-     * @return Returns 0 if the bundle has the permission; returns -1 otherwise.
-     */
-    virtual int CheckPermission(const std::string &bundleName, const std::string &permission) = 0;
-    /**
-     * @brief Obtains detailed information about a specified permission.
-     * @param permissionName Indicates the name of the ohos permission.
-     * @param permissionDef Indicates the object containing detailed information about the given ohos permission.
-     * @return Returns true if the PermissionDef object is successfully obtained; returns false otherwise.
-     */
-    virtual bool GetPermissionDef(const std::string &permissionName, PermissionDef &permissionDef) = 0;
-    /**
-     * @brief Obtains all known permission groups in the system.
-     * @param permissionDefs Indicates the list of objects containing the permission group information.
-     * @return Returns true if the PermissionDef objects is successfully obtained; returns false otherwise.
-     */
-    virtual bool GetAllPermissionGroupDefs(std::vector<PermissionDef> &permissionDefs) = 0;
-    /**
      * @brief Obtains all known permission groups in the system.
      * @param permissions Indicates the permission array.
      * @param appNames Indicates the list of application names that have the specified permissions.
@@ -236,6 +216,26 @@ public:
      * @brief Obtains the capabilities that are available in the system.
      * @param systemCaps Indicates the list of capabilities available in the system.
      * @return Returns true if capabilities in the system are successfully obtained; returns false otherwise.
+     */
+    virtual int CheckPermission(const std::string &bundleName, const std::string &permission) = 0;
+    /**
+     * @brief Obtains detailed information about a specified permission.
+     * @param permissionName Indicates the name of the ohos permission.
+     * @param permissionDef Indicates the object containing detailed information about the given ohos permission.
+     * @return Returns true if the PermissionDef object is successfully obtained; returns false otherwise.
+     */
+    virtual bool GetPermissionDef(const std::string &permissionName, PermissionDef &permissionDef) = 0;
+    /**
+     * @brief Obtains all known permission groups in the system.
+     * @param permissionDefs Indicates the list of objects containing the permission group information.
+     * @return Returns true if the PermissionDef objects is successfully obtained; returns false otherwise.
+     */
+     virtual bool GetAllPermissionGroupDefs(std::vector<PermissionDef> &permissionDefs) = 0;
+    /**
+     * @brief Checks whether a specified bundle has been granted a specific permission.
+     * @param bundleName Indicates the name of the bundle to check.
+     * @param permission Indicates the permission to check.
+     * @return Returns 0 if the bundle has the permission; returns -1 otherwise.
      */
     virtual bool GetSystemAvailableCapabilities(std::vector<std::string> &systemCaps) = 0;
     /**

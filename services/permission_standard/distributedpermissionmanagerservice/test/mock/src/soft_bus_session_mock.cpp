@@ -17,13 +17,14 @@
 #include "constant.h"
 #include "soft_bus_manager.h"
 #include "permission_log.h"
-
+#include "soft_bus_session_listener.h"
+#include "soft_bus_channel.h"
 using namespace OHOS::Security::Permission;
 namespace {
 static constexpr OHOS::HiviewDFX::HiLogLabel LABEL = {LOG_CORE, SECURITY_DOMAIN_PERMISSION, "SoftBusSenssionMock"};
 static const int SESSION_COUNT_LIMIT = 20;
 static const int SERVER_COUNT_LIMIT = 10;
-}  // namespace
+} // namespace
 
 #define MIN_(x, y) ((x) < (y)) ? (x) : (y)
 
@@ -87,6 +88,7 @@ int OpenSession(const char *mySessionName, const char *peerSessionName, const ch
 
     sessionCount_++;
     if (IsSessionCountOK()) {
+        SoftBusSessionListener::OnSessionOpened(1, Constant::SUCCESS);
         PERMISSION_LOG_DEBUG(LABEL, "success, session count: %{public}d", sessionCount_);
         return 1;
     }
@@ -109,11 +111,7 @@ int SendBytes(int sessionId, const void *data, unsigned int len)
     if (sessionId == Constant::INVALID_SESSION) {
         return Constant::FAILURE;
     }
-    printf("\n[soft_bus_session] send data:: ");
-    std::string s((char *)data);
-    printf("%s", s.c_str());
-    printf("\n\n");
-    PERMISSION_LOG_DEBUG(LABEL, "data: %{public}s", data);
+    DecompressMock((unsigned char *) data, len);
     return Constant::SUCCESS;
 }
 
@@ -156,4 +154,42 @@ int GetPeerDeviceId(int sessionId, char *devId, unsigned int len)
     }
     devId[x.length()] = '\0';
     return 0;
+}
+
+static std::string uuid = "";
+void DecompressMock(const unsigned char *bytes, const int length)
+{
+    PERMISSION_LOG_DEBUG(LABEL, "input length: %{public}d", length);
+    uLong len = 1048576;
+    unsigned char *buf = (unsigned char *) malloc(len + 1);
+    if (buf == nullptr) {
+        PERMISSION_LOG_ERROR(LABEL, "no enough memory!");
+        return;
+    }
+    memset_s(buf, len + 1, 0, len + 1);
+    int result = uncompress(buf, &len, (unsigned char *) bytes, length);
+    if (result != Z_OK) {
+        PERMISSION_LOG_ERROR(LABEL,
+            "uncompress failed, error code: %{public}d, bound length: %{public}d, buffer length: %{public}d", result,
+            (int) len, length);
+        free(buf);
+        return;
+    }
+    buf[len] = '\0';
+    std::string str((char *) buf);
+    free(buf);
+    PERMISSION_LOG_DEBUG(LABEL, "done, output: %{public}s", str.c_str());
+
+    int id_post = str.find("\"id\":");
+
+    std::string id_string = str.substr(id_post + 6, 9);
+    uuid = id_string;
+    PERMISSION_LOG_DEBUG(LABEL, "id_string: %{public}s", id_string.c_str());
+    return;
+}
+
+std::string GetUuidMock()
+{
+    PERMISSION_LOG_DEBUG(LABEL, "GetUuidMock called uuid: %{public}s", uuid.c_str());
+    return uuid;
 }

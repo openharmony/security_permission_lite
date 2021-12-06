@@ -27,17 +27,7 @@ std::string IPCSkeleton::deviceId_ = "";
 std::string permName = Constant::CAMERA;
 } // namespace OHOS
 void PermissionRemindTest::SetUpTestCase()
-{
-    OHOS::sptr<OHOS::IRemoteObject> bundleObject = new OHOS::AppExecFwk::BundleMgrService();
-    OHOS::sptr<OHOS::IRemoteObject> permissionObject = new PermissionManagerService();
-    auto sysMgr = OHOS::SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
-    if (sysMgr == NULL) {
-        GTEST_LOG_(ERROR) << "fail to get ISystemAbilityManager";
-        return;
-    }
-    sysMgr->AddSystemAbility(Constant::ServiceId::BUNDLE_MGR_SERVICE_SYS_ABILITY_ID, bundleObject);
-    sysMgr->AddSystemAbility(Constant::ServiceId::SUBSYS_SECURITY_PERMISSION_SYS_SERVICE_ID, permissionObject);
-}
+{}
 
 void PermissionRemindTest::TearDownTestCase()
 {
@@ -49,29 +39,29 @@ void PermissionRemindTest::SetUp()
     dpms_->OnStart();
     DeviceInfoRepository::GetInstance().SaveDeviceInfo(deviceId, deviceId, deviceId, deviceName, "");
 
-        BundlePermissionsDto bundles;
-        bundles.name = "bundles.name";
-        bundles.bundleLabel = "bundles.bundleLabel";
-        SignDto signDto;
-        signDto.sha256 = "bundles.sign";
-        bundles.sign.push_back(signDto);
+    BundlePermissionsDto bundles;
+    bundles.name = "bundles.name";
+    bundles.bundleLabel = "bundles.bundleLabel";
+    SignDto signDto;
+    signDto.sha256 = "bundles.sign";
+    bundles.sign.push_back(signDto);
 
-        PermissionDto permission;
-        permission.name = permName;
-        permission.grantMode = 0;
-        permission.status = Constant::PERMISSION_GRANTED_STATUS;
-        bundles.permissions.push_back(permission);
+    PermissionDto permission;
+    permission.name = permName;
+    permission.grantMode = 0;
+    permission.status = Constant::PERMISSION_GRANTED_STATUS;
+    bundles.permissions.push_back(permission);
 
-        UidBundleBo uidBundleBo;
-        uidBundleBo.DEFAULT_SIZE = 10; // default 10
-        uidBundleBo.MIN_UID_PACKAGES_NUM = 1; // default 1
-        uidBundleBo.uid = uid_normal_1_;
-        uidBundleBo.appAttribute = 0;
-        uidBundleBo.bundles.push_back(bundles);
-        uidBundleBo.uidState = 1;
+    UidBundleBo uidBundleBo;
+    uidBundleBo.DEFAULT_SIZE = 10; // default 10
+    uidBundleBo.MIN_UID_PACKAGES_NUM = 1; // default 1
+    uidBundleBo.uid = uid_normal_1_;
+    uidBundleBo.appAttribute = 0;
+    uidBundleBo.bundles.push_back(bundles);
+    uidBundleBo.uidState = 1;
 
-        std::set<std::string> remoteSensitivePermission;
-        remoteSensitivePermission.insert(permName);
+    std::set<std::string> remoteSensitivePermission;
+    remoteSensitivePermission.insert(permName);
 
     SubjectDevicePermissionManager::GetInstance().distributedPermissionMapping_.insert(
         std::pair<int32_t, UidBundleBo>(uid, uidBundleBo));
@@ -156,14 +146,11 @@ HWTEST_F(PermissionRemindTest, PermissionRemindTest04, Function | MediumTest | L
     ret = dpms_->RegisterUsingPermissionReminder(callback);
     EXPECT_EQ(0, ret);
 
-    // Case 01
     permName = Constant::CAMERA;
     pid = 101;
     uid = uid_normal_1_;
     deviceId = "ohos.deviceId.test";
     std::string appidInfo1 = DistributedPermissionKit::AppIdInfoHelper::CreateAppIdInfo(pid, uid, deviceId);
-    ret = dpms_->CheckPermissionAndStartUsing(permName, appidInfo1);
-    EXPECT_EQ(0, ret);
 
     // Case 02
     permName = "ohos.permission.NotSensitivePermission";
@@ -178,15 +165,6 @@ HWTEST_F(PermissionRemindTest, PermissionRemindTest04, Function | MediumTest | L
     std::string appidInfo2 = DistributedPermissionKit::AppIdInfoHelper::CreateAppIdInfo(pid, uid, deviceId);
     ret = dpms_->CheckPermissionAndStartUsing(permName, appidInfo2);
     EXPECT_EQ(-1, ret);
-
-    // Case 04
-    permName = Constant::CAMERA;
-    pid = 101;
-    uid = uid_normal_3_;
-    deviceId = "ohos.deviceId.test";
-    std::string appidInfo3 = DistributedPermissionKit::AppIdInfoHelper::CreateAppIdInfo(pid, uid, deviceId);
-    ret = dpms_->CheckPermissionAndStartUsing(permName, appidInfo3);
-    EXPECT_EQ(0, ret);
 
     // Case 05
     permName = "";
