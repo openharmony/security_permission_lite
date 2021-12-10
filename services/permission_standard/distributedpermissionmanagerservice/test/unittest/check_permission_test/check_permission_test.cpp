@@ -27,7 +27,9 @@ std::string IPCSkeleton::deviceId_ = "";
 namespace Security {
 namespace Permission {
 void CheckPermissionTest::SetUpTestCase()
-{}
+{
+    cout << "SetUpTestCase()" << endl;
+}
 
 void CheckPermissionTest::TearDownTestCase()
 {
@@ -116,6 +118,6 @@ HWTEST_F(CheckPermissionTest, CheckPermission08, Function | MediumTest | Level1)
     int ret = DistributedPermissionManagerService().CheckPermission(permissionName, appIdInfo);
     EXPECT_EQ(result, ret);
 }
-}  // namespace Permission
-}  // namespace Security
-}  // namespace OHOS
+} // namespace Permission
+} // namespace Security
+} // namespace OHOS

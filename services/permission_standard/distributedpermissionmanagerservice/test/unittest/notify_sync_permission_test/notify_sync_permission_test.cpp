@@ -35,7 +35,9 @@ namespace Permission {
 class NotifySyncPermissionTest : public testing::Test {
 public:
     static void SetUpTestCase()
-    {}
+    {
+        cout << "SetUpTestCase()" << endl;
+    }
     static void TearDownTestCase()
     {
         cout << "TearDownTestCase()" << endl;

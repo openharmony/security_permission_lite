@@ -27,7 +27,7 @@ pid_t IPCSkeleton::pid_ = 1;
 pid_t IPCSkeleton::uid_ = 1;
 std::string IPCSkeleton::localDeviceId_ = "1004";
 std::string IPCSkeleton::deviceId_ = "";
-}  // namespace OHOS
+} // namespace OHOS
 
 void DeletePermissionUsedRecordTest::SetUpTestCase()
 {}
@@ -132,6 +132,6 @@ HWTEST_F(DeletePermissionUsedRecordTest, DeletePermissionUsedRecord_0100, Functi
     recordResult = DataStorage::GetRealDataStorage().Find(DataStorage::PERMISSION_RECORD, recordValues);
     EXPECT_EQ(visitorResult, 0);
     EXPECT_EQ(recordResult, 0);
-    EXPECT_EQ(visitorSize - 1, (int)visitorValues.size());
-    EXPECT_EQ(recordSize - 2, (int)recordValues.size());
+    EXPECT_EQ(visitorSize - 1, (int) visitorValues.size());
+    EXPECT_EQ(recordSize - 2, (int) recordValues.size());
 }

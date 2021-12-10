@@ -28,7 +28,6 @@ namespace Permission {
 class GetPermissionUsedRecordsAsynchTest : public testing::Test {
 public:
     DistributedPermissionManagerService managerService;
-    std::shared_ptr<DistributedPermissionManagerService> service;
     static void InitVisitorData();
     static void InitRecordData(int64_t timestamp);
 
@@ -52,7 +51,7 @@ public:
         }
     };
 };
-}  // namespace Permission
-}  // namespace Security
-}  // namespace OHOS
-#endif  // GET_PERMISSION_USED_RECORD_ASYNCH_TEST_H
+} // namespace Permission
+} // namespace Security
+} // namespace OHOS
+#endif // GET_PERMISSION_USED_RECORD_ASYNCH_TEST_H
