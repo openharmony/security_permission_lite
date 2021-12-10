@@ -47,7 +47,10 @@ static const std::string TARGET_DEVICE_ID_(TARGET_UDID_);
 
 static const int SLEEP_1S = 1000;
 static const int SLEEP_100 = 100;
+static const int SLEEP_300 = 300;
+static const int SLEEP_400 = 400;
 static const int SLEEP_500 = 500;
+static const int SLEEP_600 = 600;
 } // namespace
 class RemoteCommandManagerTest : public testing::Test {
 public:
@@ -677,7 +680,7 @@ HWTEST_F(RemoteCommandManagerTest, RemoteCommandManager_Loop_003, TestSize.Level
     // simulate response
     std::atomic<int> count(0);
     std::function<void()> runner = [&]() {
-        std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_500));
+        std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_300));
         std::string uuid = ::GetUuidMock();
         std::string dummyResult = "{[1000]}";
         auto channel = (SoftBusChannel *) (instance->GetExecutorChannel(TARGET_UDID_).get());
@@ -703,23 +706,22 @@ HWTEST_F(RemoteCommandManagerTest, RemoteCommandManager_Loop_003, TestSize.Level
     int code = instance->Loop();
     EXPECT_TRUE(Constant::SUCCESS == code);
 
-    int sleep150 = 150;
-    std::this_thread::sleep_for(std::chrono::milliseconds(sleep150));
+    std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_400));
+    EXPECT_EQ(count.load(), 1);
 
     // wait thread
     if (responseThread.joinable()) {
         responseThread.join();
     }
     // wait for executor thread
-    int sleep500 = 500;
-    std::this_thread::sleep_for(std::chrono::milliseconds(sleep500));
+    std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_600));
     EXPECT_EQ(count.load(), 2);
 
     if (responseThread2.joinable()) {
         responseThread2.join();
     }
 
-    std::this_thread::sleep_for(std::chrono::milliseconds(sleep500));
+    std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_600));
 }
 
 /*
@@ -808,11 +810,8 @@ HWTEST_F(RemoteCommandManagerTest, RemoteCommandManager_Loop_004, TestSize.Level
     if (instance->GetExecutorChannel(TARGET_UUID_) != nullptr) {
         instance->GetExecutorChannel(TARGET_UUID_)->Release();
     }
-    int sleep5000 = 5000;
-    std::this_thread::sleep_for(std::chrono::milliseconds(sleep5000));
-
-    int sleep500 = 500;
-    std::this_thread::sleep_for(std::chrono::milliseconds(sleep500));
+    int sleep10s = 10000;
+    std::this_thread::sleep_for(std::chrono::milliseconds(sleep10s));
 }
 
 /*

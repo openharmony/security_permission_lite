@@ -21,7 +21,7 @@ std::string IPCSkeleton::localDeviceId_ = "1004";
 std::string IPCSkeleton::deviceId_ = "";
 namespace Security {
 namespace Permission {
-namespace {}  // namespace
+namespace {} // namespace
 
 void CanRequestPermissionFromRemoteTest::SetUpTestCase(void)
 {}
@@ -51,8 +51,8 @@ HWTEST_F(CanRequestPermissionFromRemoteTest, can_request_permission_from_remote_
     // case deviceId =""
     EXPECT_TRUE(!service->CanRequestPermissionFromRemote(permission, nodeId));
     // case permission =""
-    DeviceInfoRepository::GetInstance().SaveDeviceInfo(
-        nodeId, "universallyUniqueId", deviceId, "deviceName", "deviceType");
+    DeviceInfoRepository::GetInstance().SaveDeviceInfo(nodeId, "universallyUniqueId", deviceId, "deviceName",
+        "deviceType");
     EXPECT_TRUE(!service->CanRequestPermissionFromRemote(permission, nodeId));
     // case permission is not SensitiveResource
     permission = "notSensitiveResource";
@@ -60,6 +60,6 @@ HWTEST_F(CanRequestPermissionFromRemoteTest, can_request_permission_from_remote_
     permission = Constant::LOCATION;
     EXPECT_TRUE(service->CanRequestPermissionFromRemote(permission, nodeId));
 }
-}  // namespace Permission
-}  // namespace Security
-}  // namespace OHOS
+} // namespace Permission
+} // namespace Security
+} // namespace OHOS

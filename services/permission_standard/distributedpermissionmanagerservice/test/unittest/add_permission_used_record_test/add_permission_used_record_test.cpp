@@ -26,10 +26,13 @@ pid_t IPCSkeleton::pid_ = 1;
 pid_t IPCSkeleton::uid_ = 1;
 std::string IPCSkeleton::localDeviceId_ = "1004";
 std::string IPCSkeleton::deviceId_ = "";
-}  // namespace OHOS
+} // namespace OHOS
 
 void AddPermissionUsedRecordTest::SetUpTestCase()
-{}
+{
+    DeviceInfoManager::GetInstance().AddDeviceInfo("device_0", "device_0", "device_0", "device_name_0", "device_type");
+    cout << "SetUpTestCase()" << endl;
+}
 
 void AddPermissionUsedRecordTest::TearDownTestCase()
 {
@@ -103,6 +106,87 @@ void AddPermissionUsedRecordTest::InitRecordData(int64_t timestamp)
 }
 
 /**
+ * @tc.number: AddPermissionUsedRecord_0100
+ * @tc.name: test add permission used record
+ * @tc.desc: 1. permissionVisitor table does not exist input data
+ *           2. permissionRecord table does not exist input data
+ */
+HWTEST_F(AddPermissionUsedRecordTest, AddPermissionUsedRecord_0100, Function | MediumTest | Level1)
+{
+    SetPermissionNames(permissionNames);
+    srand((unsigned) time(NULL));
+    int index = rand() % permissionNames.size();
+    string permissionName = permissionNames[index];
+    string random = to_string(rand());
+    string deviceId = "device_" + random;
+    int32_t uid = rand();
+    int32_t accessCount = 1;
+    int32_t failCount = 0;
+    DeviceInfoManager::GetInstance().AddDeviceInfo(deviceId, deviceId, deviceId, "mock_device_name_device_" + random,
+        "device_type");
+
+    visitorValues.clear();
+    recordValues.clear();
+    int visitorSize = 0;
+    int recordSize = 0;
+    int visitorResult = DataStorage::GetRealDataStorage().Find(DataStorage::PERMISSION_VISITOR, visitorValues);
+    int recordResult = DataStorage::GetRealDataStorage().Find(DataStorage::PERMISSION_RECORD, recordValues);
+    EXPECT_EQ(visitorResult, 0);
+    EXPECT_EQ(recordResult, 0);
+    visitorSize = visitorValues.size();
+    recordSize = recordValues.size();
+    std::string appidInfo = DistributedPermissionKit::AppIdInfoHelper::CreateAppIdInfo(0, uid, deviceId);
+    managerService.AddPermissionsRecord(permissionName, appidInfo, accessCount, failCount);
+    visitorValues.clear();
+    recordValues.clear();
+    visitorResult = DataStorage::GetRealDataStorage().Find(DataStorage::PERMISSION_VISITOR, visitorValues);
+    recordResult = DataStorage::GetRealDataStorage().Find(DataStorage::PERMISSION_RECORD, recordValues);
+    EXPECT_EQ(visitorResult, 0);
+    EXPECT_EQ(recordResult, 0);
+    EXPECT_EQ(visitorSize + 1, (int) visitorValues.size());
+    EXPECT_EQ(recordSize + 1, (int) recordValues.size());
+}
+
+/**
+ * @tc.number: AddPermissionUsedRecord_0200
+ * @tc.name: test add permission used record
+ * @tc.desc: 1. permissionVisitor table already exists input data
+ *           2. permissionRecord table already exists input data
+ *           3. permissionRecord table does not need to drop precision of timestamp
+ */
+HWTEST_F(AddPermissionUsedRecordTest, AddPermissionUsedRecord_0200, Function | MediumTest | Level1)
+{
+    InitVisitorData();
+    InitRecordData(TimeUtil::GetTimestamp() - Constant::PRECISION);
+    string permissionName = "ohos.permission.READ_CONTACTS";
+    string deviceId = "device_0";
+    int32_t uid = 0;
+    int32_t accessCount = 0;
+    int32_t failCount = 1;
+
+    visitorValues.clear();
+    recordValues.clear();
+    int visitorSize = 0;
+    int recordSize = 0;
+    int visitorResult = DataStorage::GetRealDataStorage().Find(DataStorage::PERMISSION_VISITOR, visitorValues);
+    int recordResult = DataStorage::GetRealDataStorage().Find(DataStorage::PERMISSION_RECORD, recordValues);
+    EXPECT_EQ(visitorResult, 0);
+    EXPECT_EQ(recordResult, 0);
+    visitorSize = visitorValues.size();
+    recordSize = recordValues.size();
+    std::string appidInfo = DistributedPermissionKit::AppIdInfoHelper::CreateAppIdInfo(0, uid, deviceId);
+    managerService.AddPermissionsRecord(permissionName, appidInfo, accessCount, failCount);
+    visitorValues.clear();
+    recordValues.clear();
+    visitorResult = DataStorage::GetRealDataStorage().Find(DataStorage::PERMISSION_VISITOR, visitorValues);
+    recordResult = DataStorage::GetRealDataStorage().Find(DataStorage::PERMISSION_RECORD, recordValues);
+    EXPECT_EQ(visitorResult, 0);
+    EXPECT_EQ(recordResult, 0);
+    EXPECT_EQ(visitorSize, (int) visitorValues.size());
+    EXPECT_EQ(recordSize + 1, (int) recordValues.size());
+}
+
+/**
  * @tc.number: AddPermissionUsedRecord_0300
  * @tc.name: test add permission used record
  * @tc.desc: 1. permissionVisitor table already exists input data
@@ -138,8 +222,8 @@ HWTEST_F(AddPermissionUsedRecordTest, AddPermissionUsedRecord_0300, Function | M
     recordResult = DataStorage::GetRealDataStorage().Find(DataStorage::PERMISSION_RECORD, recordValues);
     EXPECT_EQ(visitorResult, 0);
     EXPECT_EQ(recordResult, 0);
-    EXPECT_EQ(visitorSize, (int)visitorValues.size());
-    EXPECT_EQ(recordSize, (int)recordValues.size());
+    EXPECT_EQ(visitorSize, (int) visitorValues.size());
+    EXPECT_EQ(recordSize, (int) recordValues.size());
 }
 
 /**
@@ -174,8 +258,8 @@ HWTEST_F(AddPermissionUsedRecordTest, AddPermissionUsedRecord_0400, Function | M
     recordResult = DataStorage::GetRealDataStorage().Find(DataStorage::PERMISSION_RECORD, recordValues);
     EXPECT_EQ(visitorResult, 0);
     EXPECT_EQ(recordResult, 0);
-    EXPECT_EQ(visitorSize, (int)visitorValues.size());
-    EXPECT_EQ(recordSize, (int)recordValues.size());
+    EXPECT_EQ(visitorSize, (int) visitorValues.size());
+    EXPECT_EQ(recordSize, (int) recordValues.size());
 }
 
 /**
@@ -203,5 +287,44 @@ HWTEST_F(AddPermissionUsedRecordTest, AddPermissionUsedRecord_0500, Function | M
     recordResult = DataStorage::GetRealDataStorage().Find(DataStorage::PERMISSION_RECORD, recordValues);
     EXPECT_EQ(recordResult, 0);
 
-    EXPECT_EQ(recordSize, (int)recordValues.size());
+    EXPECT_EQ(recordSize, (int) recordValues.size());
+}
+
+/**
+ * @tc.number: AddPermissionUsedRecord_0600
+ * @tc.name: test delete permission used record
+ * @tc.desc: 1. The delete operation occurred when the add operation started
+ *           2. Delete data that exist more than 30 days
+ */
+HWTEST_F(AddPermissionUsedRecordTest, AddPermissionUsedRecord_0600, Function | MediumTest | Level1)
+{
+    visitorValues.clear();
+    recordValues.clear();
+    int visitorSize = 0;
+    int recordSize = 0;
+    int visitorResult = DataStorage::GetRealDataStorage().Find(DataStorage::PERMISSION_VISITOR, visitorValues);
+    int recordResult = DataStorage::GetRealDataStorage().Find(DataStorage::PERMISSION_RECORD, recordValues);
+    EXPECT_EQ(visitorResult, 0);
+    EXPECT_EQ(recordResult, 0);
+    visitorSize = visitorValues.size();
+    recordSize = recordValues.size();
+
+    InitVisitorData();
+    InitRecordData(-2592000);
+    string permissionName = "ohos.permission.READ_CONTACTS";
+    string deviceId = "device_0";
+    int32_t uid = 0;
+    int32_t accessCount = 0;
+    int32_t failCount = 1;
+    std::string appidInfo = DistributedPermissionKit::AppIdInfoHelper::CreateAppIdInfo(0, uid, deviceId);
+    managerService.AddPermissionsRecord(permissionName, appidInfo, accessCount, failCount);
+    sleep(1);
+    visitorValues.clear();
+    recordValues.clear();
+    visitorResult = DataStorage::GetRealDataStorage().Find(DataStorage::PERMISSION_VISITOR, visitorValues);
+    recordResult = DataStorage::GetRealDataStorage().Find(DataStorage::PERMISSION_RECORD, recordValues);
+    EXPECT_EQ(visitorResult, 0);
+    EXPECT_EQ(recordResult, 0);
+    EXPECT_EQ(visitorSize + 1, (int) visitorValues.size());
+    EXPECT_EQ(recordSize + 1, (int) recordValues.size());
 }

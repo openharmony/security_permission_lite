@@ -20,109 +20,109 @@
 namespace OHOS {
 namespace AppExecFwk {
 
-bool BundleMgrService::GetAppsGrantedPermissions(
-    const std::vector<std::string> &permissions, std::vector<std::string> &appNames)
+bool BundleMgrService::GetAppsGrantedPermissions(const std::vector<std::string> &permissions,
+    std::vector<std::string> &appNames)
 {
-    std::cout<<"GetAppsGrantedPermissions"<<std::endl;
+    std::cout << "GetAppsGrantedPermissions" << std::endl;
     return true;
 }
 bool BundleMgrService::HasSystemCapability(const std::string &capName)
 {
-    std::cout<<"HasSystemCapability"<<std::endl;
+    std::cout << "HasSystemCapability" << std::endl;
     return true;
 }
 bool BundleMgrService::GetSystemAvailableCapabilities(std::vector<std::string> &systemCaps)
 {
-    std::cout<<"GetSystemAvailableCapabilities"<<std::endl;
+    std::cout << "GetSystemAvailableCapabilities" << std::endl;
     return true;
 }
 bool BundleMgrService::IsSafeMode()
 {
-    std::cout<<"IsSafeMode"<<std::endl;
+    std::cout << "IsSafeMode" << std::endl;
     return true;
 }
-bool BundleMgrService::CleanBundleCacheFiles(
-    const std::string &bundleName, const sptr<ICleanCacheCallback> &cleanCacheCallback)
+bool BundleMgrService::CleanBundleCacheFiles(const std::string &bundleName,
+    const sptr<ICleanCacheCallback> &cleanCacheCallback)
 {
-    std::cout<<"CleanBundleCacheFiles"<<std::endl;
+    std::cout << "CleanBundleCacheFiles" << std::endl;
     return true;
 }
 bool BundleMgrService::CleanBundleDataFiles(const std::string &bundleName)
 {
-    std::cout<<"CleanBundleDataFiles"<<std::endl;
+    std::cout << "CleanBundleDataFiles" << std::endl;
     return true;
 }
 bool BundleMgrService::RegisterBundleStatusCallback(const sptr<IBundleStatusCallback> &bundleStatusCallback)
 {
-    std::cout<<"RegisterBundleStatusCallback"<<std::endl;
+    std::cout << "RegisterBundleStatusCallback" << std::endl;
     return true;
 }
 bool BundleMgrService::ClearBundleStatusCallback(const sptr<IBundleStatusCallback> &bundleStatusCallback)
 {
-    std::cout<<"ClearBundleStatusCallback"<<std::endl;
+    std::cout << "ClearBundleStatusCallback" << std::endl;
     return true;
 }
 bool BundleMgrService::UnregisterBundleStatusCallback()
 {
-    std::cout<<"UnregisterBundleStatusCallback"<<std::endl;
+    std::cout << "UnregisterBundleStatusCallback" << std::endl;
     return true;
 }
 bool BundleMgrService::DumpInfos(const MockDumpFlag flag, const std::string &bundleName, std::string &result)
 {
-    std::cout<<"DumpInfos"<<std::endl;
+    std::cout << "DumpInfos" << std::endl;
     return true;
 }
 bool BundleMgrService::IsApplicationEnabled(const std::string &bundleName)
 {
-    std::cout<<"IsApplicationEnabled"<<std::endl;
+    std::cout << "IsApplicationEnabled" << std::endl;
     return true;
 }
 bool BundleMgrService::SetApplicationEnabled(const std::string &bundleName, bool isEnable)
 {
-    std::cout<<"SetApplicationEnabled"<<std::endl;
+    std::cout << "SetApplicationEnabled" << std::endl;
     return true;
 }
 bool BundleMgrService::IsAbilityEnabled(const AbilityInfo &abilityInfo)
 {
-    std::cout<<"IsAbilityEnabled"<<std::endl;
+    std::cout << "IsAbilityEnabled" << std::endl;
     return true;
 }
 bool BundleMgrService::SetAbilityEnabled(const AbilityInfo &abilityInfo, bool isEnabled)
 {
-    std::cout<<"SetAbilityEnabled"<<std::endl;
+    std::cout << "SetAbilityEnabled" << std::endl;
     return true;
 }
 std::string BundleMgrService::GetAbilityIcon(const std::string &bundleName, const std::string &className)
 {
-    std::cout<<"GetAbilityIcon"<<std::endl;
+    std::cout << "GetAbilityIcon" << std::endl;
     return "BundleName";
 }
-bool BundleMgrService::CanRequestPermission(
-    const std::string &bundleName, const std::string &permissionName, const int userId)
+bool BundleMgrService::CanRequestPermission(const std::string &bundleName, const std::string &permissionName,
+    const int userId)
 {
-    std::cout<<"CanRequestPermission"<<std::endl;
+    std::cout << "CanRequestPermission" << std::endl;
     return true;
 }
-bool BundleMgrService::RequestPermissionFromUser(
-    const std::string &bundleName, const std::string &permission, const int userId)
+bool BundleMgrService::RequestPermissionFromUser(const std::string &bundleName, const std::string &permission,
+    const int userId)
 {
-    std::cout<<"RequestPermissionFromUser"<<std::endl;
+    std::cout << "RequestPermissionFromUser" << std::endl;
     return true;
 }
 bool BundleMgrService::RegisterAllPermissionsChanged(const sptr<OnPermissionChangedCallback> &callback)
 {
-    std::cout<<"RegisterAllPermissionsChanged"<<std::endl;
+    std::cout << "RegisterAllPermissionsChanged" << std::endl;
     return true;
 }
-bool BundleMgrService::RegisterPermissionsChanged(
-    const std::vector<int> &uids, const sptr<OnPermissionChangedCallback> &callback)
+bool BundleMgrService::RegisterPermissionsChanged(const std::vector<int> &uids,
+    const sptr<OnPermissionChangedCallback> &callback)
 {
-    std::cout<<"RegisterPermissionsChanged"<<std::endl;
+    std::cout << "RegisterPermissionsChanged" << std::endl;
     return true;
 }
 bool BundleMgrService::UnregisterPermissionsChanged(const sptr<OnPermissionChangedCallback> &callback)
 {
-    std::cout<<"UnregisterPermissionsChanged"<<std::endl;
+    std::cout << "UnregisterPermissionsChanged" << std::endl;
     return true;
 }
 
@@ -139,8 +139,8 @@ bool BundleMgrService::GetFormsInfoByApp(const std::string &bundleName, std::vec
 {
     return true;
 }
-bool BundleMgrService::GetFormsInfoByModule(
-    const std::string &bundleName, const std::string &moduleName, std::vector<FormInfo> &formInfos)
+bool BundleMgrService::GetFormsInfoByModule(const std::string &bundleName, const std::string &moduleName,
+    std::vector<FormInfo> &formInfos)
 {
     return true;
 }
@@ -148,14 +148,14 @@ bool BundleMgrService::GetShortcutInfos(const std::string &bundleName, std::vect
 {
     return true;
 }
-bool BundleMgrService::GetApplicationInfo(
-    const std::string &appName, const ApplicationFlag flag, const int userId, ApplicationInfo &appInfo)
+bool BundleMgrService::GetApplicationInfo(const std::string &appName, const ApplicationFlag flag, const int userId,
+    ApplicationInfo &appInfo)
 {
-    std::cout<<"GetApplicationInfo"<<std::endl;
+    std::cout << "GetApplicationInfo" << std::endl;
     return true;
 }
-bool BundleMgrService::GetApplicationInfos(
-    const ApplicationFlag flag, const int userId, std::vector<ApplicationInfo> &appInfos)
+bool BundleMgrService::GetApplicationInfos(const ApplicationFlag flag, const int userId,
+    std::vector<ApplicationInfo> &appInfos)
 {
     return true;
 }
@@ -165,7 +165,7 @@ int BundleMgrService::CheckPermission(const std::string &bundleName, const std::
 }
 bool BundleMgrService::GetBundleInfo(const std::string &bundleName, const BundleFlag flag, BundleInfo &bundleInfo)
 {
-    std::cout<<"GetBundleInfo"<<std::endl;
+    std::cout << "GetBundleInfo" << std::endl;
     bundleInfo.name = "bundleInfo.name";
     bundleInfo.label = "bundleInfo.label";
     bundleInfo.description = "bundleInfo.description";
@@ -238,22 +238,22 @@ bool BundleMgrService::GetBundleInfo(const std::string &bundleName, const Bundle
 }
 bool BundleMgrService::GetBundleInfos(const BundleFlag flag, std::vector<BundleInfo> &bundleInfos)
 {
-    std::cout<<"GetBundleInfos"<<std::endl;
+    std::cout << "GetBundleInfos" << std::endl;
     return true;
 }
 int BundleMgrService::GetUidByBundleName(const std::string &bundleName, const int userId)
 {
-    std::cout<<"GetUidByBundleName"<<std::endl;
+    std::cout << "GetUidByBundleName" << std::endl;
     return 0;
 }
 std::string BundleMgrService::GetAppIdByBundleName(const std::string &bundleName, const int userId)
 {
-    std::cout<<"GetAppIdByBundleName"<<std::endl;
+    std::cout << "GetAppIdByBundleName" << std::endl;
     return "BundleName";
 }
 bool BundleMgrService::GetBundleNameForUid(const int uid, std::string &bundleName)
 {
-    std::cout<<"GetBundleNameForUid"<<std::endl;
+    std::cout << "GetBundleNameForUid" << std::endl;
     if (uid == 1024) {
         bundleName = "bundleName1024";
         return true;
@@ -266,7 +266,7 @@ bool BundleMgrService::GetBundleNameForUid(const int uid, std::string &bundleNam
 }
 bool BundleMgrService::GetBundlesForUid(const int uid, std::vector<std::string> &bundleNames)
 {
-    std::cout<<"GetBundlesForUid"<<std::endl;
+    std::cout << "GetBundlesForUid" << std::endl;
     if (uid == 1024) {
         bundleNames.push_back("bundleName1024");
         return true;
@@ -279,80 +279,80 @@ bool BundleMgrService::GetBundlesForUid(const int uid, std::vector<std::string> 
 }
 bool BundleMgrService::GetNameForUid(const int uid, std::string &name)
 {
-    std::cout<<"GetNameForUid"<<std::endl;
+    std::cout << "GetNameForUid" << std::endl;
     return true;
 }
 bool BundleMgrService::GetBundleGids(const std::string &bundleName, std::vector<int> &gids)
 {
-    std::cout<<"GetBundleGids"<<std::endl;
+    std::cout << "GetBundleGids" << std::endl;
     return true;
 }
 std::string BundleMgrService::GetAppType(const std::string &bundleName)
 {
-    std::cout<<"GetAppType"<<std::endl;
+    std::cout << "GetAppType" << std::endl;
     return "launcher";
 }
 bool BundleMgrService::CheckIsSystemAppByUid(const int uid)
 {
-    std::cout<<"CheckIsSystemAppByUid"<<std::endl;
+    std::cout << "CheckIsSystemAppByUid" << std::endl;
     return true;
 }
 bool BundleMgrService::GetBundleInfosByMetaData(const std::string &metaData, std::vector<BundleInfo> &bundleInfos)
 {
-    std::cout<<"GetBundleInfosByMetaData"<<std::endl;
+    std::cout << "GetBundleInfosByMetaData" << std::endl;
     return true;
 }
 bool BundleMgrService::QueryAbilityInfo(const Want &want, AbilityInfo &abilityInfo)
 {
-    std::cout<<"QueryAbilityInfo"<<std::endl;
+    std::cout << "QueryAbilityInfo" << std::endl;
     return true;
 }
 bool BundleMgrService::QueryAbilityInfoByUri(const std::string &abilityUri, AbilityInfo &abilityInfo)
 {
-    std::cout<<"QueryAbilityInfoByUri"<<std::endl;
+    std::cout << "QueryAbilityInfoByUri" << std::endl;
     return true;
 }
 bool BundleMgrService::QueryKeepAliveBundleInfos(std::vector<BundleInfo> &bundleInfos)
 {
-    std::cout<<"QueryKeepAliveBundleInfos"<<std::endl;
+    std::cout << "QueryKeepAliveBundleInfos" << std::endl;
     return true;
 }
 std::string BundleMgrService::GetAbilityLabel(const std::string &bundleName, const std::string &className)
 {
-    std::cout<<"GetAbilityLabel"<<std::endl;
+    std::cout << "GetAbilityLabel" << std::endl;
     return "BundleName";
 }
-bool BundleMgrService::GetBundleArchiveInfo(
-    const std::string &hapFilePath, const BundleFlag flag, BundleInfo &bundleInfo)
+bool BundleMgrService::GetBundleArchiveInfo(const std::string &hapFilePath, const BundleFlag flag,
+    BundleInfo &bundleInfo)
 {
-    std::cout<<"GetBundleArchiveInfo"<<std::endl;
+    std::cout << "GetBundleArchiveInfo" << std::endl;
     return true;
 }
 bool BundleMgrService::GetHapModuleInfo(const AbilityInfo &abilityInfo, HapModuleInfo &hapModuleInfo)
 {
-    std::cout<<"GetHapModuleInfo"<<std::endl;
+    std::cout << "GetHapModuleInfo" << std::endl;
     return true;
 }
 bool BundleMgrService::GetLaunchWantForBundle(const std::string &bundleName, Want &want)
 {
-    std::cout<<"GetLaunchWantForBundle"<<std::endl;
+    std::cout << "GetLaunchWantForBundle" << std::endl;
     return true;
 }
 int BundleMgrService::CheckPublicKeys(const std::string &firstBundleName, const std::string &secondBundleName)
 {
-    std::cout<<"CheckPublicKeys"<<std::endl;
+    std::cout << "CheckPublicKeys" << std::endl;
     return 0;
 }
 bool BundleMgrService::GetPermissionDef(const std::string &permissionName, PermissionDef &permissionDef)
 {
-    std::cout<<"GetPermissionDef"<<std::endl;
+    std::cout << "GetPermissionDef" << std::endl;
     return false;
 }
 bool BundleMgrService::GetAllPermissionGroupDefs(std::vector<PermissionDef> &permissionDefs)
 {
-    std::cout<<"GetAllPermissionGroupDefs"<<std::endl;
+    std::cout << "GetAllPermissionGroupDefs" << std::endl;
     return true;
 }
 
-}  // namespace AppExecFwk
-}  // namespace OHOS
+} // namespace AppExecFwk
+} // namespace OHOS

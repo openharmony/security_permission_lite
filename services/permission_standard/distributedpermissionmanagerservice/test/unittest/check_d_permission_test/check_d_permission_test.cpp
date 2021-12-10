@@ -180,6 +180,6 @@ HWTEST_F(CheckDPermissionTest, CheckDPermission09, Function | MediumTest | Level
     int ret = DistributedPermissionManagerService().CheckDPermission(duid, permissionName);
     EXPECT_EQ(result, ret);
 }
-}  // namespace Permission
-}  // namespace Security
-}  // namespace OHOS
+} // namespace Permission
+} // namespace Security
+} // namespace OHOS

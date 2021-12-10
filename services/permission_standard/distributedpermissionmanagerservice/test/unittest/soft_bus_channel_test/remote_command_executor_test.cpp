@@ -180,10 +180,7 @@ HWTEST_F(RemoteCommandExecutorTest, RemoteCommandExecutor_Construct_002, TestSiz
     time_t end = TimeUtil::GetTimestamp();
     PERMISSION_LOG_DEBUG(LABEL,
         "RemoteCommandExecutor_Construct_002: ellapsed %{public}ld second(s) from %{public}ld to %{public}ld",
-        (long) end - (long)begin, (long) begin, (long) end);
-
-    PERMISSION_LOG_DEBUG(LABEL, "start: %{public}ld", (long) begin);
-    PERMISSION_LOG_DEBUG(LABEL, "end: %{public}ld", (long) end);
+        (long) end - (long) begin, (long) begin, (long) end);
 
     EXPECT_TRUE(end - begin >= 3);
 }
@@ -712,7 +709,6 @@ HWTEST_F(RemoteCommandExecutorTest, RemoteCommandExecutor_ProcessOneCommand_001,
         if (responseThread.joinable()) {
             responseThread.join();
         }
-
         EXPECT_TRUE(code == Constant::SUCCESS);
     }
 }

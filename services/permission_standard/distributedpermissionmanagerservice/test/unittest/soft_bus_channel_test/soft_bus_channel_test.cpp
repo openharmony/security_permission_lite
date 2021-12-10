@@ -125,8 +125,8 @@ HWTEST_F(SoftBusChannelTest, SoftBusChannel_BuildConnection_001, TestSize.Level1
 
     {
         // when open session failed, return -1.
-        auto channel = std::make_shared<SoftBusChannel>(INVALID_DEVICE_);
-        int code = channel->BuildConnection();
+        auto channel1 = std::make_shared<SoftBusChannel>(INVALID_DEVICE_);
+        int code = channel1->BuildConnection();
         EXPECT_EQ(code, -1);
     }
 }
@@ -338,18 +338,28 @@ HWTEST_F(SoftBusChannelTest, SoftBusChannel_PrepareBytes_001, TestSize.Level1)
 HWTEST_F(SoftBusChannelTest, SoftBusChannel_IsSessionAvailable_001, TestSize.Level1)
 {
     PERMISSION_LOG_DEBUG(LABEL, "SoftBusChannel_IsSessionAvailable_001");
-    auto channel = std::make_shared<SoftBusChannel>(TARGET_DEVICE_ID_);
+    auto channel2 = std::make_shared<SoftBusChannel>(TARGET_DEVICE_ID_);
     {
         PERMISSION_LOG_DEBUG(LABEL, "SoftBusChannel_IsSessionAvailable_001-1");
-        bool ret = channel->IsSessionAvailable();
+        bool ret = channel2->IsSessionAvailable();
         EXPECT_FALSE(ret);
     }
 
     {
         PERMISSION_LOG_DEBUG(LABEL, "SoftBusChannel_IsSessionAvailable_001-2");
-        channel->BuildConnection();
-        bool ret = channel->IsSessionAvailable();
+        channel2->BuildConnection();
+        bool ret = channel2->IsSessionAvailable();
         EXPECT_TRUE(ret);
+    }
+
+    {
+        PERMISSION_LOG_DEBUG(LABEL, "SoftBusChannel_IsSessionAvailable_001: close connection");
+        channel2->CloseConnection();
+        // will execute delayed task
+        const long WAIT_SESSION_CLOSE_MILLISECONDS = 5000L;
+        std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_SESSION_CLOSE_MILLISECONDS + 1000));
+        bool ret = channel2->IsSessionAvailable();
+        EXPECT_FALSE(ret);
     }
 }
 
@@ -570,10 +580,10 @@ HWTEST_F(SoftBusChannelTest, SoftBusChannel_ExecuteCommand_002, TestSize.Level1)
         std::function<void()> runner = [&]() {
             PERMISSION_LOG_DEBUG(LABEL, "simulator start");
             std::this_thread::sleep_for(std::chrono::milliseconds(callbackSleepMs));
-
+            std::string uuid = ::GetUuidMock();
             simulatorExecuted.store(true);
             PERMISSION_LOG_DEBUG(LABEL, "simulator before handle response");
-            channel->HandleResponse(id, dummyResult);
+            channel->HandleResponse(uuid, dummyResult);
 
             PERMISSION_LOG_DEBUG(LABEL, "simulator after handle response, stop");
         };
@@ -595,12 +605,17 @@ HWTEST_F(SoftBusChannelTest, SoftBusChannel_ExecuteCommand_002, TestSize.Level1)
         }
 
         EXPECT_TRUE(simulatorExecuted.load() == true);
+
+        PERMISSION_LOG_DEBUG(LABEL, "result = %{public}s", result.c_str());
+        PERMISSION_LOG_DEBUG(LABEL, "dummyResult = %{public}s", dummyResult.c_str());
+
+        EXPECT_TRUE(result == dummyResult);
         time_t end = TimeUtil::GetTimestamp();
         PERMISSION_LOG_DEBUG(LABEL, "time from %{public}ld to %{public}ld, with callback ellapsed %{public}d ms",
             (long) begin, (long) end, callbackSleepMs);
         // callback ellapsed 1 second.
         EXPECT_TRUE(end - begin >= 1);
-
+        EXPECT_TRUE(end - begin <= 3);
         channel->CloseConnection();
     }
 }

@@ -36,7 +36,6 @@ void PermissionRemindTest::TearDownTestCase()
 void PermissionRemindTest::SetUp()
 {
     dpms_ = DelayedSingleton<DistributedPermissionManagerService>::GetInstance();
-    dpms_->OnStart();
     DeviceInfoRepository::GetInstance().SaveDeviceInfo(deviceId, deviceId, deviceId, deviceName, "");
 
     BundlePermissionsDto bundles;
@@ -70,7 +69,6 @@ void PermissionRemindTest::TearDown()
 {
     DeviceInfoRepository::GetInstance().Clear();
     SubjectDevicePermissionManager::GetInstance().distributedPermissionMapping_.clear();
-    dpms_->OnStop();
 }
 
 void PermissionRemindTest::TestCallback::StartUsingPermission(const PermissionReminderInfo &permReminderInfo)

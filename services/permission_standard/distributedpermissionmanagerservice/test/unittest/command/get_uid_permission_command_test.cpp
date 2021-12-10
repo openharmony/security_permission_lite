@@ -12,25 +12,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <thread>
-#include <functional>
 
-#include <map>
-#include <iostream>
+#include "get_uid_permission_command_test.h"
 #include <algorithm>
+#include <functional>
 #include <fstream>
-#include <memory>
 #include <iostream>
+#include <iostream>
+#include <map>
+#include <memory>
+#include <thread>
 #include "gtest/gtest.h"
-#include "mock_bundle_mgr.h"
-#include "constant_mock.h"
-#include "mock_permission_mgr.h"
+#include "ability_manager_interface.h"
 #include "base_remote_command.h"
-#include "get_uid_permission_command.h"
+#include "constant_mock.h"
 #include "if_system_ability_manager.h"
 #include "iservice_registry.h"
-#include "ability_manager_interface.h"
-#include "get_uid_permission_command_test.h"
+#include "mock_bundle_mgr.h"
+#include "mock_permission_mgr.h"
 
 using namespace std;
 using namespace OHOS::Security::Permission;
