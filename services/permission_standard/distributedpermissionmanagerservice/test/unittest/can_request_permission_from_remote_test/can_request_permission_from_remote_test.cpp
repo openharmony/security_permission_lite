@@ -21,20 +21,10 @@ std::string IPCSkeleton::localDeviceId_ = "1004";
 std::string IPCSkeleton::deviceId_ = "";
 namespace Security {
 namespace Permission {
-namespace {}  // namespace
+namespace {} // namespace
 
 void CanRequestPermissionFromRemoteTest::SetUpTestCase(void)
-{
-    OHOS::sptr<OHOS::IRemoteObject> bundleObject = new OHOS::AppExecFwk::BundleMgrService();
-    OHOS::sptr<OHOS::IRemoteObject> permissionObject = new PermissionManagerService();
-    auto sysMgr = OHOS::SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
-    if (sysMgr == NULL) {
-        GTEST_LOG_(ERROR) << "fail to get ISystemAbilityManager";
-        return;
-    }
-    sysMgr->AddSystemAbility(Constant::ServiceId::BUNDLE_MGR_SERVICE_SYS_ABILITY_ID, bundleObject);
-    sysMgr->AddSystemAbility(Constant::ServiceId::SUBSYS_SECURITY_PERMISSION_SYS_SERVICE_ID, permissionObject);
-}
+{}
 void CanRequestPermissionFromRemoteTest::TearDownTestCase(void)
 {}
 void CanRequestPermissionFromRemoteTest::SetUp()
@@ -61,8 +51,8 @@ HWTEST_F(CanRequestPermissionFromRemoteTest, can_request_permission_from_remote_
     // case deviceId =""
     EXPECT_TRUE(!service->CanRequestPermissionFromRemote(permission, nodeId));
     // case permission =""
-    DeviceInfoRepository::GetInstance().SaveDeviceInfo(
-        nodeId, "universallyUniqueId", deviceId, "deviceName", "deviceType");
+    DeviceInfoRepository::GetInstance().SaveDeviceInfo(nodeId, "universallyUniqueId", deviceId, "deviceName",
+        "deviceType");
     EXPECT_TRUE(!service->CanRequestPermissionFromRemote(permission, nodeId));
     // case permission is not SensitiveResource
     permission = "notSensitiveResource";
@@ -70,6 +60,6 @@ HWTEST_F(CanRequestPermissionFromRemoteTest, can_request_permission_from_remote_
     permission = Constant::LOCATION;
     EXPECT_TRUE(service->CanRequestPermissionFromRemote(permission, nodeId));
 }
-}  // namespace Permission
-}  // namespace Security
-}  // namespace OHOS
+} // namespace Permission
+} // namespace Security
+} // namespace OHOS

@@ -26,24 +26,13 @@ pid_t IPCSkeleton::pid_ = 1;
 pid_t IPCSkeleton::uid_ = 1;
 std::string IPCSkeleton::localDeviceId_ = "1004";
 std::string IPCSkeleton::deviceId_ = "";
-}  // namespace OHOS
+} // namespace OHOS
 
 void AddPermissionUsedRecordTest::SetUpTestCase()
 {
     DeviceInfoManager::GetInstance().AddDeviceInfo("device_0", "device_0", "device_0", "device_name_0", "device_type");
     cout << "SetUpTestCase()" << endl;
-
-    OHOS::sptr<OHOS::IRemoteObject> bundleObject = new OHOS::AppExecFwk::BundleMgrService();
-    OHOS::sptr<OHOS::IRemoteObject> permissionObject = new PermissionManagerService();
-    auto sysMgr = OHOS::SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
-    if (sysMgr == NULL) {
-        GTEST_LOG_(ERROR) << "fail to get ISystemAbilityManager";
-        return;
-    }
-
-        sysMgr->AddSystemAbility(Constant::ServiceId::BUNDLE_MGR_SERVICE_SYS_ABILITY_ID, bundleObject);
-        sysMgr->AddSystemAbility(Constant::ServiceId::SUBSYS_SECURITY_PERMISSION_SYS_SERVICE_ID, permissionObject);
-    }
+}
 
 void AddPermissionUsedRecordTest::TearDownTestCase()
 {
@@ -125,7 +114,7 @@ void AddPermissionUsedRecordTest::InitRecordData(int64_t timestamp)
 HWTEST_F(AddPermissionUsedRecordTest, AddPermissionUsedRecord_0100, Function | MediumTest | Level1)
 {
     SetPermissionNames(permissionNames);
-    srand((unsigned)time(NULL));
+    srand((unsigned) time(NULL));
     int index = rand() % permissionNames.size();
     string permissionName = permissionNames[index];
     string random = to_string(rand());
@@ -133,8 +122,8 @@ HWTEST_F(AddPermissionUsedRecordTest, AddPermissionUsedRecord_0100, Function | M
     int32_t uid = rand();
     int32_t accessCount = 1;
     int32_t failCount = 0;
-    DeviceInfoManager::GetInstance().AddDeviceInfo(
-        deviceId, deviceId, deviceId, "mock_device_name_device_" + random, "device_type");
+    DeviceInfoManager::GetInstance().AddDeviceInfo(deviceId, deviceId, deviceId, "mock_device_name_device_" + random,
+        "device_type");
 
     visitorValues.clear();
     recordValues.clear();
@@ -154,8 +143,8 @@ HWTEST_F(AddPermissionUsedRecordTest, AddPermissionUsedRecord_0100, Function | M
     recordResult = DataStorage::GetRealDataStorage().Find(DataStorage::PERMISSION_RECORD, recordValues);
     EXPECT_EQ(visitorResult, 0);
     EXPECT_EQ(recordResult, 0);
-    EXPECT_EQ(visitorSize + 1, (int)visitorValues.size());
-    EXPECT_EQ(recordSize + 1, (int)recordValues.size());
+    EXPECT_EQ(visitorSize + 1, (int) visitorValues.size());
+    EXPECT_EQ(recordSize + 1, (int) recordValues.size());
 }
 
 /**
@@ -193,8 +182,8 @@ HWTEST_F(AddPermissionUsedRecordTest, AddPermissionUsedRecord_0200, Function | M
     recordResult = DataStorage::GetRealDataStorage().Find(DataStorage::PERMISSION_RECORD, recordValues);
     EXPECT_EQ(visitorResult, 0);
     EXPECT_EQ(recordResult, 0);
-    EXPECT_EQ(visitorSize, (int)visitorValues.size());
-    EXPECT_EQ(recordSize + 1, (int)recordValues.size());
+    EXPECT_EQ(visitorSize, (int) visitorValues.size());
+    EXPECT_EQ(recordSize + 1, (int) recordValues.size());
 }
 
 /**
@@ -233,8 +222,8 @@ HWTEST_F(AddPermissionUsedRecordTest, AddPermissionUsedRecord_0300, Function | M
     recordResult = DataStorage::GetRealDataStorage().Find(DataStorage::PERMISSION_RECORD, recordValues);
     EXPECT_EQ(visitorResult, 0);
     EXPECT_EQ(recordResult, 0);
-    EXPECT_EQ(visitorSize, (int)visitorValues.size());
-    EXPECT_EQ(recordSize, (int)recordValues.size());
+    EXPECT_EQ(visitorSize, (int) visitorValues.size());
+    EXPECT_EQ(recordSize, (int) recordValues.size());
 }
 
 /**
@@ -269,8 +258,8 @@ HWTEST_F(AddPermissionUsedRecordTest, AddPermissionUsedRecord_0400, Function | M
     recordResult = DataStorage::GetRealDataStorage().Find(DataStorage::PERMISSION_RECORD, recordValues);
     EXPECT_EQ(visitorResult, 0);
     EXPECT_EQ(recordResult, 0);
-    EXPECT_EQ(visitorSize, (int)visitorValues.size());
-    EXPECT_EQ(recordSize, (int)recordValues.size());
+    EXPECT_EQ(visitorSize, (int) visitorValues.size());
+    EXPECT_EQ(recordSize, (int) recordValues.size());
 }
 
 /**
@@ -298,7 +287,7 @@ HWTEST_F(AddPermissionUsedRecordTest, AddPermissionUsedRecord_0500, Function | M
     recordResult = DataStorage::GetRealDataStorage().Find(DataStorage::PERMISSION_RECORD, recordValues);
     EXPECT_EQ(recordResult, 0);
 
-    EXPECT_EQ(recordSize, (int)recordValues.size());
+    EXPECT_EQ(recordSize, (int) recordValues.size());
 }
 
 /**
@@ -336,6 +325,6 @@ HWTEST_F(AddPermissionUsedRecordTest, AddPermissionUsedRecord_0600, Function | M
     recordResult = DataStorage::GetRealDataStorage().Find(DataStorage::PERMISSION_RECORD, recordValues);
     EXPECT_EQ(visitorResult, 0);
     EXPECT_EQ(recordResult, 0);
-    EXPECT_EQ(visitorSize + 1, (int)visitorValues.size());
-    EXPECT_EQ(recordSize + 1, (int)recordValues.size());
+    EXPECT_EQ(visitorSize + 1, (int) visitorValues.size());
+    EXPECT_EQ(recordSize + 1, (int) recordValues.size());
 }

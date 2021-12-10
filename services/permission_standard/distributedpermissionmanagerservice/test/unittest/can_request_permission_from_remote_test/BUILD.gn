@@ -88,6 +88,8 @@ ohos_unittest("can_request_permission_from_remote_test") {
     "${distributed_permission_services_path}/test/mock/src/mock_permission_mgr.cpp",
     "${distributed_permission_services_path}/test/mock/src/request_permissions_from_remote_test/mock_app_info_fetcher.cpp",
     "${distributed_permission_services_path}/test/mock/src/request_permissions_from_remote_test/mock_permission_bms_manager.cpp",
+    "../../mock/src/bms_adapter_mock.cpp",
+    "../../mock/src/pms_adapter_mock.cpp",
     "../../mock/src/soft_bus_center_mock.cpp",
     "../../mock/src/soft_bus_session_mock.cpp",
     "can_request_permission_from_remote_test.cpp",

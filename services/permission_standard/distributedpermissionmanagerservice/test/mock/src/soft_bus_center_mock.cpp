@@ -24,7 +24,7 @@ using namespace OHOS::Security::Permission;
 namespace {
 static constexpr OHOS::HiviewDFX::HiLogLabel LABEL = {LOG_CORE, SECURITY_DOMAIN_PERMISSION, "SoftBusCenterMock"};
 static const int REG_COUNT_LIMIT = 10;
-}  // namespace
+} // namespace
 static int regCount_ = -1;
 static INodeStateCb *callback_ = nullptr;
 
@@ -69,7 +69,7 @@ int32_t GetLocalNodeDeviceInfo(const char *pkgName, NodeBasicInfo *info)
 {
     if (IsRegCountOK()) {
         strcpy_s(info->deviceName, sizeof(info->deviceName), "test-device-id-001");
-        strcpy_s(info->deviceName, sizeof(info->deviceName), "test-device-id-001:network-id-001");
+        strcpy_s(info->networkId, sizeof(info->networkId), "test-device-id-001:network-id-001");
         info->deviceTypeId = 1;
         PERMISSION_LOG_DEBUG(LABEL, "success, count: %{public}d", regCount_);
         return Constant::SUCCESS;
@@ -78,8 +78,8 @@ int32_t GetLocalNodeDeviceInfo(const char *pkgName, NodeBasicInfo *info)
     return Constant::FAILURE;
 }
 
-int32_t GetNodeKeyInfo(
-    const char *pkgName, const char *networkId, NodeDeivceInfoKey key, uint8_t *info, int32_t infoLen)
+int32_t GetNodeKeyInfo(const char *pkgName, const char *networkId, NodeDeivceInfoKey key, uint8_t *info,
+    int32_t infoLen)
 {
     if (networkId == nullptr || networkId[0] == '\0') {
         PERMISSION_LOG_DEBUG(LABEL, "failure, invalid networkId, pkg name: %{public}s", pkgName);
@@ -90,13 +90,13 @@ int32_t GetNodeKeyInfo(
         if (key == NodeDeivceInfoKey::NODE_KEY_UDID) {
             std::string temp = networkId;
             temp += ":udid-001";
-            strncpy_s((char *)info, infoLen, temp.c_str(), temp.length());
+            strncpy_s((char *) info, infoLen, temp.c_str(), temp.length());
             infoLen = temp.length();
         }
         if (key == NodeDeivceInfoKey::NODE_KEY_UUID) {
             std::string temp = networkId;
             temp += ":uuid-001";
-            strncpy_s((char *)info, infoLen, temp.c_str(), temp.length());
+            strncpy_s((char *) info, infoLen, temp.c_str(), temp.length());
         }
         PERMISSION_LOG_DEBUG(LABEL, "success, count: %{public}d, id: %{public}s", regCount_, info);
         return Constant::SUCCESS;

@@ -27,20 +27,10 @@ pid_t IPCSkeleton::pid_ = 1;
 pid_t IPCSkeleton::uid_ = 1;
 std::string IPCSkeleton::localDeviceId_ = "1004";
 std::string IPCSkeleton::deviceId_ = "";
-}  // namespace OHOS
+} // namespace OHOS
 
 void DeletePermissionUsedRecordTest::SetUpTestCase()
-{
-    OHOS::sptr<OHOS::IRemoteObject> bundleObject = new OHOS::AppExecFwk::BundleMgrService();
-    OHOS::sptr<OHOS::IRemoteObject> permissionObject = new PermissionManagerService();
-    auto sysMgr = OHOS::SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
-    if (sysMgr == NULL) {
-        GTEST_LOG_(ERROR) << "fail to get ISystemAbilityManager";
-        return;
-    }
-    sysMgr->AddSystemAbility(Constant::ServiceId::BUNDLE_MGR_SERVICE_SYS_ABILITY_ID, bundleObject);
-    sysMgr->AddSystemAbility(Constant::ServiceId::SUBSYS_SECURITY_PERMISSION_SYS_SERVICE_ID, permissionObject);
-}
+{}
 
 void DeletePermissionUsedRecordTest::TearDownTestCase()
 {
@@ -142,6 +132,6 @@ HWTEST_F(DeletePermissionUsedRecordTest, DeletePermissionUsedRecord_0100, Functi
     recordResult = DataStorage::GetRealDataStorage().Find(DataStorage::PERMISSION_RECORD, recordValues);
     EXPECT_EQ(visitorResult, 0);
     EXPECT_EQ(recordResult, 0);
-    EXPECT_EQ(visitorSize - 1, (int)visitorValues.size());
-    EXPECT_EQ(recordSize - 2, (int)recordValues.size());
+    EXPECT_EQ(visitorSize - 1, (int) visitorValues.size());
+    EXPECT_EQ(recordSize - 2, (int) recordValues.size());
 }

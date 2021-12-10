@@ -32,9 +32,9 @@
 namespace OHOS {
 namespace AppExecFwk {
 enum class MockDumpFlag {
-    DUMP_BUNDLE_LIST = 1,  // corresponse to option "-bundle-list"
-    DUMP_ALL_BUNDLE_INFO,  // corresponse to option "-bundle"
-    DUMP_BUNDLE_INFO,      // corresponse to option "-bundle [name]"
+    DUMP_BUNDLE_LIST = 1, // corresponse to option "-bundle-list"
+    DUMP_ALL_BUNDLE_INFO, // corresponse to option "-bundle"
+    DUMP_BUNDLE_INFO, // corresponse to option "-bundle [name]"
 };
 
 class IBundleMgrMock : public IRemoteBroker {
@@ -51,8 +51,8 @@ public:
      * @param appInfo Indicates the obtained ApplicationInfo object.
      * @return Returns true if the application is successfully obtained; returns false otherwise.
      */
-    virtual bool GetApplicationInfo(
-        const std::string &appName, const ApplicationFlag flag, const int userId, ApplicationInfo &appInfo) = 0;
+    virtual bool GetApplicationInfo(const std::string &appName, const ApplicationFlag flag, const int userId,
+        ApplicationInfo &appInfo) = 0;
     /**
      * @brief Obtains information about all installed applications of a specified user.
      * @param flag Indicates the flag used to specify information contained
@@ -61,8 +61,8 @@ public:
      * @param appInfos Indicates all of the obtained ApplicationInfo objects.
      * @return Returns true if the application is successfully obtained; returns false otherwise.
      */
-    virtual bool GetApplicationInfos(
-        const ApplicationFlag flag, const int userId, std::vector<ApplicationInfo> &appInfos) = 0;
+    virtual bool GetApplicationInfos(const ApplicationFlag flag, const int userId,
+        std::vector<ApplicationInfo> &appInfos) = 0;
     /**
      * @brief Obtains the BundleInfo based on a given bundle name.
      * @param bundleName Indicates the application bundle name to be queried.
@@ -173,8 +173,8 @@ public:
      * @param bundleInfo Indicates the obtained BundleInfo object.
      * @return Returns true if the BundleInfo is successfully obtained; returns false otherwise.
      */
-    virtual bool GetBundleArchiveInfo(
-        const std::string &hapFilePath, const BundleFlag flag, BundleInfo &bundleInfo) = 0;
+    virtual bool GetBundleArchiveInfo(const std::string &hapFilePath, const BundleFlag flag,
+        BundleInfo &bundleInfo) = 0;
     /**
      * @brief Obtain the HAP module info of a specific ability.
      * @param abilityInfo Indicates the ability.
@@ -199,10 +199,23 @@ public:
      */
     virtual int CheckPublicKeys(const std::string &firstBundleName, const std::string &secondBundleName) = 0;
     /**
-     * @brief Checks whether a specified bundle has been granted a specific permission.
-     * @param bundleName Indicates the name of the bundle to check.
-     * @param permission Indicates the permission to check.
-     * @return Returns 0 if the bundle has the permission; returns -1 otherwise.
+     * @brief Obtains all known permission groups in the system.
+     * @param permissions Indicates the permission array.
+     * @param appNames Indicates the list of application names that have the specified permissions.
+     * @return Returns true if the application names is successfully obtained; returns false otherwise.
+     */
+    virtual bool GetAppsGrantedPermissions(const std::vector<std::string> &permissions,
+        std::vector<std::string> &appNames) = 0;
+    /**
+     * @brief Checks whether the system has a specified capability.
+     * @param capName Indicates the name of the system feature to check.
+     * @return Returns true if the given feature specified by name is available in the system; returns false otherwise.
+     */
+    virtual bool HasSystemCapability(const std::string &capName) = 0;
+    /**
+     * @brief Obtains the capabilities that are available in the system.
+     * @param systemCaps Indicates the list of capabilities available in the system.
+     * @return Returns true if capabilities in the system are successfully obtained; returns false otherwise.
      */
     virtual int CheckPermission(const std::string &bundleName, const std::string &permission) = 0;
     /**
@@ -219,23 +232,10 @@ public:
      */
     virtual bool GetAllPermissionGroupDefs(std::vector<PermissionDef> &permissionDefs) = 0;
     /**
-     * @brief Obtains all known permission groups in the system.
-     * @param permissions Indicates the permission array.
-     * @param appNames Indicates the list of application names that have the specified permissions.
-     * @return Returns true if the application names is successfully obtained; returns false otherwise.
-     */
-    virtual bool GetAppsGrantedPermissions(
-        const std::vector<std::string> &permissions, std::vector<std::string> &appNames) = 0;
-    /**
-     * @brief Checks whether the system has a specified capability.
-     * @param capName Indicates the name of the system feature to check.
-     * @return Returns true if the given feature specified by name is available in the system; returns false otherwise.
-     */
-    virtual bool HasSystemCapability(const std::string &capName) = 0;
-    /**
-     * @brief Obtains the capabilities that are available in the system.
-     * @param systemCaps Indicates the list of capabilities available in the system.
-     * @return Returns true if capabilities in the system are successfully obtained; returns false otherwise.
+     * @brief Checks whether a specified bundle has been granted a specific permission.
+     * @param bundleName Indicates the name of the bundle to check.
+     * @param permission Indicates the permission to check.
+     * @return Returns 0 if the bundle has the permission; returns -1 otherwise.
      */
     virtual bool GetSystemAvailableCapabilities(std::vector<std::string> &systemCaps) = 0;
     /**
@@ -249,8 +249,8 @@ public:
      * @param cleanCacheCallback Indicates the callback to be invoked for returning the operation result.
      * @return Returns true if this function is successfully called; returns false otherwise.
      */
-    virtual bool CleanBundleCacheFiles(
-        const std::string &bundleName, const sptr<ICleanCacheCallback> &cleanCacheCallback) = 0;
+    virtual bool CleanBundleCacheFiles(const std::string &bundleName,
+        const sptr<ICleanCacheCallback> &cleanCacheCallback) = 0;
     /**
      * @brief Clears application running data of a specified application.
      * @param bundleName Indicates the bundle name of the application whose data is to be cleared.
@@ -327,8 +327,8 @@ public:
      * further requests; returns false if the current application already has the permission, the permission is rejected
      * by the system, or the permission is denied by the user and the user has turned off further requests.
      */
-    virtual bool CanRequestPermission(
-        const std::string &bundleName, const std::string &permissionName, const int userId) = 0;
+    virtual bool CanRequestPermission(const std::string &bundleName, const std::string &permissionName,
+        const int userId) = 0;
     /**
      * @brief Requests a certain permission from user.
      * @param bundleName Indicates the name of the bundle to request permission.
@@ -336,8 +336,8 @@ public:
      * @param userId Indicates the user id.
      * @return Returns true if the permission request successfully; returns false otherwise.
      */
-    virtual bool RequestPermissionFromUser(
-        const std::string &bundleName, const std::string &permission, const int userId) = 0;
+    virtual bool RequestPermissionFromUser(const std::string &bundleName, const std::string &permission,
+        const int userId) = 0;
     /**
      * @brief Registers a callback for listening for permission changes of all UIDs.
      * @param callback Indicates the callback method to register.
@@ -350,8 +350,8 @@ public:
      * @param callback Indicates the callback method to register.
      * @return Returns true if this function is successfully called; returns false otherwise.
      */
-    virtual bool RegisterPermissionsChanged(
-        const std::vector<int> &uids, const sptr<OnPermissionChangedCallback> &callback) = 0;
+    virtual bool RegisterPermissionsChanged(const std::vector<int> &uids,
+        const sptr<OnPermissionChangedCallback> &callback) = 0;
     /**
      * @brief Unregisters a specified callback for listening for permission changes.
      * @param callback Indicates the callback method to register.
@@ -381,8 +381,8 @@ public:
      * @param bundleName Indicates the bundle name of the application.
      * @return Returns true if this function is successfully called; returns false otherwise.
      */
-    virtual bool GetFormsInfoByModule(
-        const std::string &bundleName, const std::string &moduleName, std::vector<FormInfo> &formInfos) = 0;
+    virtual bool GetFormsInfoByModule(const std::string &bundleName, const std::string &moduleName,
+        std::vector<FormInfo> &formInfos) = 0;
     /**
      * @brief Obtains the ShortcutInfo objects provided by a specified application on the device.
      * @param bundleName Indicates the bundle name of the application.
@@ -448,6 +448,6 @@ public:
         GET_BUNDLE_INSTALLER,
     };
 };
-}  // namespace AppExecFwk
-}  // namespace OHOS
-#endif  // FOUNDATION_APPEXECFWK_INTERFACES_INNERKITS_APPEXECFWK_CORE_INCLUDE_BUNDLEMGR_BUNDLE_MGR_INTERFACE_H
+} // namespace AppExecFwk
+} // namespace OHOS
+#endif // FOUNDATION_APPEXECFWK_INTERFACES_INNERKITS_APPEXECFWK_CORE_INCLUDE_BUNDLEMGR_BUNDLE_MGR_INTERFACE_H

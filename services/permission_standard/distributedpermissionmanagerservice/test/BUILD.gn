@@ -22,7 +22,6 @@ config("permission_test_config") {
     "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_base/include",
     "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_core/include/bundlemgr",
     "//foundation/appexecfwk/standard/interfaces/innerkits/libeventhandler/include",
-    "//foundation/communication/dsoftbus/interfaces/kits/transport",
     "//foundation/communication/dsoftbus/interfaces/kits/common",
     "//foundation/communication/dsoftbus/interfaces/kits/bus_center",
     "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy/include",

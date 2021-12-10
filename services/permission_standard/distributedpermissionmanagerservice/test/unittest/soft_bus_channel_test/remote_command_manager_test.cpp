@@ -47,7 +47,11 @@ static const std::string TARGET_DEVICE_ID_(TARGET_UDID_);
 
 static const int SLEEP_1S = 1000;
 static const int SLEEP_100 = 100;
-}  // namespace
+static const int SLEEP_300 = 300;
+static const int SLEEP_400 = 400;
+static const int SLEEP_500 = 500;
+static const int SLEEP_600 = 600;
+} // namespace
 class RemoteCommandManagerTest : public testing::Test {
 public:
     static void SetUpTestCase(void)
@@ -69,8 +73,8 @@ public:
         instance->RemoveOnPermissionChangedListener("ObjectDevicePermissionManager");
 
         // 2.assume target device info synchroized
-        DeviceInfoManager::GetInstance().AddDeviceInfo(
-            TARGET_NETWORK_ID_, TARGET_UUID_, TARGET_UDID_, TARGET_DEVICE_, std::to_string(1));
+        DeviceInfoManager::GetInstance().AddDeviceInfo(TARGET_NETWORK_ID_, TARGET_UUID_, TARGET_UDID_, TARGET_DEVICE_,
+            std::to_string(1));
         // should got it
         DeviceInfo info;
         bool result = DeviceInfoManager::GetInstance().GetDeviceInfo(TARGET_DEVICE_ID_, DeviceIdType::UNKNOWN, info);
@@ -107,11 +111,11 @@ HWTEST_F(RemoteCommandManagerTest, RemoteCommandManager_Construct_001, TestSize.
     PERMISSION_LOG_INFO(LABEL, "RemoteCommandManager_Construct_001");
     {
         RemoteCommandManager *instance = &RemoteCommandManager::GetInstance();
-        EXPECT_EQ(instance->executors_.size(), (const unsigned int)(0));
+        EXPECT_EQ(instance->executors_.size(), (const unsigned int) (0));
     }
     {
         RemoteCommandManager instance;
-        EXPECT_EQ(instance.executors_.size(), (const unsigned int)(0));
+        EXPECT_EQ(instance.executors_.size(), (const unsigned int) (0));
     }
 }
 
@@ -128,20 +132,20 @@ HWTEST_F(RemoteCommandManagerTest, RemoteCommandManager_GetOrCreateRemoteCommand
     PERMISSION_LOG_INFO(LABEL, "RemoteCommandManager_GetOrCreateRemoteCommandExecutor_001");
     {
         RemoteCommandManager *instance = &RemoteCommandManager::GetInstance();
-        EXPECT_EQ(instance->executors_.size(), (const unsigned int)(0));
+        EXPECT_EQ(instance->executors_.size(), (const unsigned int) (0));
 
         // udid
         instance->GetOrCreateRemoteCommandExecutor(TARGET_UDID_);
-        EXPECT_EQ(instance->executors_.size(), (const unsigned int)(1));
+        EXPECT_EQ(instance->executors_.size(), (const unsigned int) (1));
 
         instance->GetOrCreateRemoteCommandExecutor(TARGET_UDID_);
-        EXPECT_EQ(instance->executors_.size(), (const unsigned int)(1));
+        EXPECT_EQ(instance->executors_.size(), (const unsigned int) (1));
 
         instance->GetOrCreateRemoteCommandExecutor(TARGET_UDID_ + "-test");
-        EXPECT_EQ(instance->executors_.size(), (const unsigned int)(2));
+        EXPECT_EQ(instance->executors_.size(), (const unsigned int) (2));
 
         instance->Clear();
-        EXPECT_EQ(instance->executors_.size(), (const unsigned int)(0));
+        EXPECT_EQ(instance->executors_.size(), (const unsigned int) (0));
     }
 }
 
@@ -188,13 +192,17 @@ HWTEST_F(RemoteCommandManagerTest, RemoteCommandManager_ExecuteCommand_001, Test
             RemoteCommandFactory::GetInstance().NewGetUidPermissionCommand(uid, srcDeviceId, dstDeviceId);
 
         RemoteCommandManager *instance = &RemoteCommandManager::GetInstance();
+        std::shared_ptr<RemoteCommandExecutor> remoteCommandExecutor =
+            instance->GetOrCreateRemoteCommandExecutor(TARGET_UDID_);
+        std::shared_ptr<SoftBusChannel> channel_1 = std::make_shared<SoftBusChannel>(TARGET_UDID_);
+        remoteCommandExecutor->SetChannel(channel_1);
         // simulate response
         std::function<void()> runner = [&]() {
-            std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_100));
-            const std::string id = "message-unique-id-1000";  // UID_FINISH_SUCCESS_INDEX
+            std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_500));
+            std::string uuid = ::GetUuidMock();
             std::string dummyResult = "{[1000]}";
-            auto channel = (SoftBusChannel *)(instance->GetExecutorChannel(TARGET_UDID_).get());
-            channel->HandleResponse(id, dummyResult);
+            auto channel = (SoftBusChannel *) (instance->GetExecutorChannel(TARGET_UDID_).get());
+            channel->HandleResponse(uuid, dummyResult);
         };
         std::thread responseThread(runner);
 
@@ -205,6 +213,9 @@ HWTEST_F(RemoteCommandManagerTest, RemoteCommandManager_ExecuteCommand_001, Test
         if (responseThread.joinable()) {
             responseThread.join();
         }
+
+        channel_1->CloseConnection();
+        channel_1->Release();
     }
 }
 
@@ -231,13 +242,18 @@ HWTEST_F(RemoteCommandManagerTest, RemoteCommandManager_ExecuteCommand_002, Test
             RemoteCommandFactory::GetInstance().NewGetUidPermissionCommand(uid, srcDeviceId, dstDeviceId);
 
         RemoteCommandManager *instance = &RemoteCommandManager::GetInstance();
+        std::shared_ptr<RemoteCommandExecutor> remoteCommandExecutor =
+            instance->GetOrCreateRemoteCommandExecutor(TARGET_UDID_);
+        std::shared_ptr<SoftBusChannel> channel_1 = std::make_shared<SoftBusChannel>(TARGET_UDID_);
+        remoteCommandExecutor->SetChannel(channel_1);
+
         // simulate response
         std::function<void()> runner = [&]() {
-            std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_100));
-            const std::string id = "message-unique-id-1";
+            std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_500));
+            std::string uuid = ::GetUuidMock();
             std::string dummyResult = "{[100]}";
-            auto channel = (SoftBusChannel *)(instance->GetExecutorChannel(TARGET_UDID_).get());
-            channel->HandleResponse(id, dummyResult);
+            auto channel = (SoftBusChannel *) (instance->GetExecutorChannel(TARGET_UDID_).get());
+            channel->HandleResponse(uuid, dummyResult);
         };
         std::thread responseThread(runner);
 
@@ -249,6 +265,9 @@ HWTEST_F(RemoteCommandManagerTest, RemoteCommandManager_ExecuteCommand_002, Test
         if (responseThread.joinable()) {
             responseThread.join();
         }
+
+        channel_1->CloseConnection();
+        channel_1->Release();
     }
 }
 
@@ -402,18 +421,22 @@ HWTEST_F(RemoteCommandManagerTest, RemoteCommandManager_ProcessDeviceCommandImme
 
         RemoteCommandManager *instance = &RemoteCommandManager::GetInstance();
 
-        instance->AddCommand(TARGET_UDID_, ptrCommand);
+        std::shared_ptr<RemoteCommandExecutor> remoteCommandExecutor =
+            instance->GetOrCreateRemoteCommandExecutor(TARGET_UDID_);
+        std::shared_ptr<SoftBusChannel> channel_1 = std::make_shared<SoftBusChannel>(TARGET_UDID_);
+        remoteCommandExecutor->SetChannel(channel_1);
 
+        instance->AddCommand(TARGET_UDID_, ptrCommand);
         // simulate response
         std::function<void()> runner = [&]() {
-            std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_100));
-            const std::string id = "message-unique-id-100";
+            std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_500));
+            std::string uuid = ::GetUuidMock();
             // fail response: FAILURE_BUT_CAN_RETRY
             std::string dummyResult = "{[100]}";
-            auto channel = (SoftBusChannel *)(instance->GetExecutorChannel(TARGET_UDID_).get());
-            PERMISSION_LOG_DEBUG(LABEL, "channel in callback, %{public}ld", (long)channel);
-            channel->HandleResponse(id, dummyResult);
+            auto channel = (SoftBusChannel *) (instance->GetExecutorChannel(TARGET_UDID_).get());
+            channel->HandleResponse(uuid, dummyResult);
         };
+
         std::thread responseThread(runner);
 
         // ensure executor and channel in AddCommand
@@ -425,7 +448,8 @@ HWTEST_F(RemoteCommandManagerTest, RemoteCommandManager_ProcessDeviceCommandImme
         if (responseThread.joinable()) {
             responseThread.join();
         }
-
+        channel_1->CloseConnection();
+        channel_1->Release();
         PERMISSION_LOG_DEBUG(LABEL, "RemoteCommandManager_ProcessDeviceCommandImmediately_002 end");
     }
 }
@@ -451,13 +475,18 @@ HWTEST_F(RemoteCommandManagerTest, RemoteCommandManager_ProcessDeviceCommandImme
             RemoteCommandFactory::GetInstance().NewGetUidPermissionCommand(uid, srcDeviceId, dstDeviceId);
 
         RemoteCommandManager *instance = &RemoteCommandManager::GetInstance();
+        std::shared_ptr<RemoteCommandExecutor> remoteCommandExecutor =
+            instance->GetOrCreateRemoteCommandExecutor(TARGET_UDID_);
+        std::shared_ptr<SoftBusChannel> channel_1 = std::make_shared<SoftBusChannel>(TARGET_UDID_);
+        remoteCommandExecutor->SetChannel(channel_1);
+
         // simulate response
         std::function<void()> runner = [&]() {
-            std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_100));
-            const std::string id = "message-unique-id-1000";
+            std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_500));
+            std::string uuid = ::GetUuidMock();
             std::string dummyResult = "{[1000]}";
-            auto channel = (SoftBusChannel *)(instance->GetExecutorChannel(TARGET_UDID_).get());
-            channel->HandleResponse(id, dummyResult);
+            auto channel = (SoftBusChannel *) (instance->GetExecutorChannel(TARGET_UDID_).get());
+            channel->HandleResponse(uuid, dummyResult);
         };
         std::thread responseThread(runner);
 
@@ -469,6 +498,8 @@ HWTEST_F(RemoteCommandManagerTest, RemoteCommandManager_ProcessDeviceCommandImme
         if (responseThread.joinable()) {
             responseThread.join();
         }
+        channel_1->CloseConnection();
+        channel_1->Release();
     }
 }
 
@@ -496,20 +527,26 @@ HWTEST_F(RemoteCommandManagerTest, RemoteCommandManager_ProcessDeviceCommandImme
             RemoteCommandFactory::GetInstance().NewGetUidPermissionCommand(uid + 1, srcDeviceId, dstDeviceId);
 
         RemoteCommandManager *instance = &RemoteCommandManager::GetInstance();
+
+        std::shared_ptr<RemoteCommandExecutor> remoteCommandExecutor =
+            instance->GetOrCreateRemoteCommandExecutor(TARGET_UDID_);
+        std::shared_ptr<SoftBusChannel> channel_1 = std::make_shared<SoftBusChannel>(TARGET_UDID_);
+        remoteCommandExecutor->SetChannel(channel_1);
+
         // simulate response
         std::atomic<int> count(0);
         std::function<void()> runner = [&]() {
-            std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_100));
-            std::string id = "message-unique-id-1000";  // UID_FINISH_SUCCESS_INDEX
+            std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_500));
+            std::string uuid = ::GetUuidMock();
             std::string dummyResult = "{[1000]}";
-            auto channel = (SoftBusChannel *)(instance->GetExecutorChannel(TARGET_UDID_).get());
+            auto channel = (SoftBusChannel *) (instance->GetExecutorChannel(TARGET_UDID_).get());
             count++;
-            channel->HandleResponse(id, dummyResult);
+            channel->HandleResponse(uuid, dummyResult);
 
             std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_100));
             count++;
-            id = "message-unique-id-1001";  // UID_FINISH_SUCCESS_INDEX + 1
-            channel->HandleResponse(id, dummyResult);
+            uuid = ::GetUuidMock();
+            channel->HandleResponse(uuid, dummyResult);
         };
         std::thread responseThread(runner);
 
@@ -580,17 +617,20 @@ HWTEST_F(RemoteCommandManagerTest, RemoteCommandManager_Loop_002, TestSize.Level
         RemoteCommandManager *instance = &RemoteCommandManager::GetInstance();
         instance->Clear();
         instance->AddCommand(TARGET_UDID_, ptrCommand);
+        std::shared_ptr<RemoteCommandExecutor> remoteCommandExecutor =
+            instance->GetOrCreateRemoteCommandExecutor(TARGET_UDID_);
+        std::shared_ptr<SoftBusChannel> channel = std::make_shared<SoftBusChannel>(TARGET_UDID_);
+        remoteCommandExecutor->SetChannel(channel);
 
         // simulate response
         std::atomic<int> count(0);
         std::function<void()> runner = [&]() {
-            std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_100));
-            const std::string id = "message-unique-id-100";
-            // fail response: FAILURE_BUT_CAN_RETRY
+            std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_500));
+            std::string uuid = ::GetUuidMock(); // fail response: FAILURE_BUT_CAN_RETRY
             std::string dummyResult = "{[100]}";
-            auto channel = (SoftBusChannel *)(instance->GetExecutorChannel(TARGET_UDID_).get());
+            auto channel = (SoftBusChannel *) (instance->GetExecutorChannel(TARGET_UDID_).get());
             count++;
-            channel->HandleResponse(id, dummyResult);
+            channel->HandleResponse(uuid, dummyResult);
         };
         std::thread responseThread(runner);
 
@@ -626,42 +666,47 @@ HWTEST_F(RemoteCommandManagerTest, RemoteCommandManager_Loop_003, TestSize.Level
     const std::shared_ptr<BaseRemoteCommand> ptrCommand =
         RemoteCommandFactory::GetInstance().NewGetUidPermissionCommand(uid, srcDeviceId, dstDeviceId);
 
-        const std::shared_ptr<BaseRemoteCommand> ptrCommand2 =
-            RemoteCommandFactory::GetInstance().NewGetUidPermissionCommand(uid + 1, srcDeviceId, dstDeviceId);
+    const std::shared_ptr<BaseRemoteCommand> ptrCommand2 =
+        RemoteCommandFactory::GetInstance().NewGetUidPermissionCommand(uid + 1, srcDeviceId, dstDeviceId);
 
-        RemoteCommandManager *instance = &RemoteCommandManager::GetInstance();
-        instance->Clear();
-        // simulate response
-        std::atomic<int> count(0);
-        std::function<void()> runner = [&]() {
-            std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_100));
-            std::string id = "message-unique-id-1000";  // UID_FINISH_SUCCESS_INDEX
-            std::string dummyResult = "{[1000]}";
-            auto channel = (SoftBusChannel *)(instance->GetExecutorChannel(TARGET_UDID_).get());
-            count++;
-            channel->HandleResponse(id, dummyResult);
-        };
-        std::thread responseThread(runner);
+    RemoteCommandManager *instance = &RemoteCommandManager::GetInstance();
+    instance->Clear();
 
-        int sleep200 = 200;
-        std::function<void()> runner2 = [&]() {
-            std::this_thread::sleep_for(std::chrono::milliseconds(sleep200));
-            std::string id = "message-unique-id-1001";  // UID_FINISH_SUCCESS_INDEX+1
-            std::string dummyResult = "{[1001]}";
-            auto channel = (SoftBusChannel *)(instance->GetExecutorChannel(TARGET_UDID_).get());
-            count++;
-            channel->HandleResponse(id, dummyResult);
-        };
-        std::thread responseThread2(runner2);
+    std::shared_ptr<RemoteCommandExecutor> remoteCommandExecutor =
+        instance->GetOrCreateRemoteCommandExecutor(TARGET_UDID_);
+    std::shared_ptr<SoftBusChannel> channel = std::make_shared<SoftBusChannel>(TARGET_UDID_);
+    remoteCommandExecutor->SetChannel(channel);
 
-        instance->AddCommand(TARGET_UDID_, ptrCommand);
-        instance->AddCommand(TARGET_UDID_, ptrCommand2);
+    // simulate response
+    std::atomic<int> count(0);
+    std::function<void()> runner = [&]() {
+        std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_300));
+        std::string uuid = ::GetUuidMock();
+        std::string dummyResult = "{[1000]}";
+        auto channel = (SoftBusChannel *) (instance->GetExecutorChannel(TARGET_UDID_).get());
+        count++;
+        channel->HandleResponse(uuid, dummyResult);
+    };
+    std::thread responseThread(runner);
 
-        int code = instance->Loop();
-        EXPECT_TRUE(Constant::SUCCESS == code);
+    std::function<void()> runner2 = [&]() {
+        std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_500));
+        std::string uuid = ::GetUuidMock();
+        std::string dummyResult = "{[1001]}";
+        auto channel = (SoftBusChannel *) (instance->GetExecutorChannel(TARGET_UDID_).get());
 
-    int sleep150 = 150;
-    std::this_thread::sleep_for(std::chrono::milliseconds(sleep150));
+        count++;
+        channel->HandleResponse(uuid, dummyResult);
+    };
+    std::thread responseThread2(runner2);
+
+    instance->AddCommand(TARGET_UDID_, ptrCommand);
+    instance->AddCommand(TARGET_UDID_, ptrCommand2);
+
+    int code = instance->Loop();
+    EXPECT_TRUE(Constant::SUCCESS == code);
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_400));
     EXPECT_EQ(count.load(), 1);
 
     // wait thread
@@ -669,15 +714,14 @@ HWTEST_F(RemoteCommandManagerTest, RemoteCommandManager_Loop_003, TestSize.Level
         responseThread.join();
     }
     // wait for executor thread
-    int sleep500 = 500;
-    std::this_thread::sleep_for(std::chrono::milliseconds(sleep500));
+    std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_600));
     EXPECT_EQ(count.load(), 2);
 
     if (responseThread2.joinable()) {
         responseThread2.join();
     }
 
-    std::this_thread::sleep_for(std::chrono::milliseconds(sleep500));
+    std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_600));
 }
 
 /*
@@ -703,34 +747,44 @@ HWTEST_F(RemoteCommandManagerTest, RemoteCommandManager_Loop_004, TestSize.Level
     RemoteCommandManager *instance = &RemoteCommandManager::GetInstance();
     instance->Clear();
 
-        // simulate response
-        std::atomic<int> count(0);
-        std::function<void()> runner = [&]() {
-            std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_100));
-            std::string id = "message-unique-id-1000";  // UID_FINISH_SUCCESS_INDEX
-            std::string dummyResult = "{[1000]}";
-            auto channel = (SoftBusChannel *)(instance->GetExecutorChannel(TARGET_UDID_).get());
-            count++;
-            id = "message-unique-id-1000";  // UID_FINISH_SUCCESS_INDEX
-            channel->HandleResponse(id, dummyResult);
+    std::shared_ptr<RemoteCommandExecutor> remoteCommandExecutor =
+        instance->GetOrCreateRemoteCommandExecutor(TARGET_UDID_);
+    std::shared_ptr<SoftBusChannel> channel = std::make_shared<SoftBusChannel>(TARGET_UDID_);
+    remoteCommandExecutor->SetChannel(channel);
 
-            std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_100));
-            count++;
-            id = "message-unique-id-1001";  // UID_FINISH_SUCCESS_INDEX + 1
-            channel->HandleResponse(id, dummyResult);
+    // simulate response
+    std::atomic<int> count(0);
+    std::function<void()> runner = [&]() {
+        std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_100));
+        std::string id = "message-unique-id-1000"; // UID_FINISH_SUCCESS_INDEX
+        std::string dummyResult = "{[1000]}";
+        auto channel = (SoftBusChannel *) (instance->GetExecutorChannel(TARGET_UDID_).get());
+        PERMISSION_LOG_DEBUG(LABEL, "RemoteCommandManager_Loop_004 1");
 
-            std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_100));
-            count++;
-            id = "message-unique-id-1002";  // UID_FINISH_SUCCESS_INDEX + 2
-            channel->HandleResponse(id, dummyResult);
-        };
-        std::thread responseThread(runner);
+        count++;
+        id = "message-unique-id-1000"; // UID_FINISH_SUCCESS_INDEX
+        channel->HandleResponse(id, dummyResult);
+        PERMISSION_LOG_DEBUG(LABEL, "RemoteCommandManager_Loop_004 2");
 
-        // sequence related(key), maybe fail
-        instance->AddCommand(TARGET_UDID_, ptrCommand);
-        instance->AddCommand(TARGET_UDID_, ptrCommand2);
-        instance->AddCommand(TARGET_UUID_, ptrCommand3);
-        int code = instance->Loop();
+        std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_100));
+        count++;
+        id = "message-unique-id-1001"; // UID_FINISH_SUCCESS_INDEX + 1
+        channel->HandleResponse(id, dummyResult);
+        PERMISSION_LOG_DEBUG(LABEL, "RemoteCommandManager_Loop_004 3");
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_100));
+        count++;
+        id = "message-unique-id-1002"; // UID_FINISH_SUCCESS_INDEX + 2
+        channel->HandleResponse(id, dummyResult);
+        PERMISSION_LOG_DEBUG(LABEL, "RemoteCommandManager_Loop_004 4");
+    };
+    std::thread responseThread(runner);
+
+    // sequence related(key), maybe fail
+    instance->AddCommand(TARGET_UDID_, ptrCommand);
+    instance->AddCommand(TARGET_UDID_, ptrCommand2);
+    instance->AddCommand(TARGET_UUID_, ptrCommand3);
+    int code = instance->Loop();
 
     // wait for tasks1
     int sleep150 = 150;
@@ -756,11 +810,8 @@ HWTEST_F(RemoteCommandManagerTest, RemoteCommandManager_Loop_004, TestSize.Level
     if (instance->GetExecutorChannel(TARGET_UUID_) != nullptr) {
         instance->GetExecutorChannel(TARGET_UUID_)->Release();
     }
-    int sleep5000 = 5000;
-    std::this_thread::sleep_for(std::chrono::milliseconds(sleep5000));
-
-    int sleep500 = 500;
-    std::this_thread::sleep_for(std::chrono::milliseconds(sleep500));
+    int sleep10s = 10000;
+    std::this_thread::sleep_for(std::chrono::milliseconds(sleep10s));
 }
 
 /*
@@ -778,33 +829,33 @@ HWTEST_F(RemoteCommandManagerTest, RemoteCommandManager_NotifyDeviceOnline_001, 
         // parameter check: emtpy
         RemoteCommandManager *instance = &RemoteCommandManager::GetInstance();
         instance->Clear();
-        EXPECT_EQ(instance->executors_.size(), (const unsigned int)(0));
+        EXPECT_EQ(instance->executors_.size(), (const unsigned int) (0));
         int code = instance->NotifyDeviceOnline("");
-        EXPECT_EQ(instance->executors_.size(), (const unsigned int)(0));
+        EXPECT_EQ(instance->executors_.size(), (const unsigned int) (0));
         EXPECT_TRUE(code == Constant::FAILURE);
     }
     {
         // parameter check: max length
         RemoteCommandManager *instance = &RemoteCommandManager::GetInstance();
-        EXPECT_EQ(instance->executors_.size(), (const unsigned int)(0));
+        EXPECT_EQ(instance->executors_.size(), (const unsigned int) (0));
         std::string padding(65, 'x');
         int code = instance->NotifyDeviceOnline(padding);
-        EXPECT_EQ(instance->executors_.size(), (const unsigned int)(0));
+        EXPECT_EQ(instance->executors_.size(), (const unsigned int) (0));
         EXPECT_TRUE(code == Constant::FAILURE);
     }
     {
         // normal
         RemoteCommandManager *instance = &RemoteCommandManager::GetInstance();
-        EXPECT_EQ(instance->executors_.size(), (const unsigned int)(0));
+        EXPECT_EQ(instance->executors_.size(), (const unsigned int) (0));
         {
             int code = instance->NotifyDeviceOnline(TARGET_UDID_);
-            EXPECT_EQ(instance->executors_.size(), (const unsigned int)(1));
+            EXPECT_EQ(instance->executors_.size(), (const unsigned int) (1));
             EXPECT_TRUE(code == Constant::SUCCESS);
         }
         // repeat
         {
             int code = instance->NotifyDeviceOnline(TARGET_UDID_);
-            EXPECT_EQ(instance->executors_.size(), (const unsigned int)(1));
+            EXPECT_EQ(instance->executors_.size(), (const unsigned int) (1));
             EXPECT_TRUE(code == Constant::SUCCESS);
         }
     }
@@ -825,26 +876,26 @@ HWTEST_F(RemoteCommandManagerTest, RemoteCommandManager_NotifyDeviceOffline_001,
         // parameter check: emtpy
         RemoteCommandManager *instance = &RemoteCommandManager::GetInstance();
         instance->Clear();
-        EXPECT_EQ(instance->executors_.size(), (const unsigned int)(0));
+        EXPECT_EQ(instance->executors_.size(), (const unsigned int) (0));
         int code = instance->NotifyDeviceOffline("");
-        EXPECT_EQ(instance->executors_.size(), (const unsigned int)(0));
+        EXPECT_EQ(instance->executors_.size(), (const unsigned int) (0));
         EXPECT_TRUE(code == Constant::FAILURE);
     }
     {
         // parameter check: max length
         RemoteCommandManager *instance = &RemoteCommandManager::GetInstance();
-        EXPECT_EQ(instance->executors_.size(), (const unsigned int)(0));
+        EXPECT_EQ(instance->executors_.size(), (const unsigned int) (0));
         std::string padding(65, 'x');
         int code = instance->NotifyDeviceOnline(padding);
-        EXPECT_EQ(instance->executors_.size(), (const unsigned int)(0));
+        EXPECT_EQ(instance->executors_.size(), (const unsigned int) (0));
         EXPECT_TRUE(code == Constant::FAILURE);
     }
     {
         // normal: no executor
         RemoteCommandManager *instance = &RemoteCommandManager::GetInstance();
-        EXPECT_EQ(instance->executors_.size(), (const unsigned int)(0));
+        EXPECT_EQ(instance->executors_.size(), (const unsigned int) (0));
         int code = instance->NotifyDeviceOffline(TARGET_UDID_);
-        EXPECT_EQ(instance->executors_.size(), (const unsigned int)(0));
+        EXPECT_EQ(instance->executors_.size(), (const unsigned int) (0));
         EXPECT_TRUE(code == Constant::SUCCESS);
     }
     {
@@ -856,14 +907,14 @@ HWTEST_F(RemoteCommandManagerTest, RemoteCommandManager_NotifyDeviceOffline_001,
         const std::shared_ptr<BaseRemoteCommand> ptrCommand =
             RemoteCommandFactory::GetInstance().NewGetUidPermissionCommand(uid, srcDeviceId, dstDeviceId);
         instance->AddCommand(TARGET_UDID_, ptrCommand);
-        EXPECT_EQ(instance->executors_.size(), (const unsigned int)(1));
+        EXPECT_EQ(instance->executors_.size(), (const unsigned int) (1));
 
         int code = instance->NotifyDeviceOffline(TARGET_UDID_);
-        EXPECT_EQ(instance->executors_.size(), (const unsigned int)(0));
+        EXPECT_EQ(instance->executors_.size(), (const unsigned int) (0));
         // channel.Release() => PostTask removed(delay closing channel): skip
         EXPECT_TRUE(code == Constant::SUCCESS);
     }
 }
-}  // namespace Permission
-}  // namespace Security
-}  // namespace OHOS
+} // namespace Permission
+} // namespace Security
+} // namespace OHOS

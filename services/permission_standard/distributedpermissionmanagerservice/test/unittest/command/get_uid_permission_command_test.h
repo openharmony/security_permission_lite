@@ -17,7 +17,7 @@
 #define GET_UID_PERMISSION_COMMAND_TEST_H
 
 #include <gtest/gtest.h>
-
+#include "get_uid_permission_command.h"
 namespace OHOS {
 namespace Security {
 namespace Permission {
@@ -31,7 +31,7 @@ public:
     void TearDown();
     const std::unique_ptr<GetUidPermissionCommand> GetClass() const;
 };
-}  // namespace Permission
-}  // namespace Security
-}  // namespace OHOS
-#endif  // PERMISSION_DEFINITION_MANAGER_TEST_H
+} // namespace Permission
+} // namespace Security
+} // namespace OHOS
+#endif // PERMISSION_DEFINITION_MANAGER_TEST_H

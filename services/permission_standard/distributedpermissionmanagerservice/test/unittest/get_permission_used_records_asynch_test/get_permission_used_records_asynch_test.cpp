@@ -27,7 +27,7 @@ pid_t IPCSkeleton::pid_ = 1;
 pid_t IPCSkeleton::uid_ = 1;
 std::string IPCSkeleton::localDeviceId_ = "1004";
 std::string IPCSkeleton::deviceId_ = "";
-}  // namespace OHOS
+} // namespace OHOS
 
 void GetPermissionUsedRecordsAsynchTest::InitVisitorData()
 {
@@ -105,10 +105,7 @@ void GetPermissionUsedRecordsAsynchTest::TearDownTestCase()
 }
 void GetPermissionUsedRecordsAsynchTest::SetUp()
 {
-    service = OHOS::DelayedSingleton<DistributedPermissionManagerService>::GetInstance();
-    service->OnStart();
-    sleep(1);
-    cout << "SetUp() is running" << endl;
+        cout << "SetUp() is running" << endl;
 }
 void GetPermissionUsedRecordsAsynchTest::TearDown()
 {
