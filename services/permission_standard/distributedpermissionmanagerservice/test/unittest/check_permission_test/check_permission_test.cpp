@@ -29,15 +29,6 @@ namespace Permission {
 void CheckPermissionTest::SetUpTestCase()
 {
     cout << "SetUpTestCase()" << endl;
-    OHOS::sptr<OHOS::IRemoteObject> bundleObject = new OHOS::AppExecFwk::BundleMgrService();
-    OHOS::sptr<OHOS::IRemoteObject> permissionObject = new PermissionManagerService();
-    auto sysMgr = OHOS::SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
-    if (sysMgr == NULL) {
-        GTEST_LOG_(ERROR) << "fail to get ISystemAbilityManager";
-        return;
-    }
-    sysMgr->AddSystemAbility(Constant::ServiceId::BUNDLE_MGR_SERVICE_SYS_ABILITY_ID, bundleObject);
-    sysMgr->AddSystemAbility(Constant::ServiceId::SUBSYS_SECURITY_PERMISSION_SYS_SERVICE_ID, permissionObject);
 }
 
 void CheckPermissionTest::TearDownTestCase()
@@ -67,15 +58,6 @@ HWTEST_F(CheckPermissionTest, CheckPermission02, Function | MediumTest | Level1)
     string permissionName = "";
     string appIdInfo = "{\"deviceID\":\"1001\",\"pid\":1,\"uid\":-1}";
     int result = Constant::PERMISSION_DENIED;
-    int ret = DistributedPermissionManagerService().CheckPermission(permissionName, appIdInfo);
-    EXPECT_EQ(result, ret);
-}
-
-HWTEST_F(CheckPermissionTest, CheckPermission03, Function | MediumTest | Level1)
-{
-    string permissionName = "ohos.permission.INTERNET";
-    string appIdInfo = "{\"deviceID\":\"\",\"pid\":1,\"uid\":1}";
-    int result = Constant::PERMISSION_GRANTED;
     int ret = DistributedPermissionManagerService().CheckPermission(permissionName, appIdInfo);
     EXPECT_EQ(result, ret);
 }
@@ -136,6 +118,6 @@ HWTEST_F(CheckPermissionTest, CheckPermission08, Function | MediumTest | Level1)
     int ret = DistributedPermissionManagerService().CheckPermission(permissionName, appIdInfo);
     EXPECT_EQ(result, ret);
 }
-}  // namespace Permission
-}  // namespace Security
-}  // namespace OHOS
+} // namespace Permission
+} // namespace Security
+} // namespace OHOS

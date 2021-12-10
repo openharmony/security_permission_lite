@@ -56,8 +56,8 @@ HWTEST_F(WaitDuidReadyTest, WaitDuidReady_0001, Function | MediumTest | Level1)
  */
 HWTEST_F(WaitDuidReadyTest, WaitDuidReady_0002, Function | MediumTest | Level1)
 {
-    DeviceInfoRepository::GetInstance().SaveDeviceInfo(
-        "networkId", "universallyUniqueId", "uniqueDisabilityId", "deviceName", "deviceType");
+    DeviceInfoRepository::GetInstance().SaveDeviceInfo("networkId", "universallyUniqueId", "uniqueDisabilityId",
+        "deviceName", "deviceType");
 
     int32_t duid = GetInstance()->WaitDuidReady("uniqueDisabilityId", -1, validTime_);
     GTEST_LOG_(INFO) << duid;
@@ -72,8 +72,8 @@ HWTEST_F(WaitDuidReadyTest, WaitDuidReady_0002, Function | MediumTest | Level1)
  */
 HWTEST_F(WaitDuidReadyTest, WaitDuidReady_0003, Function | MediumTest | Level1)
 {
-    DeviceInfoRepository::GetInstance().SaveDeviceInfo(
-        "networkId", "universallyUniqueId", "uniqueDisabilityId", "deviceName", "deviceType");
+    DeviceInfoRepository::GetInstance().SaveDeviceInfo("networkId", "universallyUniqueId", "uniqueDisabilityId",
+        "deviceName", "deviceType");
 
     int32_t duid = GetInstance()->WaitDuidReady("uniqueDisabilityId", validRuid_, -1);
     GTEST_LOG_(INFO) << duid;
@@ -88,8 +88,8 @@ HWTEST_F(WaitDuidReadyTest, WaitDuidReady_0003, Function | MediumTest | Level1)
  */
 HWTEST_F(WaitDuidReadyTest, WaitDuidReady_0004, Function | MediumTest | Level1)
 {
-    DeviceInfoRepository::GetInstance().SaveDeviceInfo(
-        "networkId", "universallyUniqueId", "uniqueDisabilityId", "deviceName", "deviceType");
+    DeviceInfoRepository::GetInstance().SaveDeviceInfo("networkId", "universallyUniqueId", "uniqueDisabilityId",
+        "deviceName", "deviceType");
 
     int32_t duid = GetInstance()->WaitDuidReady("uniqueDisabilityId", validRuid_, 2001);
     GTEST_LOG_(INFO) << duid;
@@ -107,8 +107,8 @@ HWTEST_F(WaitDuidReadyTest, WaitDuidReady_0004, Function | MediumTest | Level1)
  */
 HWTEST_F(WaitDuidReadyTest, WaitDuidReady_0005, Function | MediumTest | Level1)
 {
-    DeviceInfoRepository::GetInstance().SaveDeviceInfo(
-        "networkId", "networkId", "uniqueDisabilityId", "deviceName", "deviceType");
+    DeviceInfoRepository::GetInstance().SaveDeviceInfo("networkId", "networkId", "uniqueDisabilityId", "deviceName",
+        "deviceType");
 
     std::string key = DistributedUidAllocator::GetInstance().Hash("uniqueDisabilityId", validRuid_);
     DistributedUidEntity distributedUidEntity;
@@ -133,8 +133,8 @@ HWTEST_F(WaitDuidReadyTest, WaitDuidReady_0005, Function | MediumTest | Level1)
  */
 HWTEST_F(WaitDuidReadyTest, WaitDuidReady_0006, Function | MediumTest | Level1)
 {
-    DeviceInfoRepository::GetInstance().SaveDeviceInfo(
-        "networkId", "networkId", "uniqueDisabilityId", "deviceName", "deviceType");
+    DeviceInfoRepository::GetInstance().SaveDeviceInfo("networkId", "networkId", "uniqueDisabilityId", "deviceName",
+        "deviceType");
 
     std::string key = DistributedUidAllocator::GetInstance().Hash("uniqueDisabilityId", validRuid_);
     DistributedUidEntity distributedUidEntity;
@@ -161,8 +161,8 @@ HWTEST_F(WaitDuidReadyTest, WaitDuidReady_0006, Function | MediumTest | Level1)
  */
 HWTEST_F(WaitDuidReadyTest, WaitDuidReady_0007, Function | MediumTest | Level1)
 {
-    DeviceInfoRepository::GetInstance().SaveDeviceInfo(
-        "networkId", "universallyUniqueId", "uniqueDisabilityId", "deviceName", "deviceType");
+    DeviceInfoRepository::GetInstance().SaveDeviceInfo("networkId", "universallyUniqueId", "uniqueDisabilityId",
+        "deviceName", "deviceType");
 
     std::string key = DistributedUidAllocator::GetInstance().Hash("uniqueDisabilityId", validRuid_);
     DistributedUidEntity distributedUidEntity;
@@ -188,8 +188,8 @@ HWTEST_F(WaitDuidReadyTest, WaitDuidReady_0007, Function | MediumTest | Level1)
  */
 HWTEST_F(WaitDuidReadyTest, WaitDuidReady_0008, Function | MediumTest | Level1)
 {
-    DeviceInfoRepository::GetInstance().SaveDeviceInfo(
-        "networkId", "universallyUniqueId", "uniqueDisabilityId", "deviceName", "deviceType");
+    DeviceInfoRepository::GetInstance().SaveDeviceInfo("networkId", "universallyUniqueId", "uniqueDisabilityId",
+        "deviceName", "deviceType");
 
     int32_t duid = GetInstance()->WaitDuidReady("uniqueDisabilityId", validRuid_, validTime_);
     GTEST_LOG_(INFO) << duid;
@@ -207,8 +207,8 @@ HWTEST_F(WaitDuidReadyTest, WaitDuidReady_0008, Function | MediumTest | Level1)
  */
 HWTEST_F(WaitDuidReadyTest, WaitDuidReady_0009, Function | MediumTest | Level1)
 {
-    DeviceInfoRepository::GetInstance().SaveDeviceInfo(
-        "networkId", "networkId", "uniqueDisabilityIdCanNotGetPackgeForUid", "deviceName", "deviceType");
+    DeviceInfoRepository::GetInstance().SaveDeviceInfo("networkId", "networkId",
+        "uniqueDisabilityIdCanNotGetPackgeForUid", "deviceName", "deviceType");
 
     int32_t duid = GetInstance()->WaitDuidReady("uniqueDisabilityIdCanNotGetPackgeForUid", validRuid_, validTime_);
     GTEST_LOG_(INFO) << duid;

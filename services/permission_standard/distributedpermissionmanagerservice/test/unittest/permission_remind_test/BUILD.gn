@@ -89,6 +89,8 @@ ohos_unittest("PermissionRemindTest") {
     "${distributed_permission_services_path}/test/mock/src/mock_notification_helper.cpp",
     "${distributed_permission_services_path}/test/mock/src/mock_parameter.c",
     "${distributed_permission_services_path}/test/mock/src/mock_permission_mgr.cpp",
+    "../../mock/src/bms_adapter_mock.cpp",
+    "../../mock/src/pms_adapter_mock.cpp",
     "../../mock/src/soft_bus_center_mock.cpp",
     "../../mock/src/soft_bus_session_mock.cpp",
     "permission_remind_test.cpp",

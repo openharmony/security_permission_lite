@@ -85,6 +85,8 @@ ohos_unittest("delete_permission_used_record_test") {
     "${distributed_permission_services_path}/test/mock/src/mock_bundle_mgr.cpp",
     "${distributed_permission_services_path}/test/mock/src/mock_is_not_sensitive_resource.cpp",
     "${distributed_permission_services_path}/test/mock/src/mock_permission_mgr.cpp",
+    "../../mock/src/bms_adapter_mock.cpp",
+    "../../mock/src/pms_adapter_mock.cpp",
     "../../mock/src/soft_bus_center_mock.cpp",
     "../../mock/src/soft_bus_session_mock.cpp",
     "delete_permission_used_record_test.cpp",

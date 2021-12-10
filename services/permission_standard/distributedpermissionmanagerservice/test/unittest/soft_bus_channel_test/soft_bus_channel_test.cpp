@@ -40,7 +40,7 @@ static const std::string TARGET_UUID_(TARGET_NETWORK_ID_ + ":uuid-001");
 static const std::string TARGET_UDID_(TARGET_NETWORK_ID_ + ":udid-001");
 static const std::string TARGET_DEVICE_ID_(TARGET_UDID_);
 static const int RETRY_TIMES = 30;
-}  // namespace
+} // namespace
 
 class SoftBusChannelTest : public testing::Test {
 public:
@@ -66,8 +66,8 @@ public:
         ASSERT_EQ(SoftBusManager::GetInstance().isSoftBusServiceBindSuccess_, true);
 
         // 2.assume target device info synchroized
-        DeviceInfoManager::GetInstance().AddDeviceInfo(
-            TARGET_NETWORK_ID_, TARGET_UUID_, TARGET_UDID_, TARGET_DEVICE_, std::to_string(1));
+        DeviceInfoManager::GetInstance().AddDeviceInfo(TARGET_NETWORK_ID_, TARGET_UUID_, TARGET_UDID_, TARGET_DEVICE_,
+            std::to_string(1));
         // should got it
         DeviceInfo info;
         bool result = DeviceInfoManager::GetInstance().GetDeviceInfo(TARGET_DEVICE_ID_, DeviceIdType::UNKNOWN, info);
@@ -125,8 +125,8 @@ HWTEST_F(SoftBusChannelTest, SoftBusChannel_BuildConnection_001, TestSize.Level1
 
     {
         // when open session failed, return -1.
-        auto channel = std::make_shared<SoftBusChannel>(INVALID_DEVICE_);
-        int code = channel->BuildConnection();
+        auto channel1 = std::make_shared<SoftBusChannel>(INVALID_DEVICE_);
+        int code = channel1->BuildConnection();
         EXPECT_EQ(code, -1);
     }
 }
@@ -251,7 +251,7 @@ HWTEST_F(SoftBusChannelTest, SoftBusChannel_Compress_001, TestSize.Level1)
         int compressedLength = 10;
         unsigned char compressedBytes[compressedLength];
         int code = channel->Compress(json, compressedBytes, compressedLength);
-        EXPECT_EQ(code, -2);
+        EXPECT_EQ(code, -1);
     }
 }
 
@@ -338,27 +338,27 @@ HWTEST_F(SoftBusChannelTest, SoftBusChannel_PrepareBytes_001, TestSize.Level1)
 HWTEST_F(SoftBusChannelTest, SoftBusChannel_IsSessionAvailable_001, TestSize.Level1)
 {
     PERMISSION_LOG_DEBUG(LABEL, "SoftBusChannel_IsSessionAvailable_001");
-    auto channel = std::make_shared<SoftBusChannel>(TARGET_DEVICE_ID_);
+    auto channel2 = std::make_shared<SoftBusChannel>(TARGET_DEVICE_ID_);
     {
         PERMISSION_LOG_DEBUG(LABEL, "SoftBusChannel_IsSessionAvailable_001-1");
-        bool ret = channel->IsSessionAvailable();
+        bool ret = channel2->IsSessionAvailable();
         EXPECT_FALSE(ret);
     }
 
     {
         PERMISSION_LOG_DEBUG(LABEL, "SoftBusChannel_IsSessionAvailable_001-2");
-        channel->BuildConnection();
-        bool ret = channel->IsSessionAvailable();
+        channel2->BuildConnection();
+        bool ret = channel2->IsSessionAvailable();
         EXPECT_TRUE(ret);
     }
 
     {
         PERMISSION_LOG_DEBUG(LABEL, "SoftBusChannel_IsSessionAvailable_001: close connection");
-        channel->CloseConnection();
+        channel2->CloseConnection();
         // will execute delayed task
         const long WAIT_SESSION_CLOSE_MILLISECONDS = 5000L;
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_SESSION_CLOSE_MILLISECONDS + 1000));
-        bool ret = channel->IsSessionAvailable();
+        bool ret = channel2->IsSessionAvailable();
         EXPECT_FALSE(ret);
     }
 }
@@ -479,7 +479,7 @@ HWTEST_F(SoftBusChannelTest, SoftBusChannel_SendResponseBytes_001, TestSize.Leve
         std::string bytesString = "abcdefg-0123456789";
         const int bytesLength = bytesString.length();
         int sessionId = 1;
-        int code = channel->SendResponseBytes(sessionId, (unsigned char *)bytesString.c_str(), bytesLength);
+        int code = channel->SendResponseBytes(sessionId, (unsigned char *) bytesString.c_str(), bytesLength);
         EXPECT_TRUE(code == 0);
     }
 
@@ -572,7 +572,7 @@ HWTEST_F(SoftBusChannelTest, SoftBusChannel_ExecuteCommand_002, TestSize.Level1)
         const std::string jsonPayload =
             "\"{\"name\":\"test\",\"number\":100,\"flag\":true,\"array\":[0,1,2],\"uid\":\"test-device-id-001-uid\"}\"";
         std::string dummyResult = "{\"type\":\"request\",\"id\":\"" + id + "\",\"commandName\":\"" + commandName +
-                                  "\",\"jsonPayload\":" + jsonPayload + "}";
+            "\",\"jsonPayload\":" + jsonPayload + "}";
 
         // simulate a response
         simulatorExecuted.store(false);
@@ -580,10 +580,10 @@ HWTEST_F(SoftBusChannelTest, SoftBusChannel_ExecuteCommand_002, TestSize.Level1)
         std::function<void()> runner = [&]() {
             PERMISSION_LOG_DEBUG(LABEL, "simulator start");
             std::this_thread::sleep_for(std::chrono::milliseconds(callbackSleepMs));
-
+            std::string uuid = ::GetUuidMock();
             simulatorExecuted.store(true);
             PERMISSION_LOG_DEBUG(LABEL, "simulator before handle response");
-            channel->HandleResponse(id, dummyResult);
+            channel->HandleResponse(uuid, dummyResult);
 
             PERMISSION_LOG_DEBUG(LABEL, "simulator after handle response, stop");
         };
@@ -605,17 +605,17 @@ HWTEST_F(SoftBusChannelTest, SoftBusChannel_ExecuteCommand_002, TestSize.Level1)
         }
 
         EXPECT_TRUE(simulatorExecuted.load() == true);
+
+        PERMISSION_LOG_DEBUG(LABEL, "result = %{public}s", result.c_str());
+        PERMISSION_LOG_DEBUG(LABEL, "dummyResult = %{public}s", dummyResult.c_str());
+
         EXPECT_TRUE(result == dummyResult);
         time_t end = TimeUtil::GetTimestamp();
-        PERMISSION_LOG_DEBUG(LABEL,
-            "time from %{public}ld to %{public}ld, with callback ellapsed %{public}d ms",
-            (long)begin,
-            (long)end,
-            callbackSleepMs);
+        PERMISSION_LOG_DEBUG(LABEL, "time from %{public}ld to %{public}ld, with callback ellapsed %{public}d ms",
+            (long) begin, (long) end, callbackSleepMs);
         // callback ellapsed 1 second.
         EXPECT_TRUE(end - begin >= 1);
-        EXPECT_TRUE(end - begin <= 2);
-
+        EXPECT_TRUE(end - begin <= 3);
         channel->CloseConnection();
     }
 }
@@ -670,7 +670,7 @@ HWTEST_F(SoftBusChannelTest, SoftBusChannel_HandleDataReceived_001, TestSize.Lev
         PERMISSION_LOG_DEBUG(LABEL, "SoftBusChannel_HandleDataReceived_001-4");
         len = 1000;
         json = "{\"type\":\"request\",\"id\":\"" + id + "\",\"commandName\":\"" + commandName +
-               "\",\"jsonPayload\":\"" + jsonPayload + "\"}";
+            "\",\"jsonPayload\":\"" + jsonPayload + "\"}";
         channel->Compress(json, buf, len);
         // ok
         // check log to confirm
@@ -682,7 +682,7 @@ HWTEST_F(SoftBusChannelTest, SoftBusChannel_HandleDataReceived_001, TestSize.Lev
         PERMISSION_LOG_DEBUG(LABEL, "SoftBusChannel_HandleDataReceived_001-5");
         len = 1000;
         json = "{\"type\":\"response\",\"id\":\"" + id + "\",\"commandName\":\"" + commandName +
-               "\",\"jsonPayload\":\"" + jsonPayload + "\"}";
+            "\",\"jsonPayload\":\"" + jsonPayload + "\"}";
         channel->Compress(json, buf, len);
         // check log to confirm
         channel->HandleDataReceived(session, buf, len);
@@ -691,6 +691,6 @@ HWTEST_F(SoftBusChannelTest, SoftBusChannel_HandleDataReceived_001, TestSize.Lev
     channel->CloseConnection();
     PERMISSION_LOG_DEBUG(LABEL, "SoftBusChannel_HandleDataReceived_001 end");
 }
-}  // namespace Permission
-}  // namespace Security
-}  // namespace OHOS
+} // namespace Permission
+} // namespace Security
+} // namespace OHOS

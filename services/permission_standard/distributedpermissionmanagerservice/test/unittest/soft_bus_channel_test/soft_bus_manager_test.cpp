@@ -35,7 +35,7 @@ static const std::string NETWORK_ID_(DEVICE_ + ":network-id-001");
 static const std::string UUID_(NETWORK_ID_ + ":uuid-001");
 static const std::string UDID_(NETWORK_ID_ + ":udid-001");
 static const int RETRY_TIMES = 30;
-}  // namespace
+} // namespace
 
 class SoftBusManagerTest : public testing::Test {
 public:
@@ -77,7 +77,7 @@ HWTEST_F(SoftBusManagerTest, SoftBusManager_Initialize001, TestSize.Level1)
     PERMISSION_LOG_DEBUG(LABEL, "SoftBusManager_Initialize001");
 
     PERMISSION_LOG_DEBUG(LABEL, "SoftBusManager_Initialize: create new instance");
-    {  // factory create
+    { // factory create
         SoftBusManager *instance = &SoftBusManager::GetInstance();
         // ensure destroied for the other test maybe construct SoftBusManager
         instance->Destroy();
@@ -99,15 +99,17 @@ HWTEST_F(SoftBusManagerTest, SoftBusManager_Initialize001, TestSize.Level1)
             // will be stored
             DeviceIdType nodeIdType = DeviceIdType::NETWORK_ID;
             std::string nodeId = NETWORK_ID_;
+            std::string deviceId = UDID_;
+            DeviceInfoRepository::GetInstance().SaveDeviceInfo(nodeId, "universallyUniqueId", deviceId, "deviceName",
+                "networkID");
+
             bool exists = DeviceInfoManager::GetInstance().ExistDeviceInfo(nodeId, nodeIdType);
             EXPECT_EQ(exists, true);
 
             DeviceInfo info;
             PERMISSION_LOG_DEBUG(LABEL, "GetDeviceInfo");
             bool found = DeviceInfoManager::GetInstance().GetDeviceInfo(nodeId, nodeIdType, info);
-            PERMISSION_LOG_DEBUG(LABEL,
-                "GetDeviceInfo, found: %{public}d, networkId: %{public}s",
-                found,
+            PERMISSION_LOG_DEBUG(LABEL, "GetDeviceInfo, found: %{public}d, networkId: %{public}s", found,
                 info.deviceId.networkId.c_str());
         }
         // simulator a unregister operator.
@@ -140,7 +142,7 @@ HWTEST_F(SoftBusManagerTest, SoftBusManager_Initialize002, TestSize.Level1)
 {
     PERMISSION_LOG_DEBUG(LABEL, "SoftBusManager_Initialize002");
 
-    {  // factory create
+    { // factory create
         SoftBusManager *instance = &SoftBusManager::GetInstance();
         // ensure destroied for the other test maybe construct SoftBusManager
         instance->Destroy();
@@ -486,6 +488,10 @@ HWTEST_F(SoftBusManagerTest, SoftBusManager_OpenSession_001, TestSize.Level1)
 
         PERMISSION_LOG_DEBUG(LABEL, "SoftBusManager_OpenSession_001-2: open1");
         // will work
+        std::string nodeId("networkId");
+        std::string deviceId = UDID_;
+        DeviceInfoRepository::GetInstance().SaveDeviceInfo(nodeId, "universallyUniqueId", deviceId, "deviceName",
+            "deviceType");
         int code = instance->OpenSession(UDID_);
         EXPECT_GT(code, -1);
 
@@ -517,6 +523,6 @@ HWTEST_F(SoftBusManagerTest, SoftBusManager_OpenSession_001, TestSize.Level1)
     instance->Destroy();
     PERMISSION_LOG_DEBUG(LABEL, "SoftBusManager_OpenSession_001-end");
 }
-}  // namespace Permission
-}  // namespace Security
-}  // namespace OHOS
+} // namespace Permission
+} // namespace Security
+} // namespace OHOS

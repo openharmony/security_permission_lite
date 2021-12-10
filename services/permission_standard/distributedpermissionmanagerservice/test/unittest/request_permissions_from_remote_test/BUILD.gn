@@ -94,6 +94,8 @@ ohos_unittest("request_permissions_from_remote_test") {
     "${distributed_permission_services_path}/main/cpp/src/sensitive/resource_switch_remote.cpp",
     "${distributed_permission_services_path}/main/cpp/src/sensitive/sensitive_resource_switch_setting.cpp",
     "${distributed_permission_services_path}/test/mock/src/request_permissions_from_remote_test/mock_remote_command_manager.cpp",
+    "../../mock/src/bms_adapter_mock.cpp",
+    "../../mock/src/pms_adapter_mock.cpp",
     "../../mock/src/soft_bus_center_mock.cpp",
     "../../mock/src/soft_bus_session_mock.cpp",
     "request_permissions_from_remote_test.cpp",
