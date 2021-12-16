@@ -45,6 +45,7 @@ SyncUidStateCommand::SyncUidStateCommand(const std::string &json)
     if (jsonObject.find("uid") != jsonObject.end() && jsonObject.at("uid").is_number()) {
         uid_ = jsonObject.at("uid").get<int32_t>();
     }
+    uidState_ = 1; // initialized uidState_
 }
 
 std::string SyncUidStateCommand::ToJsonPayload()
