@@ -158,8 +158,9 @@ static void ConvertBundleRecord(napi_env env, const sptr<AppExecFwk::IBundleMgr>
     NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objBundleRecord, "bundleLabel", nBundleLabel));
 
     AppExecFwk::BundleInfo bundleInfo;
-    bool ret =
-        iBundleMgr->GetBundleInfo(bundleRecord.bundleName, AppExecFwk::BundleFlag::GET_BUNDLE_WITH_REQUESTED_PERMISSION, bundleInfo);
+    bool ret = iBundleMgr->GetBundleInfo(bundleRecord.bundleName,
+        AppExecFwk::BundleFlag::GET_BUNDLE_WITH_REQUESTED_PERMISSION,
+        bundleInfo);
     if (!ret) {
         PERMISSION_LOG_INFO(LABEL,
             "%{public}s cannot get bundleInfo by bundleName %{public}s",

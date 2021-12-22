@@ -55,7 +55,9 @@ int32_t PermissionFetcher::GetPermissions(int32_t uid, UidBundleBo &info)
 
     for (auto bundleName_ : bundleNames_) {
         PERMISSION_LOG_DEBUG(LABEL, "bundleName_ = %{public}s", bundleName_.c_str());
-        if (!iBundleManager_->GetBundleInfo(bundleName_, AppExecFwk::BundleFlag::GET_BUNDLE_WITH_REQUESTED_PERMISSION, bundleInfo_)) {
+        if (!iBundleManager_->GetBundleInfo(bundleName_,
+            AppExecFwk::BundleFlag::GET_BUNDLE_WITH_REQUESTED_PERMISSION,
+            bundleInfo_)) {
             PERMISSION_LOG_ERROR(
                 LABEL, "getPermissions cannot get BundleInfo. bundleName: %{public}s", bundleName_.c_str());
             return Constant::CANNOT_GET_PACKAGE_FOR_UID;
