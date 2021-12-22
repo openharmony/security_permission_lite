@@ -227,7 +227,7 @@ This section uses the bundle manager as an example to describe the app permissio
       "module": {
           "package": "ohos.demo.kitframework",
           "deviceType": [
-              "phone", "tv","tablet", "pc","car","smartWatch","sportsWatch","smartCamera", "smartVision"
+              "phone", "tv","tablet", "car","smartWatch","sportsWatch","smartCamera", "smartVision"
           ],
           "reqPermissions": [{
             // Declare the ohos.permission.INSTALL_BUNDLE permission required for installing the app.

@@ -225,7 +225,7 @@ OpenHarmony中应用和系统服务均运行在独立的沙箱中，进程空间
       "module": {
           "package": "ohos.demo.kitframework",
           "deviceType": [
-              "phone", "tv","tablet", "pc","car","smartWatch","sportsWatch","smartCamera", "smartVision"
+              "phone", "tv","tablet", "car","smartWatch","sportsWatch","smartCamera", "smartVision"
           ],
           "reqPermissions": [{
             // 声明需要的权限：安装应用程序的权限名
