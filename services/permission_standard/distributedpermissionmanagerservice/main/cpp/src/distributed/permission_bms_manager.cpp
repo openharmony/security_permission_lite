@@ -123,7 +123,9 @@ bool PermissionBmsManager::IsSystemSignatureUid(const int32_t &uid)
 
     for (auto bundleName : bundleNames) {
         AppExecFwk::BundleInfo bundleInfo;
-        if (iBundleManager_->GetBundleInfo(bundleName, AppExecFwk::BundleFlag::GET_BUNDLE_DEFAULT, bundleInfo)) {
+        if (iBundleManager_->GetBundleInfo(bundleName,
+            AppExecFwk::BundleFlag::GET_BUNDLE_WITH_REQUESTED_PERMISSION,
+            bundleInfo)) {
             PERMISSION_LOG_ERROR(
                 LABEL, "getPermissions cannot get BundleInfo. bundleName: %{public}s", bundleName.c_str());
             return false;

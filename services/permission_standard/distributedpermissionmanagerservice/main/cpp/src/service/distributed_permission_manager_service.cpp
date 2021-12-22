@@ -570,7 +570,9 @@ bool DistributedPermissionManagerService::GetBundleInfo(AppExecFwk::BundleInfo &
         PERMISSION_LOG_INFO(LABEL, "%{public}s cannot get bundle name by uid %{public}d", __func__, uid);
         return false;
     }
-    result = iBundleManager_->GetBundleInfo(bundleName, AppExecFwk::BundleFlag::GET_BUNDLE_DEFAULT, bundleInfo);
+    result = iBundleManager_->GetBundleInfo(bundleName,
+        AppExecFwk::BundleFlag::GET_BUNDLE_WITH_REQUESTED_PERMISSION,
+        bundleInfo);
     if (!result) {
         PERMISSION_LOG_INFO(
             LABEL, "%{public}s cannot get bundleInfo by bundleName %{public}s", __func__, bundleName.c_str());

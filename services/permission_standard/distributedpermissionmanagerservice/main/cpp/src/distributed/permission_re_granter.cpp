@@ -90,7 +90,7 @@ bool PermissionReGranter::VerifySignatruePermission(
 
     AppExecFwk::BundleInfo bundleInfo;
     int result = iBundleManager_->GetBundleInfo(
-        permInfo.permissionDef.bundleName, AppExecFwk::BundleFlag::GET_BUNDLE_DEFAULT, bundleInfo);
+        permInfo.permissionDef.bundleName, AppExecFwk::BundleFlag::GET_BUNDLE_WITH_REQUESTED_PERMISSION, bundleInfo);
     if (!result) {
         PERMISSION_LOG_INFO(LABEL,
             "%{public}s cannot get bundleInfo by bundleName %{public}s",
