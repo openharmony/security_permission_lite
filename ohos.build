@@ -20,7 +20,6 @@
         }
       ],
       "module_list": [
-        "//base/security/permission/interfaces/kits/permission_standard/record/main/napi:napi_packages",
         "//base/security/permission:permission_build_module_standard"
       ],
       "test_list": [
