@@ -57,7 +57,6 @@ config("permission_test_config") {
     "${distributed_permission_services_path}/main/cpp/include/remind",
     "${distributed_permission_services_path}/test/mock/include",
     "//base/security/permission/interfaces/innerkits/permission_standard/permissionsdk/main/cpp/src/permission",
-    "//base/startup/init_lite/services/log",
   ]
 
   defines = [

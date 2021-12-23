@@ -69,7 +69,6 @@ config("distributed_permission_services_public_config") {
     "//base/security/permission/interfaces/innerkits/permission_standard/permissionsdk/main/cpp/include",
     "//base/security/permission/interfaces/innerkits/permission_standard/permissionsdk/main/cpp/include/permission",
     "//foundation/aafwk/standard/interfaces/innerkits/ability_manager/include",
-    "//base/startup/init_lite/services/log",
     "//foundation/distributedhardware/devicemanager/interfaces/inner_kits/native_cpp:devicemanagersdk",
   ]
 }
@@ -171,7 +170,6 @@ ohos_shared_library("distributed_permission_services") {
     "//base/notification/ans_standard/frameworks/ans/core:ans_core",
     "//base/notification/ans_standard/frameworks/wantagent:wantagent_innerkits",
     "//base/notification/ces_standard/interfaces/kits/napi:napi_packages",
-    "//base/startup/init_lite/services/log:init_log",
     "//base/startup/syspara_lite/interfaces/innerkits/native/syspara:syspara",
     "//foundation/aafwk/standard/interfaces/innerkits/base:base",
     "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_base:appexecfwk_base",
