@@ -21,13 +21,10 @@
       ],
       "module_list": [
         "//base/security/permission/interfaces/kits/permission_standard/record/main/napi:napi_packages",
-        "//base/security/permission:permission_build_module_standard",
-        "//base/security/permission:distributed_permission"
+        "//base/security/permission:permission_build_module_standard"
       ],
       "test_list": [
-        "//base/security/permission:permission_build_module_standard_test",
-        "//base/security/permission/services/permission_standard/distributedpermissionmanagerservice/test:unittest",
-        "//base/security/permission/interfaces/innerkits/permission_standard/distributedpermission/test:unittest"
+        "//base/security/permission:permission_build_module_standard_test"
       ]
     }
   }
