@@ -24,7 +24,6 @@
 #include "bundle_mgr_interface.h"
 #include "permission_kit.h"
 #include "distributed_permission_kit.h"
-#include "init_log.h"
 #include "iservice_registry.h"
 #include "bms_adapter.h"
 #include "pms_adapter.h"
@@ -77,7 +76,6 @@ bool DistributedPermissionManagerService::Init()
 
 void DistributedPermissionManagerService::OnStart()
 {
-    INIT_LOGI("DistributedPermissionManagerService::OnStart()");
     int32_t intFlag = 2;
     int32_t sleepTime = 50;
     while (true) {
@@ -87,20 +85,11 @@ void DistributedPermissionManagerService::OnStart()
             sptr<AppExecFwk::IBundleMgr> iBundleManager;
             iBundleManager = bmsAdapter->GetBundleManager();
             if (iBundleManager != nullptr) {
-                INIT_LOGI("iBundleManager is not nullptr.");
                 flag++;
-            } else {
-                INIT_LOGI("iBundleManager is nullptr.");
             }
             auto samgr = SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
-            if (samgr == nullptr) {
-                INIT_LOGI("Get SystemAbilityManager Failed");
-            }
-            auto object = samgr->CheckSystemAbility(Constant::DISTRIBUTED_HARDWARE_DEVICEMANAGER_SA_ID);
-            if (object == nullptr) {
-                INIT_LOGI("Get DeviceManager SystemAbility Failed");
-            } else {
-                INIT_LOGI("iDeviceManager is not nullptr.");
+            if ((samgr != nullptr) &&
+                (samgr->CheckSystemAbility(Constant::DISTRIBUTED_HARDWARE_DEVICEMANAGER_SA_ID) != nullptr)) {
                 flag++;
             }
         }
