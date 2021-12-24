@@ -17,9 +17,12 @@
 #define I_PERMISSION_MANAGER_H
 
 #include <string>
+
 #include "permission_def_parcel.h"
+
 #include "iremote_broker.h"
 #include "errors.h"
+
 namespace OHOS {
 namespace Security {
 namespace Permission {
@@ -29,35 +32,35 @@ public:
 
     DECLARE_INTERFACE_DESCRIPTOR(u"ohos.security.permission.IPermissionManager");
 
-    virtual int VerifyPermission(const std::string &bundleName, const std::string &permissionName, int userId) = 0;
+    virtual int VerifyPermission(const std::string& bundleName, const std::string& permissionName, int userId) = 0;
 
-    virtual bool CanRequestPermission(const std::string &bundleName, const std::string &permissionName, int userId) = 0;
+    virtual bool CanRequestPermission(const std::string& bundleName, const std::string& permissionName, int userId) = 0;
 
     virtual int GrantUserGrantedPermission(
-        const std::string &bundleName, const std::string &permissionName, int userId) = 0;
+        const std::string& bundleName, const std::string& permissionName, int userId) = 0;
 
-    virtual int GrantSystemGrantedPermission(const std::string &bundleName, const std::string &permissionName) = 0;
+    virtual int GrantSystemGrantedPermission(const std::string& bundleName, const std::string& permissionName) = 0;
 
     virtual int RevokeUserGrantedPermission(
-        const std::string &bundleName, const std::string &permissionName, int userId) = 0;
+        const std::string& bundleName, const std::string& permissionName, int userId) = 0;
 
-    virtual int RevokeSystemGrantedPermission(const std::string &bundleName, const std::string &permissionName) = 0;
+    virtual int RevokeSystemGrantedPermission(const std::string& bundleName, const std::string& permissionName) = 0;
 
     virtual int AddUserGrantedReqPermissions(
-        const std::string &bundleName, const std::vector<std::string> &permList, int userId) = 0;
+        const std::string& bundleName, const std::vector<std::string>& permList, int userId) = 0;
 
     virtual int AddSystemGrantedReqPermissions(
-        const std::string &bundleName, const std::vector<std::string> &permList) = 0;
+        const std::string& bundleName, const std::vector<std::string>& permList) = 0;
 
-    virtual int RemoveUserGrantedReqPermissions(const std::string &bundleName, int userId) = 0;
+    virtual int RemoveUserGrantedReqPermissions(const std::string& bundleName, int userId) = 0;
 
-    virtual int RemoveSystemGrantedReqPermissions(const std::string &bundleName) = 0;
+    virtual int RemoveSystemGrantedReqPermissions(const std::string& bundleName) = 0;
 
-    virtual int AddDefPermissions(const std::vector<PermissionDefParcel> &permDefList) = 0;
+    virtual int AddDefPermissions(const std::vector<PermissionDefParcel>& permDefList) = 0;
 
-    virtual int RemoveDefPermissions(const std::string &bundleName) = 0;
+    virtual int RemoveDefPermissions(const std::string& bundleName) = 0;
 
-    virtual int GetDefPermission(const std::string &permissionName, PermissionDefParcel &permissionDefResult) = 0;
+    virtual int GetDefPermission(const std::string& permissionName, PermissionDefParcel& permissionDefResult) = 0;
 
     enum class InterfaceCode {
         VERIFY_PERMISSION = 0xff01,
@@ -75,8 +78,8 @@ public:
         GET_DEF_PERMISSION = 0xff13,
     };
 };
-}  // namespace Permission
-}  // namespace Security
-}  // namespace OHOS
+} // namespace Permission
+} // namespace Security
+} // namespace OHOS
 
-#endif  // I_PERMISSION_MANAGER_H
+#endif // I_PERMISSION_MANAGER_H
