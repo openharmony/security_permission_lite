@@ -45,3 +45,9 @@ group("distributed_permission") {
     ]
   }
 }
+
+group("permission_napi") {
+  if (support_jsapi) {
+    deps = [ "//base/security/permission/interfaces/kits/permission_standard/record/main/napi:napi_packages" ]
+  }
+}
