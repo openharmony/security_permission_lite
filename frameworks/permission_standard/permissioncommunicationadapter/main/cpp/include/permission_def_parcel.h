@@ -16,7 +16,7 @@
 #ifndef PERMISSION_DEF_PARCEL_H
 #define PERMISSION_DEF_PARCEL_H
 
-#include "permission/permission_def.h"
+#include "permission_def.h"
 
 #include "parcel.h"
 
@@ -28,9 +28,9 @@ struct PermissionDefParcel final : public Parcelable {
 
     ~PermissionDefParcel() override = default;
 
-    bool Marshalling(Parcel &out) const override;
+    bool Marshalling(Parcel& out) const override;
 
-    static PermissionDefParcel *Unmarshalling(Parcel &in);
+    static PermissionDefParcel* Unmarshalling(Parcel& in);
 
     PermissionDef permissionDef;
 };

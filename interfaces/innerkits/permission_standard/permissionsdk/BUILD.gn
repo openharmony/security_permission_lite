@@ -33,8 +33,7 @@ ohos_shared_library("libpermissionsdk_standard") {
     "//utils/native/base/include",
     "main/cpp/include",
     "main/cpp/src",
-    "main/cpp/include/permission",
-    "main/cpp/include/permission_using_remind",
+    "//base/security/permission/interfaces/innerkits/permission_standard/permissionsdk/main/cpp/include/permission",
   ]
 
   sources = [
