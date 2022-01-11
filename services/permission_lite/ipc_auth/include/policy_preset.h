@@ -292,6 +292,19 @@ FeaturePolicy recorderFeature[] = {
     },
 };
 
+FeaturePolicy audioCapturerFeature[] = {
+    {
+        NULL,
+        {
+            {
+                .type=RANGE,
+                .uidMin=0,
+                .uidMax=__INT_MAX__,
+            },
+        },
+    },
+};
+
 FeaturePolicy devAuthFeature[] = {
     {
         NULL,
@@ -349,6 +362,7 @@ static PolicySetting g_presetPolicies[] = {
     {"PlayerServer", playerFeature, 1},
     {"CameraServer", cameraFeature, 1},
     {"RecorderServer", recorderFeature, 1},
+    {"AudioCapServer", audioCapturerFeature, 1},
     {"devauth_svc", devAuthFeature, 1},
     {"battery_service", batteryFeature, 1},
     {"dev_mgr_svc", deviceManagerFeature, 1}
