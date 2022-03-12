@@ -27,115 +27,70 @@ namespace Security {
 namespace Permission {
 using namespace std;
 
-namespace {
-static constexpr OHOS::HiviewDFX::HiLogLabel LABEL = {LOG_CORE, SECURITY_DOMAIN_PERMISSION, "PermissionKit"};
-} // namespace
-
 int PermissionKit::VerifyPermission(const string& bundleName, const string& permissionName, int userId)
 {
-    PERMISSION_LOG_INFO(LABEL, "%{public}s called", __func__);
-    PERMISSION_LOG_INFO(LABEL, "bundleName=%{public}s, permissionName=%{public}s, userId=%{public}d",
-        bundleName.c_str(), permissionName.c_str(), userId);
-    if (!DataValidator::IsBundleNameValid(bundleName) || !DataValidator::IsPermissionNameValid(permissionName) ||
-        !DataValidator::IsUserIdValid(userId)) {
-        return PERMISSION_NOT_GRANTED;
-    }
-    return PermissionManagerClient::GetInstance().VerifyPermission(bundleName, permissionName, userId);
+    return 0;
 }
 
 bool PermissionKit::CanRequestPermission(const string& bundleName, const string& permissionName, int userId)
 {
-    PERMISSION_LOG_INFO(LABEL, "%{public}s called", __func__);
-    PERMISSION_LOG_INFO(LABEL, "bundleName=%{public}s, permissionName=%{public}s, userId=%{public}d",
-        bundleName.c_str(), permissionName.c_str(), userId);
-    if (!DataValidator::IsBundleNameValid(bundleName) || !DataValidator::IsPermissionNameValid(permissionName) ||
-        !DataValidator::IsUserIdValid(userId)) {
-        return false;
-    }
-    return PermissionManagerClient::GetInstance().CanRequestPermission(bundleName, permissionName, userId);
+    return 0;
 }
 
 int PermissionKit::GrantUserGrantedPermission(const string& bundleName, const string& permissionName, int userId)
 {
-    PERMISSION_LOG_INFO(LABEL, "%{public}s called", __func__);
-    PERMISSION_LOG_INFO(LABEL, "bundleName=%{public}s, permissionName=%{public}s, userId=%{public}d",
-        bundleName.c_str(), permissionName.c_str(), userId);
-    return PermissionManagerClient::GetInstance().GrantUserGrantedPermission(bundleName, permissionName, userId);
+    return 0;
 }
 
 int PermissionKit::GrantSystemGrantedPermission(const string& bundleName, const string& permissionName)
 {
-    PERMISSION_LOG_INFO(LABEL, "%{public}s called", __func__);
-    PERMISSION_LOG_INFO(
-        LABEL, "bundleName=%{public}s, permissionName=%{public}s", bundleName.c_str(), permissionName.c_str());
-    return PermissionManagerClient::GetInstance().GrantSystemGrantedPermission(bundleName, permissionName);
+    return 0;
 }
 
 int PermissionKit::RevokeUserGrantedPermission(const string& bundleName, const string& permissionName, int userId)
 {
-    PERMISSION_LOG_INFO(LABEL, "%{public}s called", __func__);
-    PERMISSION_LOG_INFO(LABEL, "bundleName=%{public}s, permissionName=%{public}s, userId=%{public}d",
-        bundleName.c_str(), permissionName.c_str(), userId);
-    return PermissionManagerClient::GetInstance().RevokeUserGrantedPermission(bundleName, permissionName, userId);
+    return 0;
 }
 
 int PermissionKit::RevokeSystemGrantedPermission(const string& bundleName, const string& permissionName)
 {
-    PERMISSION_LOG_INFO(LABEL, "%{public}s called", __func__);
-    PERMISSION_LOG_INFO(
-        LABEL, "bundleName=%{public}s, permissionName=%{public}s", bundleName.c_str(), permissionName.c_str());
-    return PermissionManagerClient::GetInstance().RevokeSystemGrantedPermission(bundleName, permissionName);
+    return 0;
 }
 
 int PermissionKit::AddUserGrantedReqPermissions(
     const string& bundleName, const std::vector<string>& permList, int userId)
 {
-    PERMISSION_LOG_INFO(LABEL, "%{public}s called", __func__);
-    PERMISSION_LOG_INFO(LABEL, "bundleName=%{public}s, userId=%{public}d", bundleName.c_str(), userId);
-    return PermissionManagerClient::GetInstance().AddUserGrantedReqPermissions(bundleName, permList, userId);
+    return 0;
 }
 
 int PermissionKit::AddSystemGrantedReqPermissions(const string& bundleName, const std::vector<string>& permList)
 {
-    PERMISSION_LOG_INFO(LABEL, "%{public}s called", __func__);
-    PERMISSION_LOG_INFO(LABEL, "bundleName=%{public}s", bundleName.c_str());
-    return PermissionManagerClient::GetInstance().AddSystemGrantedReqPermissions(bundleName, permList);
+    return 0;
 }
 
 int PermissionKit::RemoveUserGrantedReqPermissions(const string& bundleName, int userId)
 {
-    PERMISSION_LOG_INFO(LABEL, "%{public}s called", __func__);
-    PERMISSION_LOG_INFO(LABEL, "bundleName=%{public}s, userId=%{public}d", bundleName.c_str(), userId);
-    return PermissionManagerClient::GetInstance().RemoveUserGrantedReqPermissions(bundleName, userId);
+    return 0;
 }
 
 int PermissionKit::RemoveSystemGrantedReqPermissions(const string& bundleName)
 {
-    PERMISSION_LOG_INFO(LABEL, "%{public}s called", __func__);
-    PERMISSION_LOG_INFO(LABEL, "bundleName=%{public}s", bundleName.c_str());
-    return PermissionManagerClient::GetInstance().RemoveSystemGrantedReqPermissions(bundleName);
+    return 0;
 }
 
 int PermissionKit::AddDefPermissions(const std::vector<PermissionDef>& permList)
 {
-    PERMISSION_LOG_INFO(LABEL, "%{public}s called", __func__);
-    return PermissionManagerClient::GetInstance().AddDefPermissions(permList);
+    return 0;
 }
 
 int PermissionKit::RemoveDefPermissions(const string& bundleName)
 {
-    PERMISSION_LOG_INFO(LABEL, "%{public}s called", __func__);
-    PERMISSION_LOG_INFO(LABEL, "bundleName=%{public}s", bundleName.c_str());
-    return PermissionManagerClient::GetInstance().RemoveDefPermissions(bundleName);
+    return 0;
 }
 
 int PermissionKit::GetDefPermission(const string& permissionName, PermissionDef& permissionDefResult)
 {
-    PERMISSION_LOG_INFO(LABEL, "%{public}s called", __func__);
-    PERMISSION_LOG_INFO(LABEL, "permissionName=%{public}s", permissionName.c_str());
-    int ret = PermissionManagerClient::GetInstance().GetDefPermission(permissionName, permissionDefResult);
-    PERMISSION_LOG_INFO(LABEL, "GetDefPermission bundleName = %{public}s", permissionDefResult.bundleName.c_str());
-    return ret;
+    return 0;
 }
 } // namespace Permission
 } // namespace Security
