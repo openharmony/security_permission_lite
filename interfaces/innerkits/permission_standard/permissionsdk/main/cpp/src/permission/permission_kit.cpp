@@ -15,13 +15,6 @@
 
 #include "permission/permission_kit.h"
 
-#include <string>
-#include <vector>
-
-#include "permission_log.h"
-#include "permission_manager_client.h"
-#include "data_validator.h"
-
 namespace OHOS {
 namespace Security {
 namespace Permission {
