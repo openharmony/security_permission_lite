@@ -36,9 +36,4 @@ void PermissionStateManagerTest::TearDown()
 {}
 
 HWTEST_F(PermissionStateManagerTest, AddUserGrantedReqPermissions001, TestSize.Level1)
-{
-    std::vector<std::string> permList;
-    permList.emplace_back(TEST_PERMISSION_NAME_ALPHA);
-    PermissionStateManager::GetInstance().AddUserGrantedReqPermissions(TEST_BUNDLE_NAME, permList, 0);
-    PermissionStateManager::GetInstance().AddUserGrantedReqPermissions(TEST_BUNDLE_NAME, permList, TEST_SUB_USER_ID);
-}
+{}

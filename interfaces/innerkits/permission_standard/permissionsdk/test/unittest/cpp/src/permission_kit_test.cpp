@@ -25,41 +25,10 @@ void PermissionKitTest::SetUpTestCase()
 {}
 
 void PermissionKitTest::TearDownTestCase()
-{
-    PermissionKit::RemoveDefPermissions(TEST_BUNDLE_NAME);
-    PermissionKit::RemoveUserGrantedReqPermissions(TEST_BUNDLE_NAME, TEST_USER_ID);
-    PermissionKit::RemoveSystemGrantedReqPermissions(TEST_BUNDLE_NAME);
-}
+{}
 
 void PermissionKitTest::SetUp()
-{
-    vector<PermissionDef> permDefList;
-    PermissionDef permissionDefAlpha = {
-        .permissionName = TEST_PERMISSION_NAME_ALPHA,
-        .bundleName = TEST_BUNDLE_NAME,
-        .grantMode = GrantMode::USER_GRANT,
-        .availableScope = AVAILABLE_SCOPE_ALL,
-        .label = TEST_LABEL,
-        .labelId = TEST_LABEL_ID,
-        .description = TEST_DESCRIPTION,
-        .descriptionId = TEST_DESCRIPTION_ID
-    };
-
-    PermissionDef permissionDefBeta = {
-        .permissionName = TEST_PERMISSION_NAME_BETA,
-        .bundleName = TEST_BUNDLE_NAME,
-        .grantMode = GrantMode::SYSTEM_GRANT,
-        .availableScope = AVAILABLE_SCOPE_ALL,
-        .label = TEST_LABEL,
-        .labelId = TEST_LABEL_ID,
-        .description = TEST_DESCRIPTION,
-        .descriptionId = TEST_DESCRIPTION_ID
-    };
-
-    permDefList.emplace_back(permissionDefAlpha);
-    permDefList.emplace_back(permissionDefBeta);
-    PermissionKit::AddDefPermissions(permDefList);
-}
+{}
 
 void PermissionKitTest::TearDown()
 {}
@@ -71,15 +40,7 @@ void PermissionKitTest::TearDown()
  * @tc.require:
  */
 HWTEST_F(PermissionKitTest, AddDefPermissions001, TestSize.Level0)
-{
-    PermissionDef permissionDefResultAlpha;
-    int ret = PermissionKit::GetDefPermission(TEST_PERMISSION_NAME_ALPHA, permissionDefResultAlpha);
-    ASSERT_EQ(RET_SUCCESS, ret);
-
-    PermissionDef permissionDefResultBeta;
-    ret = PermissionKit::GetDefPermission(TEST_PERMISSION_NAME_BETA, permissionDefResultBeta);
-    ASSERT_EQ(RET_SUCCESS, ret);
-}
+{}
 
 /**
  * @tc.name: RemoveDefPermissions001
@@ -88,18 +49,7 @@ HWTEST_F(PermissionKitTest, AddDefPermissions001, TestSize.Level0)
  * @tc.require:
  */
 HWTEST_F(PermissionKitTest, RemoveDefPermissions001, TestSize.Level0)
-{
-    PermissionDef permissionDefResultAlpha;
-    int ret = PermissionKit::GetDefPermission(TEST_PERMISSION_NAME_ALPHA, permissionDefResultAlpha);
-    ASSERT_EQ(RET_SUCCESS, ret);
-
-    ret = PermissionKit::RemoveDefPermissions(TEST_BUNDLE_NAME);
-    ASSERT_EQ(RET_SUCCESS, ret);
-
-    PermissionDef result;
-    ret = PermissionKit::GetDefPermission(TEST_PERMISSION_NAME_ALPHA, result);
-    ASSERT_EQ(RET_FAILED, ret);
-}
+{}
 
 /**
  * @tc.name: VerifyPermission001
@@ -108,28 +58,7 @@ HWTEST_F(PermissionKitTest, RemoveDefPermissions001, TestSize.Level0)
  * @tc.require:
  */
 HWTEST_F(PermissionKitTest, VerifyPermission001, TestSize.Level0)
-{
-    vector<string> permList;
-    permList.push_back(TEST_PERMISSION_NAME_ALPHA);
-
-    int ret = PermissionKit::AddUserGrantedReqPermissions(TEST_BUNDLE_NAME, permList, TEST_USER_ID);
-    ASSERT_EQ(RET_SUCCESS, ret);
-
-    ret = PermissionKit::GrantUserGrantedPermission(TEST_BUNDLE_NAME, TEST_PERMISSION_NAME_ALPHA, TEST_USER_ID);
-    ASSERT_EQ(RET_SUCCESS, ret);
-
-    ret = PermissionKit::VerifyPermission(TEST_BUNDLE_NAME, TEST_PERMISSION_NAME_ALPHA, TEST_USER_ID);
-    ASSERT_EQ(PERMISSION_GRANTED, ret);
-
-    ret = PermissionKit::RevokeUserGrantedPermission(TEST_BUNDLE_NAME, TEST_PERMISSION_NAME_ALPHA, TEST_USER_ID);
-    ASSERT_EQ(RET_SUCCESS, ret);
-
-    ret = PermissionKit::VerifyPermission(TEST_BUNDLE_NAME, TEST_PERMISSION_NAME_ALPHA, TEST_USER_ID);
-    ASSERT_EQ(PERMISSION_NOT_GRANTED, ret);
-
-    ret = PermissionKit::RemoveUserGrantedReqPermissions(TEST_BUNDLE_NAME, TEST_USER_ID);
-    ASSERT_EQ(RET_SUCCESS, ret);
-}
+{}
 
 /**
  * @tc.name: VerifyPermission002
@@ -138,34 +67,7 @@ HWTEST_F(PermissionKitTest, VerifyPermission001, TestSize.Level0)
  * @tc.require:
  */
 HWTEST_F(PermissionKitTest, VerifyPermission002, TestSize.Level0)
-{
-    vector<string> permList;
-    permList.push_back(TEST_PERMISSION_NAME_BETA);
-
-    int ret = PermissionKit::AddSystemGrantedReqPermissions(TEST_BUNDLE_NAME, permList);
-    ASSERT_EQ(RET_SUCCESS, ret);
-
-    ret = PermissionKit::GrantSystemGrantedPermission(TEST_BUNDLE_NAME, TEST_PERMISSION_NAME_BETA);
-    ASSERT_EQ(RET_SUCCESS, ret);
-
-    ret = PermissionKit::VerifyPermission(TEST_BUNDLE_NAME, TEST_PERMISSION_NAME_BETA, TEST_USER_ID);
-    ASSERT_EQ(PERMISSION_GRANTED, ret);
-
-    ret = PermissionKit::VerifyPermission(TEST_BUNDLE_NAME, TEST_PERMISSION_NAME_BETA, TEST_SUB_USER_ID);
-    ASSERT_EQ(PERMISSION_GRANTED, ret);
-
-    ret = PermissionKit::RevokeSystemGrantedPermission(TEST_BUNDLE_NAME, TEST_PERMISSION_NAME_BETA);
-    ASSERT_EQ(RET_SUCCESS, ret);
-
-    ret = PermissionKit::VerifyPermission(TEST_BUNDLE_NAME, TEST_PERMISSION_NAME_BETA, TEST_USER_ID);
-    ASSERT_EQ(PERMISSION_NOT_GRANTED, ret);
-
-    ret = PermissionKit::VerifyPermission(TEST_BUNDLE_NAME, TEST_PERMISSION_NAME_BETA, TEST_SUB_USER_ID);
-    ASSERT_EQ(PERMISSION_NOT_GRANTED, ret);
-
-    ret = PermissionKit::RemoveSystemGrantedReqPermissions(TEST_BUNDLE_NAME);
-    ASSERT_EQ(RET_SUCCESS, ret);
-}
+{}
 
 /**
  * @tc.name: VerifyPermission003
@@ -174,10 +76,7 @@ HWTEST_F(PermissionKitTest, VerifyPermission002, TestSize.Level0)
  * @tc.require:
  */
 HWTEST_F(PermissionKitTest, VerifyPermission003, TestSize.Level0)
-{
-    int ret = PermissionKit::VerifyPermission(TEST_BUNDLE_NAME, TEST_PERMISSION_NAME_GAMMA, TEST_USER_ID);
-    ASSERT_EQ(PERMISSION_NOT_GRANTED, ret);
-}
+{}
 
 /**
  * @tc.name: VerifyPermissionErrorUserGrant001
@@ -186,28 +85,7 @@ HWTEST_F(PermissionKitTest, VerifyPermission003, TestSize.Level0)
  * @tc.require:
  */
 HWTEST_F(PermissionKitTest, VerifyPermissionErrorUserGrant001, TestSize.Level0)
-{
-    vector<string> permList;
-    permList.push_back(TEST_PERMISSION_NAME_ALPHA);
-
-    int ret = PermissionKit::AddSystemGrantedReqPermissions(TEST_BUNDLE_NAME, permList);
-    ASSERT_EQ(RET_SUCCESS, ret);
-
-    ret = PermissionKit::GrantUserGrantedPermission(TEST_BUNDLE_NAME, TEST_PERMISSION_NAME_ALPHA, TEST_USER_ID);
-    ASSERT_EQ(RET_SUCCESS, ret);
-
-    ret = PermissionKit::VerifyPermission(TEST_BUNDLE_NAME, TEST_PERMISSION_NAME_ALPHA, TEST_USER_ID);
-    ASSERT_EQ(PERMISSION_NOT_GRANTED, ret);
-
-    ret = PermissionKit::RevokeUserGrantedPermission(TEST_BUNDLE_NAME, TEST_PERMISSION_NAME_ALPHA, TEST_USER_ID);
-    ASSERT_EQ(RET_SUCCESS, ret);
-
-    ret = PermissionKit::VerifyPermission(TEST_BUNDLE_NAME, TEST_PERMISSION_NAME_ALPHA, TEST_USER_ID);
-    ASSERT_EQ(PERMISSION_NOT_GRANTED, ret);
-
-    ret = PermissionKit::RemoveUserGrantedReqPermissions(TEST_BUNDLE_NAME, TEST_USER_ID);
-    ASSERT_EQ(RET_SUCCESS, ret);
-}
+{}
 
 /**
  * @tc.name: VerifyPermissionErrorUserGrant002
@@ -216,28 +94,7 @@ HWTEST_F(PermissionKitTest, VerifyPermissionErrorUserGrant001, TestSize.Level0)
  * @tc.require:
  */
 HWTEST_F(PermissionKitTest, VerifyPermissionErrorUserGrant002, TestSize.Level0)
-{
-    vector<string> permList;
-    permList.push_back(TEST_PERMISSION_NAME_ALPHA);
-
-    int ret = PermissionKit::AddUserGrantedReqPermissions(TEST_BUNDLE_NAME, permList, TEST_USER_ID);
-    ASSERT_EQ(RET_SUCCESS, ret);
-
-    ret = PermissionKit::GrantSystemGrantedPermission(TEST_BUNDLE_NAME, TEST_PERMISSION_NAME_ALPHA);
-    ASSERT_EQ(RET_SUCCESS, ret);
-
-    ret = PermissionKit::VerifyPermission(TEST_BUNDLE_NAME, TEST_PERMISSION_NAME_ALPHA, TEST_USER_ID);
-    ASSERT_EQ(PERMISSION_NOT_GRANTED, ret);
-
-    ret = PermissionKit::RevokeUserGrantedPermission(TEST_BUNDLE_NAME, TEST_PERMISSION_NAME_ALPHA, TEST_USER_ID);
-    ASSERT_EQ(RET_SUCCESS, ret);
-
-    ret = PermissionKit::VerifyPermission(TEST_BUNDLE_NAME, TEST_PERMISSION_NAME_ALPHA, TEST_USER_ID);
-    ASSERT_EQ(PERMISSION_NOT_GRANTED, ret);
-
-    ret = PermissionKit::RemoveUserGrantedReqPermissions(TEST_BUNDLE_NAME, TEST_USER_ID);
-    ASSERT_EQ(RET_SUCCESS, ret);
-}
+{}
 
 /**
  * @tc.name: VerifyPermissionErrorSystemGrant001
@@ -246,28 +103,7 @@ HWTEST_F(PermissionKitTest, VerifyPermissionErrorUserGrant002, TestSize.Level0)
  * @tc.require:
  */
 HWTEST_F(PermissionKitTest, VerifyPermissionErrorSystemGrant001, TestSize.Level0)
-{
-    vector<string> permList;
-    permList.push_back(TEST_PERMISSION_NAME_BETA);
-
-    int ret = PermissionKit::AddUserGrantedReqPermissions(TEST_BUNDLE_NAME, permList, TEST_USER_ID);
-    ASSERT_EQ(RET_SUCCESS, ret);
-
-    ret = PermissionKit::GrantSystemGrantedPermission(TEST_BUNDLE_NAME, TEST_PERMISSION_NAME_BETA);
-    ASSERT_EQ(RET_SUCCESS, ret);
-
-    ret = PermissionKit::VerifyPermission(TEST_BUNDLE_NAME, TEST_PERMISSION_NAME_BETA, TEST_USER_ID);
-    ASSERT_EQ(PERMISSION_NOT_GRANTED, ret);
-
-    ret = PermissionKit::RevokeSystemGrantedPermission(TEST_BUNDLE_NAME, TEST_PERMISSION_NAME_BETA);
-    ASSERT_EQ(RET_SUCCESS, ret);
-
-    ret = PermissionKit::VerifyPermission(TEST_BUNDLE_NAME, TEST_PERMISSION_NAME_BETA, TEST_USER_ID);
-    ASSERT_EQ(PERMISSION_NOT_GRANTED, ret);
-
-    ret = PermissionKit::RemoveUserGrantedReqPermissions(TEST_BUNDLE_NAME, TEST_USER_ID);
-    ASSERT_EQ(RET_SUCCESS, ret);
-}
+{}
 
 /**
  * @tc.name: VerifyPermissionErrorSystemGrant002
@@ -276,34 +112,7 @@ HWTEST_F(PermissionKitTest, VerifyPermissionErrorSystemGrant001, TestSize.Level0
  * @tc.require:
  */
 HWTEST_F(PermissionKitTest, VerifyPermissionErrorSystemGrant002, TestSize.Level0)
-{
-    vector<string> permList;
-    permList.push_back(TEST_PERMISSION_NAME_BETA);
-
-    int ret = PermissionKit::AddSystemGrantedReqPermissions(TEST_BUNDLE_NAME, permList);
-    ASSERT_EQ(RET_SUCCESS, ret);
-
-    ret = PermissionKit::GrantUserGrantedPermission(TEST_BUNDLE_NAME, TEST_PERMISSION_NAME_BETA, TEST_USER_ID);
-    ASSERT_EQ(RET_SUCCESS, ret);
-
-    ret = PermissionKit::VerifyPermission(TEST_BUNDLE_NAME, TEST_PERMISSION_NAME_BETA, TEST_USER_ID);
-    ASSERT_EQ(PERMISSION_NOT_GRANTED, ret);
-
-    ret = PermissionKit::VerifyPermission(TEST_BUNDLE_NAME, TEST_PERMISSION_NAME_BETA, TEST_SUB_USER_ID);
-    ASSERT_EQ(PERMISSION_NOT_GRANTED, ret);
-
-    ret = PermissionKit::RevokeSystemGrantedPermission(TEST_BUNDLE_NAME, TEST_PERMISSION_NAME_BETA);
-    ASSERT_EQ(RET_SUCCESS, ret);
-
-    ret = PermissionKit::VerifyPermission(TEST_BUNDLE_NAME, TEST_PERMISSION_NAME_BETA, TEST_USER_ID);
-    ASSERT_EQ(PERMISSION_NOT_GRANTED, ret);
-
-    ret = PermissionKit::VerifyPermission(TEST_BUNDLE_NAME, TEST_PERMISSION_NAME_BETA, TEST_SUB_USER_ID);
-    ASSERT_EQ(PERMISSION_NOT_GRANTED, ret);
-
-    ret = PermissionKit::RemoveUserGrantedReqPermissions(TEST_BUNDLE_NAME, TEST_USER_ID);
-    ASSERT_EQ(RET_SUCCESS, ret);
-}
+{}
 
 /**
  * @tc.name: CanRequestPermission001
@@ -312,28 +121,7 @@ HWTEST_F(PermissionKitTest, VerifyPermissionErrorSystemGrant002, TestSize.Level0
  * @tc.require:
  */
 HWTEST_F(PermissionKitTest, CanRequestPermission001, TestSize.Level0)
-{
-    vector<string> permList;
-    permList.push_back(TEST_PERMISSION_NAME_ALPHA);
-
-    int ret = PermissionKit::AddUserGrantedReqPermissions(TEST_BUNDLE_NAME, permList, TEST_USER_ID);
-    ASSERT_EQ(RET_SUCCESS, ret);
-
-    bool isCanRequest = PermissionKit::CanRequestPermission(TEST_BUNDLE_NAME, TEST_PERMISSION_NAME_ALPHA, TEST_USER_ID);
-    ASSERT_TRUE(isCanRequest);
-
-    ret = PermissionKit::GrantUserGrantedPermission(TEST_BUNDLE_NAME, TEST_PERMISSION_NAME_ALPHA, TEST_USER_ID);
-    ASSERT_EQ(RET_SUCCESS, ret);
-
-    isCanRequest = PermissionKit::CanRequestPermission(TEST_BUNDLE_NAME, TEST_PERMISSION_NAME_ALPHA, TEST_USER_ID);
-    ASSERT_FALSE(isCanRequest);
-
-    ret = PermissionKit::RemoveDefPermissions(TEST_BUNDLE_NAME);
-    ASSERT_EQ(RET_SUCCESS, ret);
-
-    isCanRequest = PermissionKit::CanRequestPermission(TEST_BUNDLE_NAME, TEST_PERMISSION_NAME_ALPHA, TEST_USER_ID);
-    ASSERT_FALSE(isCanRequest);
-}
+{}
 
 /**
  * @tc.name: CanRequestPermission001
@@ -342,16 +130,4 @@ HWTEST_F(PermissionKitTest, CanRequestPermission001, TestSize.Level0)
  * @tc.require:
  */
 HWTEST_F(PermissionKitTest, CanRequestPermission002, TestSize.Level0)
-{
-    vector<string> permList;
-    permList.push_back(TEST_PERMISSION_NAME_BETA);
-
-    int ret = PermissionKit::AddSystemGrantedReqPermissions(TEST_BUNDLE_NAME, permList);
-    ASSERT_EQ(RET_SUCCESS, ret);
-
-    bool isCanRequest = PermissionKit::CanRequestPermission(TEST_BUNDLE_NAME, TEST_PERMISSION_NAME_BETA, TEST_USER_ID);
-    ASSERT_FALSE(isCanRequest);
-
-    isCanRequest = PermissionKit::CanRequestPermission("", "", TEST_INVALID_USER_ID);
-    ASSERT_FALSE(isCanRequest);
-}
+{}
