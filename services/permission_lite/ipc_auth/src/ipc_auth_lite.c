@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 Huawei Device Co., Ltd.
+ * Copyright (c) 2020~2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -25,7 +25,7 @@
 
 #include "ipc_auth.h"
 
-static void Init();
+static void Init(void);
 static const char *GetName(Feature *feature);
 static void OnInitialize(Feature *feature, Service *parent, Identity identity);
 static void OnStop(Feature *feature, Identity identity);
@@ -43,7 +43,7 @@ static IpcAuthLite g_authLite = {
     .identity = {-1, -1, NULL},
 };
 
-static void Init()
+static void Init(void)
 {
     SAMGR_GetInstance()->RegisterFeature(PERMISSION_SERVICE, (Feature *)&g_authLite);
     SAMGR_GetInstance()->RegisterFeatureApi(PERMISSION_SERVICE, IPCAUTH, GET_IUNKNOWN(g_authLite));
