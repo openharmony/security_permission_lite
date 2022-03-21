@@ -180,7 +180,7 @@ int GetCommunicationStrategy(RegParams params, PolicyTrans **policies, unsigned 
     if (res != AUTH_ERRORCODE_POLICY_NOT_FOUND) {
         return res;
     }
-#if  POLICY_PRODUCT 
+#if  POLICY_PRODUCT
     res = SetPresetPolicies(g_productPolicies, g_productPolicySize, params, policies, policyNum);
     if (res != AUTH_ERRORCODE_POLICY_NOT_FOUND) {
         return res;
@@ -276,7 +276,7 @@ int IsCommunicationAllowed(AuthParams params)
     if (CheckSvcPolicies(g_presetPolicies, g_presetPolicySize, &params) == AUTH_ERRORCODE_SUCCESS) {
         return AUTH_ERRORCODE_SUCCESS;
     }
-#if  POLICY_PRODUCT 
+#if  POLICY_PRODUCT
     if (CheckSvcPolicies(g_productPolicies, g_productPolicySize, &params) == AUTH_ERRORCODE_SUCCESS) {
         return AUTH_ERRORCODE_SUCCESS;
     }

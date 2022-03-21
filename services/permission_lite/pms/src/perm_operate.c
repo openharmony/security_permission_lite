@@ -43,7 +43,7 @@ int ModifyPermission(TNode *node, const char *permission, const enum IsGranted g
     if (node == NULL || permission == NULL) {
         return RET_NOK;
     }
-    
+
     for (int i = 0; i < node->permNum; i++) {
         if (strcmp(node->permList[i].name, permission) == 0) {
             node->permList[i].granted = granted;
