@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020~2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2020~2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -304,7 +304,7 @@ int CheckSelfPermission(const char *permissionName)
     char data[MAX_DATA_LEN];
     IpcIoInit(&request, data, MAX_DATA_LEN, 0);
     IpcIoPushString(&request, permissionName);
-    int32_t ret;
+    int32_t ret = -1;
     proxy->Invoke((IClientProxy *)proxy, ID_CHECK_SELF, &request, &ret, Notify);
     ReleaseClientApi(proxy);
     return ret;
@@ -325,7 +325,7 @@ int CheckPermission(int uid, const char *permissionName)
     IpcIoInit(&request, data, MAX_DATA_LEN, 0);
     IpcIoPushInt64(&request, uid);
     IpcIoPushString(&request, permissionName);
-    int32_t ret;
+    int32_t ret = -1;
     proxy->Invoke((IClientProxy *)proxy, ID_CHECK, &request, &ret, Notify);
     ReleaseInnerClientApi(proxy);
     return ret;
@@ -364,7 +364,7 @@ int GrantPermission(const char *identifier, const char *permName)
     IpcIoInit(&request, data, MAX_DATA_LEN, 0);
     IpcIoPushString(&request, identifier);
     IpcIoPushString(&request, permName);
-    int32_t ret;
+    int32_t ret = -1;
     proxy->Invoke((IClientProxy *)proxy, ID_GRANT, &request, &ret, Notify);
     ReleaseInnerClientApi(proxy);
     HILOG_INFO(HILOG_MODULE_APP, "client grant[ret: %d]", ret);
@@ -382,7 +382,7 @@ int RevokePermission(const char *identifier, const char *permName)
     IpcIoInit(&request, data, MAX_DATA_LEN, 0);
     IpcIoPushString(&request, identifier);
     IpcIoPushString(&request, permName);
-    int32_t ret;
+    int32_t ret = -1;
     proxy->Invoke((IClientProxy *)proxy, ID_REVOKE, &request, &ret, Notify);
     ReleaseInnerClientApi(proxy);
     HILOG_INFO(HILOG_MODULE_APP, "client revoke[ret: %d]", ret);
@@ -400,7 +400,7 @@ int GrantRuntimePermission(int uid, const char *permissionName)
     IpcIoInit(&request, data, MAX_DATA_LEN, 0);
     IpcIoPushInt64(&request, uid);
     IpcIoPushString(&request, permissionName);
-    int32_t ret;
+    int32_t ret = -1;
     proxy->Invoke((IClientProxy *)proxy, ID_GRANT_RUNTIME, &request, &ret, Notify);
     ReleaseInnerClientApi(proxy);
     return ret;
@@ -417,7 +417,7 @@ int RevokeRuntimePermission(int uid, const char *permissionName)
     IpcIoInit(&request, data, MAX_DATA_LEN, 0);
     IpcIoPushInt64(&request, uid);
     IpcIoPushString(&request, permissionName);
-    int32_t ret;
+    int32_t ret = -1;
     proxy->Invoke((IClientProxy *)proxy, ID_REVOKE_RUNTIME, &request, &ret, Notify);
     ReleaseInnerClientApi(proxy);
     return ret;
@@ -435,7 +435,7 @@ int UpdatePermissionFlags(const char *identifier, const char *permissionName, co
     IpcIoPushString(&request, identifier);
     IpcIoPushString(&request, permissionName);
     IpcIoPushInt32(&request, flags);
-    int32_t ret;
+    int32_t ret = -1;
     proxy->Invoke((IClientProxy *)proxy, ID_UPDATE_PERMS_FLAGS, &request, &ret, Notify);
     ReleaseInnerClientApi(proxy);
     return ret;
