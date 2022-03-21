@@ -53,6 +53,9 @@ static const char *GetName(Service *service)
 
 static BOOL Initialize(Service *service, Identity identity)
 {
+    if (service == NULL) {
+        return FALSE;
+    }
     PermissionService *pms = (PermissionService *)service;
     pms->identity = identity;
     return TRUE;

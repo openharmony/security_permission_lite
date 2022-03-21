@@ -34,8 +34,8 @@
  * @version 1.0
  */
 
-#ifndef PMS_TYPES_H
-#define PMS_TYPES_H
+#ifndef INTERFACES_KITS_PERMISSION_LITE_PMS_TYPES_H
+#define INTERFACES_KITS_PERMISSION_LITE_PMS_TYPES_H
 
 #ifdef __cplusplus
 #if __cplusplus
@@ -82,7 +82,7 @@ enum PmsFlagDef {
     * Permission flag: The default value of permission flag.
     */
     PMS_FLAG_DEFAULT = 0,
-    
+
     /**
     * Permission flag[bit1]: The permission is set in its current state by the user and it is fixed,
     * i.e. apps can no longer request this permission.
@@ -166,4 +166,4 @@ enum PmsErrorCode {
 }
 #endif
 #endif
-#endif // PMS_TYPES_H
+#endif // INTERFACES_KITS_PERMISSION_LITE_PMS_TYPES_H

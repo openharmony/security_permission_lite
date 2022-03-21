@@ -23,17 +23,17 @@ FeaturePolicy regSvc1Feature[] = {
         "feature1",
         {
             {
-                .type=RANGE,
-                .uidMin=100,
-                .uidMax=110
+                .type = RANGE,
+                .uidMin = 100,
+                .uidMax = 110
             },
             {
-                .type=FIXED,
-                .fixedUid={75, 85, 95}
+                .type = FIXED,
+                .fixedUid = {75, 85, 95}
             },
             {
-                .type=BUNDLENAME,
-                .bundleName="OHOS"
+                .type = BUNDLENAME,
+                .bundleName = "OHOS"
             },
         }
     },
@@ -41,17 +41,17 @@ FeaturePolicy regSvc1Feature[] = {
         "feature2",
         {
             {
-                .type=RANGE,
-                .uidMin=100,
-                .uidMax=110
+                .type = RANGE,
+                .uidMin = 100,
+                .uidMax = 110
             },
             {
-                .type=FIXED,
-                .fixedUid={75, 85, 95}
+                .type = FIXED,
+                .fixedUid = {75, 85, 95}
             },
             {
-                .type=BUNDLENAME,
-                .bundleName="OHOS"
+                .type = BUNDLENAME,
+                .bundleName = "OHOS"
             },
         }
     },

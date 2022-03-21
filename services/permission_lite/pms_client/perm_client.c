@@ -38,6 +38,7 @@
 #define SYS_SVC_UID_MAX 99
 #define SYS_APP_UID_MIN 100
 #define SYS_APP_UID_MAX 999
+#define PERMISSION_NUM_MAX 1000
 
 enum FUNCID {
     ID_CHECK_SELF = 0,
@@ -91,6 +92,9 @@ void *CreatClient(const char *service, const char *feature, uint32 size)
     (void)service;
     (void)feature;
     uint32 len = size + sizeof(ClientEntry);
+    if ((len < size) || (len < sizeof(ClientEntry))) {
+        return NULL;
+    }
     uint8 *client = malloc(len);
     if (client == NULL) {
         return NULL;
@@ -110,6 +114,8 @@ void *CreatClient(const char *service, const char *feature, uint32 size)
 
 void DestroyClient(const char *service, const char *feature, void *iproxy)
 {
+    (void)service;
+    (void)feature;
     free(iproxy);
 }
 
@@ -125,8 +131,8 @@ static ClientApi *GetClientApi(void)
     }
 
     (void)iUnknown->QueryInterface(iUnknown, CLIENT_PROXY_VER, (void **)&clientApi);
-    HILOG_INFO(HILOG_MODULE_APP, "[QueryInterface CLIENT_PROXY_VER S:%s, F:%s]: is %p\n",
-               PERMISSION_SERVICE, PERM_FEATURE, clientApi);
+    HILOG_INFO(HILOG_MODULE_APP, "[QueryInterface CLIENT_PROXY_VER S:%s, F:%s]\n",
+               PERMISSION_SERVICE, PERM_FEATURE);
     return clientApi;
 }
 
@@ -136,8 +142,8 @@ static void ReleaseClientApi(ClientApi *clientApi)
         return;
     }
     int32 ref = clientApi->Release((IUnknown *)clientApi);
-    HILOG_INFO(HILOG_MODULE_APP, "[Release api S:%s, F:%s]: is %p ref:%d\n",
-               PERMISSION_SERVICE, PERM_FEATURE, clientApi, ref);
+    HILOG_INFO(HILOG_MODULE_APP, "[Release api S:%s, F:%s]: ref:%d\n",
+               PERMISSION_SERVICE, PERM_FEATURE, ref);
 }
 
 void *CreatInnerClient(const char *service, const char *feature, uint32 size)
@@ -145,6 +151,9 @@ void *CreatInnerClient(const char *service, const char *feature, uint32 size)
     (void)service;
     (void)feature;
     uint32 len = size + sizeof(ClientInnerEntry);
+    if ((len < size) || (len < sizeof(ClientInnerEntry))) {
+        return NULL;
+    }
     uint8 *client = malloc(len);
     if (client == NULL) {
         return NULL;
@@ -168,6 +177,8 @@ void *CreatInnerClient(const char *service, const char *feature, uint32 size)
 
 void DestroyInnerClient(const char *service, const char *feature, void *iproxy)
 {
+    (void)service;
+    (void)feature;
     free(iproxy);
 }
 
@@ -183,8 +194,8 @@ static InnerClientApi *GetInnerClientApi(void)
         return NULL;
     }
     (void)iUnknown->QueryInterface(iUnknown, CLIENT_PROXY_VER, (void **)&clientApi);
-    HILOG_INFO(HILOG_MODULE_APP, "[QueryInterface CLIENT_PROXY_VER S:%s, F:%s]: is %p\n",
-               PERMISSION_SERVICE, PERM_INNER_FEATURE, clientApi);
+    HILOG_INFO(HILOG_MODULE_APP, "[QueryInterface CLIENT_PROXY_VER S:%s, F:%s]\n",
+               PERMISSION_SERVICE, PERM_INNER_FEATURE);
     return clientApi;
 }
 
@@ -194,8 +205,8 @@ static void ReleaseInnerClientApi(InnerClientApi *clientApi)
         return;
     }
     int32 ref = clientApi->Release((IUnknown *)clientApi);
-    HILOG_INFO(HILOG_MODULE_APP, "[Release api S:%s, F:%s]: is %p ref:%d\n",
-               PERMISSION_SERVICE, PERM_INNER_FEATURE, clientApi, ref);
+    HILOG_INFO(HILOG_MODULE_APP, "[Release api S:%s, F:%s]: ref:%d\n",
+               PERMISSION_SERVICE, PERM_INNER_FEATURE, ref);
 }
 
 static int ParsePermissions(const char *jsonStr, PermissionSaved **perms, int *permNum)
@@ -206,11 +217,16 @@ static int ParsePermissions(const char *jsonStr, PermissionSaved **perms, int *p
     }
     cJSON *array = cJSON_GetObjectItem(root, FIELD_PERMISSION);
     int pSize = cJSON_GetArraySize(array);
+    if (pSize > PERMISSION_NUM_MAX) {
+        return PERM_ERRORCODE_JSONPARSE_FAIL;
+    }
+
     int allocSize = sizeof(PermissionSaved) * pSize;
     if (allocSize == 0) {
         cJSON_Delete(root);
         return PERM_ERRORCODE_SUCCESS;
     }
+
     *perms = (PermissionSaved *) malloc(allocSize);
     if (*perms == NULL) {
         cJSON_Delete(root);
@@ -335,6 +351,9 @@ int QueryPermission(const char *identifier, PermissionSaved **permissions, int *
 {
     ClientApi *proxy = GetClientApi();
     if (proxy == NULL) {
+        return OHOS_FAILURE;
+    }
+    if (permissions == NULL || permNum == NULL) {
         return OHOS_FAILURE;
     }
     IpcIo request;

@@ -263,7 +263,7 @@ static int SavePermissions(const char *identifier, const PermissionSaved *permis
             cJSON_Delete(object);
             return PERM_ERRORCODE_MEMSET_FAIL;
         }
-        if (sprintf_s(buf, BUFF_PARAM_SIZE - 1, "%d", permissions[i].flags) < 0) {
+        if (sprintf_s(buf, BUFF_PARAM_SIZE, "%d", permissions[i].flags) < 0) {
             cJSON_Delete(array);
             cJSON_Delete(root);
             cJSON_Delete(object);
