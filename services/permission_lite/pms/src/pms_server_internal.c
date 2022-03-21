@@ -200,7 +200,7 @@ static void ReplyUpdatePermissionFlags(const void *origin, IpcIo *req, IpcIo *re
     char *permName = (char *)IpcIoPopString(req, &permLen);
     int32_t flags = IpcIoPopInt32(req);
     int32_t ret = api->UpdatePermissionFlags(identifier, permName, flags);
-    HILOG_INFO(HILOG_MODULE_APP, "update runtime permission flags, [identifier: %s][perm: %s][flags:%d][ret: %d]", 
+    HILOG_INFO(HILOG_MODULE_APP, "update runtime permission flags, [identifier: %s][perm: %s][flags:%d][ret: %d]",
         identifier, permName, flags, ret);
     IpcIoPushInt32(reply, ret);
 }
