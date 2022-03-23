@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020~2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2020-2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -43,7 +43,7 @@ int ModifyPermission(TNode *node, const char *permission, const enum IsGranted g
     if (node == NULL || permission == NULL) {
         return RET_NOK;
     }
-    
+
     for (int i = 0; i < node->permNum; i++) {
         if (strcmp(node->permList[i].name, permission) == 0) {
             node->permList[i].granted = granted;
@@ -70,7 +70,7 @@ void DeleteTask(TList *list, int uid)
     while (cur != NULL) {
         if (cur->uid == uid) {
             if (pre == NULL) {
-                list->head =  cur->next;
+                list->head = cur->next;
             } else {
                 pre->next = cur->next;
             }

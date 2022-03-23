@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020~2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -38,8 +38,8 @@
  * @version 1.0
  */
 
-#ifndef OHOS_PERMISSIONMANAGESERVICE_INTERFACE_H
-#define OHOS_PERMISSIONMANAGESERVICE_INTERFACE_H
+#ifndef INTERFACES_KITS_PERMISSION_LITE_OHOS_PERMISSIONMANAGESERVICE_INTERFACE_H
+#define INTERFACES_KITS_PERMISSION_LITE_OHOS_PERMISSIONMANAGESERVICE_INTERFACE_H
 
 #include "pms_types.h"
 
@@ -173,4 +173,4 @@ int RevokeRuntimePermission(int uid, const char *permissionName);
 }
 #endif
 #endif
-#endif // OHOS_PERMISSIONMANAGESERVICE_INTERFACE_H
+#endif // INTERFACES_KITS_PERMISSION_LITE_OHOS_PERMISSIONMANAGESERVICE_INTERFACE_H

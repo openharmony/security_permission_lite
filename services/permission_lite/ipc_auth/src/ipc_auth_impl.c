@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020~2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2020-2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -58,10 +58,10 @@ static int GetUidByBundleName(const char *bundleName, unsigned int *uid)
 
 static int StrcmpWithNull(const char *s1, const char *s2)
 {
-    if (s1 == NULL && s2 == NULL) {
+    if ((s1 == NULL) && (s2 == NULL)) {
         return 0;
     }
-    if (s1 == NULL || s2 == NULL) {
+    if ((s1 == NULL) || (s2 == NULL)) {
         return -1;
     }
     return strcmp(s1, s2);
@@ -100,9 +100,14 @@ static void SetPolicy(const IpcPolicy *policy, PolicyTrans *policyTrans)
 
 static bool IsPolicyValid(enum PolicyType type)
 {
-    if ((type == RANGE) || (type == FIXED) || (type == BUNDLENAME)) {
+    if ((type == RANGE) || (type == FIXED)) {
         return true;
     }
+#ifdef OHOS_APPFWK_ENABLE
+    if (type == BUNDLENAME) {
+        return true;
+    }
+#endif
     return false;
 }
 
@@ -118,7 +123,7 @@ static int SetPolicies(const FeaturePolicy *featurePolicy, PolicyTrans **policie
     if (allocSize == 0) {
         return AUTH_ERRORCODE_NO_POLICY_SET;
     }
-    *policies = (PolicyTrans *) malloc(allocSize);
+    *policies = (PolicyTrans *)malloc(allocSize);
     if (*policies == NULL) {
         HILOG_ERROR(HILOG_MODULE_APP, "Malloc failed, [line: %d]", __LINE__);
         return AUTH_ERRORCODE_MALLOC_FAIL;
@@ -175,7 +180,7 @@ int GetCommunicationStrategy(RegParams params, PolicyTrans **policies, unsigned 
     if (res != AUTH_ERRORCODE_POLICY_NOT_FOUND) {
         return res;
     }
-#if  POLICY_PRODUCT 
+#if  POLICY_PRODUCT
     res = SetPresetPolicies(g_productPolicies, g_productPolicySize, params, policies, policyNum);
     if (res != AUTH_ERRORCODE_POLICY_NOT_FOUND) {
         return res;
@@ -271,7 +276,7 @@ int IsCommunicationAllowed(AuthParams params)
     if (CheckSvcPolicies(g_presetPolicies, g_presetPolicySize, &params) == AUTH_ERRORCODE_SUCCESS) {
         return AUTH_ERRORCODE_SUCCESS;
     }
-#if  POLICY_PRODUCT 
+#if  POLICY_PRODUCT
     if (CheckSvcPolicies(g_productPolicies, g_productPolicySize, &params) == AUTH_ERRORCODE_SUCCESS) {
         return AUTH_ERRORCODE_SUCCESS;
     }

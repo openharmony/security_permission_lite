@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020~2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2020-2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -26,8 +26,8 @@
 #include "hal_pms.h"
 #include "perm_operate.h"
 
-#define BUFF_SIZE_16 16
-#define BUFF_SIZE_1024 1024
+#define BUFF_PARAM_SIZE 16
+#define BUFF_SIZE_MAX_LENGTH 1024
 #define FIELD_PERMISSION "permissions"
 #define FIELD_NAME "name"
 #define FIELD_DESC "desc"
@@ -43,7 +43,7 @@ static struct TaskList g_taskList = {
 static char *ConcatString(const char *s1, const char *s2)
 {
     unsigned int allocSize = strlen(s1) + strlen(s2) + 1;
-    if (allocSize > BUFF_SIZE_1024) {
+    if (allocSize > BUFF_SIZE_MAX_LENGTH) {
         return NULL;
     }
     char *rst = (char *)HalMalloc(allocSize);
@@ -236,7 +236,7 @@ static int SavePermissions(const char *identifier, const PermissionSaved *permis
         return PERM_ERRORCODE_INVALID_PARAMS;
     }
 
-    char buf[BUFF_SIZE_16] = {0};
+    char buf[BUFF_PARAM_SIZE] = {0};
     cJSON *root = cJSON_CreateObject();
     if (root == NULL) {
         return PERM_ERRORCODE_MALLOC_FAIL;
@@ -257,13 +257,13 @@ static int SavePermissions(const char *identifier, const PermissionSaved *permis
         cJSON_AddItemToObject(object, FIELD_DESC, cJSON_CreateString(permissions[i].desc));
         cJSON_AddItemToObject(object, FIELD_IS_GRANTED, cJSON_CreateBool(permissions[i].granted));
 
-        if (memset_s(buf, BUFF_SIZE_16, 0, BUFF_SIZE_16) != EOK) {
+        if (memset_s(buf, BUFF_PARAM_SIZE, 0, BUFF_PARAM_SIZE) != EOK) {
             cJSON_Delete(array);
             cJSON_Delete(root);
             cJSON_Delete(object);
             return PERM_ERRORCODE_MEMSET_FAIL;
         }
-        if (sprintf_s(buf, BUFF_SIZE_16 - 1, "%d", permissions[i].flags) < 0) {
+        if (sprintf_s(buf, BUFF_PARAM_SIZE, "%d", permissions[i].flags) < 0) {
             cJSON_Delete(array);
             cJSON_Delete(root);
             cJSON_Delete(object);

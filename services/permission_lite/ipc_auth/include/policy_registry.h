@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 Huawei Device Co., Ltd.
+ * Copyright (c) 2020-2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -23,17 +23,17 @@ FeaturePolicy regSvc1Feature[] = {
         "feature1",
         {
             {
-                .type=RANGE,
-                .uidMin=100,
-                .uidMax=110
+                .type = RANGE,
+                .uidMin = 100,
+                .uidMax = 110
             },
             {
-                .type=FIXED,
-                .fixedUid={75, 85, 95}
+                .type = FIXED,
+                .fixedUid = {75, 85, 95}
             },
             {
-                .type=BUNDLENAME,
-                .bundleName="OHOS"
+                .type = BUNDLENAME,
+                .bundleName = "OHOS"
             },
         }
     },
@@ -41,17 +41,17 @@ FeaturePolicy regSvc1Feature[] = {
         "feature2",
         {
             {
-                .type=RANGE,
-                .uidMin=100,
-                .uidMax=110
+                .type = RANGE,
+                .uidMin = 100,
+                .uidMax = 110
             },
             {
-                .type=FIXED,
-                .fixedUid={75, 85, 95}
+                .type = FIXED,
+                .fixedUid = {75, 85, 95}
             },
             {
-                .type=BUNDLENAME,
-                .bundleName="OHOS"
+                .type = BUNDLENAME,
+                .bundleName = "OHOS"
             },
         }
     },

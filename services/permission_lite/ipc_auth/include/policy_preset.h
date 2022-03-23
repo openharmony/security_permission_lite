@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020~2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2020-2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -23,9 +23,9 @@ FeaturePolicy pmsFeature[] = {
         "PmsFeature",
         {
             {
-                .type=RANGE,
-                .uidMin=0,
-                .uidMax=__INT_MAX__,
+                .type = RANGE,
+                .uidMin = 0,
+                .uidMax = __INT_MAX__,
             },
         },
     },
@@ -33,9 +33,9 @@ FeaturePolicy pmsFeature[] = {
         "PmsInnerFeature",
         {
             {
-                .type=RANGE,
-                .uidMin=0,
-                .uidMax=999,
+                .type = RANGE,
+                .uidMin = 0,
+                .uidMax = 999,
             },
         },
     },
@@ -46,9 +46,9 @@ FeaturePolicy amsFeature[] = {
         "AmsFeature",
         {
             {
-                .type=RANGE,
-                .uidMin=0,
-                .uidMax=__INT_MAX__,
+                .type = RANGE,
+                .uidMin = 0,
+                .uidMax = __INT_MAX__,
             },
         }
     },
@@ -56,8 +56,8 @@ FeaturePolicy amsFeature[] = {
         "AmsInnerFeature",
         {
             {
-                .type=FIXED,
-                .fixedUid={2}
+                .type = FIXED,
+                .fixedUid = {2}
             },
         }
     },
@@ -68,13 +68,13 @@ FeaturePolicy bmsFeature[] = {
         "BmsFeature",
         {
             {
-                .type=FIXED,
-                .fixedUid={2, 3, 8}
+                .type = FIXED,
+                .fixedUid = {2, 3, 8}
             },
             {
-                .type=RANGE,
-                .uidMin=100,
-                .uidMax=__INT_MAX__,
+                .type = RANGE,
+                .uidMin = 100,
+                .uidMax = __INT_MAX__,
             },
         }
     },
@@ -82,13 +82,13 @@ FeaturePolicy bmsFeature[] = {
         "BmsInnerFeature",
         {
             {
-                .type=FIXED,
-                .fixedUid={2, 3, 8}
+                .type = FIXED,
+                .fixedUid = {2, 3, 8}
             },
             {
-                .type=RANGE,
-                .uidMin=100,
-                .uidMax=999,
+                .type = RANGE,
+                .uidMin = 100,
+                .uidMax = 999,
             },
         }
     },
@@ -99,8 +99,8 @@ FeaturePolicy bdsFeature[] = {
         NULL,
         {
             {
-                .type=FIXED,
-                .fixedUid={7}
+                .type = FIXED,
+                .fixedUid = {7}
             },
         }
     },
@@ -111,9 +111,9 @@ FeaturePolicy dmsFeature[] = {
         "dmslite",
         {
             {
-                .type=RANGE,
-                .uidMin=0,
-                .uidMax=__INT_MAX__,
+                .type = RANGE,
+                .uidMin = 0,
+                .uidMax = __INT_MAX__,
             },
         }
     },
@@ -124,9 +124,9 @@ FeaturePolicy samgrFeature[] = {
         NULL,
         {
             {
-                .type=RANGE,
-                .uidMin=0,
-                .uidMax=__INT_MAX__,
+                .type = RANGE,
+                .uidMin = 0,
+                .uidMax = __INT_MAX__,
             },
         }
     },
@@ -137,8 +137,8 @@ FeaturePolicy appspawnFeature[] = {
         NULL,
         {
             {
-                .type=FIXED,
-                .fixedUid={7}
+                .type = FIXED,
+                .fixedUid = {7}
             },
         }
     },
@@ -149,13 +149,13 @@ FeaturePolicy imsFeature[] = {
         NULL,
         {
             {
-                .type=RANGE,
-                .uidMin=100,
-                .uidMax=__INT_MAX__,
+                .type = RANGE,
+                .uidMin = 100,
+                .uidMax = __INT_MAX__,
             },
             {
-                .type=FIXED,
-                .fixedUid={2, 7}
+                .type = FIXED,
+                .fixedUid = {2, 7}
             },
         }
     },
@@ -166,13 +166,13 @@ FeaturePolicy wmsFeature[] = {
         NULL,
         {
             {
-                .type=RANGE,
-                .uidMin=100,
-                .uidMax=__INT_MAX__,
+                .type = RANGE,
+                .uidMin = 100,
+                .uidMax = __INT_MAX__,
             },
             {
-                .type=FIXED,
-                .fixedUid={2, 7}
+                .type = FIXED,
+                .fixedUid = {2, 7}
             },
         }
     },
@@ -183,9 +183,9 @@ FeaturePolicy sensorFeature[] = {
         NULL,
         {
             {
-                .type=RANGE,
-                .uidMin=0,
-                .uidMax=__INT_MAX__,
+                .type = RANGE,
+                .uidMin = 0,
+                .uidMax = __INT_MAX__,
             },
         }
     },
@@ -196,9 +196,9 @@ FeaturePolicy aiFeature[] = {
         NULL,
         {
             {
-                .type=RANGE,
-                .uidMin=0,
-                .uidMax=__INT_MAX__,
+                .type = RANGE,
+                .uidMin = 0,
+                .uidMax = __INT_MAX__,
             },
         }
     },
@@ -209,9 +209,9 @@ FeaturePolicy powermgrFeature[] = {
         "screensaver",
         {
             {
-                .type=RANGE,
-                .uidMin=0,
-                .uidMax=1000,
+                .type = RANGE,
+                .uidMin = 0,
+                .uidMax = 1000,
             },
         },
     },
@@ -219,9 +219,9 @@ FeaturePolicy powermgrFeature[] = {
         "powermanage",
         {
             {
-                .type=RANGE,
-                .uidMin=0,
-                .uidMax=__INT_MAX__,
+                .type = RANGE,
+                .uidMin = 0,
+                .uidMax = __INT_MAX__,
             },
         },
     },
@@ -232,9 +232,9 @@ FeaturePolicy timertaskFeature[] = {
         "timertask_fea",
         {
             {
-                .type=RANGE,
-                .uidMin=0,
-                .uidMax=999,
+                .type = RANGE,
+                .uidMin = 0,
+                .uidMax = 999,
             },
         },
     },
@@ -245,9 +245,9 @@ FeaturePolicy softbusFeature[] = {
         NULL,
         {
             {
-                .type=RANGE,
-                .uidMin=0,
-                .uidMax=__INT_MAX__,
+                .type = RANGE,
+                .uidMin = 0,
+                .uidMax = __INT_MAX__,
             },
         },
     },
@@ -258,9 +258,9 @@ FeaturePolicy playerFeature[] = {
         NULL,
         {
             {
-                .type=RANGE,
-                .uidMin=0,
-                .uidMax=__INT_MAX__,
+                .type = RANGE,
+                .uidMin = 0,
+                .uidMax = __INT_MAX__,
             },
         },
     },
@@ -271,9 +271,9 @@ FeaturePolicy cameraFeature[] = {
         NULL,
         {
             {
-                .type=RANGE,
-                .uidMin=0,
-                .uidMax=__INT_MAX__,
+                .type = RANGE,
+                .uidMin = 0,
+                .uidMax = __INT_MAX__,
             },
         },
     },
@@ -284,9 +284,9 @@ FeaturePolicy recorderFeature[] = {
         NULL,
         {
             {
-                .type=RANGE,
-                .uidMin=0,
-                .uidMax=__INT_MAX__,
+                .type = RANGE,
+                .uidMin = 0,
+                .uidMax = __INT_MAX__,
             },
         },
     },
@@ -297,9 +297,9 @@ FeaturePolicy audioCapturerFeature[] = {
         NULL,
         {
             {
-                .type=RANGE,
-                .uidMin=0,
-                .uidMax=__INT_MAX__,
+                .type = RANGE,
+                .uidMin = 0,
+                .uidMax = __INT_MAX__,
             },
         },
     },
@@ -310,9 +310,9 @@ FeaturePolicy devAuthFeature[] = {
         NULL,
         {
             {
-                .type=RANGE,
-                .uidMin=0,
-                .uidMax=999,
+                .type = RANGE,
+                .uidMin = 0,
+                .uidMax = 999,
             },
         },
     },
@@ -323,9 +323,9 @@ FeaturePolicy batteryFeature[] = {
         "battery_feature",
         {
             {
-                .type=RANGE,
-                .uidMin=0,
-                .uidMax=__INT_MAX__,
+                .type = RANGE,
+                .uidMin = 0,
+                .uidMax = __INT_MAX__,
             },
         },
     },
@@ -336,9 +336,9 @@ FeaturePolicy deviceManagerFeature[] = {
         NULL,
         {
             {
-                .type=RANGE,
-                .uidMin=0,
-                .uidMax=__INT_MAX__,
+                .type = RANGE,
+                .uidMin = 0,
+                .uidMax = __INT_MAX__,
             },
         },
     },
