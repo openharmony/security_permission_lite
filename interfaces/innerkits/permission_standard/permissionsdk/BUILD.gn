@@ -40,11 +40,5 @@ ohos_shared_library("libpermissionsdk_standard") {
     "main/cpp/src/permission/permission_kit.cpp",
   ]
 
-  deps = [
-  ]
-
-  external_deps = [
-  ]
-
   cflags_cc = [ "-DHILOG_ENABLE" ]
 }
