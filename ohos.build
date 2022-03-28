@@ -21,9 +21,6 @@
       ],
       "module_list": [
         "//base/security/permission:permission_build_module_standard"
-      ],
-      "test_list": [
-        "//base/security/permission:permission_build_module_standard_test"
       ]
     }
   }

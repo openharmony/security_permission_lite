@@ -36,23 +36,7 @@ ohos_shared_library("libpermissionsdk_standard") {
     "//base/security/permission/interfaces/innerkits/permission_standard/permissionsdk/main/cpp/include/permission",
   ]
 
-  sources = [
-    "main/cpp/src/permission/permission_kit.cpp",
-    "main/cpp/src/permission/permission_manager_client.cpp",
-    "main/cpp/src/permission/permission_manager_proxy.cpp",
-  ]
-
-  deps = [
-    "//base/security/permission/frameworks/permission_standard/permissioncommunicationadapter:permission_standard_communication_adapter_cxx",
-    "//base/security/permission/frameworks/permission_standard/permissioninfrastructure:permission_standard_infrastructure_cxx",
-    "//utils/native/base:utils",
-  ]
-
-  external_deps = [
-    "hiviewdfx_hilog_native:libhilog",
-    "ipc:ipc_core",
-    "samgr_standard:samgr_proxy",
-  ]
+  sources = [ "main/cpp/src/permission/permission_kit.cpp" ]
 
   cflags_cc = [ "-DHILOG_ENABLE" ]
 }

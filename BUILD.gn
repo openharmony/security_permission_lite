@@ -14,21 +14,6 @@
 import("//build/ohos.gni")
 group("permission_build_module_standard") {
   if (is_standard_system) {
-    deps = [
-      "//base/security/permission/interfaces/innerkits/permission_standard/permissionsdk:libpermissionsdk_standard",
-      "//base/security/permission/services/permission_standard/permissionmanagerservice:permission_manager_service_standard",
-      "//base/security/permission/services/permission_standard/permissionmanagerservice/main/sa_profile:permission_sa_profile_standard",
-    ]
-  }
-}
-
-group("permission_build_module_standard_test") {
-  testonly = true
-  deps = []
-  if (is_standard_system) {
-    deps += [
-      "//base/security/permission/interfaces/innerkits/permission_standard/permissionsdk/test:unittest",
-      "//base/security/permission/services/permission_standard/permissionmanagerservice/test:unittest",
-    ]
+    deps = [ "//base/security/permission/interfaces/innerkits/permission_standard/permissionsdk:libpermissionsdk_standard" ]
   }
 }
