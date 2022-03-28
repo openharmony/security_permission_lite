@@ -14,8 +14,6 @@
 import("//build/ohos.gni")
 group("permission_build_module_standard") {
   if (is_standard_system) {
-    deps = [
-      "//base/security/permission/interfaces/innerkits/permission_standard/permissionsdk:libpermissionsdk_standard",
-    ]
+    deps = [ "//base/security/permission/interfaces/innerkits/permission_standard/permissionsdk:libpermissionsdk_standard" ]
   }
 }
