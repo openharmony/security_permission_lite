@@ -36,9 +36,7 @@ ohos_shared_library("libpermissionsdk_standard") {
     "//base/security/permission/interfaces/innerkits/permission_standard/permissionsdk/main/cpp/include/permission",
   ]
 
-  sources = [
-    "main/cpp/src/permission/permission_kit.cpp",
-  ]
+  sources = [ "main/cpp/src/permission/permission_kit.cpp" ]
 
   cflags_cc = [ "-DHILOG_ENABLE" ]
 }
