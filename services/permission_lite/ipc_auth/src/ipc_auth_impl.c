@@ -166,7 +166,7 @@ static int SetPresetPolicies(const PolicySetting presetPolicy[], int policySize,
 int GetCommunicationStrategy(RegParams params, PolicyTrans **policies, unsigned int *policyNum)
 {
     if (IsUidValid(params.uid) == AUTH_ERRORCODE_INVALID_UID) {
-        HILOG_ERROR(HILOG_MODULE_APP, "Invalid uid, [svc: %s][ft: %s][uid: %d][pid: %d][line: %d]",
+        HILOG_ERROR(HILOG_MODULE_APP, "Invalid uid, [svc: %s][ft: %s][uid:%u][pid: %u][line: %d]",
                     params.service, params.feature, params.uid, params.pid, __LINE__);
         return AUTH_ERRORCODE_INVALID_UID;
     }
@@ -281,7 +281,7 @@ int IsCommunicationAllowed(AuthParams params)
     }
 
     HILOG_ERROR(HILOG_MODULE_APP,
-        "Access denied, [consumerUid: %d][consumerPid: %d][providerUid: %d][providerPid: %d][line: %d]",
+        "Access denied, [consumerUid: %u][consumerPid: %u][providerUid:%u][providerPid: %u][line: %d]",
         params.consumerUid, params.consumerPid, params.providerUid, params.providerPid, __LINE__);
     return AUTH_ERRORCODE_ACCESS_DENIED;
 }
