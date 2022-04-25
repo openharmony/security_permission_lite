@@ -19,7 +19,7 @@
 
 #include "cJSON.h"
 #include "iproxy_client.h"
-#include "liteipc_adapter.h"
+#include "ipc_skeleton.h"
 #include "log.h"
 #include "pms_interface.h"
 #include "pms_types.h"
@@ -270,7 +270,7 @@ static int Notify(IOwner owner, int code, IpcIo *reply)
     }
 
     int32_t *ret = (int32_t *)owner;
-    *ret = IpcIoPopInt32(reply);
+    ReadInt32(reply, ret);
 
     return EC_SUCCESS;
 }
@@ -280,28 +280,16 @@ static int DealQueryReply(IOwner owner, int code, IpcIo *reply)
     if ((reply == NULL) || (owner == NULL)) {
         return OHOS_FAILURE;
     }
-    int resultCode = IpcIoPopInt32(reply);
+    int resultCode;
+    ReadInt32(reply, &resultCode);
     RetOfQueryPerms *ret = (RetOfQueryPerms *)(owner);
     if (resultCode != PERM_ERRORCODE_SUCCESS) {
         ret->resultCode = resultCode;
         return resultCode;
     }
-#ifndef __LINUX__
-    BuffPtr *buff = IpcIoPopDataBuff(reply);
-    if (buff == NULL) {
-        ret->resultCode = OHOS_FAILURE;
-        HILOG_ERROR(HILOG_MODULE_APP, "Permission string popped is empty!");
-        return OHOS_FAILURE;
-    }
-    char *jsonStr = (char *)(buff->buff);
-#else
-    char *jsonStr = (char *)IpcIoPopString(reply, NULL);
-#endif
+    char *jsonStr = (char *)ReadString(reply, NULL);
     HILOG_INFO(HILOG_MODULE_APP, "[perms: %s]", jsonStr);
     int retCode = ParsePermissions(jsonStr, &(ret->permission), &(ret->length));
-#ifndef __LINUX__
-    FreeBuffer(NULL, buff->buff);
-#endif
     ret->resultCode = retCode;
     return retCode;
 }
@@ -319,7 +307,7 @@ int CheckSelfPermission(const char *permissionName)
     IpcIo request;
     char data[MAX_DATA_LEN];
     IpcIoInit(&request, data, MAX_DATA_LEN, 0);
-    IpcIoPushString(&request, permissionName);
+    WriteString(&request, permissionName);
     int32_t ret = -1;
     proxy->Invoke((IClientProxy *)proxy, ID_CHECK_SELF, &request, &ret, Notify);
     ReleaseClientApi(proxy);
@@ -339,8 +327,8 @@ int CheckPermission(int uid, const char *permissionName)
     IpcIo request;
     char data[MAX_DATA_LEN];
     IpcIoInit(&request, data, MAX_DATA_LEN, 0);
-    IpcIoPushInt64(&request, uid);
-    IpcIoPushString(&request, permissionName);
+    WriteInt64(&request, uid);
+    WriteString(&request, permissionName);
     int32_t ret = -1;
     proxy->Invoke((IClientProxy *)proxy, ID_CHECK, &request, &ret, Notify);
     ReleaseInnerClientApi(proxy);
@@ -359,7 +347,7 @@ int QueryPermission(const char *identifier, PermissionSaved **permissions, int *
     IpcIo request;
     char data[MAX_DATA_LEN];
     IpcIoInit(&request, data, MAX_DATA_LEN, 0);
-    IpcIoPushString(&request, identifier);
+    WriteString(&request, identifier);
     RetOfQueryPerms ret = {
         .resultCode = 0,
         .length = 0,
@@ -381,8 +369,8 @@ int GrantPermission(const char *identifier, const char *permName)
     IpcIo request;
     char data[MAX_DATA_LEN];
     IpcIoInit(&request, data, MAX_DATA_LEN, 0);
-    IpcIoPushString(&request, identifier);
-    IpcIoPushString(&request, permName);
+    WriteString(&request, identifier);
+    WriteString(&request, permName);
     int32_t ret = -1;
     proxy->Invoke((IClientProxy *)proxy, ID_GRANT, &request, &ret, Notify);
     ReleaseInnerClientApi(proxy);
@@ -399,8 +387,8 @@ int RevokePermission(const char *identifier, const char *permName)
     IpcIo request;
     char data[MAX_DATA_LEN];
     IpcIoInit(&request, data, MAX_DATA_LEN, 0);
-    IpcIoPushString(&request, identifier);
-    IpcIoPushString(&request, permName);
+    WriteString(&request, identifier);
+    WriteString(&request, permName);
     int32_t ret = -1;
     proxy->Invoke((IClientProxy *)proxy, ID_REVOKE, &request, &ret, Notify);
     ReleaseInnerClientApi(proxy);
@@ -417,8 +405,8 @@ int GrantRuntimePermission(int uid, const char *permissionName)
     IpcIo request;
     char data[MAX_DATA_LEN];
     IpcIoInit(&request, data, MAX_DATA_LEN, 0);
-    IpcIoPushInt64(&request, uid);
-    IpcIoPushString(&request, permissionName);
+    WriteInt64(&request, uid);
+    WriteString(&request, permissionName);
     int32_t ret = -1;
     proxy->Invoke((IClientProxy *)proxy, ID_GRANT_RUNTIME, &request, &ret, Notify);
     ReleaseInnerClientApi(proxy);
@@ -434,8 +422,8 @@ int RevokeRuntimePermission(int uid, const char *permissionName)
     IpcIo request;
     char data[MAX_DATA_LEN];
     IpcIoInit(&request, data, MAX_DATA_LEN, 0);
-    IpcIoPushInt64(&request, uid);
-    IpcIoPushString(&request, permissionName);
+    WriteInt64(&request, uid);
+    WriteString(&request, permissionName);
     int32_t ret = -1;
     proxy->Invoke((IClientProxy *)proxy, ID_REVOKE_RUNTIME, &request, &ret, Notify);
     ReleaseInnerClientApi(proxy);
@@ -451,9 +439,9 @@ int UpdatePermissionFlags(const char *identifier, const char *permissionName, co
     IpcIo request;
     char data[MAX_DATA_LEN];
     IpcIoInit(&request, data, MAX_DATA_LEN, 0);
-    IpcIoPushString(&request, identifier);
-    IpcIoPushString(&request, permissionName);
-    IpcIoPushInt32(&request, flags);
+    WriteString(&request, identifier);
+    WriteString(&request, permissionName);
+    WriteInt32(&request, flags);
     int32_t ret = -1;
     proxy->Invoke((IClientProxy *)proxy, ID_UPDATE_PERMS_FLAGS, &request, &ret, Notify);
     ReleaseInnerClientApi(proxy);

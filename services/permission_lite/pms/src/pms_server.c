@@ -22,7 +22,7 @@
 #include "iproxy_client.h"
 #include "iproxy_server.h"
 #include "iunknown.h"
-#include "liteipc_adapter.h"
+#include "ipc_skeleton.h"
 #include "log.h"
 
 #include "pms.h"
@@ -117,45 +117,37 @@ void static InnerFreeDataBuff(void *ptr)
 
 static void ReplyCheckSelfPermission(const void *origin, IpcIo *req, IpcIo *reply, PermLiteApi* api)
 {
-    pid_t callingPid = GetCallingPid(origin);
-    uid_t callingUid = GetCallingUid(origin);
+    pid_t callingPid = GetCallingPid();
+    uid_t callingUid = GetCallingUid();
     HILOG_INFO(HILOG_MODULE_APP, "Enter ID_CHECKSELF, [callerPid: %d][callerUid: %u]", callingPid, callingUid);
 
     size_t permLen = 0;
-    char *permName = (char *)IpcIoPopString(req, &permLen);
+    char *permName = (char *)ReadString(req, &permLen);
     int32_t ret = api->CheckPermission(callingUid, permName);
     HILOG_INFO(HILOG_MODULE_APP, "check self permission, [uid: %u][perm: %s][ret: %d]", callingUid, permName, ret);
-    IpcIoPushInt32(reply, ret);
+    WriteInt32(reply, ret);
 }
 
 static void ReplyQueryPermission(const void *origin, IpcIo *req, IpcIo *reply)
 {
-    pid_t callingPid = GetCallingPid(origin);
-    uid_t callingUid = GetCallingUid(origin);
+    pid_t callingPid = GetCallingPid();
+    uid_t callingUid = GetCallingUid();
     HILOG_INFO(HILOG_MODULE_APP, "Enter ID_Query, [callerPid: %d][callerUid: %u]", callingPid, callingUid);
     size_t idLen = 0;
     int ret = 0;
-    char *identifier = (char *)IpcIoPopString(req, &idLen);
+    char *identifier = (char *)ReadString(req, &idLen);
     char *jsonStr = QueryPermissionString(identifier, &ret);
     if (jsonStr == NULL) {
         return;
     }
 
-    IpcIoPushInt32(reply, ret);
+    WriteInt32(reply, ret);
     if (ret != PERM_ERRORCODE_SUCCESS) {
         free(jsonStr);
         return;
     }
-#ifndef __LINUX__
-    BuffPtr dataBuff = {
-        .buffSz = strlen(jsonStr) + 1,
-        .buff = (char *)jsonStr,
-    };
-    IpcIoPushDataBuffWithFree(reply, &dataBuff, InnerFreeDataBuff);
-#else
-    IpcIoPushString(reply, jsonStr);
+    WriteString(reply, jsonStr);
     free(jsonStr);
-#endif
 }
 
 static int32 Invoke(IServerProxy *iProxy, int funcId, void *origin, IpcIo *req, IpcIo *reply)

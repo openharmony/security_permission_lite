@@ -42,7 +42,7 @@ lite_library("pms_target") {
     "${ohos_product_adapter_dir}/security/permission_lite:hal_pms",
     "//base/security/permission/services/permission_lite/pms_base:pms_base",
     "//build/lite/config/component/cJSON:cjson_shared",
-    "//foundation/communication/ipc_lite:liteipc_adapter",
+    "//foundation/communication/ipc/interfaces/innerkits/c/ipc:ipc_single",
     "//foundation/distributedschedule/samgr_lite/samgr:samgr",
     "//third_party/bounds_checking_function:libsec_shared",
   ]
