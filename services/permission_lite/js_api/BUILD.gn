@@ -24,8 +24,8 @@ shared_library("ace_kit_permission") {
   include_dirs = [
     "include",
     "//base/security/permission/interfaces/kits/permission_lite",
-    "//foundation/ace/interfaces/innerkits/builtin/jsi",
-    "//foundation/ace/interfaces/innerkits/builtin/base",
+    "//foundation/arkui/interfaces/inner_api/builtin/jsi",
+    "//foundation/arkui/interfaces/inner_api/builtin/base",
   ]
   deps = [
     "//base/hiviewdfx/hilog_lite/frameworks/featured:hilog_shared",
