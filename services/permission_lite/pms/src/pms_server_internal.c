@@ -24,7 +24,7 @@
 #include "iproxy_client.h"
 #include "iproxy_server.h"
 #include "iunknown.h"
-#include "liteipc_adapter.h"
+#include "ipc_skeleton.h"
 #include "samgr_lite.h"
 #include "service.h"
 
@@ -123,86 +123,90 @@ static BOOL OnMessage(Feature *feature, Request *request)
 
 static void ReplyCheckPermission(const void *origin, IpcIo *req, IpcIo *reply, InnerPermLiteApi* api)
 {
-    pid_t callingPid = GetCallingPid(origin);
-    uid_t callingUid = GetCallingUid(origin);
+    pid_t callingPid = GetCallingPid();
+    uid_t callingUid = GetCallingUid();
     HILOG_INFO(HILOG_MODULE_APP, "Enter ID_CHECK, [callerPid: %d][callerUid: %u]", callingPid, callingUid);
 
     size_t permLen = 0;
-    int64_t uid = IpcIoPopInt64(req);
-    char *permName = (char *)IpcIoPopString(req, &permLen);
+    int64_t uid;
+    ReadInt64(req, &uid);
+    char *permName = (char *)ReadString(req, &permLen);
     int32_t ret = api->CheckPermission(uid, permName);
     HILOG_INFO(HILOG_MODULE_APP, "check permission, [uid: %lld][perm: %s][ret: %d]", uid, permName, ret);
-    IpcIoPushInt32(reply, ret);
+    WriteInt32(reply, ret);
 }
 
 static void ReplyGrantPermission(const void *origin, IpcIo *req, IpcIo *reply, InnerPermLiteApi* api)
 {
-    pid_t callingPid = GetCallingPid(origin);
-    uid_t callingUid = GetCallingUid(origin);
+    pid_t callingPid = GetCallingPid();
+    uid_t callingUid = GetCallingUid();
     HILOG_INFO(HILOG_MODULE_APP, "Enter ID_GRANT, [callerPid: %d][callerUid: %u]", callingPid, callingUid);
     size_t permLen = 0;
     size_t idLen = 0;
-    char *identifier = (char *)IpcIoPopString(req, &idLen);
-    char *permName = (char *)IpcIoPopString(req, &permLen);
+    char *identifier = (char *)ReadString(req, &idLen);
+    char *permName = (char *)ReadString(req, &permLen);
     int32_t ret = api->GrantPermission(identifier, permName);
     HILOG_INFO(HILOG_MODULE_APP, "grant permission, [id: %s][perm: %s][ret: %d]", identifier, permName, ret);
-    IpcIoPushInt32(reply, ret);
+    WriteInt32(reply, ret);
 }
 
 static void ReplyRevokePermission(const void *origin, IpcIo *req, IpcIo *reply, InnerPermLiteApi* api)
 {
-    pid_t callingPid = GetCallingPid(origin);
-    uid_t callingUid = GetCallingUid(origin);
+    pid_t callingPid = GetCallingPid();
+    uid_t callingUid = GetCallingUid();
     HILOG_INFO(HILOG_MODULE_APP, "Enter ID_REVOKE, [callerPid: %d][callerUid: %u]", callingPid, callingUid);
     size_t permLen = 0;
     size_t idLen = 0;
-    char *identifier = (char *)IpcIoPopString(req, &idLen);
-    char *permName = (char *)IpcIoPopString(req, &permLen);
+    char *identifier = (char *)ReadString(req, &idLen);
+    char *permName = (char *)ReadString(req, &permLen);
     int32_t ret = api->RevokePermission(identifier, permName);
     HILOG_INFO(HILOG_MODULE_APP, "revoke permission, [id: %s][perm: %s][ret: %d]", identifier, permName, ret);
-    IpcIoPushInt32(reply, ret);
+    WriteInt32(reply, ret);
 }
 
 static void ReplyGrantRuntimePermission(const void *origin, IpcIo *req, IpcIo *reply, InnerPermLiteApi* api)
 {
-    pid_t callingPid = GetCallingPid(origin);
-    uid_t callingUid = GetCallingUid(origin);
+    pid_t callingPid = GetCallingPid();
+    uid_t callingUid = GetCallingUid();
     HILOG_INFO(HILOG_MODULE_APP, "Enter ID_GRANTRUNTIME, [callerPid: %d][callerUid: %u]", callingPid, callingUid);
     size_t permLen = 0;
-    int64_t uid = IpcIoPopInt64(req);
-    char *permName = (char *)IpcIoPopString(req, &permLen);
+    int64_t uid;
+    ReadInt64(req, &uid);
+    char *permName = (char *)ReadString(req, &permLen);
     int32_t ret = api->GrantRuntimePermission(uid, permName);
     HILOG_INFO(HILOG_MODULE_APP, "grant runtime permission, [uid: %lld][perm: %s][ret: %d]", uid, permName, ret);
-    IpcIoPushInt32(reply, ret);
+    WriteInt32(reply, ret);
 }
 
 static void ReplyRevokeRuntimePermission(const void *origin, IpcIo *req, IpcIo *reply, InnerPermLiteApi* api)
 {
-    pid_t callingPid = GetCallingPid(origin);
-    uid_t callingUid = GetCallingUid(origin);
+    pid_t callingPid = GetCallingPid();
+    uid_t callingUid = GetCallingUid();
     HILOG_INFO(HILOG_MODULE_APP, "Enter ID_REVOKERUNTIME, [callerPid: %d][callerUid: %u]", callingPid, callingUid);
     size_t permLen = 0;
-    int64_t uid = IpcIoPopInt64(req);
-    char *permName = (char *)IpcIoPopString(req, &permLen);
+    int64_t uid;
+    ReadInt64(req, &uid);
+    char *permName = (char *)ReadString(req, &permLen);
     int32_t ret = api->RevokeRuntimePermission(uid, permName);
     HILOG_INFO(HILOG_MODULE_APP, "revoke runtime permission, [uid: %lld][perm: %s][ret: %d]", uid, permName, ret);
-    IpcIoPushInt32(reply, ret);
+    WriteInt32(reply, ret);
 }
 
 static void ReplyUpdatePermissionFlags(const void *origin, IpcIo *req, IpcIo *reply, const InnerPermLiteApi *api)
 {
-    pid_t callingPid = GetCallingPid(origin);
-    uid_t callingUid = GetCallingUid(origin);
+    pid_t callingPid = GetCallingPid();
+    uid_t callingUid = GetCallingUid();
     HILOG_INFO(HILOG_MODULE_APP, "Enter ID_UPDATE_PERMS_FLAGS, [callerPid: %d][callerUid: %u]", callingPid, callingUid);
     size_t permLen = 0;
     size_t idLen = 0;
-    char *identifier = (char *)IpcIoPopString(req, &idLen);
-    char *permName = (char *)IpcIoPopString(req, &permLen);
-    int32_t flags = IpcIoPopInt32(req);
+    char *identifier = (char *)ReadString(req, &idLen);
+    char *permName = (char *)ReadString(req, &permLen);
+    int32_t flags;
+    ReadInt32(req, &flags);
     int32_t ret = api->UpdatePermissionFlags(identifier, permName, flags);
     HILOG_INFO(HILOG_MODULE_APP, "update runtime permission flags, [identifier: %s][perm: %s][flags:%d][ret: %d]",
         identifier, permName, flags, ret);
-    IpcIoPushInt32(reply, ret);
+    WriteInt32(reply, ret);
 }
 
 static int32 Invoke(IServerProxy *iProxy, int funcId, void *origin, IpcIo *req, IpcIo *reply)
