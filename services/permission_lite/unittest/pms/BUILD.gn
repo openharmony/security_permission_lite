@@ -39,7 +39,6 @@ unittest("security_test") {
     "//base/security/permission/services/permission_lite/pms_base:pms_base",
     "//base/security/permission/services/permission_lite/pms_client:pms_client",
     "//build/lite/config/component/cJSON:cjson_shared",
-    "//foundation/appexecfwk/appexecfwk_lite/frameworks/bundle_lite:bundle",
     "//foundation/distributedschedule/samgr_lite/communication/broadcast",
     "//foundation/distributedschedule/samgr_lite/samgr:samgr",
     "//third_party/bounds_checking_function:libsec_shared",
