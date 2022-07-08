@@ -46,6 +46,4 @@ lite_library("pms_target") {
     "//foundation/distributedschedule/samgr_lite/samgr:samgr",
     "//third_party/bounds_checking_function:libsec_shared",
   ]
-
-  cflags = [ "-Wall" ]
 }

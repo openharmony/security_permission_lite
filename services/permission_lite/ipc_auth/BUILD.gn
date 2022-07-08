@@ -53,6 +53,4 @@ lite_library("ipc_auth_target") {
       "OHOS_APPFWK_ENABLE",
     ]
   }
-
-  cflags = [ "-Wall" ]
 }
