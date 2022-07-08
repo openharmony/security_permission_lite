@@ -20,8 +20,8 @@
     "deps": {
       "components": [
         "hilog",
-		"samgr_lite",
-		"ipc_lite"
+        "samgr_lite",
+        "ipc_single"
       ],
       "third_party": [
         "bounds_checking_function",
