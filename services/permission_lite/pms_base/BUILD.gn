@@ -28,6 +28,4 @@ lite_library("pms_base") {
     "//foundation/communication/ipc/interfaces/innerkits/c/ipc:ipc_single",
     "//foundation/distributedschedule/samgr_lite/samgr:samgr",
   ]
-
-  cflags = [ "-Wall" ]
 }

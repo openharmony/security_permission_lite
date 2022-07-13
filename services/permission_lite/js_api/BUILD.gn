@@ -14,13 +14,6 @@
 shared_library("ace_kit_permission") {
   sources = [ "//base/security/permission/services/permission_lite/js_api/src/perm_module.cpp" ]
 
-  cflags = [
-    "-fPIC",
-    "-Wall",
-  ]
-
-  cflags_cc = cflags
-
   include_dirs = [
     "include",
     "//base/security/permission/interfaces/kits/permission_lite",
