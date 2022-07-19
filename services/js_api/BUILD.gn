@@ -12,16 +12,16 @@
 # limitations under the License.
 
 shared_library("ace_kit_permission") {
-  sources = [ "//base/security/permission/services/permission_lite/js_api/src/perm_module.cpp" ]
+  sources = [ "//base/security/permission_lite/services/js_api/src/perm_module.cpp" ]
 
   include_dirs = [
     "include",
-    "//base/security/permission/interfaces/kits/permission_lite",
+    "//base/security/permission_lite/interfaces/kits",
     "//foundation/arkui/interfaces/inner_api/builtin/jsi",
     "//foundation/arkui/interfaces/inner_api/builtin/base",
   ]
   deps = [
     "//base/hiviewdfx/hilog_lite/frameworks/featured:hilog_shared",
-    "//base/security/permission/services/permission_lite/pms_client:pms_client",
+    "//base/security/permission_lite/services/pms_client:pms_client",
   ]
 }

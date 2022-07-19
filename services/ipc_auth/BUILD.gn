@@ -16,14 +16,14 @@ import("//build/lite/config/component/lite_component.gni")
 lite_library("ipc_auth_target") {
   target_type = "shared_library"
   sources = [
-    "//base/security/permission/services/permission_lite/ipc_auth/src/ipc_auth_impl.c",
-    "//base/security/permission/services/permission_lite/ipc_auth/src/ipc_auth_lite.c",
+    "//base/security/permission_lite/services/ipc_auth/src/ipc_auth_impl.c",
+    "//base/security/permission_lite/services/ipc_auth/src/ipc_auth_lite.c",
   ]
   include_dirs = [
-    "//base/security/permission/interfaces/innerkits/permission_lite",
-    "//base/security/permission/services/permission_lite/ipc_auth/include",
+    "//base/security/permission_lite/interfaces/innerkits",
+    "//base/security/permission_lite/services/ipc_auth/include",
     "${ohos_product_adapter_dir}/security/permission_lite/ipc_auth/include",
-    "//base/security/permission/services/permission_lite/pms_base/include",
+    "//base/security/permission_lite/services/pms_base/include",
     "//foundation/distributedschedule/samgr_lite/interfaces/kits/registry",
     "//foundation/distributedschedule/samgr_lite/interfaces/kits/samgr",
     "//utils/native/lite/include",
@@ -32,7 +32,7 @@ lite_library("ipc_auth_target") {
 
   deps = [
     "//base/hiviewdfx/hilog_lite/frameworks/featured:hilog_shared",
-    "//base/security/permission/services/permission_lite/pms_base:pms_base",
+    "//base/security/permission_lite/services/pms_base:pms_base",
     "//foundation/distributedschedule/samgr_lite/samgr:samgr",
     "//third_party/bounds_checking_function:libsec_shared",
   ]

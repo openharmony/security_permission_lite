@@ -31,7 +31,7 @@ OpenHarmony中应用和系统服务均运行在独立的沙箱中，进程空间
 ## 目录<a name="section161941989596"></a>
 
 ```
-/base/security/permission
+/base/security/permission_lite
 ├── frameworks                         # 基础设施层
 │   └── permission_standard            # 标准系统权限管理基础设施层
 ├── interfaces                         # 接口层
@@ -289,7 +289,7 @@ OpenHarmony中应用和系统服务均运行在独立的沙箱中，进程空间
 
 使用说明：以BMS服务通过IPC通信方式对外开放接口为例，讲解如何通过IPC通信鉴权组件配置对应接口的访问策略。这里BMS在Samgr中注册的service为bundlems，为开放的接口注册的Feature为BmsFeature。
 
-1.  在源码路径下的头文件base/security/permission/services/permission\_lite/ipc\_auth/include/policy\_preset.h中配置相应的访问策略，访问策略主要有三种类型：
+1.  在源码路径下的头文件base/security/permission\_lite/services/ipc\_auth/include/policy\_preset.h中配置相应的访问策略，访问策略主要有三种类型：
 
     （1）type为RANGE类型：允许某个特定范围UID的进程访问，需要指定uidMin和uidMax；
 
