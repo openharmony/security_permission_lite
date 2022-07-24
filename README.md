@@ -32,7 +32,7 @@ App permission management provides permission management for the application fra
 ## Directory Structure<a name="section161941989596"></a>
 
 ```
-/base/security/permission
+/base/security/permission_lite
 ├── frameworks                         # Frameworks
 │   └── permission_standard            # Permission management framework for the standard system
 ├── interfaces                         # APIs
@@ -291,7 +291,7 @@ This section uses the bundle manager as an example to describe the app permissio
 
 This section uses the bundle manager as an example to describe how to configure access policies for APIs provided by the IPC authentication component. In this example, the service registered by BMS with Samgr is  **bundlems**, and the feature registered for open APIs is  **BmsFeature**.
 
-1.  <a name="li15901515152517"></a>Configure access policies in the  **base/security/permission/services/permission\_lite/ipc\_auth/include/policy\_preset.h**  file. Access policies are classified into the following three types:
+1.  <a name="li15901515152517"></a>Configure access policies in the  **base/security/permission\_lite/services/ipc\_auth/include/policy\_preset.h**  file. Access policies are classified into the following three types:
 
     1.  **RANGE**: Processes with a specified range of UIDs can access BMS APIs.  **uidMin**  and  **uidMax**  must be specified.
 

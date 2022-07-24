@@ -5,7 +5,7 @@
   "license": "Apache License 2.0",
   "publishAs": "code-segment",
   "segment": {
-    "destPath": "base/security/permission/services/permission_lite"
+    "destPath": "base/security/permission_lite/services"
   },
   "dirs": {},
   "scripts": {},
@@ -30,30 +30,30 @@
     },
     "build": {
       "sub_component": [
-		"//base/security/permission/services/permission_lite:permission_lite"
+		"//base/security/permission_lite/services:permission_lite"
       ],
       "inner_kits": [
         {
-          "name": "//base/security/permission/services/permission_lite/pms_client:pms_client",
+          "name": "//base/security/permission_lite/services/pms_client:pms_client",
           "header": {
             "header_files": [
               "pms_interface_inner.h"
             ],
-            "header_base": "//base/security/interfaces/innerkits/permission_lite"
+            "header_base": "//base/security/permission_lite/interfaces/innerkits"
           }
         },
         {
-          "name": "//base/security/permission/services/permission_lite/ipc_auth:ipc_auth_target",
+          "name": "//base/security/permission_lite/services/ipc_auth:ipc_auth_target",
           "header": {
             "header_files": [
               "ipc_auth_interface.h"
             ],
-            "header_base": "//base/security/interfaces/innerkits/permission_lite"
+            "header_base": "//base/security/permission_lite/interfaces/innerkits"
           }
         }
       ],
       "test": [
-		"//base/security/permission/services/permission_lite/unittest:unittest"
+		"//base/security/permission_lite/services/unittest:unittest"
       ]
     }
   }
