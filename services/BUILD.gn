@@ -13,20 +13,24 @@
 
 import("//build/lite/config/component/lite_component.gni")
 
-lite_component("permission_lite") {
-  deps = [
-    "//base/security/permission_lite/services/pms_base:pms_base",
-  ]
+if (ohos_kernel_type != "liteos_m") {
+  lite_component("permission_lite") {
+    deps = [ "//base/security/permission_lite/services/pms_base:pms_base" ]
 
-  features = [
-    "//base/security/permission_lite/services/ipc_auth:ipc_auth_target",
-    "//base/security/permission_lite/services/pms:pms_target",
-    "//base/security/permission_lite/services/pms_client:pms_client",
-  ]
-
-  if (ohos_build_type == "debug") {
-    features += [
-      "//base/security/permission_lite/services/unittest:unittest",
+    features = [
+      "//base/security/permission_lite/services/ipc_auth:ipc_auth_target",
+      "//base/security/permission_lite/services/pms:pms_target",
+      "//base/security/permission_lite/services/pms_client:pms_client",
     ]
+
+    if (ohos_build_type == "debug") {
+      features +=
+          [ "//base/security/permission_lite/services/unittest:unittest" ]
+    }
+  }
+} else {
+  lite_component("permission_lite") {
+    features =
+        [ "//base/security/permission_lite/services/pms:pms_target_static" ]
   }
 }
