@@ -12,7 +12,8 @@
 # limitations under the License.
 
 shared_library("ace_kit_permission") {
-  sources = [ "//base/security/permission_lite/services/js_api/src/perm_module.cpp" ]
+  sources =
+      [ "//base/security/permission_lite/services/js_api/src/perm_module.cpp" ]
 
   include_dirs = [
     "include",

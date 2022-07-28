@@ -15,7 +15,8 @@ import("//build/lite/config/component/lite_component.gni")
 
 lite_library("pms_client") {
   target_type = "shared_library"
-  sources = [ "//base/security/permission_lite/services/pms_client/perm_client.c" ]
+  sources =
+      [ "//base/security/permission_lite/services/pms_client/perm_client.c" ]
 
   include_dirs = [
     "//base/security/permission_lite/interfaces/innerkits",
@@ -23,10 +24,10 @@ lite_library("pms_client") {
     "//base/security/permission_lite/services/pms/include",
     "//base/security/permission_lite/services/pms_base/include",
     "//utils/native/lite/include",
-    "//foundation/distributedschedule/samgr_lite/interfaces/kits/registry",
-    "//foundation/distributedschedule/samgr_lite/interfaces/kits/samgr",
-    "//foundation/distributedschedule/samgr_lite/interfaces/kits/communication/broadcast",
-    "//foundation/distributedschedule/samgr_lite/samgr/source",
+    "//foundation/systemabilitymgr/samgr_lite/interfaces/kits/registry",
+    "//foundation/systemabilitymgr/samgr_lite/interfaces/kits/samgr",
+    "//foundation/systemabilitymgr/samgr_lite/interfaces/kits/communication/broadcast",
+    "//foundation/systemabilitymgr/samgr_lite/samgr/source",
     "//third_party/cJSON",
     "//third_party/bounds_checking_function/include",
   ]
@@ -35,7 +36,7 @@ lite_library("pms_client") {
     "//base/hiviewdfx/hilog_lite/frameworks/featured:hilog_shared",
     "//build/lite/config/component/cJSON:cjson_shared",
     "//foundation/communication/ipc/interfaces/innerkits/c/ipc:ipc_single",
-    "//foundation/distributedschedule/samgr_lite/samgr:samgr",
+    "//foundation/systemabilitymgr/samgr_lite/samgr:samgr",
     "//third_party/bounds_checking_function:libsec_shared",
   ]
 }
