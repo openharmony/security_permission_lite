@@ -23,8 +23,8 @@ unittest("security_test") {
     "src",
     "include",
     "//utils/native/lite/include",
-    "//foundation/distributedschedule/samgr_lite/interfaces/kits/samgr/",
-    "//foundation/distributedschedule/samgr_lite/interfaces/kits/communication/broadcast/",
+    "//foundation/systemabilitymgr/samgr_lite/interfaces/kits/samgr/",
+    "//foundation/systemabilitymgr/samgr_lite/interfaces/kits/communication/broadcast/",
     "//base/security/permission_lite/interfaces/innerkits",
     "//base/security/permission_lite/interfaces/kits",
     "//base/security/permission_lite/services/pms_base/include",
@@ -39,8 +39,8 @@ unittest("security_test") {
     "//base/security/permission_lite/services/pms_base:pms_base",
     "//base/security/permission_lite/services/pms_client:pms_client",
     "//build/lite/config/component/cJSON:cjson_shared",
-    "//foundation/distributedschedule/samgr_lite/communication/broadcast",
-    "//foundation/distributedschedule/samgr_lite/samgr:samgr",
+    "//foundation/systemabilitymgr/samgr_lite/communication/broadcast",
+    "//foundation/systemabilitymgr/samgr_lite/samgr:samgr",
     "//third_party/bounds_checking_function:libsec_shared",
   ]
 }

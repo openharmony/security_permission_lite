@@ -15,8 +15,6 @@ import("//build/lite/ndk/ndk.gni")
 
 ndk_lib("permission_notes") {
   lib_extension = ".so"
-  deps = [
-    "//base/security/permission_lite/services/pms_client:pms_client",
-  ]
+  deps = [ "//base/security/permission_lite/services/pms_client:pms_client" ]
   head_files = [ "//base/security/permission_lite/interfaces/kits" ]
 }
