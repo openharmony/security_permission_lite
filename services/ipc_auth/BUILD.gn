@@ -59,7 +59,3 @@ if (os_level != "mini") {
   group("ipc_auth_target") {
   }
 }
-} else {
-  group("ipc_auth_target") {
-    }
-}
