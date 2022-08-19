@@ -108,13 +108,6 @@ static BOOL OnMessage(Feature *feature, Request *request)
     return TRUE;
 }
 
-void static InnerFreeDataBuff(void *ptr)
-{
-    if (ptr != NULL) {
-        free(ptr);
-    }
-}
-
 static void ReplyCheckSelfPermission(const void *origin, IpcIo *req, IpcIo *reply, PermLiteApi* api)
 {
     pid_t callingPid = GetCallingPid();
