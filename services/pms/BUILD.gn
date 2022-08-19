@@ -14,7 +14,7 @@
 import("//build/lite/config/component/lite_component.gni")
 import("//build/ohos.gni")
 
-if (ohos_kernel_type != "liteos_m") {
+if (os_level != "mini") {
   lite_library("pms_target") {
     target_type = "shared_library"
     sources = [
@@ -72,8 +72,8 @@ if (ohos_kernel_type != "liteos_m") {
     }
 
     deps = [
-      "${ohos_product_adapter_dir}/security/permission_lite:hal_pms",
-      "//build/lite/config/component/cJSON:cjson_shared",
+      "${pms_hal_path}:hal_pms_static",
+      "//build/lite/config/component/cJSON:cjson_static",
     ]
   }
 }

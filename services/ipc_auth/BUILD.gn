@@ -13,6 +13,7 @@
 
 import("//build/lite/config/component/lite_component.gni")
 
+if (os_level != "mini") {
 lite_library("ipc_auth_target") {
   target_type = "shared_library"
   sources = [
@@ -53,4 +54,8 @@ lite_library("ipc_auth_target") {
       "OHOS_APPFWK_ENABLE",
     ]
   }
+}
+else {
+  group("ipc_auth_target") {
+    }
 }
