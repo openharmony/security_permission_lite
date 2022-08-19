@@ -15,9 +15,9 @@ import("//build/lite/config/component/lite_component.gni")
 
 lite_library("pms_base") {
   target_type = "shared_library"
-  sources = [ "//base/security/permission/services/permission_lite/pms_base/src/permission_service.c" ]
+  sources = [ "src/permission_service.c" ]
   include_dirs = [
-    "//base/security/permission/services/permission_lite/pms_base/include",
+    "include",
     "//foundation/distributedschedule/samgr_lite/interfaces/kits/registry",
     "//foundation/distributedschedule/samgr_lite/interfaces/kits/samgr",
     "//utils/native/lite/include",
@@ -28,6 +28,4 @@ lite_library("pms_base") {
     "//foundation/communication/ipc/interfaces/innerkits/c/ipc:ipc_single",
     "//foundation/distributedschedule/samgr_lite/samgr:samgr",
   ]
-
-  cflags = [ "-Wall" ]
 }
