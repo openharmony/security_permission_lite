@@ -55,7 +55,7 @@ lite_library("ipc_auth_target") {
     ]
   }
 }
-else {
+} else {
   group("ipc_auth_target") {
     }
 }
