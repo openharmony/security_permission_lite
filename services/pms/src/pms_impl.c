@@ -51,15 +51,15 @@ static char *ConcatString(const char *s1, const char *s2)
         return NULL;
     }
     if (memset_s(rst, allocSize, 0x0, allocSize) != EOK) {
-        HalFree(rst);
+        HalFree((void *)rst);
         return NULL;
     }
     if (strcpy_s(rst, allocSize, s1) != EOK) {
-        HalFree(rst);
+        HalFree((void *)rst);
         return NULL;
     }
     if (strcat_s(rst, allocSize, s2) != EOK) {
-        HalFree(rst);
+        HalFree((void *)rst);
         return NULL;
     }
     return rst;
@@ -101,14 +101,14 @@ static char *ReadString(const char *path, int *errCode)
     }
 
     if (memset_s(rst, readSize, 0x0, readSize) != EOK) {
-        HalFree(rst);
+        HalFree((void *)rst);
         *errCode = PERM_ERRORCODE_MEMSET_FAIL;
         return NULL;
     }
 
     int fd = open(path, O_RDONLY, S_IRUSR | S_IWUSR);
     if (fd < 0) {
-        HalFree(rst);
+        HalFree((void *)rst);
         *errCode = PERM_ERRORCODE_OPENFD_FAIL;
         return NULL;
     }
@@ -116,7 +116,7 @@ static char *ReadString(const char *path, int *errCode)
     int ret = read(fd, rst, readSize);
     close(fd);
     if (ret < 0) {
-        HalFree(rst);
+        HalFree((void *)rst);
         *errCode = PERM_ERRORCODE_READFD_FAIL;
         return NULL;
     }
@@ -196,14 +196,14 @@ static int ParsePermissions(const char *jsonStr, PermissionSaved **perms, int *p
         ret = ParseFixedPermissionsItem(object, *perms + i);
         if (ret != PERM_ERRORCODE_SUCCESS) {
             cJSON_Delete(root);
-            HalFree(*perms);
+            HalFree((void *)*perms);
             *perms = NULL;
             return ret;
         }
         ret = ParseNewPermissionsItem(object, *perms + i);
         if (ret != PERM_ERRORCODE_SUCCESS) {
             cJSON_Delete(root);
-            HalFree(*perms);
+            HalFree((void *)*perms);
             *perms = NULL;
             return ret;
         }
@@ -221,12 +221,12 @@ static int WritePermissions(const char *identifier, const cJSON *root)
     }
     const char *jsonStr = cJSON_PrintUnformatted(root);
     if (jsonStr == NULL) {
-        HalFree(path);
+        HalFree((void *)path);
         return PERM_ERRORCODE_MALLOC_FAIL;
     }
     int ret = WriteString(path, jsonStr);
-    HalFree(path);
-    cJSON_free(jsonStr);
+    HalFree((void *)path);
+    cJSON_free((void *)jsonStr);
     return ret;
 }
 
@@ -304,13 +304,13 @@ char *QueryPermissionString(const char *identifier, int *errCode)
     }
     ret = HalAccess(path);
     if (ret) {
-        HalFree(path);
+        HalFree((void *)path);
         *errCode = PERM_ERRORCODE_FILE_NOT_EXIST;
         return NULL;
     }
 
     jsonStr = ReadString(path, errCode);
-    HalFree(path);
+    HalFree((void *)path);
     return jsonStr;
 }
 
@@ -323,7 +323,7 @@ int QueryPermission(const char *identifier, PermissionSaved **permissions, int *
     }
 
     int ret = ParsePermissions(jsonStr, permissions, permNum);
-    HalFree(jsonStr);
+    HalFree((void *)jsonStr);
     return ret;
 }
 
@@ -340,12 +340,12 @@ int QueryAppCapabilities(const char *identifier, unsigned int **caps, unsigned i
     }
     unsigned int allocSize = sizeof(unsigned int) * permNum;
     if (allocSize == 0) {
-        HalFree(permissions);
+        HalFree((void *)permissions);
         return PERM_ERRORCODE_SUCCESS;
     }
     unsigned int *capsBinded = (unsigned int *)HalMalloc(allocSize);
     if (capsBinded == NULL) {
-        HalFree(permissions);
+        HalFree((void *)permissions);
         return PERM_ERRORCODE_MALLOC_FAIL;
     }
 
@@ -362,22 +362,22 @@ int QueryAppCapabilities(const char *identifier, unsigned int **caps, unsigned i
             break;
         }
     }
-    HalFree(permissions);
+    HalFree((void *)permissions);
     allocSize = sizeof(unsigned int) * index;
     if (allocSize == 0) {
-        HalFree(capsBinded);
+        HalFree((void *)capsBinded);
         return PERM_ERRORCODE_SUCCESS;
     }
     *caps = (unsigned int *)HalMalloc(allocSize);
     if (*caps == NULL) {
-        HalFree(capsBinded);
+        HalFree((void *)capsBinded);
         return PERM_ERRORCODE_MALLOC_FAIL;
     }
     for (int k = 0; k < index; k++) {
         *(*caps + k) = capsBinded[k];
     }
     *capNum = index;
-    HalFree(capsBinded);
+    HalFree((void *)capsBinded);
     return PERM_ERRORCODE_SUCCESS;
 }
 
@@ -396,23 +396,23 @@ static int UpdateAppPermission(
     int allocSize = sizeof(PermissionSaved) * newPermNum;
     PermissionSaved *updatePerms = (PermissionSaved *)HalMalloc(allocSize);
     if (updatePerms == NULL) {
-        HalFree(permissions);
+        HalFree((void *)permissions);
         return PERM_ERRORCODE_MALLOC_FAIL;
     }
     for (int i = 0; i < newPermNum; i++) {
         if (strlen(newPerms[i].name) > PERM_NAME_LEN - 1 || strlen(newPerms[i].desc) > PERM_DESC_LEN - 1) {
-            HalFree(updatePerms);
-            HalFree(permissions);
+            HalFree((void *)updatePerms);
+            HalFree((void *)permissions);
             return PERM_ERRORCODE_FIELD_TOO_LONG;
         }
         if (strcpy_s(updatePerms[i].name, PERM_NAME_LEN, newPerms[i].name) != EOK) {
-            HalFree(updatePerms);
-            HalFree(permissions);
+            HalFree((void *)updatePerms);
+            HalFree((void *)permissions);
             return PERM_ERRORCODE_COPY_ERROR;
         }
         if (strcpy_s(updatePerms[i].desc, PERM_DESC_LEN, newPerms[i].desc) != EOK) {
-            HalFree(updatePerms);
-            HalFree(permissions);
+            HalFree((void *)updatePerms);
+            HalFree((void *)permissions);
             return PERM_ERRORCODE_COPY_ERROR;
         }
         int permType = GetPermissionType(newPerms[i].name);
@@ -428,8 +428,8 @@ static int UpdateAppPermission(
         }
     }
     retCode = SavePermissions(identifier, updatePerms, newPermNum);
-    HalFree(updatePerms);
-    HalFree(permissions);
+    HalFree((void *)updatePerms);
+    HalFree((void *)permissions);
     return retCode;
 }
 
@@ -449,10 +449,10 @@ int SaveOrUpdatePermissions(
     }
     if (permNum == 0) {
         unlink(path);
-        HalFree(path);
+        HalFree((void *)path);
         return PERM_ERRORCODE_SUCCESS;
     }
-    HalFree(path);
+    HalFree((void *)path);
 
     int distinctNum = 0;
     int *flag = (int *)HalMalloc(permNum * sizeof(int));
@@ -471,7 +471,7 @@ int SaveOrUpdatePermissions(
             }
         }
     }
-    HalFree(flag);
+    HalFree((void *)flag);
 
     return UpdateAppPermission(identifier, permissions, distinctNum, isUpdate);
 }
@@ -490,12 +490,12 @@ int DeletePermissions(const char *identifier)
 
     ret = HalAccess(path);
     if (ret != 0) {
-        HalFree(path);
+        HalFree((void *)path);
         return PERM_ERRORCODE_SUCCESS;
     }
 
     ret = unlink(path);
-    HalFree(path);
+    HalFree((void *)path);
     return (ret != 0) ? PERM_ERRORCODE_UNLINK_ERROR : PERM_ERRORCODE_SUCCESS;
 }
 
@@ -552,14 +552,14 @@ int LoadPermissions(const char *identifier, int uid)
     }
     TNode *node = (TNode *)HalMalloc(sizeof(TNode));
     if (node == NULL) {
-        HalFree(permissions);
+        HalFree((void *)permissions);
         HalMutexUnlock();
         return PERM_ERRORCODE_MALLOC_FAIL;
     }
     node->uid = uid;
     if (strcpy_s(node->pkgName, PKG_NAME_LEN, identifier) != EOK) {
-        HalFree(permissions);
-        HalFree(node);
+        HalFree((void *)permissions);
+        HalFree((void *)node);
         HalMutexUnlock();
         return PERM_ERRORCODE_COPY_ERROR;
     }
@@ -612,7 +612,7 @@ static int OnPermissionFileSync(const char *identifier, const char *permName, co
     if (isSave) {
         retCode = SavePermissions(identifier, permissions, permNum);
     }
-    HalFree(permissions);
+    HalFree((void *)permissions);
     return retCode;
 }
 
@@ -636,7 +636,7 @@ static int OnPermissionFlagsFileSync(const char *identifier, const char *permNam
     if (isSave) {
         retCode = SavePermissions(identifier, permissions, permNum);
     }
-    HalFree(permissions);
+    HalFree((void *)permissions);
     return retCode;
 }
 
