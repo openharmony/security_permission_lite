@@ -36,7 +36,7 @@ if (os_level != "mini") {
       "//foundation/systemabilitymgr/samgr_lite/interfaces/kits/samgr",
       "//foundation/systemabilitymgr/samgr_lite/interfaces/kits/communication/broadcast",
       "//foundation/systemabilitymgr/samgr_lite/samgr_endpoint/source",
-      "//utils/native/lite/include",
+      "//commonlibrary/utils_lite/include",
       "//third_party/cJSON",
       "//third_party/bounds_checking_function/include/",
     ]
