@@ -24,7 +24,7 @@ if (os_level != "mini") {
       "//base/security/permission_lite/interfaces/kits",
       "//base/security/permission_lite/services/pms/include",
       "//base/security/permission_lite/services/pms_base/include",
-      "//utils/native/lite/include",
+      "//commonlibrary/utils_lite/include",
       "//foundation/systemabilitymgr/samgr_lite/interfaces/kits/registry",
       "//foundation/systemabilitymgr/samgr_lite/interfaces/kits/samgr",
       "//foundation/systemabilitymgr/samgr_lite/interfaces/kits/communication/broadcast",
