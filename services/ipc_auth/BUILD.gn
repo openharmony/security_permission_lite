@@ -27,7 +27,7 @@ if (os_level != "mini") {
       "//base/security/permission_lite/services/pms_base/include",
       "//foundation/systemabilitymgr/samgr_lite/interfaces/kits/registry",
       "//foundation/systemabilitymgr/samgr_lite/interfaces/kits/samgr",
-      "//utils/native/lite/include",
+      "//commonlibrary/utils_lite/include",
       "//third_party/bounds_checking_function/include/",
     ]
 
