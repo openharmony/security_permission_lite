@@ -65,13 +65,6 @@ if (os_level != "mini") {
       "//base/hiviewdfx/hilog_lite/interfaces/native/kits/hilog_lite",
     ]
 
-    if (board_toolchain_type == "iccarm") {
-      cflags = [
-        "-diag_suppress",
-        "Pe167",
-      ]
-    }
-
     deps = [
       "${pms_hal_path}:hal_pms_static",
       "//build/lite/config/component/cJSON:cjson_static",
