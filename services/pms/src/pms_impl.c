@@ -178,7 +178,6 @@ static int ParsePermissions(const char *jsonStr, PermissionSaved **perms, int *p
     if (root == NULL) {
         return PERM_ERRORCODE_JSONPARSE_FAIL;
     }
-    int ret;
     cJSON *array = cJSON_GetObjectItem(root, FIELD_PERMISSION);
     int pSize = cJSON_GetArraySize(array);
     int allocSize = sizeof(PermissionSaved) * pSize;
@@ -193,7 +192,7 @@ static int ParsePermissions(const char *jsonStr, PermissionSaved **perms, int *p
     }
     for (int i = 0; i < pSize; i++) {
         cJSON *object = cJSON_GetArrayItem(array, i);
-        ret = ParseFixedPermissionsItem(object, *perms + i);
+        int ret = ParseFixedPermissionsItem(object, *perms + i);
         if (ret != PERM_ERRORCODE_SUCCESS) {
             cJSON_Delete(root);
             HalFree((void *)*perms);
