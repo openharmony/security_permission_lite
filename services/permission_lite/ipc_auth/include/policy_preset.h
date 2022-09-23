@@ -399,7 +399,6 @@ static PolicySetting g_presetPolicies[] = {
     {"devauth_svc", devAuthFeature, 1},
     {"battery_service", batteryFeature, 1},
     {"dev_mgr_svc", deviceManagerFeature, 1},
-    {"dev_mgr_svc", deviceManagerFeature, 1},
     {"wifisrvlite", wifiFeature, 3}
 };
 
