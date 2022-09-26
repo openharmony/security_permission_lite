@@ -81,12 +81,6 @@ typedef struct RetOfQueryPerms {
     PermissionSaved *permission;
 } RetOfQueryPerms;
 
-typedef struct RetOfGetDevUdid {
-    unsigned char *udid;
-    int size;
-    int result;
-} RetOfGetDevUdid;
-
 void *CreatClient(const char *service, const char *feature, uint32 size)
 {
     (void)service;
