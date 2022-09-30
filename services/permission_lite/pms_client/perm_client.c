@@ -221,7 +221,8 @@ static int ParsePermissions(const char *jsonStr, PermissionSaved **perms, int *p
         cJSON *itemName = cJSON_GetObjectItem(object, FIELD_NAME);
         cJSON *itemDesc = cJSON_GetObjectItem(object, FIELD_DESC);
         cJSON *itemGranted = cJSON_GetObjectItem(object, FIELD_IS_GRANTED);
-        if (itemName == NULL || itemDesc == NULL || itemGranted == NULL) {
+        if (itemName == NULL || itemDesc == NULL || itemGranted == NULL || !cJSON_IsString(itemName)
+            || itemName->valuestring == NULL || !cJSON_IsString(itemDesc) || itemDesc->valuestring == NULL) {
             cJSON_Delete(root);
             free(*perms);
             *perms = NULL;

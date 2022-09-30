@@ -147,7 +147,7 @@ static int ParseFixedPermissionsItem(const cJSON *object, PermissionSaved *perms
     cJSON *itemDesc = cJSON_GetObjectItem(object, FIELD_DESC);
     cJSON *itemGranted = cJSON_GetObjectItem(object, FIELD_IS_GRANTED);
     if (itemName == NULL || itemDesc == NULL || itemGranted == NULL ||
-        !cJSON_IsString(itemName) || !cJSON_IsString(itemDesc)) {
+        !cJSON_IsString(itemName) || !cJSON_IsString(itemDesc) || itemName->valuestring == NULL) {
         return PERM_ERRORCODE_JSONPARSE_FAIL;
     }
     if (strcpy_s(perms->name, PERM_NAME_LEN, itemName->valuestring) != EOK) {
@@ -163,11 +163,11 @@ static int ParseFixedPermissionsItem(const cJSON *object, PermissionSaved *perms
 static int ParseNewPermissionsItem(const cJSON *object, PermissionSaved *perms)
 {
     cJSON *itemFlags = cJSON_GetObjectItem(object, FIELD_FLAGS);
-    if (itemFlags != NULL) {
-        perms->flags = atoi(itemFlags->valuestring);
-    } else {
+    if (itemFlags == NULL || !cJSON_IsString(itemFlags) || itemFlags->valuestring == NULL) {
         perms->flags = PMS_FLAG_DEFAULT;
+        return PERM_ERRORCODE_JSONPARSE_FAIL;
     }
+    perms->flags = atoi(itemFlags->valuestring);
     return PERM_ERRORCODE_SUCCESS;
 }
 
