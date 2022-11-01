@@ -52,7 +52,7 @@ static void Init(void);
 static const char *GetName(Feature *feature);
 static void OnInitialize(Feature *feature, Service *parent, Identity identity);
 static void OnStop(Feature *feature, Identity identity);
-static BOOL OnMessage(Feature *feature, Request *request);
+static BOOL OnMessage(const Feature *feature, const Request *request);
 static int32 Invoke(IServerProxy *iProxy, int funcId, void *origin, IpcIo *req, IpcIo *reply);
 
 static PermLite g_permlite = {
@@ -99,7 +99,7 @@ static void OnStop(Feature *feature, Identity identity)
     (void)identity;
 }
 
-static BOOL OnMessage(Feature *feature, Request *request)
+static BOOL OnMessage(const Feature *feature, const Request *request)
 {
     if (feature == NULL || request == NULL) {
         return FALSE;
