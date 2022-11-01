@@ -28,7 +28,7 @@ static void Init();
 static const char *GetName(Service *service);
 static BOOL Initialize(Service *service, Identity identity);
 static TaskConfig GetTaskConfig(Service *service);
-static BOOL MessageHandle(Service *service, Request *request);
+static BOOL MessageHandle(const Service *service, const Request *request);
 
 static PermissionService g_permissionService = {
     .GetName = GetName,
@@ -61,7 +61,7 @@ static BOOL Initialize(Service *service, Identity identity)
     return TRUE;
 }
 
-static BOOL MessageHandle(Service *service, Request *request)
+static BOOL MessageHandle(const Service *service, const Request *request)
 {
     (void)service;
     if (request == NULL) {
