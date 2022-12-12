@@ -413,7 +413,7 @@ static PolicySetting g_presetPolicies[] = {
     {"battery_service", batteryFeature, 1},
     {"dev_mgr_svc", deviceManagerFeature, 1},
     {"wifisrvlite", wifiFeature, 3},
-    {"huks_feature", huksFeature, 1}
+    {"huks_service", huksFeature, 1}
 };
 
 static int g_presetPolicySize = sizeof(g_presetPolicies) / sizeof(PolicySetting);
