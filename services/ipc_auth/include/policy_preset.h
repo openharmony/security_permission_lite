@@ -377,6 +377,19 @@ FeaturePolicy wifiFeature[] = {
     },
 };
 
+FeaturePolicy devAttestFeature[] = {
+    {
+        "attest_feature",
+        {
+            {
+                .type = RANGE,
+                .uidMin = 0,
+                .uidMax = __INT_MAX__,
+            },
+        },
+    },
+};
+
 FeaturePolicy huksFeature[] = {
     {
         "huks_feature",
@@ -413,6 +426,7 @@ static PolicySetting g_presetPolicies[] = {
     {"battery_service", batteryFeature, 1},
     {"dev_mgr_svc", deviceManagerFeature, 1},
     {"wifisrvlite", wifiFeature, 3},
+    {"attest_service", devAttestFeature, 1},
     {"huks_service", huksFeature, 1}
 };
 
