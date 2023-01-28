@@ -377,6 +377,19 @@ FeaturePolicy wifiFeature[] = {
     },
 };
 
+FeaturePolicy devAttestFeature[] = {
+    {
+        "attest_feature",
+        {
+            {
+                .type = RANGE,
+                .uidMin = 0,
+                .uidMax = __INT_MAX__,
+            },
+        },
+    },
+};
+
 static PolicySetting g_presetPolicies[] = {
     {"permissionms", pmsFeature, 2},
     {"abilityms", amsFeature, 2},
@@ -399,7 +412,8 @@ static PolicySetting g_presetPolicies[] = {
     {"devauth_svc", devAuthFeature, 1},
     {"battery_service", batteryFeature, 1},
     {"dev_mgr_svc", deviceManagerFeature, 1},
-    {"wifisrvlite", wifiFeature, 3}
+    {"wifisrvlite", wifiFeature, 3},
+    {"attest_service", devAttestFeature, 1}
 };
 
 static int g_presetPolicySize = sizeof(g_presetPolicies) / sizeof(PolicySetting);
