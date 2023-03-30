@@ -29,7 +29,7 @@
 #include "policy_preset_product.h"
 #include "policy_registry.h"
 
-static unsigned int g_systemSvcUids[] = {1, 2, 0, 6, 7, 8, 9, 10, 11, 19, 20};
+static unsigned int g_systemSvcUids[] = {1, 2, 0, 6, 7, 8, 9, 10, 11, 12, 19, 20};
 
 static unsigned int g_systemSvcUidSize = sizeof(g_systemSvcUids) / sizeof(unsigned int);
 
