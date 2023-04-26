@@ -11,18 +11,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import("../../build/config.gni")
+
 shared_library("ace_kit_permission") {
-  sources =
-      [ "//base/security/permission_lite/services/js_api/src/perm_module.cpp" ]
+  sources = [ "src/perm_module.cpp" ]
 
   include_dirs = [
     "include",
-    "//base/security/permission_lite/interfaces/kits",
-    "//foundation/arkui/interfaces/inner_api/builtin/jsi",
-    "//foundation/arkui/interfaces/inner_api/builtin/base",
+    "../../interfaces/kits",
   ]
   deps = [
-    "//base/hiviewdfx/hilog_lite/frameworks/featured:hilog_shared",
-    "//base/security/permission_lite/services/pms_client:pms_client",
+    "${hilog_lite_path}/frameworks/featured:hilog_shared",
+    "../pms_client:pms_client",
   ]
 }

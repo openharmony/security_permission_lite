@@ -12,9 +12,10 @@
 # limitations under the License.
 
 import("//build/lite/ndk/ndk.gni")
+import("../../build/config.gni")
 
 ndk_lib("permission_notes") {
   lib_extension = ".so"
-  deps = [ "//base/security/permission_lite/services/pms_client:pms_client" ]
-  head_files = [ "//base/security/permission_lite/interfaces/kits" ]
+  deps = [ "${permission_lite_path}/services/pms_client:pms_client" ]
+  head_files = [ "${permission_lite_path}/interfaces/kits" ]
 }

@@ -13,6 +13,7 @@
 
 import("//build/lite/config/component/lite_component.gni")
 import("//build/lite/config/test.gni")
+import("../../../build/config.gni")
 
 if (os_level != "mini") {
   unittest("security_test") {
@@ -22,26 +23,20 @@ if (os_level != "mini") {
 
     include_dirs = [
       "src",
-      "include",
-      "//commonlibrary/utils_lite/include",
-      "//foundation/systemabilitymgr/samgr_lite/interfaces/kits/samgr/",
-      "//foundation/systemabilitymgr/samgr_lite/interfaces/kits/communication/broadcast/",
-      "//base/security/permission_lite/interfaces/innerkits",
-      "//base/security/permission_lite/interfaces/kits",
-      "//base/security/permission_lite/services/pms_base/include",
-      "//base/security/permission_lite/services/pms/include",
-      "//base/security/permission_lite/services/ipc_auth/include",
-      "//third_party/bounds_checking_function/include",
+      "${permission_lite_path}/interfaces/innerkits",
+      "${permission_lite_path}/interfaces/kits",
+      "../../pms_base/include",
+      "../../pms/include",
+      "../../ipc_auth/include",
     ]
 
     deps = [
-      "//base/security/permission_lite/services/ipc_auth:ipc_auth_target",
-      "//base/security/permission_lite/services/pms:pms_target",
-      "//base/security/permission_lite/services/pms_base:pms_base",
-      "//base/security/permission_lite/services/pms_client:pms_client",
-      "//build/lite/config/component/cJSON:cjson_shared",
-      "//foundation/systemabilitymgr/samgr_lite/communication/broadcast",
-      "//foundation/systemabilitymgr/samgr_lite/samgr:samgr",
+      "${samgr_lite_path}/communication/broadcast",
+      "${samgr_lite_path}/samgr:samgr",
+      "../../ipc_auth:ipc_auth_target",
+      "../../pms:pms_target",
+      "../../pms_base:pms_base",
+      "../../pms_client:pms_client",
       "//third_party/bounds_checking_function:libsec_shared",
     ]
   }

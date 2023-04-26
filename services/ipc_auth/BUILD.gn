@@ -12,29 +12,26 @@
 # limitations under the License.
 
 import("//build/lite/config/component/lite_component.gni")
+import("../../build/config.gni")
 
 if (os_level != "mini") {
   lite_library("ipc_auth_target") {
     target_type = "shared_library"
     sources = [
-      "//base/security/permission_lite/services/ipc_auth/src/ipc_auth_impl.c",
-      "//base/security/permission_lite/services/ipc_auth/src/ipc_auth_lite.c",
+      "src/ipc_auth_impl.c",
+      "src/ipc_auth_lite.c",
     ]
     include_dirs = [
-      "//base/security/permission_lite/interfaces/innerkits",
-      "//base/security/permission_lite/services/ipc_auth/include",
+      "../../interfaces/innerkits",
+      "ipc_auth/include",
       "${ohos_product_adapter_dir}/security/permission_lite/ipc_auth/include",
-      "//base/security/permission_lite/services/pms_base/include",
-      "//foundation/systemabilitymgr/samgr_lite/interfaces/kits/registry",
-      "//foundation/systemabilitymgr/samgr_lite/interfaces/kits/samgr",
-      "//commonlibrary/utils_lite/include",
-      "//third_party/bounds_checking_function/include/",
+      "../pms_base/include",
     ]
 
     deps = [
-      "//base/hiviewdfx/hilog_lite/frameworks/featured:hilog_shared",
-      "//base/security/permission_lite/services/pms_base:pms_base",
-      "//foundation/systemabilitymgr/samgr_lite/samgr:samgr",
+      "${hilog_lite_path}/frameworks/featured:hilog_shared",
+      "${samgr_lite_path}/samgr:samgr",
+      "../pms_base:pms_base",
       "//third_party/bounds_checking_function:libsec_shared",
     ]
 
@@ -44,10 +41,12 @@ if (os_level != "mini") {
       include_dirs += [
         "${aafwk_lite_path}/interfaces/kits/want_lite",
         "${appexecfwk_lite_path}/interfaces/kits/bundle_lite",
-        "${appexecfwk_lite_path}/interfaces/inner_api/bundlemgr_lite",
       ]
 
-      deps += [ "${appexecfwk_lite_path}/frameworks/bundle_lite:bundle" ]
+      deps += [
+        "${appexecfwk_lite_path}/frameworks/bundle_lite:bundle",
+        "${appexecfwk_lite_path}/services/bundlemgr_lite:appexecfwk_services_lite",
+      ]
 
       defines += [
         "OHOS_APPEXECFWK_BMS_BUNDLEMANAGER",

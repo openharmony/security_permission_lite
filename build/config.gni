@@ -12,6 +12,11 @@
 # limitations under the License.
 
 declare_args() {
+  hilog_lite_path = "//base/hiviewdfx/hilog_lite"
+  ipc_path = "//foundation/communication/ipc"
+  permission_lite_path = "//base/security/permission_lite"
+
   # hal path
   pms_hal_path = ""
+  samgr_lite_path = "//foundation/systemabilitymgr/samgr_lite"
 }

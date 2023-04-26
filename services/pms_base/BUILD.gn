@@ -12,20 +12,15 @@
 # limitations under the License.
 
 import("//build/lite/config/component/lite_component.gni")
+import("../../build/config.gni")
 
 lite_library("pms_base") {
   target_type = "shared_library"
   sources = [ "src/permission_service.c" ]
-  include_dirs = [
-    "include",
-    "//foundation/systemabilitymgr/samgr_lite/interfaces/kits/registry",
-    "//foundation/systemabilitymgr/samgr_lite/interfaces/kits/samgr",
-    "//commonlibrary/utils_lite/include",
-  ]
+  include_dirs = [ "include" ]
 
   deps = [
-    "//base/hiviewdfx/hilog_lite/frameworks/featured:hilog_shared",
-    "//foundation/communication/ipc/interfaces/innerkits/c/ipc:ipc_single",
-    "//foundation/systemabilitymgr/samgr_lite/samgr:samgr",
+    "${hilog_lite_path}/frameworks/featured:hilog_shared",
+    "${samgr_lite_path}/samgr:samgr",
   ]
 }
