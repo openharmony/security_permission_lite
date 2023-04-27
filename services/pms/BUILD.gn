@@ -12,6 +12,7 @@
 # limitations under the License.
 
 import("//build/lite/config/component/lite_component.gni")
+import("//build/ohos.gni")
 import("../../build/config.gni")
 
 if (os_level != "mini") {
