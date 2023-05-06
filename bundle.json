@@ -18,8 +18,8 @@
       "small",
       "mini"
     ],
-    "rom": "100KB",
-    "ram": "90KB",
+    "rom": "150KB",
+    "ram": "500KB",
     "deps": {
       "components": [
         "hilog",
