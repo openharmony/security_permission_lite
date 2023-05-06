@@ -5,7 +5,7 @@
   "license": "Apache License 2.0",
   "publishAs": "code-segment",
   "segment": {
-    "destPath": "base/security/permission_lite/services"
+    "destPath": "base/security/permission_lite"
   },
   "dirs": {},
   "scripts": {},
@@ -18,13 +18,13 @@
       "small",
       "mini"
     ],
-    "rom": "100KB",
-    "ram": "90KB",
+    "rom": "150KB",
+    "ram": "500KB",
     "deps": {
       "components": [
         "hilog",
         "samgr_lite",
-        "ipc_single"
+        "ipc"
       ],
       "third_party": [
         "bounds_checking_function",
