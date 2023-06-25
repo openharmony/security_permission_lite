@@ -356,8 +356,7 @@ int QueryAppCapabilities(const char *identifier, unsigned int **caps, unsigned i
             if (strcmp(permissions[j].name, permList[i].name) || permList[i].cap == CAP_NOT_BINDED) {
                 continue;
             }
-            capsBinded[index] = permList[i].cap;
-            index++;
+            capsBinded[index++] = permList[i].cap;
             break;
         }
     }
