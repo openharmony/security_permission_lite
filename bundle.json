@@ -22,13 +22,13 @@
     "ram": "500KB",
     "deps": {
       "components": [
-        "hilog",
+        "hilog_lite",
         "samgr_lite",
         "ipc_single"
       ],
       "third_party": [
         "bounds_checking_function",
-        "cJSON"
+        "cjson"
       ]
     },
     "build": {
