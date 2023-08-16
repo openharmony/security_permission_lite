@@ -22,7 +22,7 @@
     "ram": "500KB",
     "deps": {
       "components": [
-        "hilog",
+        "hilog_lite",
         "samgr_lite",
         "ipc"
       ],
