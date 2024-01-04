@@ -239,13 +239,8 @@ static int ParsePermissions(const char *jsonStr, PermissionSaved **perms, int *p
             *perms = NULL;
             return PERM_ERRORCODE_JSONPARSE_FAIL;
         }
-        if (strcpy_s((*perms + i)->name, PERM_NAME_LEN, itemName->valuestring) != EOK) {
-            cJSON_Delete(root);
-            free(*perms);
-            *perms = NULL;
-            return PERM_ERRORCODE_COPY_ERROR;
-        }
-        if (strcpy_s((*perms + i)->desc, PERM_DESC_LEN, itemDesc->valuestring) != EOK) {
+        if (strcpy_s((*perms + i)->name, PERM_NAME_LEN, itemName->valuestring) != EOK
+            || strcpy_s((*perms + i)->desc, PERM_DESC_LEN, itemDesc->valuestring) != EOK) {
             cJSON_Delete(root);
             free(*perms);
             *perms = NULL;
