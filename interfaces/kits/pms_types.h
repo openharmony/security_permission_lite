@@ -91,7 +91,7 @@ enum PmsFlagDef {
 
     /**
     * Permission flag mask: Indicates the valid flag definition.
-    */ 
+    */
     PMS_FLAG_VALID_MASK = 0x2,
 };
 
