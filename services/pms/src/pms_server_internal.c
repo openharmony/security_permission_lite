@@ -57,7 +57,7 @@ enum INNERFUNCID {
     ID_UPDATE_PERMS_FLAGS,
 };
 
-static void Init();
+static void Init(void);
 static const char *GetName(Feature *feature);
 static void OnInitialize(Feature *feature, Service *parent, Identity identity);
 static void OnStop(Feature *feature, Identity identity);
@@ -81,7 +81,7 @@ static InnerPermLite g_permlite = {
     .identity = {-1, -1, NULL},
 };
 
-static void Init()
+static void Init(void)
 {
     SAMGR_GetInstance()->RegisterFeature(PERMISSION_SERVICE, (Feature *)&g_permlite);
     SAMGR_GetInstance()->RegisterFeatureApi(PERMISSION_SERVICE, PERM_INNER_FEATURE, GET_IUNKNOWN(g_permlite));

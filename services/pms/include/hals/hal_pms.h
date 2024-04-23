@@ -26,13 +26,13 @@ extern "C" {
 #endif /* __cplusplus */
 
 PermissionDef* HalGetPermissionList(unsigned int *length);
-const char *HalGetPermissionPath();
-int HalGetMaxPermissionSize();
+const char *HalGetPermissionPath(void);
+int HalGetMaxPermissionSize(void);
 void* HalMalloc(unsigned int size);
 void HalFree(void *ptr);
 int HalAccess(const char *pathname);
-void HalMutexLock();
-void HalMutexUnlock();
+void HalMutexLock(void);
+void HalMutexUnlock(void);
 int HalGetDevUdid(unsigned char *udid, int size);
 bool HalIsValidPath(const char *path);
 
