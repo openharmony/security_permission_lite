@@ -32,7 +32,7 @@ struct IpcAuthLite {
     Identity identity;
 };
 
-IpcAuthLite *IpcAuthLite_GetInstance();
+IpcAuthLite *IpcAuthLiteGetInstance(void);
 #ifdef __cplusplus
 #if __cplusplus
 }

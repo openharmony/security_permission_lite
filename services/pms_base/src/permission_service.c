@@ -24,7 +24,7 @@
 #define STACK_SIZE 0x800
 #define QUEUE_SIZE 20
 
-static void Init();
+static void Init(void);
 static const char *GetName(Service *service);
 static BOOL Initialize(Service *service, Identity identity);
 static TaskConfig GetTaskConfig(Service *service);
@@ -38,7 +38,7 @@ static PermissionService g_permissionService = {
     .identity = {-1, -1, NULL}
 };
 
-static void Init()
+static void Init(void)
 {
     SAMGR_GetInstance()->RegisterService((Service *)&g_permissionService);
     HILOG_INFO(HILOG_MODULE_APP, "Init pms service success");
