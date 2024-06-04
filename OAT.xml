@@ -60,6 +60,10 @@ Note:If the text contains special characters, please escape them according to th
             <filefilter name="licenseFileNamePolicyFilter" desc="Filters for LICENSE file policies" >
 		<filteritem type="filepath" name="dir name figures/.*" desc="Figures of PMS framework, no need to check"/>
             </filefilter>
+            <filefilter name="binaryFileTypePolicyFilter" desc="Filters for binary file policies">
+            <filteritem type="filepath" name="figures/zh-cn_image_0000001113598272.png" desc="应用权限管理架构"/>
+            <filteritem type="filepath" name="figures/app_permission_mgmt.png" desc="app_permission_mgmt"/>
+            </filefilter>
         </filefilterlist>
     </oatconfig>
 </configuration>
