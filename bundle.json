@@ -12,7 +12,9 @@
   "component": {
     "name": "permission_lite",
     "subsystem": "security",
-    "syscap": [
+    "syscap": [],
+    "features": [
+      "permission_lite_pms_hal_path"
     ],
     "adapted_system_type": [
       "small",
@@ -33,7 +35,7 @@
     },
     "build": {
       "sub_component": [
-		"//base/security/permission_lite/services:permission_lite"
+        "//base/security/permission_lite/services:permission_lite"
       ],
       "inner_kits": [
         {
@@ -56,7 +58,7 @@
         }
       ],
       "test": [
-		"//base/security/permission_lite/services/unittest:unittest"
+        "//base/security/permission_lite/services/unittest:unittest"
       ]
     }
   }

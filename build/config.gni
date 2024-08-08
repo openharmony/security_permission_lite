@@ -17,6 +17,6 @@ declare_args() {
   permission_lite_path = "//base/security/permission_lite"
 
   # hal path
-  pms_hal_path = ""
+  permission_lite_pms_hal_path = ""
   samgr_lite_path = "//foundation/systemabilitymgr/samgr_lite"
 }
