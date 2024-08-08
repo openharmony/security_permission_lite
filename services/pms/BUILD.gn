@@ -60,7 +60,7 @@ if (os_level != "mini") {
     ]
 
     deps = [
-      "${pms_hal_path}:hal_pms_static",
+      "${permission_lite_pms_hal_path}:hal_pms_static",
       "//build/lite/config/component/cJSON:cjson_static",
     ]
   }
