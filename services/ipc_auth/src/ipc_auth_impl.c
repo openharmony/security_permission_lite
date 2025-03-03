@@ -46,6 +46,11 @@ static int IsUidValid(unsigned int uid)
 #ifdef OHOS_APPFWK_ENABLE
 static int GetUidByBundleName(const char *bundleName, unsigned int *uid)
 {
+    if (bundleName == NULL) {
+        HILOG_ERROR(HILOG_MODULE_APP, "bundleName is null, [function: %s][line: %d]", __FUNCTION__, __LINE__);
+        return AUTH_ERRORCODE_INVALID_BUNDLENAME;
+    }
+
     BundleInfo bundleInfo = {0};
     if (GetBundleInfo(bundleName, 0, &bundleInfo) != 0) {
         HILOG_ERROR(HILOG_MODULE_APP, "Invalid bundleName, [name: %s][line: %d]", bundleName, __LINE__);
