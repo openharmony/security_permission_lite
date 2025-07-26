@@ -93,7 +93,7 @@ static char *ReadString(const char *path, int *errCode)
         *errCode = PERM_ERRORCODE_STAT_FAIL;
         return NULL;
     }
-    unsigned int readSize = (unsigned int)buf.st_size;
+    unsigned int readSize = buf.st_size;
     char *rst = (char *)HalMalloc(readSize);
     if (rst == NULL) {
         *errCode = PERM_ERRORCODE_MALLOC_FAIL;
@@ -337,7 +337,7 @@ int QueryAppCapabilities(const char *identifier, unsigned int **caps, unsigned i
     if (ret != PERM_ERRORCODE_SUCCESS) {
         return ret;
     }
-    unsigned int allocSize = sizeof(unsigned int) * (unsigned int)permNum;
+    unsigned int allocSize = sizeof(unsigned int) * permNum;
     if (allocSize == 0) {
         HalFree((void *)permissions);
         return PERM_ERRORCODE_SUCCESS;
@@ -626,7 +626,7 @@ static int OnPermissionFlagsFileSync(const char *identifier, const char *permNam
     }
     for (int i = 0; i < permNum; i++) {
         if (strcmp(permissions[i].name, permName) == 0) {
-            isSave = (unsigned int)permissions[i].flags ^ (unsigned int)flags;
+            isSave = permissions[i].flags ^ flags;
             permissions[i].flags = flags;
             break;
         }
