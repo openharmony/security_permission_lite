@@ -93,7 +93,7 @@ static char *ReadString(const char *path, int *errCode)
         *errCode = PERM_ERRORCODE_STAT_FAIL;
         return NULL;
     }
-    unsigned int readSize = buf.st_size;
+    unsigned int readSize = (unsigned int)buf.st_size;
     char *rst = (char *)HalMalloc(readSize);
     if (rst == NULL) {
         *errCode = PERM_ERRORCODE_MALLOC_FAIL;
@@ -133,7 +133,7 @@ static int GetPermissionType(const char *permission)
     unsigned int permSize = 0;
     PermissionDef *permList = HalGetPermissionList(&permSize);
 
-    for (int i = 0; i < permSize; i++) {
+    for (unsigned int i = 0; i < permSize; i++) {
         if (strcmp(permission, permList[i].name) == 0) {
             return permList[i].type;
         }
@@ -337,7 +337,7 @@ int QueryAppCapabilities(const char *identifier, unsigned int **caps, unsigned i
     if (ret != PERM_ERRORCODE_SUCCESS) {
         return ret;
     }
-    unsigned int allocSize = sizeof(unsigned int) * permNum;
+    unsigned int allocSize = sizeof(unsigned int) * (unsigned int)permNum;
     if (allocSize == 0) {
         HalFree((void *)permissions);
         return PERM_ERRORCODE_SUCCESS;
@@ -352,8 +352,8 @@ int QueryAppCapabilities(const char *identifier, unsigned int **caps, unsigned i
     PermissionDef *permList = HalGetPermissionList(&permSize);
     unsigned int index = 0;
     for (int j = 0; j < permNum; j++) {
-        for (int i = 0; i < permSize; i++) {
-            if (strcmp(permissions[j].name, permList[i].name) || permList[i].cap == CAP_NOT_BINDED) {
+        for (unsigned int i = 0; i < permSize; i++) {
+            if (strcmp(permissions[j].name, permList[i].name) || permList[i].cap == (unsigned int)CAP_NOT_BINDED) {
                 continue;
             }
             capsBinded[index++] = permList[i].cap;
@@ -371,7 +371,7 @@ int QueryAppCapabilities(const char *identifier, unsigned int **caps, unsigned i
         HalFree((void *)capsBinded);
         return PERM_ERRORCODE_MALLOC_FAIL;
     }
-    for (int k = 0; k < index; k++) {
+    for (unsigned int k = 0; k < index; k++) {
         *(*caps + k) = capsBinded[k];
     }
     *capNum = index;
@@ -502,7 +502,7 @@ int IsPermissionValid(const char *permissionName)
     unsigned int permSize = 0;
     PermissionDef *permList = HalGetPermissionList(&permSize);
 
-    for (int i = 0; i < permSize; i++) {
+    for (unsigned int i = 0; i < permSize; i++) {
         if (strcmp(permissionName, permList[i].name) == 0) {
             return PERM_ERRORCODE_SUCCESS;
         }
@@ -515,7 +515,7 @@ int IsPermissionRestricted(const char *permissionName)
     unsigned int permSize = 0;
     PermissionDef *permList = HalGetPermissionList(&permSize);
 
-    for (int i = 0; i < permSize; i++) {
+    for (unsigned int i = 0; i < permSize; i++) {
         if (strcmp(permissionName, permList[i].name) == 0) {
             return permList[i].isRestricted;
         }
@@ -626,7 +626,7 @@ static int OnPermissionFlagsFileSync(const char *identifier, const char *permNam
     }
     for (int i = 0; i < permNum; i++) {
         if (strcmp(permissions[i].name, permName) == 0) {
-            isSave = permissions[i].flags ^ flags;
+            isSave = (unsigned int)permissions[i].flags ^ (unsigned int)flags;
             permissions[i].flags = flags;
             break;
         }
