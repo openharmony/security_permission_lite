@@ -44,7 +44,7 @@ if (os_level != "mini") {
   }
 } else {
   ohos_static_library("pms_target_static") {
-    subsystem_name = "permission_lite"
+    subsystem_name = "security"
     part_name = "permission_lite"
     sources = [
       "src/perm_operate.c",
