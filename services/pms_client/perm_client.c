@@ -210,6 +210,10 @@ static int ParsePermissions(const char *jsonStr, PermissionSaved **perms, int *p
         return PERM_ERRORCODE_JSONPARSE_FAIL;
     }
     cJSON *array = cJSON_GetObjectItem(root, FIELD_PERMISSION);
+    if (array == NULL || !cJSON_IsArray(array)) {
+        cJSON_Delete(root);
+        return PERM_ERRORCODE_JSONPARSE_FAIL;
+    }
     int pSize = cJSON_GetArraySize(array);
     if (pSize > PERMISSION_NUM_MAX) {
         cJSON_Delete(root);
