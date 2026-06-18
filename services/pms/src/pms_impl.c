@@ -398,7 +398,8 @@ static int UpdateAppPermission(
         return PERM_ERRORCODE_MALLOC_FAIL;
     }
     for (int i = 0; i < newPermNum; i++) {
-        if (strlen(newPerms[i].name) > PERM_NAME_LEN - 1 || strlen(newPerms[i].desc) > PERM_DESC_LEN - 1) {
+        if (strnlen(newPerms[i].name, PERM_NAME_LEN) > PERM_NAME_LEN - 1 ||
+            strnlen(newPerms[i].desc, PERM_DESC_LEN) > PERM_DESC_LEN - 1) {
             HalFree((void *)updatePerms);
             HalFree((void *)permissions);
             return PERM_ERRORCODE_FIELD_TOO_LONG;
