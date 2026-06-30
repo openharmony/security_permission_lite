@@ -187,7 +187,8 @@ static void ReplyRevokeRuntimePermission(const void *origin, IpcIo *req, IpcIo *
     int64_t uid;
     ReadInt64(req, &uid);
     if (callingUid != uid && callingUid > SYS_SVC_UID_MAX) {
-        HILOG_ERROR(HILOG_MODULE_APP, "RevokeRuntimePermission denied: callerUid %u cannot revoke for uid %lld", callingUid, uid);
+        HILOG_ERROR(HILOG_MODULE_APP, "RevokeRuntimePermission denied: callerUid %u cannot revoke for uid %lld",
+                    callingUid, uid);
         WriteInt32(reply, PERM_ERRORCODE_INVALID_PARAMS);
         return;
     }
