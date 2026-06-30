@@ -382,6 +382,9 @@ int QueryAppCapabilities(const char *identifier, unsigned int **caps, unsigned i
 static int UpdateAppPermission(
     const char *identifier, const PermissionTrans newPerms[], int newPermNum, enum IsUpdate isUpdate)
 {
+    if (newPermNum <= 0) {
+        return PERM_ERRORCODE_INVALID_PARAMS;
+    }
     PermissionSaved *permissions = NULL;
     int permNum = 0;
     int retCode = PERM_ERRORCODE_SUCCESS;
