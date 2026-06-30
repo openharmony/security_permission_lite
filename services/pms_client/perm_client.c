@@ -23,6 +23,7 @@
 #include "log.h"
 #include "pms_interface.h"
 #include "pms_types.h"
+#include "pms_common.h"
 #include "registry.h"
 #include "samgr_lite.h"
 
@@ -35,7 +36,6 @@
 #define FIELD_DESC "desc"
 #define FIELD_IS_GRANTED "isGranted"
 #define FIELD_FLAGS "flags"
-#define SYS_SVC_UID_MAX 99
 #define SYS_APP_UID_MIN 100
 #define SYS_APP_UID_MAX 999
 #define PERMISSION_NUM_MAX 1000

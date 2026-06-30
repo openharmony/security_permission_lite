@@ -21,5 +21,6 @@
 #define PERM_INNER_FEATURE "PmsInnerFeature"
 #define PERM_INNER "PmsInner"
 #define IPCAUTH "ipc_auth"
+#define SYS_SVC_UID_MAX 99
 
 #endif // PERM_COMMON_H
