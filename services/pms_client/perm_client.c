@@ -422,7 +422,7 @@ int RevokeRuntimePermission(int uid, const char *permissionName)
     int32_t ret = -1;
     proxy->Invoke((IClientProxy *)proxy, ID_REVOKE_RUNTIME, &request, &ret, Notify);
     ReleaseInnerClientApi(proxy);
-    (void)memset_s(data, MAX_DATA_LEN, 0, MAX_DATA_LEN);
+    (void)memset_s(data, sizeof(data), 0, sizeof(data));
     return ret;
 }
 
