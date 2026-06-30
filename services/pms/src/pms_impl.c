@@ -379,6 +379,22 @@ int QueryAppCapabilities(const char *identifier, unsigned int **caps, unsigned i
     return PERM_ERRORCODE_SUCCESS;
 }
 
+static int CopyPermissionEntry(PermissionSaved *dest, const PermissionTrans *src,
+                                 PermissionSaved *updatePerms, PermissionSaved *permissions)
+{
+    if (strnlen(src->name, PERM_NAME_LEN) > PERM_NAME_LEN - 1 ||
+        strnlen(src->desc, PERM_DESC_LEN) > PERM_DESC_LEN - 1) {
+        return PERM_ERRORCODE_FIELD_TOO_LONG;
+    }
+    if (strcpy_s(dest->name, PERM_NAME_LEN, src->name) != EOK) {
+        return PERM_ERRORCODE_COPY_ERROR;
+    }
+    if (strcpy_s(dest->desc, PERM_DESC_LEN, src->desc) != EOK) {
+        return PERM_ERRORCODE_COPY_ERROR;
+    }
+    return PERM_ERRORCODE_SUCCESS;
+}
+
 static int UpdateAppPermission(
     const char *identifier, const PermissionTrans newPerms[], int newPermNum, enum IsUpdate isUpdate)
 {
@@ -401,21 +417,11 @@ static int UpdateAppPermission(
         return PERM_ERRORCODE_MALLOC_FAIL;
     }
     for (int i = 0; i < newPermNum; i++) {
-        if (strnlen(newPerms[i].name, PERM_NAME_LEN) > PERM_NAME_LEN - 1 ||
-            strnlen(newPerms[i].desc, PERM_DESC_LEN) > PERM_DESC_LEN - 1) {
+        retCode = CopyPermissionEntry(&updatePerms[i], &newPerms[i], updatePerms, permissions);
+        if (retCode != PERM_ERRORCODE_SUCCESS) {
             HalFree((void *)updatePerms);
             HalFree((void *)permissions);
-            return PERM_ERRORCODE_FIELD_TOO_LONG;
-        }
-        if (strcpy_s(updatePerms[i].name, PERM_NAME_LEN, newPerms[i].name) != EOK) {
-            HalFree((void *)updatePerms);
-            HalFree((void *)permissions);
-            return PERM_ERRORCODE_COPY_ERROR;
-        }
-        if (strcpy_s(updatePerms[i].desc, PERM_DESC_LEN, newPerms[i].desc) != EOK) {
-            HalFree((void *)updatePerms);
-            HalFree((void *)permissions);
-            return PERM_ERRORCODE_COPY_ERROR;
+            return retCode;
         }
         int permType = GetPermissionType(newPerms[i].name);
         updatePerms[i].granted = NOT_GRANTED;
