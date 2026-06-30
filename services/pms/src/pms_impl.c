@@ -380,7 +380,7 @@ int QueryAppCapabilities(const char *identifier, unsigned int **caps, unsigned i
 }
 
 static int CopyPermissionEntry(PermissionSaved *dest, const PermissionTrans *src,
-                                 PermissionSaved *updatePerms, PermissionSaved *permissions)
+    PermissionSaved *updatePerms, PermissionSaved *permissions)
 {
     if (strnlen(src->name, PERM_NAME_LEN) > PERM_NAME_LEN - 1 ||
         strnlen(src->desc, PERM_DESC_LEN) > PERM_DESC_LEN - 1) {
