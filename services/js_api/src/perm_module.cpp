@@ -32,6 +32,13 @@ JSIValue PermModule::CheckSelfPerm(const JSIValue thisVal, const JSIValue *args,
     JSIValue complete = JSI::GetNamedProperty(args[0], CB_COMPLETE);
     char *permission = JSI::GetStringProperty(args[0], "permission");
 
+    if (permission == nullptr) {
+        HILOG_ERROR(HILOG_MODULE_ACE, "CheckSelfPerm: permission is null.");
+        JSIValue code = JSI::CreateNumber(OHOS_FAILURE);
+        JSIValue argv[ARGC_ONE] = { code };
+        JSI::CallFunction(fail, thisVal, argv, ARGC_ONE);
+        goto RELEASE;
+    }
     int ret = CheckSelfPermission(permission);
     JSIValue code = JSI::CreateNumber(ret);
     JSIValue argv[ARGC_ONE] = { code };
