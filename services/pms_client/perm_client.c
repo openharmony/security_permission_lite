@@ -405,6 +405,7 @@ int GrantRuntimePermission(int uid, const char *permissionName)
     int32_t ret = -1;
     proxy->Invoke((IClientProxy *)proxy, ID_GRANT_RUNTIME, &request, &ret, Notify);
     ReleaseInnerClientApi(proxy);
+    (void)memset_s(data, sizeof(data), 0, sizeof(data));
     return ret;
 }
 
@@ -422,6 +423,7 @@ int RevokeRuntimePermission(int uid, const char *permissionName)
     int32_t ret = -1;
     proxy->Invoke((IClientProxy *)proxy, ID_REVOKE_RUNTIME, &request, &ret, Notify);
     ReleaseInnerClientApi(proxy);
+    (void)memset_s(data, sizeof(data), 0, sizeof(data));
     return ret;
 }
 
