@@ -19,6 +19,7 @@ if (os_level != "mini") {
   lite_library("pms_target") {
     target_type = "shared_library"
     sources = [
+      "src/parse_perm_flags_int.cpp",
       "src/perm_operate.c",
       "src/pms_impl.c",
       "src/pms_inner.c",
@@ -47,6 +48,7 @@ if (os_level != "mini") {
     subsystem_name = "security"
     part_name = "permission_lite"
     sources = [
+      "src/parse_perm_flags_int.cpp",
       "src/perm_operate.c",
       "src/pms_impl.c",
     ]
