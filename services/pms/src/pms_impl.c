@@ -14,6 +14,7 @@
  */
 
 #include "pms.h"
+#include "parse_perm_flags_int.h"
 
 #include <fcntl.h>
 #include <sys/stat.h>
@@ -167,7 +168,10 @@ static int ParseNewPermissionsItem(const cJSON *object, PermissionSaved *perms)
         perms->flags = PMS_FLAG_DEFAULT;
         return PERM_ERRORCODE_JSONPARSE_FAIL;
     }
-    perms->flags = atoi(itemFlags->valuestring);
+    if (!ParsePermFlagsInt(itemFlags->valuestring, &perms->flags)) {
+        HILOG_ERROR(HILOG_MODULE_APP, "Invalid permission flags: %s", itemFlags->valuestring);
+        return PERM_ERRORCODE_JSONPARSE_FAIL;
+    }
     return PERM_ERRORCODE_SUCCESS;
 }
 
